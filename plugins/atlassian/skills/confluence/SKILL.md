@@ -47,14 +47,25 @@ Only stop if **neither** auth path works. Tell the user:
 
 **Do not proceed without auth. This is a hard gate.**
 
+## Script Detection
+
+Check if wrapper scripts are available:
+
+```bash
+test -f "${CLAUDE_PLUGIN_ROOT}/scripts/_common.sh" && echo "SCRIPTS OK"
+```
+
+If available, prefer scripts for all curl-based operations. Scripts handle auth, URL construction, and error handling internally.
+
 ## Tool Preference
 
-**Curl is the PRIMARY tool for Confluence.** acli Confluence support is limited.
+**Wrapper scripts are the preferred tool for Confluence**, followed by acli for limited operations, then raw curl as fallback.
 
-| Tool | Use for |
-|------|---------|
-| **acli** | Page view by ID, space list, space view |
-| **curl** | Everything else — search, create, update, list pages, comments |
+| Priority | Tool | Use for |
+|----------|------|---------|
+| 1 | **Wrapper scripts** (`${CLAUDE_PLUGIN_ROOT}/scripts/confluence/...`) | Preferred for all curl-based operations |
+| 2 | **acli** | Page view by ID, space list, space view |
+| 3 | **Raw curl** | Fallback if scripts aren't available |
 
 ### Curl base URLs
 
@@ -77,7 +88,13 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
 
 ### Search pages (CQL)
 
-**curl only** (v1 API) — acli does not support CQL search.
+**script:**
+
+```bash
+${CLAUDE_PLUGIN_ROOT}/scripts/confluence/search.sh <cql> [--limit N]
+```
+
+**curl** (v1 API) — acli does not support CQL search.
 
 ```bash
 curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
@@ -88,6 +105,12 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
 See `cql-recipes.md` for common CQL patterns.
 
 ### Get page by ID
+
+**script:**
+
+```bash
+${CLAUDE_PLUGIN_ROOT}/scripts/confluence/get-page.sh <page-id> [--body-format storage|atlas_doc_format|view]
+```
 
 **acli:**
 
@@ -114,6 +137,12 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
 ```
 
 ### List spaces
+
+**script:**
+
+```bash
+${CLAUDE_PLUGIN_ROOT}/scripts/confluence/list-spaces.sh [--limit N]
+```
 
 **acli:**
 
@@ -161,6 +190,14 @@ All write operations require curl. acli does not support Confluence page create,
 
 ### Create page
 
+**script:**
+
+```bash
+${CLAUDE_PLUGIN_ROOT}/scripts/confluence/create-page.sh --space-id ID --title "..." --body "..."
+```
+
+**curl:**
+
 ```bash
 curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
   -H "Accept: application/json" \
@@ -182,7 +219,13 @@ See `storage-format.md` for how to construct the body value.
 
 ### Update page
 
-**You MUST GET the page first** to obtain the current version number, then PUT with `version.number + 1`.
+**script:**
+
+```bash
+${CLAUDE_PLUGIN_ROOT}/scripts/confluence/update-page.sh <page-id> --body "..." [--title "..."]
+```
+
+**curl** — You MUST GET the page first to obtain the current version number, then PUT with `version.number + 1`.
 
 ```bash
 # Step 1: GET current page (note the version number in the response)

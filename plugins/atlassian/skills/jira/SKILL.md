@@ -51,9 +51,31 @@ This is a hard gate. No API calls without auth.
 
 ---
 
+## Script Detection
+
+Check if wrapper scripts are available:
+
+```bash
+test -f "${CLAUDE_PLUGIN_ROOT}/scripts/_common.sh" && echo "SCRIPTS OK"
+```
+
+If available, prefer scripts for all curl-based operations. Scripts handle auth, ADF construction, and error handling internally.
+
+---
+
 ## Tool Preference
 
-### When acli is authenticated — prefer it for ALL operations
+Priority order:
+
+1. **Wrapper scripts** (`${CLAUDE_PLUGIN_ROOT}/scripts/jira/...`) — preferred, handles auth and ADF internally
+2. **`acli`** — for bulk operations (`--jql` + `--yes`), sprint management, `@me` shorthand
+3. **Raw curl** — fallback if scripts aren't available
+
+### When scripts are available — prefer them for ALL operations
+
+Scripts automatically handle authentication (env vars), ADF construction for descriptions/comments, and error handling. No need to build JSON payloads or manage auth headers manually.
+
+### When acli is authenticated — use for bulk and sprint operations
 
 Key advantages over curl:
 
@@ -88,6 +110,11 @@ For write operations, add:
 
 ### Search Issues
 
+**script:**
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/jira/search.sh" "assignee = currentUser() AND resolution = Unresolved" --limit 50
+```
+
 **acli:**
 ```bash
 acli jira workitem search --jql "assignee = currentUser() AND resolution = Unresolved" --json
@@ -103,6 +130,11 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
 ```
 
 ### View Issue
+
+**script:**
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/jira/view.sh" KEY-123
+```
 
 **acli:**
 ```bash
@@ -164,6 +196,11 @@ For sprint operations without acli, use the Jira Agile REST API (`/rest/agile/1.
 
 ### Create Issue
 
+**script:**
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/jira/create.sh" --project PROJ --type Task --summary "Implement rate limiting" --description "Add rate limiting to auth endpoints to prevent brute-force attacks."
+```
+
 **acli** (plain text, no ADF needed):
 ```bash
 acli jira workitem create \
@@ -200,6 +237,11 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
 
 ### Add Comment
 
+**script:**
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/jira/comment.sh" KEY-123 "Investigated the issue. Root cause identified. Fix incoming."
+```
+
 **acli** (plain text):
 ```bash
 acli jira workitem comment create --key KEY-123 --body "Investigated the issue. Root cause identified. Fix incoming."
@@ -227,6 +269,11 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
 
 ### Edit Fields
 
+**script:**
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/jira/edit.sh" KEY-123 --summary "Updated summary" --description "New description" --labels "backend,urgent"
+```
+
 **acli:**
 ```bash
 acli jira workitem edit --key KEY-123 --summary "Updated summary" --description "New description" --labels "backend,urgent"
@@ -252,6 +299,11 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
 
 ### Transition Issue
 
+**script:**
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/jira/transition.sh" KEY-123 "Done"
+```
+
 **acli** (uses status name directly):
 ```bash
 acli jira workitem transition --key KEY-123 --status "Done"
@@ -274,6 +326,11 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
 
 ### Assign Issue
 
+**script:**
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/jira/assign.sh" KEY-123 --me
+```
+
 **acli:**
 ```bash
 acli jira workitem assign --key KEY-123 --assignee "@me"
@@ -291,6 +348,11 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
 Note: with curl, you must know the user's `accountId`. Use `GET /rest/api/3/myself` to get the current user's account ID for self-assignment.
 
 ### Link Issues
+
+**script:**
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/jira/link.sh" KEY-123 "Blocks" KEY-456
+```
 
 **acli:**
 ```bash
@@ -339,7 +401,7 @@ See `jql-recipes.md` for common JQL patterns including:
 
 See `adf-format.md` for the Atlassian Document Format reference.
 
-ADF is **only needed when using curl** for write operations (create issue descriptions, add comments, update descriptions). When using `acli`, pass plain text directly — no ADF required.
+ADF is **only needed when using raw curl** for write operations (create issue descriptions, add comments, update descriptions). When using wrapper scripts or `acli`, pass plain text directly — no ADF required.
 
 ---
 
@@ -375,7 +437,7 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
 
 - **Infer intent from natural language.** "Show me my tickets" becomes a JQL search for `assignee = currentUser() AND resolution = Unresolved`. "What's in the current sprint?" becomes `sprint in openSprints()`.
 - **Construct all JQL and ADF from user intent.** Never ask the user to write raw JQL or ADF JSON.
-- **Prefer acli when available.** It is simpler, avoids ADF complexity, and supports bulk operations natively.
+- **Prefer wrapper scripts when available.** They handle auth, ADF, and errors internally. Use acli for bulk operations and sprint management.
 - **Use `--json` with acli** when you need to parse structured output programmatically.
 - **Use `--yes` for bulk operations** to skip interactive confirmation prompts.
 - **Map natural language to operations directly:**
