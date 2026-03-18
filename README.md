@@ -12,14 +12,25 @@ Jira and Confluence skills for the Atlassian suite — search, create, update, a
 - `/spycner-tools:jira` — Search issues, create/update tickets, transition status, add comments, manage sprints
 - `/spycner-tools:confluence` — Search pages, read documentation, create/update pages, browse spaces
 
+### google-workspace
+
+Gmail and Calendar skills for Google Workspace — powered by the `gws` CLI.
+
+**Skills:**
+- `/spycner-tools:gmail` — Search, read, send, and manage Gmail messages, drafts, labels, and filters
+- `/spycner-tools:calendar` — View agenda, create and manage events, check availability, manage calendars
+
 ## Installation
 
 ```
 /plugin marketplace add Spycner/spycner-tools
 /plugin install atlassian@spycner-tools
+/plugin install google-workspace@spycner-tools
 ```
 
 ## Setup
+
+### Atlassian
 
 The plugin supports two authentication paths:
 
@@ -38,3 +49,14 @@ export ATLASSIAN_DOMAIN="your-domain"    # e.g. mycompany (for mycompany.atlassi
 export ATLASSIAN_EMAIL="you@company.com"
 export ATLASSIAN_API_TOKEN="your-token"
 ```
+
+### Google Workspace
+
+Install and authenticate the `gws` CLI:
+
+```bash
+npm i -g @anthropic-ai/gws
+gws auth login -s gmail,calendar
+```
+
+For full setup instructions, see: https://github.com/googleworkspace/cli
