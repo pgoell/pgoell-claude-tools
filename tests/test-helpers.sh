@@ -198,8 +198,14 @@ show_tools_used() {
     echo "  Commands:"
     grep -oE 'scripts/(jira|confluence)/[a-z_-]+\.sh' "$log_file" 2>/dev/null | sort -u | sed 's/^/    - script: /' || true
     grep -oE 'acli (jira|confluence) [a-z-]+ [a-z-]*' "$log_file" 2>/dev/null | sort -u | sed 's/^/    - acli: /' || true
+    grep -oE 'gws (gmail|calendar) [+a-z_-]+' "$log_file" 2>/dev/null | sort -u | sed 's/^/    - gws: /' || true
     if grep -q 'curl -s -u' "$log_file" 2>/dev/null; then echo "    - raw curl detected"; fi
-    if ! grep -qE 'scripts/|acli |curl -s' "$log_file" 2>/dev/null; then echo "    (no commands detected)"; fi
+    if ! grep -qE 'scripts/|acli |curl -s|gws ' "$log_file" 2>/dev/null; then echo "    (no commands detected)"; fi
+}
+
+# Check if gws CLI is authenticated
+check_gws_auth() {
+    command -v gws &>/dev/null && gws auth status &>/dev/null 2>&1
 }
 
 # Export functions for use in tests
@@ -213,3 +219,4 @@ export -f show_tools_used
 export -f check_acli_auth
 export -f check_env_auth
 export -f check_any_auth
+export -f check_gws_auth
