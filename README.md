@@ -25,8 +25,7 @@ Gmail and Calendar skills for Google Workspace — powered by the `gws` CLI.
 Comprehensive web research with multi-perspective analysis, or optimized prompt generation for external AI tools.
 
 **Skills:**
-- `/spycner-tools:research` — Deep web research with source synthesis, fact-checking, and structured reports
-- `/spycner-tools:deep-research` — Generate optimized prompts for external AI research tools (e.g. Perplexity, Gemini)
+- `/spycner-tools:research` — Research intake, refinement, and routing. Conducts deep web research with multi-perspective analysis and structured reports, or generates optimized prompts for external AI tools (OpenAI, Gemini, Perplexity). Dispatches a `deep-research` agent for execution.
 
 ## Installation
 
