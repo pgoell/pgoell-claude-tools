@@ -7,45 +7,11 @@ description: Use when the user wants to interact with Confluence — search page
 
 Interact with Confluence Cloud to search pages, read documentation, create or update content, and browse spaces.
 
-## Auth Gate
+## Auth Approach
 
-**You MUST confirm authentication before making any API calls.**
+Do NOT check authentication upfront. Just run the command. If it fails with an auth error, see the **Self-Healing** section for diagnostics.
 
-### Step 1 — Check env vars (PRIMARY — required for most operations)
-
-```bash
-echo "ATLASSIAN_DOMAIN=${ATLASSIAN_DOMAIN:-(not set)}"
-echo "ATLASSIAN_EMAIL=${ATLASSIAN_EMAIL:-(not set)}"
-echo "ATLASSIAN_API_TOKEN=${ATLASSIAN_API_TOKEN:-(not set)}"
-```
-
-All three must be set for curl-based operations. Since curl is the primary tool for Confluence, these are effectively required for any real workflow. **If env vars are set, you are good to proceed — do not wait for acli.**
-
-### Step 2 — Optionally check acli (supplementary only)
-
-```bash
-command -v acli && acli auth status
-```
-
-If available and authenticated, acli can supplement curl for a few operations (page view by ID, space list/view). But acli is **not required** and **not the primary tool** for Confluence.
-
-**Important: If acli is not installed or not authenticated, silently fall back to curl. Do NOT ask the user about acli setup. Do NOT stop or prompt — just use curl.**
-
-### If env vars are not set AND acli is not available — STOP
-
-Only stop if **neither** auth path works. Tell the user:
-
-> To use Confluence, set these environment variables:
->
-> ```bash
-> export ATLASSIAN_DOMAIN="yourcompany"        # yourcompany.atlassian.net
-> export ATLASSIAN_EMAIL="you@company.com"
-> export ATLASSIAN_API_TOKEN="your-token"
-> ```
->
-> Generate an API token at: https://id.atlassian.com/manage/api-tokens
-
-**Do not proceed without auth. This is a hard gate.**
+**NEVER print, echo, or log the values of `ATLASSIAN_API_TOKEN`, `ATLASSIAN_EMAIL`, or any credentials.** Only check whether they are set (e.g., `test -n`), never display their contents.
 
 ## Script Detection
 
@@ -308,7 +274,37 @@ See `storage-format.md` for the Confluence XHTML storage format reference, neede
 
 If an API call or acli command fails:
 
-1. Check the error message for clues (auth, permissions, bad request body, version conflict).
+### Auth Errors (401, 403, or "not authenticated")
+
+Check which auth paths are available — **never print token or credential values**:
+
+```bash
+# Check if env vars are set (NOT their values)
+test -n "${ATLASSIAN_DOMAIN:-}" && echo "ATLASSIAN_DOMAIN is set" || echo "ATLASSIAN_DOMAIN is NOT set"
+test -n "${ATLASSIAN_EMAIL:-}" && echo "ATLASSIAN_EMAIL is set" || echo "ATLASSIAN_EMAIL is NOT set"
+test -n "${ATLASSIAN_API_TOKEN:-}" && echo "ATLASSIAN_API_TOKEN is set" || echo "ATLASSIAN_API_TOKEN is NOT set"
+```
+
+```bash
+# Check acli (optional)
+command -v acli && acli auth status
+```
+
+If neither auth path is available, tell the user:
+
+> To use Confluence, set these environment variables:
+>
+> ```bash
+> export ATLASSIAN_DOMAIN="yourcompany"        # yourcompany.atlassian.net
+> export ATLASSIAN_EMAIL="you@company.com"
+> export ATLASSIAN_API_TOKEN="your-token"
+> ```
+>
+> Generate an API token at: https://id.atlassian.com/manage/api-tokens
+
+### Other Errors
+
+1. Check the error message for clues (permissions, bad request body, version conflict).
 2. For acli errors, run `acli confluence [command] --help` for current flags and syntax.
 3. If the API may have changed, check live docs via web search. Canonical URLs:
    - Confluence v2 REST API: `https://developer.atlassian.com/cloud/confluence/rest/v2/`
