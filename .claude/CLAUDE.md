@@ -11,6 +11,8 @@ plugins/
   <plugin-name>/
     .claude-plugin/
       plugin.json           # Plugin metadata (name, description, author, license, keywords)
+    agents/                 # Optional: agent definitions for long-running isolated tasks
+      <agent-name>.md
     scripts/                # Optional wrapper scripts (if the CLI needs abstraction)
       _common.sh            # Shared helpers (auth, curl wrappers, etc.)
       <service>/            # Per-service scripts
@@ -33,6 +35,7 @@ tests/
 |--------|---------|--------|
 | `atlassian` | 1.2.0 | `jira`, `confluence` |
 | `google-workspace` | 1.0.0 | `gmail`, `calendar` |
+| `research` | 1.0.0 | `research` (+ `deep-research` agent) |
 
 ## How to Develop a New Skill
 
@@ -164,4 +167,5 @@ PLUGIN_DIR=plugins/<plugin> bash tests/skill-triggering/run-test.sh <skill> test
 - **One skill per service, one plugin per product family.** Gmail and Calendar are both under `google-workspace`. Jira and Confluence are both under `atlassian`.
 - **Skills are self-contained.** Each SKILL.md should contain everything Claude needs to use the service without reading other files (except reference docs it explicitly links to).
 - **Tests run Claude in a subprocess.** Unit tests use `run_claude` with `--dangerously-skip-permissions`. Integration tests use `run_claude_logged` with `--output-format stream-json` to capture tool usage.
+- **Agents for long-running, context-heavy operations.** When a skill's execution would consume significant context (e.g. dozens of web pages for research), define an agent in `agents/` and have the skill dispatch it via the Agent tool. The agent runs in an isolated subagent context. Use skills for everything else.
 - **Lazy auth, never print secrets.** Skills do not check authentication upfront. They attempt the operation and only diagnose auth issues when commands fail (in Self-Healing). Credentials, tokens, and API keys are NEVER printed or echoed — only check whether they are set (`test -n`), never display values.

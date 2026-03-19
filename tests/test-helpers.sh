@@ -193,7 +193,7 @@ show_tools_used() {
     local log_file="$1"
     echo "  Tools used:"
     # Extract tool names from tool_use blocks
-    grep -oE '"name":"(Bash|Read|Write|Edit|Glob|Grep|Skill)"' "$log_file" 2>/dev/null | sort | uniq -c | sed 's/"name":"//;s/"$//;s/^/    /' || true
+    grep -oE '"name":"(Bash|Read|Write|Edit|Glob|Grep|Skill|WebSearch|WebFetch|Agent)"' "$log_file" 2>/dev/null | sort | uniq -c | sed 's/"name":"//;s/"$//;s/^/    /' || true
     # Show bash commands that reference scripts or acli or curl
     echo "  Commands:"
     grep -oE 'scripts/(jira|confluence)/[a-z_-]+\.sh' "$log_file" 2>/dev/null | sort -u | sed 's/^/    - script: /' || true
