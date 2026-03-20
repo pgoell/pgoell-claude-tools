@@ -26,7 +26,7 @@ output=$(run_claude "In the research skill, what tools does it use? What is the 
 
 assert_contains "$output" "WebSearch|web search" "Mentions WebSearch" || true
 assert_contains "$output" "WebFetch|web fetch|fetch" "Mentions WebFetch" || true
-assert_contains "$output" "agent|Agent|subagent" "Mentions agent dispatch" || true
+assert_contains "$output" "agent|Agent|subagent|pipeline|orchestrat" "Mentions agent dispatch or pipeline" || true
 
 echo ""
 
@@ -51,29 +51,34 @@ assert_contains "$output" "recipe|pattern|strateg" "Mentions research recipes" |
 
 echo ""
 
-echo "Test: Deep research agent mentions author estimate labeling"
+# Test 5: Multi-agent pipeline
+echo "Test 5: Multi-agent pipeline..."
+
+output=$(run_claude "How does the research skill execute research? What agents are involved?" 30)
+
+assert_contains "$output" "planner|researcher|writer|reviewer|pipeline" "Mentions pipeline agents" || true
+assert_contains "$output" "review|gate|validat" "Mentions review gates" || true
+
+echo ""
+
+echo "Test: Research skill mentions author estimate labeling"
 result=$(run_claude "I want to research AI adoption metrics. What would you do if you derived a threshold yourself during research?" 30)
 assert_contains "$result" "author estimate" "Should mention author estimate labeling for derived numbers" || true
 
 echo ""
-echo "Test: Deep research agent describes creative synthesis phase"
+echo "Test: Research skill describes creative synthesis"
 result=$(run_claude "I want to do creative research on remote work trends. What does creative mode do?" 30)
 assert_contains "$result" "original analysis" "Should mention original analysis tagging in creative mode" || true
 
 echo ""
-echo "Test: Deep research agent mentions bias consistency for reused data"
+echo "Test: Research skill mentions bias consistency for reused data"
 result=$(run_claude "When writing a research report, how should I handle vendor data that I cite multiple times?" 30)
 assert_contains "$result" "credibility" "Should mention credibility tagging on reuse of biased sources" || true
 
 echo ""
-echo "Test: Deep research agent mentions single-source transparency"
+echo "Test: Research skill mentions single-source transparency"
 result=$(run_claude "Can I include a key finding that only has one source?" 30)
 assert_contains "$result" "single source" "Should mention flagging single-source status for key findings" || true
-
-echo ""
-echo "Test: Deep research agent mentions threshold integrity in self-audit"
-result=$(run_claude "What does the deep research agent check during self-audit before writing the report?" 30)
-assert_contains "$result" "author estimate|threshold|source" "Should mention threshold integrity in self-audit" || true
 
 echo ""
 echo "Test: Research skill recognizes creative parameter"
