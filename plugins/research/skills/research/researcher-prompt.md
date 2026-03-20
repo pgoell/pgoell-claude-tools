@@ -80,11 +80,11 @@ Agent tool (general-purpose):
     ### Credibility Tags
 
     Tag every source by credibility type:
-    - `[independent]` — academic research, non-profit institutions (Stanford HAI, Brookings)
-    - `[consulting]` — firms selling related services (McKinsey, BCG, Deloitte)
-    - `[vendor]` — companies selling AI products (IBM, Google Cloud, Cisco)
-    - `[practitioner]` — practitioners sharing experience (blog posts, CIO.com)
-    - `[journalism]` — news reporting (Reuters, NYT)
+    - `[independent]` — academic research, non-profit institutions (Stanford HAI, Brookings) — most trustworthy for claims
+    - `[consulting]` — firms selling related services (McKinsey, BCG, Deloitte) — useful data, but incentive to frame AI positively
+    - `[vendor]` — companies selling AI products (IBM, Google Cloud, Cisco) — treat claims skeptically, use only for their own data
+    - `[practitioner]` — practitioners sharing experience (blog posts, CIO.com) — anecdotal but grounded
+    - `[journalism]` — news reporting (Reuters, NYT) — good for events, weak for analysis
 
     ### Contradiction Handling
 
@@ -130,7 +130,7 @@ Agent tool (general-purpose):
     Skip this phase entirely in quick mode.
 
     Explicitly search for counterarguments, limitations, and criticism of the findings
-    gathered so far. Look for:
+    gathered so far. Use adversarial query patterns from `{RECIPES_PATH}` (Adversarial Pass Queries section) as a starting point. Look for:
     - Conflicting data or dissenting experts
     - Retractions, corrections, or updated findings
     - Methodological criticisms of cited studies
