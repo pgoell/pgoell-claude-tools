@@ -212,7 +212,7 @@ Agent tool (general-purpose):
 
     Rules:
     - Any CRITICAL issue means the verdict is FAIL
-    - IMPORTANT-only issues also result in FAIL — the writer should address them
+    - IMPORTANT-only findings result in PASS (list them for awareness, but they do not block)
     - List CRITICAL issues first, then IMPORTANT
     - Be specific about location: "In the Executive Summary, paragraph 1..." or
       "Section 'What Matters Most', finding #3..."

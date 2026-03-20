@@ -35,7 +35,7 @@ tests/
 |--------|---------|--------|
 | `atlassian` | 1.2.0 | `jira`, `confluence` |
 | `google-workspace` | 1.0.0 | `gmail`, `calendar` |
-| `research` | 1.0.0 | `research` (+ `deep-research` agent) |
+| `research` | 1.3.0 | `research` (multi-agent pipeline with review gates) |
 
 ## How to Develop a New Skill
 
