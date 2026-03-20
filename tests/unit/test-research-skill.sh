@@ -52,7 +52,7 @@ assert_contains "$output" "recipe|pattern|strateg" "Mentions research recipes" |
 echo ""
 
 echo "Test: Deep research agent mentions author estimate labeling"
-result=$(run_claude "I want to research AI adoption metrics. What would you do if you derived a threshold yourself during research?" "$PLUGIN_DIR")
+result=$(run_claude "I want to research AI adoption metrics. What would you do if you derived a threshold yourself during research?" 30)
 assert_contains "$result" "author estimate" "Should mention author estimate labeling for derived numbers" || true
 
 echo "=== research skill tests complete ==="
