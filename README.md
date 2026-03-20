@@ -72,3 +72,15 @@ For full setup instructions, see: https://github.com/googleworkspace/cli
 ### Research Plugin
 
 No authentication required. The research plugin uses WebSearch and WebFetch which work out of the box.
+
+**Recommended:** Allow WebFetch and WebSearch so the research agent can run without prompting for every web request. Add to your `~/.claude/settings.json`:
+
+```json
+{
+  "permissions": {
+    "allow": ["WebFetch", "WebSearch"]
+  }
+}
+```
+
+Or merge into your existing permissions `allow` array if you already have one.
