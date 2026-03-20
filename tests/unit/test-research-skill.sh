@@ -75,4 +75,9 @@ echo "Test: Deep research agent mentions threshold integrity in self-audit"
 result=$(run_claude "What does the deep research agent check during self-audit before writing the report?" 30)
 assert_contains "$result" "author estimate|threshold|source" "Should mention threshold integrity in self-audit" || true
 
+echo ""
+echo "Test: Research skill recognizes creative parameter"
+result=$(run_claude "I want to do a creative deep dive on climate policy. What options can I configure?" 30)
+assert_contains "$result" "creative" "Should mention creative as a configurable parameter" || true
+
 echo "=== research skill tests complete ==="
