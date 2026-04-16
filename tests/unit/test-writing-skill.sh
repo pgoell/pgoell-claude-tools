@@ -33,6 +33,8 @@ assert_contains "$output" "Hemingway|hemingway" "Mentions Hemingway" || true
 assert_contains "$output" "Hitchcock|hitchcock" "Mentions Hitchcock" || true
 assert_contains "$output" "[Mm]om" "Mentions Mom reader" || true
 assert_contains "$output" "[Aa]sshole" "Mentions Asshole reader" || true
+assert_contains "$output" "[Cc]larity|Zinsser" "Mentions Clarity critic (Zinsser)" || true
+assert_contains "$output" "[Uu]sage|Strunk" "Mentions Usage critic (Strunk & White)" || true
 echo ""
 
 # Test 4: Finishing passes

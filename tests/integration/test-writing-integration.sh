@@ -45,8 +45,8 @@ else
 fi
 
 echo ""
-echo "Test 2: All four per-critic files created..."
-for critic in hemingway hitchcock mom asshole; do
+echo "Test 2: All six per-critic files created..."
+for critic in hemingway hitchcock mom asshole clarity usage; do
     if [ -f "$TEST_DIR/critique-${critic}.md" ]; then
         echo "  [PASS] critique-${critic}.md created"
     else
@@ -56,7 +56,7 @@ done
 
 echo ""
 echo "Test 3: Each critic flagged at least one issue (the draft is intentionally bad)..."
-for critic in hemingway hitchcock mom asshole; do
+for critic in hemingway hitchcock mom asshole clarity usage; do
     if [ -f "$TEST_DIR/critique-${critic}.md" ]; then
         line_count=$(wc -l < "$TEST_DIR/critique-${critic}.md")
         if [ "$line_count" -gt 5 ]; then

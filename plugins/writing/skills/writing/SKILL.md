@@ -69,7 +69,9 @@ Use TaskCreate to add one task per phase that will run, plus sub-tasks for the p
    ├── Critic: Hemingway
    ├── Critic: Hitchcock
    ├── Critic: Mom reader
-   └── Critic: Asshole reader
+   ├── Critic: Asshole reader
+   ├── Critic: Clarity
+   └── Critic: Usage
 5. Phase 5: Finishing pass
    ├── AI-pattern detector
    ├── Style enforcer
@@ -119,16 +121,18 @@ Dispatch each phase agent via the Agent tool. The orchestrator injects context i
 
 #### Phase 4: Panel review
 
-Fan out: dispatch all four critic agents in parallel (single message with multiple Agent tool calls).
+Fan out: dispatch all six critic agents in parallel (single message with multiple Agent tool calls).
 
-The four critics use distinct prompt-file and output-file slugs:
+The six critics use distinct prompt-file and output-file slugs:
 
-| Prompt file | Output file |
-|---|---|
-| `critics/hemingway.md` | `critique-hemingway.md` |
-| `critics/hitchcock.md` | `critique-hitchcock.md` |
-| `critics/mom-reader.md` | `critique-mom.md` |
-| `critics/asshole-reader.md` | `critique-asshole.md` |
+| Prompt file | Output file | Lens |
+|---|---|---|
+| `critics/hemingway.md` | `critique-hemingway.md` | Economy: cut adjectives, kill darlings |
+| `critics/hitchcock.md` | `critique-hitchcock.md` | Pacing: reader engagement, bomb under the table |
+| `critics/mom-reader.md` | `critique-mom.md` | Accessibility: where the general reader gets lost |
+| `critics/asshole-reader.md` | `critique-asshole.md` | Rigor: unearned claims, missing counterarguments |
+| `critics/clarity.md` | `critique-clarity.md` | Precision: vague abstractions, unclear antecedents (Zinsser) |
+| `critics/usage.md` | `critique-usage.md` | Correctness of form: grammar, parallelism, misused words (Strunk & White) |
 
 For each critic:
 1. Read the prompt file from the table above
@@ -137,7 +141,7 @@ For each critic:
 4. Verify the corresponding output file exists
 5. Mark sub-task completed
 
-When all four critics return, consolidate into `critique.md`:
+When all six critics return, consolidate into `critique.md`:
 
 ```markdown
 # Panel Critique
@@ -150,6 +154,8 @@ When all four critics return, consolidate into `critique.md`:
 | Hitchcock | ... | ... |
 | Mom reader | ... | ... |
 | Asshole reader | ... | ... |
+| Clarity | ... | ... |
+| Usage | ... | ... |
 
 ## Hemingway
 <full content of critique-hemingway.md>
@@ -162,11 +168,17 @@ When all four critics return, consolidate into `critique.md`:
 
 ## Asshole reader
 <full content of critique-asshole.md>
+
+## Clarity
+<full content of critique-clarity.md>
+
+## Usage
+<full content of critique-usage.md>
 ```
 
 Then check verdicts. **Match on the first whitespace-delimited token of each critic's `**Verdict:**` line.** Critic prompts emit `PASS`, `MINOR ISSUES`, or `CRITICAL ISSUES`; only the first token is the gate signal. Expected tokens: `PASS`, `MINOR`, `CRITICAL`.
 
-- All four critics emit `PASS` or `MINOR` → continue to finishing
+- All six critics emit `PASS` or `MINOR` → continue to finishing
 - One or more critics emit `CRITICAL` → re-dispatch the draft agent with the consolidated critique injected as REVIEWER_FEEDBACK. Re-run the panel. Repeat up to 2 iterations. If still CRITICAL after 2 iterations, present remaining critical issues to user via AskUserQuestion: "Continue to finishing, or pause for manual intervention?"
 
 Mark phase task completed when verdict allows progression or user overrides.
