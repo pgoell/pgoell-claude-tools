@@ -36,7 +36,7 @@ Resolution order:
 1. Explicit flag: `--style-guide ./path/to/guide.md`
 2. Project-level: search for `style-guide.md` or `CLAUDE.md` in the working directory and parents (up to repo root)
 3. State memory: the state file's recorded style guide for this project
-4. Skill default: `default-style-guide.md` shipped with this skill
+4. Skill default: `default-style-guide.md` shipped with this skill. Resolve its absolute path by locating the directory of this `SKILL.md` file (the skill's own install path) via `Glob` on `**/writing/SKILL.md` under the active plugin directory, then take the parent.
 
 If multiple candidates exist at the project level (e.g., both `style-guide.md` and a `CLAUDE.md` in scope), use AskUserQuestion to ask once which to use, then record the choice in the state file.
 
@@ -121,11 +121,20 @@ Dispatch each phase agent via the Agent tool. The orchestrator injects context i
 
 Fan out: dispatch all four critic agents in parallel (single message with multiple Agent tool calls).
 
+The four critics use distinct prompt-file and output-file slugs:
+
+| Prompt file | Output file |
+|---|---|
+| `critics/hemingway.md` | `critique-hemingway.md` |
+| `critics/hitchcock.md` | `critique-hitchcock.md` |
+| `critics/mom-reader.md` | `critique-mom.md` |
+| `critics/asshole-reader.md` | `critique-asshole.md` |
+
 For each critic:
-1. Read `critics/{critic}.md`
+1. Read the prompt file from the table above
 2. Inject: output path, style guide path, empty reviewer feedback
 3. Dispatch via Agent tool
-4. Verify `critique-{critic}.md` exists
+4. Verify the corresponding output file exists
 5. Mark sub-task completed
 
 When all four critics return, consolidate into `critique.md`:
@@ -177,11 +186,12 @@ After all four passes, present `draft.md` and `finishing-notes.md` to the user. 
 
 ### Step 6: Update state and present
 
-Update the state file:
-- `last_completed_phase`: name of last successful phase
-- `working_directory`: absolute path
+Update the state file. The working directory is the *key* under `projects` (not a field). For that key, write:
 - `active_style_guide`: absolute path
+- `last_completed_phase`: name of last successful phase
 - `last_run_at`: ISO timestamp
+
+See the State File Format section below for the exact JSON shape.
 
 Present the final draft and a summary of what each pass did.
 
