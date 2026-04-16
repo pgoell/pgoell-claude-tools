@@ -61,8 +61,8 @@ Agent tool (general-purpose):
     | 24 | "There are many engineers who believe..." | "Many engineers believe..." | "there are" filler |
 
     ## Sentences to tighten
-    - L42: <quote first 80 chars>...— two ideas joined awkwardly, split them
-    - L67: <quote>...— passive voice with no reason
+    - L42: <quote first 80 chars>... two ideas joined awkwardly, split them
+    - L67: <quote>... passive voice with no reason
 
     ## Notes for the writer
     <one or two sentences naming the dominant pattern, e.g., "Adjective bloat is
