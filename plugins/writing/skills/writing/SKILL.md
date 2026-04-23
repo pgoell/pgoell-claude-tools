@@ -1,6 +1,6 @@
 ---
 name: writing
-description: Use when the user wants to draft a blog post, essay, talk, newsletter, literature note, or any longer-form prose; or when they want to review, critique, or finish an existing draft. Orchestrates a multi-phase pipeline (interview, outline, throughline gate, draft, panel review, finishing) modeled on Katie Parrott's process. Triggers on writing intent (drafting, reviewing, polishing, voice work) and not on simple text generation tasks.
+description: Use when the user wants to draft a blog post, essay, talk, newsletter, memo, announcement, briefing, literature note, or any longer-form prose; or when they want to review, critique, or finish an existing draft. Orchestrates a multi-phase pipeline (interview, outline, throughline gate, draft, panel review, finishing) modeled on Katie Parrott's process, with format-gated branches for pyramid-structured outlines (memo/briefing/announcement) and a Smart-Brevity panel critic (memo/newsletter/announcement). Triggers on writing intent (drafting, reviewing, polishing, voice work) and not on simple text generation tasks.
 ---
 
 # Writing Skill
@@ -11,7 +11,7 @@ Multi-phase writing pipeline with a panel of specialised critics. Modeled on Kat
 
 ## Tool Preference
 
-1. **Agent tool**: to dispatch phase agents (interview, outline, draft) and critics (Hemingway, Hitchcock, Mom reader, Asshole reader, Clarity, Usage, Steel-man) and finishing passes (AI-pattern detector, style enforcer, line editor, Sedaris). The throughline gate runs in the orchestrator and does not dispatch an agent.
+1. **Agent tool**: to dispatch phase agents (interview, outline, draft) and critics (Hemingway, Hitchcock, Mom reader, Asshole reader, Clarity, Usage, Steel-man, plus Smart-Brevity for memo/newsletter/announcement formats) and finishing passes (AI-pattern detector, style enforcer, line editor, Sedaris). The throughline gate runs in the orchestrator and does not dispatch an agent.
 2. **Read**: to load prompt templates and existing artifacts
 3. **Bash**: for directory creation, file existence checks, state file read/write
 4. **TaskCreate / TaskUpdate**: to surface progress through the pipeline visibly
@@ -42,7 +42,27 @@ If multiple candidates exist at the project level (e.g., both `style-guide.md` a
 
 Surface the active guide in the first response: "Using style guide: {path}".
 
-### Step 3: Determine starting phase
+### Step 3: Determine the piece format
+
+Some phases branch on the format of the piece. Outline structure and panel composition change when the piece is a memo or briefing rather than an essay.
+
+Supported formats:
+- `essay` (default), `blog`, `talk`, `newsletter`, `memo`, `announcement`, `briefing`
+
+Resolution order:
+1. Explicit flag: `--format <format>`
+2. State memory: the state file's recorded format for this project
+3. Default silently to `essay` and surface the default in the first response with an inline change hint: "Format: essay (default). Pass `--format memo|newsletter|announcement|briefing|blog|talk` to change."
+
+Ask via AskUserQuestion only when the working directory name or the interview synthesis strongly signals a different format than the recorded state (for example, a state-stored `essay` format but the working directory is `memos/q3-roadmap-2026-04-23/`). In ambiguous cases, surface both candidates and let the user pick. Otherwise, resolve silently.
+
+Format gates:
+- **Outline prompt:** formats `memo`, `announcement`, `briefing` use `outline-pyramid-prompt.md`. All other formats use `outline-prompt.md`.
+- **Smart-Brevity critic:** formats `memo`, `newsletter`, `announcement` add the Smart-Brevity critic to the panel fan-out. Other formats run the default seven-critic panel.
+
+Surface the active format in the first response alongside the style guide: "Format: {format}. Using style guide: {path}". Record the format in the state file under the project key.
+
+### Step 4: Determine starting phase
 
 Scan the working directory for existing artifacts:
 - `interview-synthesis.md` exists → interview phase complete
@@ -58,7 +78,7 @@ Determine the latest completed phase. Present to user:
 
 User can also pre-empt the dialogue by passing `--phase X` (X ∈ {interview, outline, throughline, draft, panel, finishing}).
 
-### Step 4: Create task list
+### Step 5: Create task list
 
 Use TaskCreate to add one task per phase that will run, plus sub-tasks for the panel and finishing phases. Example for a fresh full pipeline:
 
@@ -74,7 +94,8 @@ Use TaskCreate to add one task per phase that will run, plus sub-tasks for the p
    ├── Critic: Asshole reader
    ├── Critic: Clarity
    ├── Critic: Usage
-   └── Critic: Steel-man
+   ├── Critic: Steel-man
+   └── Critic: Smart-Brevity (only for memo/newsletter/announcement)
 6. Phase 6: Finishing pass
    ├── AI-pattern detector
    ├── Style enforcer
@@ -86,7 +107,7 @@ For phase-selectable runs, only the requested phases get tasks.
 
 Mark each task as `in_progress` when starting, `completed` when the artifact is verified.
 
-### Step 5: Execute phases
+### Step 6: Execute phases
 
 Dispatch each phase agent via the Agent tool. The orchestrator injects context into the prompt template.
 
@@ -107,11 +128,13 @@ Dispatch each phase agent via the Agent tool. The orchestrator injects context i
 
 #### Phase 2: Outline
 
-1. Read `outline-prompt.md`
+1. Pick the outline prompt based on format (from Step 3):
+   - Format ∈ {`memo`, `announcement`, `briefing`}: read `outline-pyramid-prompt.md`
+   - All other formats: read `outline-prompt.md`
 2. Inject: output path, style guide path, empty reviewer feedback
 3. Dispatch via Agent tool
 4. Verify `outline.md` exists
-5. Surface the outline to the user. Accept revisions via AskUserQuestion ("Outline as proposed, or revisions before draft?"). On revisions, re-dispatch with feedback injected.
+5. Surface the outline to the user. Accept revisions via AskUserQuestion ("Outline as proposed, or revisions before draft?"). On revisions, re-dispatch with feedback injected using the same prompt file (do not switch structures mid-negotiation).
 6. Mark task completed when user accepts
 
 #### Phase 3: Throughline
@@ -135,9 +158,9 @@ Orchestrator-only synchronous gate. No agent dispatch. Happens after the outline
 
 #### Phase 5: Panel review
 
-Fan out: dispatch all seven critic agents in parallel (single message with multiple Agent tool calls).
+Fan out: dispatch all critic agents in parallel (single message with multiple Agent tool calls). The critic set depends on format.
 
-The seven critics use distinct prompt-file and output-file slugs:
+**Default panel (seven critics).** Used for `essay`, `blog`, `talk` formats.
 
 | Prompt file | Output file | Lens |
 |---|---|---|
@@ -149,14 +172,20 @@ The seven critics use distinct prompt-file and output-file slugs:
 | `critics/usage.md` | `critique-usage.md` | Correctness of form: grammar, parallelism, misused words (Strunk & White) |
 | `critics/steel-man.md` | `critique-steelman.md` | Preemption: strongest opposing thesis and whether the draft engages it |
 
-For each critic:
-1. Read the prompt file from the table above
+**Extended panel (eight critics).** Used for formats `memo`, `newsletter`, `announcement`. Adds one format-gated critic to the default seven:
+
+| Prompt file | Output file | Lens |
+|---|---|---|
+| `critics/smart-brevity.md` | `critique-smartbrevity.md` | Scannable structure: muscular lead, one takeaway early, short sentences, no fluff (Axios method) |
+
+For each critic in the active set:
+1. Read the prompt file from the tables above
 2. Inject: output path, style guide path, empty reviewer feedback
 3. Dispatch via Agent tool
 4. Verify the corresponding output file exists
 5. Mark sub-task completed
 
-When all seven critics return, consolidate into `critique.md`:
+When all active critics return, consolidate into `critique.md` (include Smart-Brevity rows only when it ran):
 
 ```markdown
 # Panel Critique
@@ -172,6 +201,7 @@ When all seven critics return, consolidate into `critique.md`:
 | Clarity | ... | ... |
 | Usage | ... | ... |
 | Steel-man | ... | ... |
+| Smart-Brevity | ... | ... | (only when format gated it in)
 
 ## Hemingway
 <full content of critique-hemingway.md>
@@ -193,11 +223,14 @@ When all seven critics return, consolidate into `critique.md`:
 
 ## Steel-man
 <full content of critique-steelman.md>
+
+## Smart-Brevity
+<full content of critique-smartbrevity.md, only when the Smart-Brevity critic ran>
 ```
 
 Then check verdicts. **Match on the first whitespace-delimited token of each critic's `**Verdict:**` line.** Critic prompts emit `PASS`, `MINOR ISSUES`, or `CRITICAL ISSUES`; only the first token is the gate signal. Expected tokens: `PASS`, `MINOR`, `CRITICAL`.
 
-- All seven critics emit `PASS` or `MINOR` → continue to finishing
+- All active critics emit `PASS` or `MINOR` → continue to finishing
 - One or more critics emit `CRITICAL` → re-dispatch the draft agent with the consolidated critique injected as REVIEWER_FEEDBACK. Re-run the panel. Repeat up to 2 iterations. If still CRITICAL after 2 iterations, present remaining critical issues to user via AskUserQuestion: "Continue to finishing, or pause for manual intervention?"
 
 Mark phase task completed when verdict allows progression or user overrides.
@@ -215,7 +248,7 @@ For each pass in order [ai-pattern-detector, style-enforcer, line-editor, sedari
 
 After all four passes, present `draft.md` and `finishing-notes.md` to the user. The piece is now ready for the writer's manual voice pass per the user feedback memory (drafted prose is a skeleton, the writer rewrites in own voice).
 
-### Step 6: Update state and present
+### Step 7: Update state and present
 
 Update the state file. The working directory is the *key* under `projects` (not a field). For that key, write:
 - `active_style_guide`: absolute path
@@ -238,6 +271,8 @@ Present the final draft and a summary of what each pass did.
 - **Multiple style guide candidates** with no state record: ask once, record choice
 - **Missing prerequisite artifact on phase jump**: some phases depend on artifacts produced by earlier phases (Outline reads `interview-synthesis.md`; Throughline reads `outline.md`; Sedaris reads `interview-synthesis.md`; Draft reads `outline.md` and `throughline.md` if present; Panel and Finishing read `draft.md`). If the user invokes `--phase X` on a directory missing the upstream artifact, ask via AskUserQuestion whether to (a) run the missing upstream phase first, (b) accept a degraded run where the agent works without that input (only safe for Sedaris reading the synthesis, or Draft reading a missing throughline), or (c) cancel and let the user produce the artifact manually
 - **Throughline thesis line missing**: if the outline does not contain a `**Thesis (one sentence):**` line (e.g., user hand-wrote an outline), ask the user for the thesis directly before running the throughline gate rather than failing silently
+- **Pyramid outline on resume with format mismatch**: if the recorded format is `memo`/`announcement`/`briefing` but the existing `outline.md` uses the narrative template (or vice versa), ask the user whether to regenerate the outline under the format's prompt or keep the existing structure and override format gating for this project
+- **Unknown format value**: if `--format` or the state file contains an unrecognised value, warn once, fall back to `essay`, and ask the user to confirm
 
 ## State File Format
 
@@ -249,12 +284,15 @@ Present the final draft and a summary of what each pass did.
   "projects": {
     "<absolute-working-directory>": {
       "active_style_guide": "<absolute-path-or-default>",
+      "format": "essay",
       "last_completed_phase": "draft",
       "last_run_at": "2026-04-16T12:00:00Z"
     }
   }
 }
 ```
+
+Recognised format values: `essay`, `blog`, `talk`, `newsletter`, `memo`, `announcement`, `briefing`. Defaults to `essay` if absent. The format drives outline prompt selection (pyramid variant for `memo`, `announcement`, `briefing`) and panel composition (Smart-Brevity critic added for `memo`, `newsletter`, `announcement`).
 
 The state file is keyed by working directory so multiple in-flight pieces in the same project can each have their own state.
 
