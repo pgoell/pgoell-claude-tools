@@ -32,7 +32,7 @@ echo "Test 3: Audit panel coverage..."
 output=$(run_claude "What audits does the pyramid skill run? Name them." 30)
 assert_contains "$output" "MECE|mece" "Mentions MECE audit" || true
 assert_contains "$output" "[Ss]o.[Ww]hat|so.what" "Mentions So-What audit" || true
-assert_contains "$output" "Q.A [Aa]lignment|alignment" "Mentions Q-A Alignment audit" || true
+assert_contains "$output" "Q.A [Aa]lignment|Q-A alignment|QA alignment" "Mentions Q-A Alignment audit" || true
 assert_contains "$output" "[Ii]nductive|[Dd]eductive" "Mentions Inductive/Deductive audit" || true
 echo ""
 
@@ -53,7 +53,7 @@ echo ""
 # Test 6: Reference file mentioned
 echo "Test 6: Reference file..."
 output=$(run_claude "What reference material ships with the pyramid skill?" 30)
-assert_contains "$output" "pyramid.principle.reference|reference|Minto|pyramid-principle" "Mentions the shipped reference" || true
+assert_contains "$output" "pyramid.principle.reference|pyramid-principle-reference" "Mentions the shipped reference" || true
 echo ""
 
 # Test 7: Verdict token semantics
