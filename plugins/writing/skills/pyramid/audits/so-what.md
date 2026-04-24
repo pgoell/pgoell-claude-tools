@@ -111,7 +111,8 @@ Agent tool (general-purpose):
     - **CRITICAL ISSUES:** the apex fails the Caveman Answer Test (truism), OR
       three or more non-leaf nodes fail the So-What Test.
     - **MINOR ISSUES:** a leaf's evidence is weak (thin, anecdotal, or vague),
-      OR exactly one or two non-leaf nodes are intellectually blank.
+      OR one or two non-leaf nodes are intellectually blank (below the
+      three-or-more CRITICAL threshold).
     - **PASS:** all non-leaf nodes earn their place with findings, apex
       compresses cleanly to one pole.
 
