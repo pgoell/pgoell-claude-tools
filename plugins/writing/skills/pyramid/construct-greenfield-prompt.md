@@ -95,6 +95,31 @@ Agent tool (general-purpose):
     - Evidence: <...>
     ```
 
+    ## Handoff mode
+
+    **Handoff flag:** {HANDOFF}
+
+    If `{HANDOFF}` is `true`, an existing `construction.md` is present in
+    `{OUTPUT_PATH}` because the user started the pyramid in Mode D (Socratic
+    dialogue) and chose to hand off the remaining tiers. Read it.
+
+    Locked nodes (any node value that is not the literal placeholder `<pending>`)
+    are FIXED: do NOT modify them. The user wrote them; preserve them verbatim.
+
+    Fill in only `<pending>` nodes by running the Q-A Dialogue Procedure from the
+    apex downward, treating all locked nodes as given. The apex, the reader
+    question, the plural noun, and any populated siblings or evidence rows are
+    all locked input.
+
+    Verify the pyramid as a whole still passes the rules (apex is a finding,
+    siblings are MECE relative to the apex's downward question, grouping noun is
+    consistent across siblings). If a locked node violates a rule, do NOT rewrite
+    it; instead, append a `## Handoff notes` section at the end of
+    `construction.md` flagging the inconsistency for the audit panel.
+
+    If `{HANDOFF}` is `false`, ignore this section entirely and proceed with the
+    Q-A Dialogue Procedure for a fresh build.
+
     ## Reviewer Feedback
 
     {REVIEWER_FEEDBACK}
@@ -105,4 +130,10 @@ Agent tool (general-purpose):
     (MECE gaps or overlaps, Q-A alignment failures, intellectually blank nodes,
     mixed inductive/deductive groupings), and update construction.md in place.
     Do NOT start from scratch; preserve working siblings and fix what is broken.
+
+    If both `{HANDOFF}` is `true` AND `{REVIEWER_FEEDBACK}` is non-empty
+    (re-dispatch of a Mode-D-built pyramid after CRITICAL audit), apply both:
+    locked nodes from Mode D stay locked unless they are the specific cause
+    cited by the audit summary; everything else gets the in-place repair
+    treatment.
 ```
