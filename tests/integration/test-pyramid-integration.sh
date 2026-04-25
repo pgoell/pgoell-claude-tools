@@ -89,7 +89,7 @@ fi
 echo ""
 echo "Test 7: Apex in pyramid.md is a finding, not a label..."
 if [ -f "$TEST_DIR/pyramid.md" ]; then
-    apex_line=$(grep -A1 '^## Apex' "$TEST_DIR/pyramid.md" | tail -1)
+    apex_line=$(awk '/^## Apex$/{flag=1; next} flag && NF{print; exit}' "$TEST_DIR/pyramid.md")
     if echo "$apex_line" | grep -qiE "raise|Series B|Q1 2027"; then
         echo "  [PASS] Apex names the finding (contains raise/Series B/Q1 2027)"
     else
@@ -174,7 +174,7 @@ fi
 echo ""
 echo "Test D7: Apex in pyramid.md is a finding mentioning the user-supplied content..."
 if [ -f "$TEST_DIR_D/pyramid.md" ]; then
-    apex_line=$(grep -A1 '^## Apex' "$TEST_DIR_D/pyramid.md" | tail -1)
+    apex_line=$(awk '/^## Apex$/{flag=1; next} flag && NF{print; exit}' "$TEST_DIR_D/pyramid.md")
     if echo "$apex_line" | grep -qiE "raise|Series B|Q1 2027"; then
         echo "  [PASS] Apex contains user-supplied finding (raise/Series B/Q1 2027)"
     else
