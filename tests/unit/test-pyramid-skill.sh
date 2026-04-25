@@ -72,4 +72,31 @@ assert_contains "$output" "phase|Phase|--phase" "Mentions phase selection" || tr
 assert_contains "$output" "resume|jump|skip|start" "Mentions resume capability" || true
 echo ""
 
+# Test 9: Mode D (Socratic) is documented in SKILL.md
+echo "Test 9: Mode D (Socratic dialogue) recognition..."
+output=$(run_claude "Does the pyramid skill support an interactive Socratic dialogue mode where it walks the writer through pyramid construction question by question? What is it called?" 30)
+assert_contains "$output" "[Ss]ocratic|Mode D" "Mentions Mode D / Socratic" || true
+assert_contains "$output" "AskUserQuestion|turn|dialogue|question.and.answer" "Mentions the dialogue mechanic" || true
+echo ""
+
+# Test 10: Greenfield prompt has Handoff mode for Mode D handoffs
+echo "Test 10: Greenfield Handoff mode section..."
+SKILL_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)/plugins/writing/skills/pyramid"
+GREENFIELD_PROMPT="$SKILL_DIR/construct-greenfield-prompt.md"
+if [ -f "$GREENFIELD_PROMPT" ]; then
+    if grep -qF '## Handoff mode' "$GREENFIELD_PROMPT"; then
+        echo "  [PASS] construct-greenfield-prompt.md has '## Handoff mode' section"
+    else
+        echo "  [FAIL] construct-greenfield-prompt.md missing '## Handoff mode' section"
+    fi
+    if grep -qF '{HANDOFF}' "$GREENFIELD_PROMPT"; then
+        echo "  [PASS] construct-greenfield-prompt.md references {HANDOFF} placeholder"
+    else
+        echo "  [FAIL] construct-greenfield-prompt.md missing {HANDOFF} placeholder reference"
+    fi
+else
+    echo "  [FAIL] construct-greenfield-prompt.md not found at $GREENFIELD_PROMPT"
+fi
+echo ""
+
 echo "=== pyramid skill tests complete ==="
