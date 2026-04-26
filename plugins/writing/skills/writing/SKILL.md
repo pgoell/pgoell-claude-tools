@@ -325,8 +325,22 @@ Mark phase task completed when verdict allows progression or user overrides.
 
 Sequential, NOT parallel. Each pass updates the draft in place; later passes need the earlier passes' changes.
 
-For each pass in order [ai-pattern-detector, style-enforcer, line-editor, sedaris]:
-1. Read `finishing/{pass}.md`
+**Narrative formats** (essay, blog, talk, newsletter): run the four passes in this order:
+
+1. `finishing/ai-pattern-detector.md`
+2. `finishing/style-enforcer.md`
+3. `finishing/line-editor.md`
+4. `finishing/sedaris.md` (literary voice; reads `interview-synthesis.md` for tone calibration)
+
+**Analytical formats** (memo, briefing, announcement): run the four passes in this order:
+
+1. `finishing/ai-pattern-detector.md`
+2. `finishing/style-enforcer.md`
+3. `finishing/line-editor.md`
+4. `finishing/analytical-voice.md` (executive voice; reads `intake.md` for audience calibration; replaces Sedaris because analytical formats do not run the interview phase that Sedaris depends on)
+
+For each pass in order:
+1. Read the prompt file
 2. Inject: output path, style guide path, empty reviewer feedback
 3. Dispatch via Agent tool
 4. Verify the agent appended its log section to `finishing-notes.md`

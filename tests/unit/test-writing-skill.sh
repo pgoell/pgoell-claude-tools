@@ -153,6 +153,27 @@ if grep -qE 'draft-analytical-prompt' "$WRITING_SKILL"; then
 else
     echo "  [FAIL] writing SKILL.md Phase 4 missing draft-analytical-prompt reference"
 fi
+ANALYTICAL_VOICE_PROMPT="$SKILL_DIR/finishing/analytical-voice.md"
+if [ -f "$ANALYTICAL_VOICE_PROMPT" ]; then
+    echo "  [PASS] finishing/analytical-voice.md exists"
+    if grep -qF 'intake.md' "$ANALYTICAL_VOICE_PROMPT"; then
+        echo "  [PASS] analytical-voice.md calibrates from intake.md"
+    else
+        echo "  [FAIL] analytical-voice.md does not read intake.md"
+    fi
+    if grep -qiE 'throat.clearing|hedging|directive|apex' "$ANALYTICAL_VOICE_PROMPT"; then
+        echo "  [PASS] analytical-voice.md targets analytical voice issues"
+    else
+        echo "  [FAIL] analytical-voice.md missing analytical voice targets"
+    fi
+else
+    echo "  [FAIL] finishing/analytical-voice.md not found"
+fi
+if grep -qE 'analytical-voice|analytical voice pass' "$WRITING_SKILL"; then
+    echo "  [PASS] writing SKILL.md Phase 6 references analytical voice pass"
+else
+    echo "  [FAIL] writing SKILL.md Phase 6 missing analytical voice pass reference"
+fi
 echo ""
 
 echo "=== writing skill tests complete ==="
