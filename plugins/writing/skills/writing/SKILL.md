@@ -161,13 +161,28 @@ Dispatch each phase agent via the Agent tool. The orchestrator injects context i
 - **Reviewer feedback injection.** When `{REVIEWER_FEEDBACK}` is non-empty (re-dispatch on a failed gate), append this standing instruction to the dispatched prompt, regardless of what the prompt template itself says: *"Reviewer feedback is provided above. Read the existing artifact in the output directory, address the specific concerns, and update the file in place rather than starting fresh."* This compensates for the asymmetric treatment of feedback across the prompt files.
 - **Date substitution.** `{YYYY-MM-DD}` resolves to today's date in ISO format.
 
-#### Phase 1: Interview
+#### Phase 1: Interview (narrative formats) or Pyramid intake (analytical formats)
+
+**Narrative formats** (essay, blog, talk, newsletter):
 
 1. Read `interview-prompt.md` from this skill directory
 2. Inject: topic, output path, style guide path, empty reviewer feedback
 3. Dispatch via Agent tool. The agent will conduct an interactive interview with the user.
 4. Verify `interview.md` and `interview-synthesis.md` exist
 5. Mark task completed
+
+**Analytical formats** (memo, briefing, announcement):
+
+Skip writing's interview entirely. Run the pyramid skill's Phase 1 (intake) in **dispatched mode** as documented in `plugins/writing/skills/pyramid/SKILL.md`, with these adjustments:
+
+1. **Mode (step 1 of pyramid intake):** ask via AskUserQuestion as normal. Note: Mode B (Restructure) is rare in this dispatched path because writing skill is forward-building; the writer typically picks Greenfield or Socratic.
+2. **Genre (step 2 of pyramid intake):** pre-fill from the writing skill's resolved format. `memo` → genre `Memo`. `briefing` → genre `Briefing`. `announcement` → genre `Announcement`. Do NOT ask the user; surface the pre-fill in a one-line confirmation: "Genre: {genre} (from format)."
+3. **Domain-limits gate (step 3 of pyramid intake):** SKIP. The writing skill's format gating already validated the genre is analytical-compatible; surfacing the gate would be redundant.
+4. **Mode-specific inputs (steps 4, 5, 6 of pyramid intake):** ask as normal.
+5. **Write intake.md (step 7 of pyramid intake):** as normal, but add field `dispatched_from: writing` so future runs know the entry point.
+6. **Mark Phase 1 task completed** when `intake.md` exists.
+
+The orchestrator (Claude at runtime) reads pyramid SKILL.md sections at dispatch time. No code or prompt files are duplicated; the dispatched mode is an instruction overlay applied to pyramid's standalone Phase 1.
 
 #### Phase 2: Outline
 
