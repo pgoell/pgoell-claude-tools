@@ -93,4 +93,20 @@ assert_contains "$output" "[Mm]emo|[Nn]ewsletter|[Aa]nnouncement" "Mentions whic
 assert_contains "$output" "[Aa]xios|muscular|takeaway|scannable|short" "Mentions smart-brevity tenets" || true
 echo ""
 
+# Test 11: Pyramid dispatch in description
+echo "Test 11: Pyramid dispatch in description and Step 3..."
+SKILL_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)/plugins/writing/skills/writing"
+WRITING_SKILL="$SKILL_DIR/SKILL.md"
+if grep -qE 'pyramid|Minto' "$WRITING_SKILL"; then
+    echo "  [PASS] writing SKILL.md mentions pyramid/Minto"
+else
+    echo "  [FAIL] writing SKILL.md does not mention pyramid dispatch"
+fi
+if grep -qE 'analytical formats?' "$WRITING_SKILL"; then
+    echo "  [PASS] writing SKILL.md mentions analytical formats"
+else
+    echo "  [FAIL] writing SKILL.md does not mention analytical formats"
+fi
+echo ""
+
 echo "=== writing skill tests complete ==="

@@ -1,6 +1,6 @@
 ---
 name: writing
-description: Use when the user wants to draft a blog post, essay, talk, newsletter, memo, announcement, briefing, literature note, or any longer-form prose; or when they want to review, critique, or finish an existing draft. Orchestrates a multi-phase pipeline (interview, outline, throughline gate, draft, panel review, finishing) modeled on Katie Parrott's process, with a format-gated Smart-Brevity panel critic for memo/newsletter/announcement pieces. Triggers on writing intent (drafting, reviewing, polishing, voice work) and not on simple text generation tasks.
+description: Use when the user wants to draft a blog post, essay, talk, newsletter, memo, announcement, briefing, literature note, or any longer-form prose; or when they want to review, critique, or finish an existing draft. Orchestrates a multi-phase pipeline (interview, outline, throughline gate, draft, panel review, finishing) modeled on Katie Parrott's process. For analytical formats (memo, briefing, announcement), the outline phase dispatches to the pyramid skill for Minto-style structural construction (intake, construct, audit, opener, render) and the draft phase uses an analytical draft prompt. The format-gated Smart-Brevity panel critic runs for memo, newsletter, and announcement pieces. Triggers on writing intent (drafting, reviewing, polishing, voice work) and not on simple text generation tasks.
 ---
 
 # Writing Skill
@@ -44,20 +44,22 @@ Surface the active guide in the first response: "Using style guide: {path}".
 
 ### Step 3: Determine the piece format
 
-Panel composition changes when the piece is a memo, newsletter, or announcement rather than an essay. Outline structure does not branch in this version (see issue #11 for the planned dedicated pyramid-principle skill that the writing skill will dispatch to).
+Panel composition and the outline / draft phases change based on format. The pipeline branches on whether the format is **analytical** (memo, briefing, announcement) or **narrative** (essay, blog, talk, newsletter).
 
 Supported formats:
-- `essay` (default), `blog`, `talk`, `newsletter`, `memo`, `announcement`, `briefing`
+- Narrative: `essay` (default), `blog`, `talk`, `newsletter`
+- Analytical: `memo`, `briefing`, `announcement`
 
 Resolution order:
 1. Explicit flag: `--format <format>`
 2. State memory: the state file's recorded format for this project
-3. Default silently to `essay` and surface the default in the first response with an inline change hint: "Format: essay (default). Pass `--format memo|newsletter|announcement|briefing|blog|talk` to change."
+3. Default silently to `essay` and surface the default in the first response with an inline change hint: "Format: essay (default). Pass `--format memo|briefing|announcement|newsletter|blog|talk` to change."
 
 Ask via AskUserQuestion only when the working directory name or the interview synthesis strongly signals a different format than the recorded state (for example, a state-stored `essay` format but the working directory is `memos/q3-roadmap-2026-04-23/`). In ambiguous cases, surface both candidates and let the user pick. Otherwise, resolve silently.
 
 Format gates:
-- **Smart-Brevity critic:** formats `memo`, `newsletter`, `announcement` add the Smart-Brevity critic to the panel fan-out. Other formats run the default seven-critic panel.
+- **Pyramid pipeline:** analytical formats (`memo`, `briefing`, `announcement`) skip writing's interview and outline phases entirely. Phase 1 dispatches the pyramid skill's intake; Phase 2 dispatches pyramid's construct, audit, opener, and render phases. The pyramid pipeline produces `pyramid.md`, which is then consumed by writing's throughline (Phase 3) and analytical draft (Phase 4) phases.
+- **Smart-Brevity critic:** formats `memo`, `newsletter`, `announcement` add the Smart-Brevity critic to the panel fan-out. Other formats run the default seven-critic panel. Note: `briefing` does NOT add Smart-Brevity, because briefings are dense by construction and the Smart-Brevity lens has lower signal there.
 
 Surface the active format in the first response alongside the style guide: "Format: {format}. Using style guide: {path}". Record the format in the state file under the project key.
 
