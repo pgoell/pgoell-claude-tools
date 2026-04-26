@@ -26,7 +26,7 @@ Ask the user what they want to write about (or what existing piece they want to 
 
 Resolve working directory in this order:
 1. **Explicit flag**: `--dir ./path/to/project/`
-2. **Existing artifacts in cwd**: if the cwd already contains any of `interview.md`, `outline.md`, `draft.md`, `critique.md`, treat the cwd as the working directory
+2. **Existing artifacts in cwd**: if the cwd already contains any of `interview.md`, `outline.md`, `intake.md`, `pyramid.md`, `draft.md`, `critique.md`, treat the cwd as the working directory
 3. **State file lookup**: read `~/.claude/projects/<project-id>/writing-skill-state.json` (where `<project-id>` is the cwd path with slashes replaced by hyphens, leading hyphen). If a working directory is recorded for an in-flight piece, offer to resume there.
 4. **Default**: prompt for a slug, create `writing/{slug}-{YYYY-MM-DD}/` in the cwd.
 
