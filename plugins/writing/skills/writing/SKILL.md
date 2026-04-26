@@ -178,7 +178,7 @@ Skip writing's interview entirely. Run the pyramid skill's Phase 1 (intake) in *
 1. **Mode (step 1 of pyramid intake):** ask via AskUserQuestion as normal. Note: Mode B (Restructure) is rare in this dispatched path because writing skill is forward-building; the writer typically picks Greenfield or Socratic.
 2. **Genre (step 2 of pyramid intake):** pre-fill from the writing skill's resolved format. `memo` → genre `Memo`. `briefing` → genre `Briefing`. `announcement` → genre `Announcement`. Do NOT ask the user; surface the pre-fill in a one-line confirmation: "Genre: {genre} (from format)."
 3. **Domain-limits gate (step 3 of pyramid intake):** SKIP. The writing skill's format gating already validated the genre is analytical-compatible; surfacing the gate would be redundant.
-4. **Mode-specific inputs (steps 4, 5, 6 of pyramid intake):** ask as normal.
+4. **Mode-specific inputs (whichever of steps 4, 5, or 6 of pyramid intake matches the mode chosen in step 1):** ask as normal.
 5. **Write intake.md (step 7 of pyramid intake):** as normal, but add field `dispatched_from: writing` so future runs know the entry point.
 6. **Mark Phase 1 task completed** when `intake.md` exists.
 
