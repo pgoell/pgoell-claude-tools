@@ -210,14 +210,19 @@ After Phase 2 completes, the working directory contains `intake.md`, `constructi
 
 #### Phase 3: Throughline
 
-Orchestrator-only synchronous gate. No agent dispatch. Happens after the outline is accepted, before the draft agent is dispatched. If the writer cannot compress the piece into ten words, the piece is not ready to draft.
+Orchestrator-only synchronous gate. No agent dispatch. Happens after Phase 2 completes, before the draft agent is dispatched. If the writer cannot compress the piece into ten words, the piece is not ready to draft.
 
-1. Read `{OUTPUT_PATH}/outline.md` and extract the `**Thesis (one sentence):**` line.
-2. Surface the thesis to the user via AskUserQuestion: "Throughline check. Compress the piece to ≤10 words. Current outline thesis: \"{thesis}\". What is the one thing you most want the reader to take away?"
-3. Validate word count on the user's response by splitting on whitespace and ignoring empty strings. If more than 10 words, re-ask via AskUserQuestion: "That is N words. Cut it to 10 or fewer. If you cannot, the outline may be wrong. Return to Phase 2."
-4. Offer an explicit escape hatch: the user may answer the re-ask with "RETURN TO OUTLINE" to resume Phase 2 with their attempted throughline as reviewer feedback injected into the outline prompt.
-5. On acceptance, write `{OUTPUT_PATH}/throughline.md` as a single-line file containing only the accepted throughline (no markdown headers, no decoration).
-6. Mark task completed.
+**Source of truth varies by format:**
+- Narrative formats: read `{OUTPUT_PATH}/outline.md` and extract the `**Thesis (one sentence):**` line.
+- Analytical formats: read `{OUTPUT_PATH}/pyramid.md` and extract the line under the `## Apex` header (the one-sentence governing thought rendered verbatim from `construction.md`).
+
+1. Surface the source line to the user via AskUserQuestion: "Throughline check. Compress the piece to ≤10 words. Current {thesis|apex}: \"{line}\". What is the one thing you most want the reader to take away?"
+2. Validate word count on the user's response by splitting on whitespace and ignoring empty strings. If more than 10 words, re-ask via AskUserQuestion: "That is N words. Cut it to 10 or fewer. If you cannot, the {outline|pyramid} may be wrong. Return to Phase 2."
+3. Offer an explicit escape hatch: the user may answer the re-ask with "RETURN TO OUTLINE" (narrative) or "RETURN TO PYRAMID" (analytical) to resume Phase 2 with their attempted throughline as reviewer feedback injected into the outline / construct prompt.
+4. On acceptance, write `{OUTPUT_PATH}/throughline.md` as a single-line file containing only the accepted throughline (no markdown headers, no decoration).
+5. Mark task completed.
+
+**Edge case for analytical formats:** if `pyramid.md` lacks a `## Apex` header (e.g., a degraded MISMATCH render), fall back to reading `construction.md` and extracting the apex node directly. If neither is parseable, ask the user for the apex sentence directly before running the gate.
 
 #### Phase 4: Draft
 
