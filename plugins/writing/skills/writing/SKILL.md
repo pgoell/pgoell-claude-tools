@@ -94,7 +94,9 @@ User can also pre-empt the dialogue by passing `--phase X` (X ∈ {interview, ou
 
 ### Step 5: Create task list
 
-Use TaskCreate to add one task per phase that will run, plus sub-tasks for the panel and finishing phases. Example for a fresh full pipeline:
+Use TaskCreate to add one task per phase that will run, plus sub-tasks for the panel and finishing phases. Two task list shapes exist depending on format.
+
+**Narrative format task list** (essay, blog, talk, newsletter):
 
 ```
 1. Phase 1: Interview the author
@@ -109,12 +111,39 @@ Use TaskCreate to add one task per phase that will run, plus sub-tasks for the p
    ├── Critic: Clarity
    ├── Critic: Usage
    ├── Critic: Steel-man
-   └── Critic: Smart-Brevity (only for memo/newsletter/announcement)
+   └── Critic: Smart-Brevity (only for newsletter)
 6. Phase 6: Finishing pass
    ├── AI-pattern detector
    ├── Style enforcer
    ├── Line editor
    └── Sedaris
+```
+
+**Analytical format task list** (memo, briefing, announcement):
+
+```
+1. Phase 1: Pyramid intake (mode, audience, reader question)
+2. Phase 2: Pyramid construct + audit + opener + render
+   ├── Construct
+   ├── Audit panel (MECE, So-What, Q-A Alignment, Inductive-Deductive)
+   ├── Opener (SCQA)
+   └── Render pyramid.md
+3. Phase 3: Throughline check (≤10-word gate on apex)
+4. Phase 4: Analytical draft
+5. Phase 5: Run panel review
+   ├── Critic: Hemingway
+   ├── Critic: Hitchcock
+   ├── Critic: Mom reader
+   ├── Critic: Asshole reader
+   ├── Critic: Clarity
+   ├── Critic: Usage
+   ├── Critic: Steel-man
+   └── Critic: Smart-Brevity (only for memo, announcement)
+6. Phase 6: Finishing pass
+   ├── AI-pattern detector
+   ├── Style enforcer
+   ├── Line editor
+   └── Analytical voice
 ```
 
 For phase-selectable runs, only the requested phases get tasks.

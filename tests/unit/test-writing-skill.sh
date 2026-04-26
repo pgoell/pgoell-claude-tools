@@ -112,6 +112,11 @@ if grep -qE 'pyramid\.md.{0,2}exists' "$WRITING_SKILL"; then
 else
     echo "  [FAIL] writing SKILL.md Step 4 does not mention pyramid.md artifact"
 fi
+if grep -qE 'Pyramid intake|Pyramid construct' "$WRITING_SKILL"; then
+    echo "  [PASS] writing SKILL.md Step 5 has analytical task list variant"
+else
+    echo "  [FAIL] writing SKILL.md Step 5 missing analytical task list variant"
+fi
 echo ""
 
 echo "=== writing skill tests complete ==="
