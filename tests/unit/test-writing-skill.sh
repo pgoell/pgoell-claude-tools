@@ -132,6 +132,22 @@ if grep -qE 'RETURN TO PYRAMID' "$WRITING_SKILL"; then
 else
     echo "  [FAIL] writing SKILL.md Phase 3 missing apex from pyramid.md"
 fi
+DRAFT_ANALYTICAL_PROMPT="$SKILL_DIR/draft-analytical-prompt.md"
+if [ -f "$DRAFT_ANALYTICAL_PROMPT" ]; then
+    echo "  [PASS] draft-analytical-prompt.md exists"
+    if grep -qF 'pyramid.md' "$DRAFT_ANALYTICAL_PROMPT"; then
+        echo "  [PASS] draft-analytical-prompt.md reads pyramid.md"
+    else
+        echo "  [FAIL] draft-analytical-prompt.md does not read pyramid.md"
+    fi
+    if grep -qE 'apex|SCQA' "$DRAFT_ANALYTICAL_PROMPT"; then
+        echo "  [PASS] draft-analytical-prompt.md references apex/SCQA"
+    else
+        echo "  [FAIL] draft-analytical-prompt.md missing apex/SCQA references"
+    fi
+else
+    echo "  [FAIL] draft-analytical-prompt.md not found"
+fi
 echo ""
 
 echo "=== writing skill tests complete ==="
