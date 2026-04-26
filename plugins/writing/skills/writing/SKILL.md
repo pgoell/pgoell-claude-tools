@@ -184,14 +184,29 @@ Skip writing's interview entirely. Run the pyramid skill's Phase 1 (intake) in *
 
 The orchestrator (Claude at runtime) reads pyramid SKILL.md sections at dispatch time. No code or prompt files are duplicated; the dispatched mode is an instruction overlay applied to pyramid's standalone Phase 1.
 
-#### Phase 2: Outline
+#### Phase 2: Outline (narrative formats) or Pyramid pipeline (analytical formats)
+
+**Narrative formats** (essay, blog, talk, newsletter):
 
 1. Read `outline-prompt.md`
 2. Inject: output path, style guide path, empty reviewer feedback
 3. Dispatch via Agent tool
 4. Verify `outline.md` exists
 5. Surface the outline to the user. Accept revisions via AskUserQuestion ("Outline as proposed, or revisions before draft?"). On revisions, re-dispatch with feedback injected.
-6. Mark task completed when user accepts
+6. Mark task completed when user accepts.
+
+**Analytical formats** (memo, briefing, announcement):
+
+Run pyramid skill's Phases 2 through 5 (construct, audit, opener, render) inline as documented in `plugins/writing/skills/pyramid/SKILL.md`. The pyramid pipeline is reused unchanged; the orchestrator follows pyramid SKILL.md's instructions for each phase.
+
+1. **Pyramid Phase 2 (Construct):** dispatch the construct agent per `pyramid/SKILL.md`. Mode-branched (greenfield, restructure, socratic) based on the mode collected in Phase 1. Verify `construction.md` exists.
+2. **Pyramid Phase 3 (Audit panel):** fan out four audit agents in parallel per `pyramid/SKILL.md`. Consolidate into `audit-summary.md`. Apply pyramid's CRITICAL re-dispatch logic (up to 2 iterations) verbatim.
+3. **Pyramid Phase 4 (Opener):** dispatch the opener agent per `pyramid/SKILL.md`. Apply pyramid's MISMATCH handling verbatim.
+4. **Pyramid Phase 5 (Render):** assemble `pyramid.md` per `pyramid/SKILL.md`'s render template. The pyramid is the outline equivalent for the analytical pipeline.
+5. Surface `pyramid.md` to the user. Accept revisions via AskUserQuestion ("Pyramid as proposed, or revisions before draft?"). On revisions, re-dispatch the construct agent (pyramid Phase 2) with the feedback injected, then re-run audit, opener, and render.
+6. Mark task completed when user accepts.
+
+After Phase 2 completes, the working directory contains `intake.md`, `construction.md`, `audit-summary.md`, `opener.md`, and `pyramid.md`. The throughline phase reads `pyramid.md`'s apex line; the analytical draft phase reads `pyramid.md` whole.
 
 #### Phase 3: Throughline
 

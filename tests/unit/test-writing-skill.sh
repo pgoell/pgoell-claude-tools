@@ -122,6 +122,11 @@ if grep -qE "^#### Phase 1.*Pyramid intake" "$WRITING_SKILL"; then
 else
     echo "  [FAIL] writing SKILL.md Phase 1 missing analytical branch"
 fi
+if grep -qE '^#### Phase 2.*Pyramid pipeline' "$WRITING_SKILL"; then
+    echo "  [PASS] writing SKILL.md Phase 2 has pyramid pipeline dispatch"
+else
+    echo "  [FAIL] writing SKILL.md Phase 2 missing pyramid pipeline dispatch"
+fi
 echo ""
 
 echo "=== writing skill tests complete ==="
