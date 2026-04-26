@@ -148,6 +148,11 @@ if [ -f "$DRAFT_ANALYTICAL_PROMPT" ]; then
 else
     echo "  [FAIL] draft-analytical-prompt.md not found"
 fi
+if grep -qE 'draft-analytical-prompt' "$WRITING_SKILL"; then
+    echo "  [PASS] writing SKILL.md Phase 4 references draft-analytical-prompt"
+else
+    echo "  [FAIL] writing SKILL.md Phase 4 missing draft-analytical-prompt reference"
+fi
 echo ""
 
 echo "=== writing skill tests complete ==="

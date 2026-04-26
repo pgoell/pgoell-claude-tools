@@ -226,9 +226,19 @@ Orchestrator-only synchronous gate. No agent dispatch. Happens after Phase 2 com
 
 #### Phase 4: Draft
 
+**Narrative formats** (essay, blog, talk, newsletter):
+
 1. Read `draft-prompt.md`
 2. Inject: output path, style guide path, empty reviewer feedback
 3. Dispatch via Agent tool
+4. Verify `draft.md` exists
+5. Mark task completed
+
+**Analytical formats** (memo, briefing, announcement):
+
+1. Read `draft-analytical-prompt.md`
+2. Inject: output path, style guide path, empty reviewer feedback
+3. Dispatch via Agent tool. The agent reads `pyramid.md`, `intake.md`, `throughline.md` (if present), and `audit-summary.md`.
 4. Verify `draft.md` exists
 5. Mark task completed
 
