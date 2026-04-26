@@ -127,7 +127,7 @@ if grep -qE '^#### Phase 2.*Pyramid pipeline' "$WRITING_SKILL"; then
 else
     echo "  [FAIL] writing SKILL.md Phase 2 missing pyramid pipeline dispatch"
 fi
-if grep -qE 'apex.*pyramid\.md|pyramid\.md.*apex' "$WRITING_SKILL"; then
+if grep -qE 'RETURN TO PYRAMID' "$WRITING_SKILL"; then
     echo "  [PASS] writing SKILL.md Phase 3 reads apex from pyramid.md"
 else
     echo "  [FAIL] writing SKILL.md Phase 3 missing apex from pyramid.md"
