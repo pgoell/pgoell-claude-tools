@@ -16,6 +16,7 @@ echo ""
 TEST_DIR=$(mktemp -d)
 LOG_FILE=$(mktemp)
 trap 'rm -rf "$TEST_DIR" "$LOG_FILE"' EXIT
+cd "$TEST_DIR"
 
 echo "Working dir: $TEST_DIR"
 echo ""
