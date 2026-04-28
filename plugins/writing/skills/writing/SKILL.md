@@ -217,7 +217,8 @@ Skip writing's interview entirely. Run the tech-doc skill's Phase 1 (intake) in 
 
 1. **Quadrant (always-asked step in tech-doc intake):** pre-fill from the writing skill's resolved format. `tutorial` → quadrant `tutorial`, `how-to` → quadrant `how-to`, `reference` → quadrant `reference`, `explanation` → quadrant `explanation`. Surface the pre-fill in a one-line confirmation: "Quadrant: {quadrant} (from format)." Tech-doc's standalone path always asks the quadrant question; in dispatched mode, accept the format-derived value and skip the question.
 2. **Style preset:** dispatch with `--style-preset` set per writing's resolved style guide if it matches a preset (`google`, `microsoft`, or `house`). Otherwise default to `house`.
-3. **Mark Phase 1 task completed** when `intake.md` exists.
+3. **Write intake.md field:** add `dispatched_from: writing` to the intake.md fields so resume logic can distinguish dispatched-mode intake from a standalone tech-doc run. (Mirrors the analytical dispatch's `dispatched_from: writing` field added to pyramid's intake.md.)
+4. **Mark Phase 1 task completed** when `intake.md` exists.
 
 The orchestrator (Claude at runtime) reads tech-doc SKILL.md sections at dispatch time. No code or prompt files are duplicated.
 
@@ -259,6 +260,8 @@ Run tech-doc skill's Phases 2-6 (outline, throughline, draft, panel, finishing) 
 
 #### Phase 3: Throughline
 
+**For technical formats (tutorial, how-to, reference, explanation):** SKIPPED. Tech-doc's throughline gate has already run during the dispatch in writing's Phase 2. Mark phase task completed and proceed to Phase 4.
+
 Orchestrator-only synchronous gate. No agent dispatch. Happens after Phase 2 completes, before the draft agent is dispatched. If the writer cannot compress the piece into ten words, the piece is not ready to draft.
 
 **Source of truth varies by format:**
@@ -274,6 +277,8 @@ Orchestrator-only synchronous gate. No agent dispatch. Happens after Phase 2 com
 **Edge case for analytical formats:** if `pyramid.md` lacks a `## Apex` header (e.g., a degraded MISMATCH render), fall back to reading `construction.md` and extracting the apex node directly. If neither is parseable, ask the user for the apex sentence directly before running the gate.
 
 #### Phase 4: Draft
+
+**For technical formats (tutorial, how-to, reference, explanation):** SKIPPED. Tech-doc's draft agent has already run during the dispatch in writing's Phase 2. Mark phase task completed and proceed to Phase 5.
 
 **Narrative formats** (essay, blog, talk, newsletter):
 
@@ -432,7 +437,7 @@ Present the final draft and a summary of what each pass did.
 - **Missing prerequisite artifact on phase jump (technical):** intake reads no upstream; outline reads `intake.md`; throughline reads `outline.md`/`schema.md`; draft reads `intake.md`, `outline.md`/`schema.md`, optionally `throughline.md`; panel reads `draft.md`; finishing reads `draft.md`. Apply the same three-option pattern (run upstream / accept degraded / cancel) on phase-jump with missing upstream.
 - **Tech-doc panel CRITICAL gate fails twice during dispatched run:** tech-doc's standard handling applies (present remaining critical issues, ask whether to continue to finishing with known issues, pause, or cancel). Writing skill does NOT add a second gate handling layer.
 - **Tech-doc quadrant-fit CRITICAL persistent:** tech-doc's standard handling applies (offer to switch quadrant). If the user chooses to switch, the working directory may need to be reset. Tech-doc owns this.
-- **Format mismatch on resume (technical):** state file recorded format `tutorial` but working directory contains pyramid artifacts (e.g., `intake.md` with `genre: Memo`). Ask via AskUserQuestion which format applies; record the corrected value.
+- **Format mismatch on resume (technical):** state file recorded format `tutorial` but working directory contains pyramid artifacts (e.g., `intake.md` with `genre: Memo`), or pyramid was the intended track but `intake.md` has `dispatched_from: writing` and a `quadrant:` field. Use the `dispatched_from` field and the presence of `quadrant:` (technical) vs. `genre:` (analytical) to disambiguate. Ask via AskUserQuestion which format applies; record the corrected value.
 
 ## State File Format
 
