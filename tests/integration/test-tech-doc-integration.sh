@@ -9,6 +9,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/../test-helpers.sh"
 
 PLUGIN_DIR="${PLUGIN_DIR:-plugins/writing}"
+export PLUGIN_DIR
 
 echo "=== Integration Test: tech-doc skill (tutorial smoke) ==="
 echo ""
