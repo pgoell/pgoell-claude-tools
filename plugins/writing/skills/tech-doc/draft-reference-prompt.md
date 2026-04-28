@@ -28,7 +28,8 @@ Agent tool (general-purpose):
 
     - **Required fields with no value:** write `<unknown>` literally. Do NOT fabricate values. Do NOT skip the field.
     - **Optional fields with no value:** omit the field's section entirely.
-    - **Code samples:** must be runnable and idiomatic. No placeholder values like "your_data_here"; use realistic-but-generic values like "user-42", "example.com", "secret-key-placeholder".
+    - **Code samples:** must be runnable and idiomatic. Use realistic-but-generic concrete values (`user-42`, `example.com`) for fixed strings.
+    - **Placeholders for values the reader must replace:** use `<UPPERCASE>` syntax (Google convention). Examples: `<API_KEY>`, `<USER_ID>`, `<REGION>`. Never use `your_x_here`, `xxx`, `{{var}}`, or other conventions. Don't mix syntaxes within the same doc.
     - **Tables:** every parameter, every status code, every option gets one row. Do not summarize.
     - **Examples:** at least one minimal example. Where idiomatic differs from minimal, include a second idiomatic example.
 

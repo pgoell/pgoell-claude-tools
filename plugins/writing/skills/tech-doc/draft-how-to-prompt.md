@@ -50,6 +50,11 @@ Agent tool (general-purpose):
     - No expansion of why beyond what is strictly needed for the reader to act.
     - Conditions before instructions.
 
+    ## Code sample conventions
+
+    - **Placeholders for values the reader must replace:** use `<UPPERCASE>` syntax (Google convention). Examples: `<API_KEY>`, `<USER_ID>`, `<REGION>`. Never use `your_x_here`, `xxx`, `{{var}}`, or other conventions. Don't mix syntaxes within the same doc.
+    - For fixed example values, use realistic-but-generic concrete strings (`user-42`, `example.com`) rather than placeholders.
+
     ## Output
 
     Write `{OUTPUT_PATH}/draft.md` containing the complete how-to guide.
