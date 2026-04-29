@@ -16,12 +16,10 @@ Agent tool (general-purpose):
     ## Configuration
 
     - **Output path:** {OUTPUT_PATH}
-    - **Active style guide:** {STYLE_GUIDE_PATH}
 
     ## Setup
 
     1. Read `{OUTPUT_PATH}/draft.md`
-    2. Read the active style guide's anti-patterns table
 
     ## What to flag
 
