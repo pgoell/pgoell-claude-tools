@@ -15,42 +15,24 @@ Agent tool (general-purpose):
     ## Configuration
 
     - **Output path:** {OUTPUT_PATH}
-    - **Active style preset:** {STYLE_GUIDE_PATH}
+    - **Active style preset directory:** {STYLE_GUIDE_DIR}
 
     ## Setup
 
     1. Read `{OUTPUT_PATH}/draft.md`.
-    2. Read the active style preset at {STYLE_GUIDE_PATH}.
+    2. Read `{STYLE_GUIDE_DIR}/core.md`.
+    3. Read `{STYLE_GUIDE_DIR}/wordlist.md`.
 
     ## What to flag
 
-    Use the following replacement table as your primary reference:
+    Walk `{STYLE_GUIDE_DIR}/wordlist.md`. For every entry under sections named `## Inclusive language`, `## Ableist language`, `## Gendered language`, `## Culturally narrow language` (and any equivalents in the wordlist), search the draft for the term (whole-word, case-insensitive, excluding code blocks). For each hit, flag with the entry's Replacement and a one-line context.
 
-    | Legacy term | Replacement |
-    |-------------|-------------|
-    | `master/slave` | `primary/secondary`, `leader/follower`, `main/replica` |
-    | `blacklist/whitelist` | `blocklist/allowlist`, `denylist/allowlist` |
-    | `sanity check` | `validation check`, `confidence check` |
-    | `dummy variable` | `placeholder variable`, `example variable` |
-    | `kill the process` | `stop the process`, `terminate the process` |
-    | `crazy` / `insane` | `unexpected`, `extreme`, `surprising` (concrete adjective) |
-    | `blind to` / `deaf to` | `unaware of`, `does not detect` |
-    | `lame` | `inadequate`, `weak`, `poorly designed` |
-    | `man-hours` | `person-hours`, `engineer-hours` |
-    | `chairman` | `chair`, `chairperson` |
-    | `manpower` | `staff`, `workforce` |
-    | `guys` (mixed-gender address) | `everyone`, `team`, `folks` |
-    | Singular `he`/`his` for indeterminate person | `they`/`their` |
-    | Sports or cultural metaphors (`home run`, `slam dunk`, `out of left field`) | concrete description of the outcome |
+    Also flag the following patterns even if not in the wordlist:
 
-    Also flag:
-
-    - **Cultural assumptions.** References to "western" defaults, "the holiday
-      season", specific national holidays, or US-centric units without
-      conversion (miles, Fahrenheit, etc.).
-    - **Ableist metaphors not in the table.** Any metaphor that uses a
-      disability or impairment as a synonym for failure or deficiency.
-    - **Gendered job titles or role names** not already covered by the table.
+    - Cultural assumptions. References to "western" defaults, "the holiday season", specific national holidays, or US-centric units without conversion (miles, Fahrenheit, etc.).
+    - Ableist metaphors not in the wordlist. Any metaphor that uses a disability or impairment as a synonym for failure or deficiency.
+    - Gendered job titles or role names not already covered by the wordlist.
+    - Singular `he`/`his` for an indeterminate person. Replace with `they`/`their`.
 
     ## What NOT to flag
 
