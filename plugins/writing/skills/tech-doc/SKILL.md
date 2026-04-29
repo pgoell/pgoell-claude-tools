@@ -49,7 +49,7 @@ Resolution order:
 2. **State memory:** recorded quadrant for this project.
 3. **Always-asked AskUserQuestion** if neither.
 
-Surface in the first response: "Quadrant: {quadrant}. Style preset: {preset_path}".
+Surface in the first response: "Quadrant: {quadrant}. Style preset directory: {path}".
 
 ### Step 4: Determine starting phase
 
