@@ -1,11 +1,11 @@
 ---
 name: research
-description: Use when the user wants to research a topic, investigate something, conduct a deep dive, find sources and citations, write a research report, or craft an optimized research prompt for external AI tools like OpenAI or Gemini. Triggers on research intent — not simple factual questions Claude can answer directly.
+description: Use when the user wants to research a topic, investigate something, conduct a deep dive, find sources and citations, or write a research report. Triggers on research intent, not simple factual questions Claude can answer directly.
 ---
 
 # Research Skill
 
-Universal entry point for all research requests. Refines the user's intent, then either orchestrates a multi-agent research pipeline or generates an optimized prompt for external tools.
+Orchestrator-driven deep research. The skill plans the work itself, spawns parallel deep-research subagents per topic cluster, synthesizes findings under unbounded review, and produces a polished report.
 
 ---
 
@@ -15,143 +15,211 @@ No authentication required. Uses WebSearch and WebFetch (no credentials needed) 
 
 ## Tool Preference
 
-1. **Agent tool** — to dispatch pipeline agents (planner, researcher, writer) and reviewers
-2. **Read** — to load prompt templates before dispatch
-3. **Bash** — for directory creation and date generation
-4. **Write** — for saving prompts to file when requested
-5. **WebSearch/WebFetch** — fallback only if agent dispatch fails
+1. **Agent tool**: dispatch researcher, synthesis, writer, and reviewer agents.
+2. **Read**: load prompt templates before dispatch.
+3. **Bash**: directory creation, date generation, simple file globbing for verification.
+4. **TaskCreate / TaskUpdate / TaskList**: live loop bookkeeping.
+5. **WebSearch / WebFetch**: fallback only if Agent dispatch fails.
 
 ## Workflow
 
-### Step 1: Clarify
+### Step 1: Intake (lightweight clarify)
 
-Ask scoping questions one at a time or in small batches:
-- Main research questions / what specifically to explore
-- Timeframe (last 2 years? historical?)
-- Geographic scope (if relevant)
-- Audience (who will read this?)
-- Purpose (what decisions will this inform?)
-- Source preferences (academic, industry, news, docs)
-- Specific angles, perspectives, or controversies to explore
+If the request is already concrete (specific topic + scope + audience clear), skip ahead. Otherwise, ask ONE consolidated question covering scope (timeframe, geography), audience, and purpose. No multi-question ladder.
 
-If the request is already clearly scoped (e.g. "research the impact of tariffs on EU automotive exports since 2024"), skip redundant questions — just confirm scope and proceed.
+After clarification, write a `brief.md` to the output directory capturing the consolidated brief.
 
-### Step 2: Route
+### Step 2: Configure
 
-Once intent is clear, ask: "Should I run this research now, or generate an optimized prompt you can use in another tool (OpenAI, Gemini, etc.)?"
+Output path is the only knob. Default: `reports/{topic-slug}-{YYYY-MM-DD}/`. Allow user override.
 
-- **Run now** → proceed to Step 3 (configure) then Step 4 (execute pipeline)
-- **Generate prompt** → proceed to Prompt Output section below
+Create directories:
 
-### Step 3: Configure
-
-Before dispatching, allow overrides:
-- **Output path** — default: `reports/{topic-slug}-{YYYY-MM-DD}/`
-- **Mode** — deep (default) or quick
-- **Creative** — true or false (default: false)
-
-Default to deep mode unless the user signals quick: "quick look at", "brief overview of", "what's the deal with".
-
-Create the output directory and a `research/` subdirectory inside it using Bash before starting the pipeline.
-
-### Step 4: Execute Pipeline
-
-Run the multi-agent pipeline. Each agent communicates through files in the output directory.
-
-#### 4.1: Plan
-
-1. Read `planner-prompt.md` from this skill directory
-2. Inject into the template: research brief, mode, creative flag, output path
-3. Dispatch via **Agent tool** → wait for completion
-4. Verify `{output-path}/research/plan.md` exists and contains sub-questions
-
-#### 4.2: Research
-
-1. Read `researcher-prompt.md` from this skill directory
-2. Inject into the template: research brief, mode, output path, path to `research-recipes.md`
-3. Dispatch via **Agent tool** → wait for completion
-4. Verify `{output-path}/research/sources.md` and `{output-path}/research/notes.md` exist
-
-#### 4.3: Source Review Gate
-
-1. Read `source-reviewer-prompt.md` from this skill directory
-2. Inject into the template: mode, output path
-3. Dispatch via **Agent tool** → wait for completion
-4. Parse verdict from agent response
-5. If **FAIL** with CRITICAL issues:
-   - Re-read `researcher-prompt.md`, inject original context + reviewer's CRITICAL issues into `{REVIEWER_FEEDBACK}`
-   - Re-dispatch researcher → wait → re-dispatch source reviewer
-   - Repeat up to **3 times**. If still failing, present remaining issues to the user and ask whether to proceed or manually intervene
-6. If **PASS**: continue to 4.4
-
-#### 4.4: Write
-
-1. Read `writer-prompt.md` from this skill directory
-2. Inject into the template: research brief, mode, creative flag, output path, path to `report-template.md`
-3. Dispatch via **Agent tool** → wait for completion
-4. Verify `{output-path}/report.md` exists
-
-#### 4.5: Report Review Gate
-
-1. Read `report-reviewer-prompt.md` from this skill directory
-2. Inject into the template: mode, creative flag, output path, path to `report-template.md`
-3. Dispatch via **Agent tool** → wait for completion
-4. Parse verdict from agent response
-5. If **FAIL** with CRITICAL issues:
-   - Re-read `writer-prompt.md`, inject original context + reviewer's CRITICAL issues into `{REVIEWER_FEEDBACK}`
-   - Re-dispatch writer → wait → re-dispatch report reviewer
-   - Repeat up to **3 times**. If still failing, present remaining issues to the user and ask whether to proceed or manually intervene
-6. If **PASS**: continue to 4.6
-
-#### 4.6: Present
-
-Report the output path and a brief summary to the user.
-
-## Prompt Output
-
-When the user wants a prompt for external tools, generate a structured prompt:
-
+```bash
+mkdir -p {OUTPUT_PATH}/research
 ```
-### TASK
-[Clear, specific research objective]
 
-### CONTEXT/BACKGROUND
-[Why this matters and how it will be used]
+### Step 3: Plan (orchestrator-internal)
 
-### SPECIFIC QUESTIONS OR SUBTASKS
-1. [First specific question]
-2. [Second specific question]
+YOU plan, not an agent. Decompose the brief into sub-questions and cluster them into coherent topics. As many clusters as the brief demands; each cluster should be deep enough to warrant a dedicated researcher. Cluster slugs must be unique and avoid colliding with reserved names (`synthesis`, `gap-N-*`, `*-review-*`).
+
+Write `{OUTPUT_PATH}/plan.md`:
+
+```markdown
+# Research Plan
+
+## Brief
+Topic: <topic>
+Scope: <scope>
+Audience: <audience>
+Purpose: <purpose>
+
+## Clusters
+
+### Cluster: <cluster-slug-1>
+Title: <human-readable title>
+Sub-questions:
+  - SQ1: <sub-question>
+    - Search angles: <angle1>, <angle2>, <angle3>
+    - Source types: <academic, industry, etc.>
+  - SQ2: ...
+
+### Cluster: <cluster-slug-2>
 ...
-
-### KEYWORDS
-[Relevant search terms and concepts]
-
-### CONSTRAINTS
-- Timeframe: [specified timeframe]
-- Geography: [specified scope]
-- Source Types: [preferred sources]
-
-### OUTPUT FORMAT
-[Preferred format with specific requirements]
-
-### FINAL INSTRUCTIONS
-Remain concise, reference sources accurately, and provide evidence-based analysis.
 ```
 
-Output directly in conversation. Optionally save to a file if the user requests it.
+Use TaskCreate to seed the task list with: "Spawn researchers", "Synthesize", "Review synthesis", "Write report", "Review report". Mark tasks completed as the pipeline progresses.
+
+### Step 4: Spawn parallel researchers
+
+Each researcher does iterative deep search on its cluster (round-by-round breadth, depth, adversarial, then iterative deepening) until two consecutive rounds add no new evidence (saturation). The researcher produces one self-contained markdown with notes and inline sources (no separate sources or notes files). For each cluster in plan.md:
+
+1. Read `researcher-prompt.md` from this skill directory.
+2. Inject: BRIEF, OUTPUT_PATH, RECIPES_PATH (path to research-recipes.md), CLUSTER_SLUG, OUTPUT_FILE (`{OUTPUT_PATH}/research/{cluster-slug}.md`), TARGETED_GAP (empty).
+3. Dispatch via Agent tool. Send all clusters in parallel: one Agent call per cluster in a single message.
+4. Wait for all to complete. Verify each cluster's output file exists and is non-empty.
+
+If a researcher returns a near-empty file, treat as failed dispatch (re-dispatch once; if still thin, escalate to user as a likely cluster-boundary problem).
+
+### Step 5: Synthesize (iteration N, starting at 1)
+
+1. Read `synthesis-prompt.md`.
+2. Inject: BRIEF, OUTPUT_PATH, ITERATION, REVIEWER_FEEDBACK (empty on first pass; populated on re-dispatch).
+3. Dispatch via Agent tool. Wait for completion.
+4. Verify `{OUTPUT_PATH}/research/synthesis.md` exists.
+
+### Step 6: Review synthesis (iteration N)
+
+1. Read `synthesis-reviewer-prompt.md`.
+2. Inject: BRIEF, OUTPUT_PATH, ITERATION, REVIEWER_FEEDBACK (empty for normal flow; populated only when re-dispatched from cross-loop branch in Step 10).
+3. Dispatch via Agent tool. Wait for completion.
+4. Read the verdict from agent response, or from `{OUTPUT_PATH}/research/synthesis-review-{N}.md` if response is unparseable.
+
+If verdict is PASS: continue to Step 8.
+
+If verdict is ISSUES with critical issues: classify and proceed to Step 7.
+
+### Step 7: Address synthesis-review issues
+
+Classify each critical issue:
+
+- `evidence-gap`, `coverage`, `source-quality` → spawn gap-fill researcher per issue (or per coherent group of related issues).
+- `logic`, `structure` → batch into a single re-synthesis with all such issues as feedback.
+
+For each gap-fill issue:
+
+1. Read `researcher-prompt.md`. Inject: BRIEF, OUTPUT_PATH, RECIPES_PATH, CLUSTER_SLUG=<best-fit existing cluster>, OUTPUT_FILE=`{OUTPUT_PATH}/research/gap-{N}-{issue-slug}.md`, TARGETED_GAP=<full issue description with location pointer>.
+2. Dispatch in parallel for all gap-fill issues. Wait for completion.
+
+For batched logic/structure issues:
+
+3. Re-dispatch synthesis with REVIEWER_FEEDBACK populated with the critical issue list. Wait for completion.
+
+After all gap-fills and re-syntheses complete, return to Step 6 with iteration N+1.
+
+### Loop safeguards (Steps 6-7)
+
+**Stall detection.** After writing `synthesis-review-{N}.md`, compare its issue id set to `synthesis-review-{N-1}.md`. If identical, surface to user immediately.
+
+**Check-in.** After synthesis-review iterations 3, 6, 9, ..., pause and surface:
+- Open issue ids and one-line descriptions
+- What was attempted (which gap-fills ran)
+- What's been narrowed (issues closed since iteration 1)
+- Options: `continue`, `ship as-is`, `intervene`
+
+Update task list at every step so user can run TaskList for live status.
+
+### Step 8: Write (iteration M, starting at 1)
+
+1. Read `writer-prompt.md`.
+2. Inject: BRIEF, OUTPUT_PATH, TEMPLATE_PATH (path to report-template.md), REVIEWER_FEEDBACK (empty on first pass; populated on re-dispatch).
+3. Dispatch via Agent tool. Wait for completion.
+4. Verify `{OUTPUT_PATH}/report.md` exists.
+
+### Step 9: Review report (iteration M)
+
+1. Read `writer-reviewer-prompt.md`.
+2. Inject: BRIEF, OUTPUT_PATH, TEMPLATE_PATH, ITERATION=M.
+3. Dispatch via Agent tool. Wait for completion.
+4. Read verdict.
+
+If PASS: continue to Step 11.
+
+If ISSUES with critical issues: classify and proceed to Step 10.
+
+### Step 10: Address writer-review issues
+
+Classify each critical issue:
+
+- `prose`, `flow`, `accuracy`, `format` → batch into a single re-write with all such issues as feedback.
+- `content-gap-suspected` → re-run synthesis-reviewer with this hypothesis (cross-loop).
+
+For batched prose/flow/accuracy/format issues:
+
+1. Re-dispatch writer with REVIEWER_FEEDBACK populated. Wait. Return to Step 9 with iteration M+1.
+
+For any `content-gap-suspected` issues:
+
+2. Re-dispatch synthesis-reviewer (Step 6) with REVIEWER_FEEDBACK populated with the writer-reviewer's content-gap-suspected issue list. The next synthesis-review file is `synthesis-review-{prior-N+1}.md` (synthesis loop counter resumes monotonically).
+3. Branch on synthesis-reviewer verdict:
+   - PASS → re-dispatch writer with prose-only feedback (drop the content-gap notes from the writer-reviewer's issue list). Return to Step 9.
+   - ISSUES → return to Step 7's classification logic (`evidence-gap` / `coverage` / `source-quality` route to gap-fill research; `logic` / `structure` route to re-synthesize). When the synthesis loop closes again, re-dispatch writer with the original prose feedback (if any) plus a fresh writer review. Return to Step 9.
+
+### Loop safeguards (Steps 9-10)
+
+Same as synthesis loop. Stall detection on consecutive identical id sets in `report-review-{M}.md` and `report-review-{M-1}.md`. Check-in every 3 iterations of writer-review. Same options.
+
+### Step 11: Present
+
+Surface output path + brief summary: total iterations of each loop, final artifact paths, any minor (non-blocking) issues from the final reviews.
+
+## File Layout (output directory)
+
+```
+{output-path}/
+├── brief.md
+├── plan.md
+├── research/
+│   ├── {cluster-slug}.md         (one per cluster, notes + inline sources)
+│   ├── gap-{n}-{slug}.md         (gap-fill research)
+│   ├── synthesis.md              (overwritten each iteration)
+│   └── synthesis-review-{n}.md
+├── report.md                     (overwritten each iteration)
+└── report-review-{n}.md
+```
+
+## Verdict Parsing
+
+Both reviewers return verdicts in this format:
+
+```
+VERDICT: PASS | ISSUES
+ISSUES:
+  - id: <stable-id>
+    severity: critical | minor
+    category: <category>
+    description: <one line>
+    location: <pointer>
+SUMMARY: <text>
+```
+
+A verdict of PASS with critical issues is malformed; re-dispatch the reviewer once with a format reminder. Stable ids enable stall detection: same id set in consecutive reviews means surface to user.
 
 ## Self-Healing
 
-- **Agent dispatch fails for any step:** Fall back to running that step inline (in the main conversation). Warn the user about context usage.
-- **Review loop exhausted (3 iterations):** Present the reviewer's remaining issues to the user and ask whether to proceed or manually intervene.
-- **Artifact file missing after agent completes:** Re-dispatch the agent once. If still missing, report the error and which file is absent.
-- **Output directory not writable:** Check permissions, suggest an alternative path, or ask the user where to save.
+- Agent dispatch fails: fall back to running that step inline. Warn user about context cost.
+- Artifact file missing: re-dispatch once. Surface if still missing.
+- Verdict unparseable: re-dispatch reviewer once with format reminder.
+- Researcher returns empty: re-dispatch once. Surface if still thin (likely bad cluster boundary).
+- Stall detected: surface to user immediately. Don't auto-retry.
+- Check-in interval reached: pause, present status, await user choice.
+- Output dir not writable: suggest alternative path, ask user.
 
 ## Behavioral Guidelines
 
-- Trigger on research intent (investigate, deep dive, report, sources) — not simple factual questions Claude can answer from training data
-- When in doubt: "Would you like me to do a thorough research investigation, or just answer from what I know?"
-- If the user asks for both a research run AND a prompt, do both — run the pipeline and also output the prompt
-- Each prompt template has a `{REVIEWER_FEEDBACK}` placeholder. On first dispatch, leave it empty. On fix-mode re-dispatch, inject the reviewer's CRITICAL issues.
-- Never pass session history to agents. Construct each dispatch prompt fresh from the template + injected values.
-- See `report-template.md` for report structure and `research-recipes.md` for search patterns
+- Trigger on research intent, not simple factual questions.
+- When in doubt: ask "Would you like me to run a thorough research investigation, or just answer from what I know?"
+- Never pass session history to agents. Construct each dispatch fresh from the template + injected values.
+- Each prompt template has placeholders. Researcher: BRIEF, OUTPUT_PATH, RECIPES_PATH, CLUSTER_SLUG, OUTPUT_FILE, TARGETED_GAP. Synthesis: BRIEF, OUTPUT_PATH, ITERATION, REVIEWER_FEEDBACK. Synthesis-reviewer: BRIEF, OUTPUT_PATH, ITERATION, REVIEWER_FEEDBACK (cross-loop only). Writer: BRIEF, OUTPUT_PATH, TEMPLATE_PATH, REVIEWER_FEEDBACK. Writer-reviewer: BRIEF, OUTPUT_PATH, TEMPLATE_PATH, ITERATION.
+- Credentials/secrets never appear in templates or injected values.
+- See `report-template.md` for report structure (use Deep Mode section) and `research-recipes.md` for search patterns.
