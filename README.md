@@ -57,7 +57,7 @@ Multi-phase writing pipeline modelled on Katie Parrott's process. Interview, out
 Aligns Claude Code and Codex artifacts across a project. When Claude Code and Codex work together on the same codebase, this skill helps ensure files are formatted and structured consistently so both runtimes can understand them.
 
 **Skills:**
-- `/pgoell-claude-tools:claude-codex-bridge` — Analyze and align Claude Code and Codex artifacts
+- `/pgoell-claude-tools:claude-codex-bridge`: Analyze and align Claude Code and Codex artifacts
 
 ## Installation
 

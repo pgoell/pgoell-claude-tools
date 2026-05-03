@@ -49,14 +49,13 @@ for fixture in "$FIXTURES_DIR"/*/; do
     # Fault injection: if the fixture provides a buggy-apply-prompt.md,
     # stage it as a sibling override the orchestrator will read.
     buggy_apply="$fixture/buggy-apply-prompt.md"
+    skill_override=""
     if [ -f "$buggy_apply" ]; then
         skill_local="$workdir/.runtime-bridge-skill"
         mkdir -p "$skill_local"
         cp "$REPO_ROOT/plugins/runtime-bridge/skills/claude-codex-bridge/"*.md "$skill_local/"
         cp "$buggy_apply" "$skill_local/apply-prompt.md"
-        export RUNTIME_BRIDGE_SKILL_OVERRIDE="$skill_local"
-    else
-        unset RUNTIME_BRIDGE_SKILL_OVERRIDE
+        skill_override="$skill_local"
     fi
 
     prompt="$(cat "$prompt_file")"
@@ -67,9 +66,12 @@ for fixture in "$FIXTURES_DIR"/*/; do
 
     log_file="$(mktemp)"
 
-    # Run the skill in the temp workdir
+    # Run the skill in the temp workdir; scope override env to this subshell only
     (
         cd "$workdir"
+        if [ -n "$skill_override" ]; then
+            export RUNTIME_BRIDGE_SKILL_OVERRIDE="$skill_override"
+        fi
         run_claude_logged "$prompt" "$log_file" 180 > /dev/null 2>&1 || true
     )
 

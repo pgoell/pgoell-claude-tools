@@ -66,7 +66,7 @@ Render the manifest for the user:
 - Notes (free-form).
 - If `trust_warning` is present: include the line "After apply, run `codex` once in this dir and accept the trust prompt; `.codex/` artifacts no-op on untrusted projects."
 
-For drift ops, ask the user to confirm the suggested canonical or pick the other side.
+For drift ops, ask the user to confirm the suggested canonical or pick the other side. If the user's original prompt already specifies a canonical-selection rule (for example "use the newer file as canonical"), apply that rule to all drift ops without re-asking per pair.
 
 If dry-run: stop here. Print the manifest summary as the final report.
 
