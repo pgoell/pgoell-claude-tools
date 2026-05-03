@@ -76,7 +76,7 @@ for fixture in "$FIXTURES_DIR"/*/; do
     # Fault-injection: assertion is on reviewer log, not filesystem
     if [ -f "$buggy_apply" ]; then
         expected_issue_kind="$(cat "$fixture/expected-issue-kind.txt" 2>/dev/null || echo "missing")"
-        if grep -qE "\"kind\"\s*:\s*\"$expected_issue_kind\"" "$log_file"; then
+        if grep -qE "(\"kind\"|\\\\\"kind\\\\\")\s*:\s*(\"$expected_issue_kind\"|\\\\\"$expected_issue_kind\\\\\")" "$log_file"; then
             echo "  [PASS] $fixture_name reviewer flagged $expected_issue_kind"
             PASSES=$((PASSES+1))
         else
