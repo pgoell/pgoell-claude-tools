@@ -82,6 +82,8 @@ In the picker, install `atlassian`, `google-workspace`, `research`, and `writing
 
 `codex plugin marketplace add` accepts `owner/repo[@ref]`, an HTTPS or SSH Git URL, or a local marketplace root directory. The marketplace file lives at `.agents/plugins/marketplace.json` and the per-plugin Codex manifests live at `plugins/<plugin>/.codex-plugin/plugin.json`. Both reuse the same `plugins/<plugin>/skills/` directories as Claude Code, single sourced.
 
+To pick up changes, run `codex plugin marketplace upgrade pgoell-claude-tools` and re-install the affected plugins from `/plugins` inside Codex. Codex does not poll for updates; it uses the cached snapshot from `add` time until you upgrade.
+
 ## Setup
 
 ### Atlassian
