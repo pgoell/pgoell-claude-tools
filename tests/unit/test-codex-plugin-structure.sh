@@ -54,7 +54,14 @@ for plugin in atlassian google-workspace research writing; do
 
     category="$(jq -r --arg plugin "$plugin" '.plugins[] | select(.name == $plugin) | .category' "$MARKETPLACE")"
     [ -n "$category" ] || fail "$plugin marketplace category missing"
+
+    marketplace_display_name="$(jq -r --arg plugin "$plugin" '.plugins[] | select(.name == $plugin) | .interface.displayName // empty' "$MARKETPLACE")"
+    [ -n "$marketplace_display_name" ] || fail "$plugin marketplace entry missing interface.displayName"
 done
+
+[ -L "$REPO_ROOT/CLAUDE.md" ] || fail "Root CLAUDE.md must be a symlink to AGENTS.md"
+[ "$(readlink "$REPO_ROOT/CLAUDE.md")" = "AGENTS.md" ] || fail "CLAUDE.md symlink must target AGENTS.md"
+[ -f "$REPO_ROOT/AGENTS.md" ] || fail "AGENTS.md missing at repo root"
 
 for skill in \
     "$REPO_ROOT/plugins/research/skills/research/SKILL.md" \

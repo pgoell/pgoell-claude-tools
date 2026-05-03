@@ -7,6 +7,8 @@ Claude Code and Codex use separate plugin metadata, but they must reuse the same
 ## Repository Structure
 
 ```
+AGENTS.md                   # Shared host-agent instructions (canonical file)
+CLAUDE.md                   # Symlink to AGENTS.md, kept for Claude Code discovery
 .claude-plugin/
   marketplace.json          # Claude Code plugin registry, lists all plugins with name, source, version
 .agents/
@@ -97,7 +99,7 @@ Create `.codex-plugin/plugin.json` for the same plugin. It must point to the exi
 Register the plugin in both marketplaces:
 
 - `.claude-plugin/marketplace.json` for Claude Code
-- `.agents/plugins/marketplace.json` for Codex
+- `.agents/plugins/marketplace.json` for Codex (each plugin entry must include `interface.displayName` and `interface.shortDescription` so the picker label is explicit)
 
 ### 3. Write SKILL.md
 

@@ -14,7 +14,11 @@
         "installation": "AVAILABLE",
         "authentication": "ON_INSTALL"
       },
-      "category": "Productivity"
+      "category": "Productivity",
+      "interface": {
+        "displayName": "Atlassian",
+        "shortDescription": "Use Jira and Confluence from agent workflows"
+      }
     },
     {
       "name": "google-workspace",
@@ -26,7 +30,11 @@
         "installation": "AVAILABLE",
         "authentication": "ON_INSTALL"
       },
-      "category": "Productivity"
+      "category": "Productivity",
+      "interface": {
+        "displayName": "Google Workspace",
+        "shortDescription": "Use Gmail and Calendar through gws"
+      }
     },
     {
       "name": "research",
@@ -38,7 +46,11 @@
         "installation": "AVAILABLE",
         "authentication": "ON_INSTALL"
       },
-      "category": "Productivity"
+      "category": "Productivity",
+      "interface": {
+        "displayName": "Research",
+        "shortDescription": "Plan, research, synthesize, and write reports"
+      }
     },
     {
       "name": "writing",
@@ -50,7 +62,11 @@
         "installation": "AVAILABLE",
         "authentication": "ON_INSTALL"
       },
-      "category": "Productivity"
+      "category": "Productivity",
+      "interface": {
+        "displayName": "Writing",
+        "shortDescription": "Draft, structure, review, and finish prose"
+      }
     }
   ]
 }

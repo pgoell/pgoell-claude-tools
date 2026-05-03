@@ -52,19 +52,22 @@ Multi-phase writing pipeline modelled on Katie Parrott's process. Interview, out
 
 ### Codex
 
-Use this repository as a local Codex plugin marketplace. The Codex marketplace file is:
+Add the marketplace from your shell:
 
 ```
-.agents/plugins/marketplace.json
+codex plugin marketplace add pgoell/pgoell-claude-tools
 ```
 
-Each Codex plugin manifest lives beside its Claude Code manifest:
+Then install plugins from inside Codex:
 
 ```
-plugins/<plugin>/.codex-plugin/plugin.json
+codex
+/plugins
 ```
 
-Do not copy or fork skill files for Codex. Codex manifests must set `"skills": "./skills/"`, which reuses the same skill directories as Claude Code.
+In the picker, install `atlassian`, `google-workspace`, `research`, and `writing`.
+
+`codex plugin marketplace add` accepts `owner/repo[@ref]`, an HTTPS or SSH Git URL, or a local marketplace root directory. The marketplace file lives at `.agents/plugins/marketplace.json` and the per-plugin Codex manifests live at `plugins/<plugin>/.codex-plugin/plugin.json`. Both reuse the same `plugins/<plugin>/skills/` directories as Claude Code, single sourced.
 
 ## Setup
 
