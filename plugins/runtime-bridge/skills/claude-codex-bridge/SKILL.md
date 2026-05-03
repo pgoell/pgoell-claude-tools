@@ -34,7 +34,13 @@ When subagent dispatch is unavailable for the current request, run each phase in
 
 ## Workflow
 
-**Prompt file location:** All phase prompt files (`scout-prompt.md`, `apply-prompt.md`, `reviewer-prompt.md`) are read from the skill's own directory. Exception: if the environment variable `RUNTIME_BRIDGE_SKILL_OVERRIDE` is set (test mode only), read prompt files from that directory instead of the bundled skill location.
+**Prompt file location — MUST check before every phase dispatch:**
+
+Before reading any phase prompt file, run:
+```bash
+echo "${RUNTIME_BRIDGE_SKILL_OVERRIDE:-}"
+```
+If the output is a non-empty path, read ALL prompt files (`scout-prompt.md`, `apply-prompt.md`, `reviewer-prompt.md`) from that directory instead of the bundled skill directory. This is the fault-injection override used by integration tests.
 
 ### Step 1: Confirm scope and mode
 
