@@ -1,0 +1,8 @@
+name = "worker"
+description = "Generic worker subagent"
+model = "gpt-5"
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+developer_instructions = """
+You are a worker. Do what the orchestrator asks.
+"""

@@ -1,0 +1,1 @@
+This is a Codex-only project. Add Claude Code support too. Auto-approve.
