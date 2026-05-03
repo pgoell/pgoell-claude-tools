@@ -46,6 +46,19 @@ for fixture in "$FIXTURES_DIR"/*/; do
         WORKDIR="$workdir" bash "$fixture/setup.sh"
     fi
 
+    # Fault injection: if the fixture provides a buggy-apply-prompt.md,
+    # stage it as a sibling override the orchestrator will read.
+    buggy_apply="$fixture/buggy-apply-prompt.md"
+    if [ -f "$buggy_apply" ]; then
+        skill_local="$workdir/.runtime-bridge-skill"
+        mkdir -p "$skill_local"
+        cp "$REPO_ROOT/plugins/runtime-bridge/skills/claude-codex-bridge/"*.md "$skill_local/"
+        cp "$buggy_apply" "$skill_local/apply-prompt.md"
+        export RUNTIME_BRIDGE_SKILL_OVERRIDE="$skill_local"
+    else
+        unset RUNTIME_BRIDGE_SKILL_OVERRIDE
+    fi
+
     prompt="$(cat "$prompt_file")"
     is_dry_run="false"
     if [ -f "$options_file" ] && grep -q "dry-run" "$options_file"; then
@@ -60,27 +73,39 @@ for fixture in "$FIXTURES_DIR"/*/; do
         run_claude_logged "$prompt" "$log_file" 180 > /dev/null 2>&1 || true
     )
 
-    # Compare resulting filesystem to expected/
-    if [ "$is_dry_run" = "true" ]; then
-        # Dry-run: filesystem must NOT have changed (input == workdir contents).
-        if diff -r "$input" "$workdir" > /dev/null 2>&1; then
-            echo "  [PASS] $fixture_name dry-run preserved input filesystem"
+    # Fault-injection: assertion is on reviewer log, not filesystem
+    if [ -f "$buggy_apply" ]; then
+        expected_issue_kind="$(cat "$fixture/expected-issue-kind.txt" 2>/dev/null || echo "missing")"
+        if grep -qE "\"kind\"\s*:\s*\"$expected_issue_kind\"" "$log_file"; then
+            echo "  [PASS] $fixture_name reviewer flagged $expected_issue_kind"
             PASSES=$((PASSES+1))
         else
-            echo "  [FAIL] $fixture_name dry-run modified filesystem"
-            diff -r "$input" "$workdir" | head -20 | sed 's/^/    /'
+            echo "  [FAIL] $fixture_name reviewer did not flag $expected_issue_kind"
             FAILS=$((FAILS+1))
         fi
     else
-        # Full run: filesystem must match expected/
-        if diff -r "$expected" "$workdir" > /dev/null 2>&1; then
-            echo "  [PASS] $fixture_name matches expected"
-            PASSES=$((PASSES+1))
+        # Compare resulting filesystem to expected/
+        if [ "$is_dry_run" = "true" ]; then
+            # Dry-run: filesystem must NOT have changed (input == workdir contents).
+            if diff -r "$input" "$workdir" > /dev/null 2>&1; then
+                echo "  [PASS] $fixture_name dry-run preserved input filesystem"
+                PASSES=$((PASSES+1))
+            else
+                echo "  [FAIL] $fixture_name dry-run modified filesystem"
+                diff -r "$input" "$workdir" | head -20 | sed 's/^/    /'
+                FAILS=$((FAILS+1))
+            fi
         else
-            echo "  [FAIL] $fixture_name diff:"
-            diff -r "$expected" "$workdir" | head -40 | sed 's/^/    /'
-            echo "    (full log at: $log_file)"
-            FAILS=$((FAILS+1))
+            # Full run: filesystem must match expected/
+            if diff -r "$expected" "$workdir" > /dev/null 2>&1; then
+                echo "  [PASS] $fixture_name matches expected"
+                PASSES=$((PASSES+1))
+            else
+                echo "  [FAIL] $fixture_name diff:"
+                diff -r "$expected" "$workdir" | head -40 | sed 's/^/    /'
+                echo "    (full log at: $log_file)"
+                FAILS=$((FAILS+1))
+            fi
         fi
     fi
 
