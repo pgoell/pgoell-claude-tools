@@ -1,6 +1,8 @@
 # pgoell-claude-tools
 
-A personal Claude Code plugin marketplace.
+A personal plugin marketplace for Claude Code and Codex.
+
+The two runtimes use separate plugin metadata, but the skills are single sourced. Claude Code reads `.claude-plugin` metadata. Codex reads `.codex-plugin` metadata and `.agents/plugins/marketplace.json`. Both point at the same `plugins/<plugin>/skills/` directories.
 
 ## Plugins
 
@@ -38,6 +40,8 @@ Multi-phase writing pipeline modelled on Katie Parrott's process. Interview, out
 
 ## Installation
 
+### Claude Code
+
 ```
 /plugin marketplace add pgoell/pgoell-claude-tools
 /plugin install atlassian@pgoell-claude-tools
@@ -45,6 +49,22 @@ Multi-phase writing pipeline modelled on Katie Parrott's process. Interview, out
 /plugin install research@pgoell-claude-tools
 /plugin install writing@pgoell-claude-tools
 ```
+
+### Codex
+
+Use this repository as a local Codex plugin marketplace. The Codex marketplace file is:
+
+```
+.agents/plugins/marketplace.json
+```
+
+Each Codex plugin manifest lives beside its Claude Code manifest:
+
+```
+plugins/<plugin>/.codex-plugin/plugin.json
+```
+
+Do not copy or fork skill files for Codex. Codex manifests must set `"skills": "./skills/"`, which reuses the same skill directories as Claude Code.
 
 ## Setup
 
@@ -81,4 +101,4 @@ For full setup instructions, see: https://github.com/googleworkspace/cli
 
 ### Research Plugin
 
-No authentication required. The research plugin uses WebSearch and WebFetch which work out of the box.
+No authentication required. The research plugin uses the host agent's web search and fetch or browse tools.
