@@ -44,6 +44,7 @@ tests/
 | `research` | 2.0.0 | `research` (multi-agent pipeline with review gates) |
 | `writing` | 1.6.0 | `writing`, `pyramid`, `tech-doc` |
 | `runtime-bridge` | 0.1.0 | `claude-codex-bridge` |
+| `agents-md-management` | 0.1.0 | `agents-md-improver`, `agents-md-session-capture` |
 
 ## How to Develop a New Skill
 
