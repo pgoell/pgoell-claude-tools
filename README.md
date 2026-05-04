@@ -17,6 +17,8 @@ The two runtimes use separate plugin metadata, but the skills are single sourced
 | `pyramid` | writing | Barbara Minto pyramid-principle outlines or restructures, with a parallel MECE / So-What / Q-A / Inductive-Deductive audit panel and SCQA opener |
 | `tech-doc` | writing | Diátaxis-aware technical documentation pipeline (tutorials, how-tos, references, explanations) with Microsoft and Google style-guide presets |
 | `claude-codex-bridge` | runtime-bridge | Align Claude Code and Codex artifacts in a project |
+| `agents-md-improver` | agents-md-management | Audit AGENTS.md / CLAUDE.md across project and user-global scopes; propose targeted edits |
+| `agents-md-session-capture` | agents-md-management | Capture session learnings into AGENTS.md / CLAUDE.md (or `*.local.md`, or user-global) by scope |
 
 ## Plugins
 
@@ -59,6 +61,14 @@ Aligns Claude Code and Codex artifacts across a project. When Claude Code and Co
 **Skills:**
 - `/pgoell-claude-tools:claude-codex-bridge`: Analyze and align Claude Code and Codex artifacts
 
+### agents-md-management
+
+Audit and maintain `AGENTS.md` / `CLAUDE.md` files (and variants like `AGENTS.local.md`, `CLAUDE.local.md`, `.claude.md`, `.claude.local.md`, plus user-global `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`). Symlink-aware via `realpath`, so `CLAUDE.md` symlinked to `AGENTS.md` counts as one logical file. Derived from Anthropic's `claude-md-management` plugin by Isabella He, with adaptations for cross-runtime use.
+
+**Skills:**
+- `/pgoell-claude-tools:agents-md-improver`: Periodic cold audit. Scores each file against a six-criterion rubric, outputs a quality report, then proposes targeted edits with confirmation.
+- `/pgoell-claude-tools:agents-md-session-capture`: End-of-session warm capture. Reflects on what context was missing, classifies each learning by scope (project-shared, project-local, user-global), and routes additions to the right file. Triggers on `/revise-agents-md` or `/revise-claude-md`.
+
 ## Installation
 
 ### Claude Code
@@ -70,6 +80,7 @@ Aligns Claude Code and Codex artifacts across a project. When Claude Code and Co
 /plugin install research@pgoell-claude-tools
 /plugin install writing@pgoell-claude-tools
 /plugin install runtime-bridge@pgoell-claude-tools
+/plugin install agents-md-management@pgoell-claude-tools
 ```
 
 ### Codex
@@ -87,7 +98,7 @@ codex
 /plugins
 ```
 
-In the picker, install `atlassian`, `google-workspace`, `research`, and `writing`.
+In the picker, install `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, and `agents-md-management`.
 
 `codex plugin marketplace add` accepts `owner/repo[@ref]`, an HTTPS or SSH Git URL, or a local marketplace root directory. The marketplace file lives at `.agents/plugins/marketplace.json` and the per-plugin Codex manifests live at `plugins/<plugin>/.codex-plugin/plugin.json`. Both reuse the same `plugins/<plugin>/skills/` directories as Claude Code, single sourced.
 
@@ -133,3 +144,7 @@ No authentication required. The research plugin uses the host agent's web search
 ### runtime-bridge
 
 No setup required. In any project, ask the skill to align Claude Code and Codex artifacts (e.g. "make this project work with both Claude Code and Codex"). After the first apply that writes into `.codex/`, run `codex` once in that project and accept the trust prompt.
+
+### agents-md-management
+
+No setup required. In any project, ask either skill: "audit my CLAUDE.md files" (cold audit) or "update AGENTS.md with what we learned this session" (warm capture). Operates on local agent-instruction files only; no network or auth.

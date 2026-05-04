@@ -1,0 +1,1 @@
+Audit my global ~/.claude/CLAUDE.md and let me know if any rules belong in a project file instead.

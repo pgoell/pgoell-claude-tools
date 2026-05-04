@@ -44,6 +44,7 @@ tests/
 | `research` | 2.0.0 | `research` (multi-agent pipeline with review gates) |
 | `writing` | 1.6.0 | `writing`, `pyramid`, `tech-doc` |
 | `runtime-bridge` | 0.1.0 | `claude-codex-bridge` |
+| `agents-md-management` | 0.1.0 | `agents-md-improver`, `agents-md-session-capture` |
 
 ## How to Develop a New Skill
 
@@ -67,7 +68,7 @@ Create `.claude-plugin/plugin.json`:
 {
   "name": "<plugin-name>",
   "description": "<one-line description>",
-  "author": { "name": "Pascal Kraus" },
+  "author": { "name": "Pascal Göllner" },
   "license": "MIT",
   "keywords": ["<relevant>", "<keywords>"]
 }
@@ -80,7 +81,7 @@ Create `.codex-plugin/plugin.json` for the same plugin. It must point to the exi
   "name": "<plugin-name>",
   "version": "<same-version-as-claude-plugin>",
   "description": "<one-line description>",
-  "author": { "name": "Pascal Kraus" },
+  "author": { "name": "Pascal Göllner" },
   "license": "MIT",
   "keywords": ["<relevant>", "<keywords>"],
   "skills": "./skills/",
@@ -88,7 +89,7 @@ Create `.codex-plugin/plugin.json` for the same plugin. It must point to the exi
     "displayName": "<Plugin Display Name>",
     "shortDescription": "<short human-facing description>",
     "longDescription": "<long human-facing description>",
-    "developerName": "Pascal Kraus",
+    "developerName": "Pascal Göllner",
     "category": "Productivity",
     "capabilities": ["Interactive", "Write"],
     "defaultPrompt": ["<starter prompt>"],
