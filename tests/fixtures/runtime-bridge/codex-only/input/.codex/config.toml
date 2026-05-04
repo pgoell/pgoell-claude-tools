@@ -1,0 +1,4 @@
+model = "gpt-5"
+
+[shell_environment_policy]
+set = { BAZ = "qux" }
