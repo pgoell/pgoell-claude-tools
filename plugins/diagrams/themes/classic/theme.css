@@ -1,0 +1,56 @@
+/* ============================================================
+   Classic theme, diagram tokens
+   ============================================================
+   Source of truth for the variable block embedded in every
+   diagram that uses this theme. Values come from the upstream
+   Cocoon AI dark palette and the archify light palette (both
+   MIT, see the plugin NOTICE). Contract: ../README.md.
+   ============================================================ */
+
+[data-theme="light"] {
+  --bg:             #f8fafc;
+  --grid:           #e2e8f0;
+  --panel:          #ffffff;
+  --panel-border:   #e2e8f0;
+  --text:           #0f172a;
+  --text-muted:     #64748b;
+  --text-dim:       #94a3b8;
+  --mask:           #ffffff;
+  --arrow:          #64748b;
+  --arrow-emphasis: #059669;
+  --fill-strength:  16%;
+
+  --frontend-stroke:   #0891b2;
+  --backend-stroke:    #059669;
+  --database-stroke:   #7c3aed;
+  --cloud-stroke:      #d97706;
+  --security-stroke:   #e11d48;
+  --messagebus-stroke: #ea580c;
+  --external-stroke:   #64748b;
+
+  --font-diagram: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+[data-theme="dark"] {
+  --bg:             #020617;
+  --grid:           #1e293b;
+  --panel:          rgba(15, 23, 42, 0.5);
+  --panel-border:   #1e293b;
+  --text:           #ffffff;
+  --text-muted:     #94a3b8;
+  --text-dim:       #475569;
+  --mask:           #0f172a;
+  --arrow:          #64748b;
+  --arrow-emphasis: #34d399;
+  --fill-strength:  30%;
+
+  --frontend-stroke:   #22d3ee;
+  --backend-stroke:    #34d399;
+  --database-stroke:   #a78bfa;
+  --cloud-stroke:      #fbbf24;
+  --security-stroke:   #fb7185;
+  --messagebus-stroke: #fb923c;
+  --external-stroke:   #94a3b8;
+
+  --font-diagram: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, Consolas, monospace;
+}

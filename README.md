@@ -2,7 +2,7 @@
 
 Plugin marketplace for Claude Code and Codex.
 
-Bundles 16 plugins across Atlassian, Google Workspace, Databricks, agent-system management, design workflows, research, writing, presentations, terminal control, learning, prose output styles, code minimalism, and more.
+Bundles 17 plugins across Atlassian, Google Workspace, Databricks, agent-system management, design workflows, research, writing, presentations, diagrams, terminal control, learning, prose output styles, code minimalism, and more.
 
 ## Skills at a glance
 
@@ -45,6 +45,7 @@ Bundles 16 plugins across Atlassian, Google Workspace, Databricks, agent-system 
 | `creating-presentations`          | `presentations`           | Build multi-slide HTML decks from brand presets, with a presenter view and an opt-in review-to-done loop                    |
 | `exporting-presentations-to-pptx` | `presentations`           | Convert a finished HTML deck into a native, editable PowerPoint (.pptx) via python-pptx                                     |
 | `extracting-presets`              | `presentations`           | Turn brand material (PPTX templates, PDF guidelines, decks) into reusable presentation presets                              |
+| `creating-diagrams`               | `diagrams`                | Draw architecture, workflow, sequence, data-flow, and lifecycle diagrams as themeable standalone HTML with inline SVG       |
 | `ponytail`                        | `ponytail`                | Force the laziest solution that works: YAGNI, stdlib first, one line over fifty                                             |
 | `ponytail-review`                 | `ponytail`                | Review a diff for over-engineering only: what to delete and what replaces it                                                |
 | `ponytail-audit`                  | `ponytail`                | Whole-repo over-engineering audit, ranked by what to delete, simplify, or replace                                           |
@@ -77,6 +78,7 @@ Skills are invoked from the host agent (Claude Code or Codex) using the fully qu
 /plugin install databricks@pgoell-claude-tools
 /plugin install learning@pgoell-claude-tools
 /plugin install presentations@pgoell-claude-tools
+/plugin install diagrams@pgoell-claude-tools
 /plugin install prose-styles@pgoell-claude-tools
 /plugin install ponytail@pgoell-claude-tools
 ```
@@ -93,7 +95,7 @@ codex
 /plugins
 ```
 
-In the `/plugins` picker, install any combination of `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `frontend-design`, `playground`, `databricks`, `learning`, `presentations`, and `ponytail` (plus `deprecated` if an old workflow needs the archived skill names). `prose-styles` is absent from the Codex picker on purpose, because Codex has no output-style mechanism.
+In the `/plugins` picker, install any combination of `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `frontend-design`, `playground`, `databricks`, `learning`, `presentations`, `diagrams`, and `ponytail` (plus `deprecated` if an old workflow needs the archived skill names). `prose-styles` is absent from the Codex picker on purpose, because Codex has no output-style mechanism.
 
 To pick up updates: `codex plugin marketplace upgrade pgoell-claude-tools` and re-install the affected plugins.
 
@@ -276,6 +278,18 @@ The full presentation lifecycle in one plugin: content design, HTML deck buildin
 - `/presentations:extracting-presets`: Turn brand material (PPTX templates and slide masters, PDF guidelines, icon libraries, example decks) into reusable presets: layered CSS variables, guidance files, assets, and self-contained example slides.
 
 Styling flows through presets (contract in `plugins/presentations/presets/README.md`). The plugin bundles a neutral `default` preset; project-local presets and a preset choice live under `.pgoell/presentations/` (`config.md` plus `presets/<name>/`) at the repo root of the project you are working in. Runtime dependencies (checked lazily, per branch): a Chromium-based browser, `uv`, and a container engine for preset extraction render checks.
+
+### diagrams
+
+Diagrams as one self-contained HTML file: inline SVG, light and dark modes, and SVG, PNG, and clipboard export, with no dependencies or network requests. Combines ideas from [Cocoon-AI/architecture-diagram-generator](https://github.com/Cocoon-AI/architecture-diagram-generator) and [tt-a1i/archify](https://github.com/tt-a1i/archify), both MIT (see `plugins/diagrams/NOTICE`).
+
+**Skills:**
+
+- `/diagrams:creating-diagrams`: Draw an architecture, workflow, sequence, data-flow, or lifecycle diagram from a description, pasted Mermaid, or a repository scan. Plans the layout on a grid, renders both modes in headless Chromium, and reviews the screenshots against a fixed checklist.
+
+Colors come only from theme variables (contract in `plugins/diagrams/themes/README.md`). The plugin bundles a `classic` theme; the skill can derive a brand theme from a `presentations` preset or straight from a PPTX template and saves it under `.pgoell/diagrams/` in the project you are working in.
+
+**Setup:** optional. A Chromium-based browser (Chrome, Chromium, or Edge) enables the visual review step; without one, the skill reports the review as skipped.
 
 ### prose-styles
 

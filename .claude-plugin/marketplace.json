@@ -83,6 +83,12 @@
       "version": "0.1.0"
     },
     {
+      "name": "diagrams",
+      "source": "./plugins/diagrams",
+      "description": "Draw themeable architecture, workflow, sequence, data-flow, and lifecycle diagrams as HTML.",
+      "version": "0.1.0"
+    },
+    {
       "name": "prose-styles",
       "source": "./plugins/prose-styles",
       "description": "Claude Code output styles that govern prose: Orwell's six rules, extreme concision, Simplified Technical English, and a combined house style.",

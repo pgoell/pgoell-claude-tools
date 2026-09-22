@@ -1,0 +1,8 @@
+{
+  "name": "diagrams",
+  "version": "0.1.0",
+  "description": "Draw themeable architecture, workflow, sequence, data-flow, and lifecycle diagrams as standalone HTML with inline SVG",
+  "author": { "name": "Pascal Göllner" },
+  "license": "MIT",
+  "keywords": ["diagrams", "architecture", "svg", "sequence", "workflow", "themes"]
+}

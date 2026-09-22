@@ -1,0 +1,19 @@
+{
+  "name": "diagrams",
+  "version": "0.1.0",
+  "description": "Draw themeable architecture, workflow, sequence, data-flow, and lifecycle diagrams as standalone HTML with inline SVG",
+  "author": { "name": "Pascal Göllner" },
+  "license": "MIT",
+  "keywords": ["diagrams", "architecture", "svg", "sequence", "workflow", "themes"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Diagrams",
+    "shortDescription": "Draw themeable architecture and flow diagrams as HTML",
+    "longDescription": "One skill, creating-diagrams, that draws architecture, workflow, sequence, data-flow, and lifecycle diagrams as self-contained HTML with inline SVG, light and dark modes, and SVG/PNG export. Colors come only from theme variables, and themes can be derived from a presentations preset or a PowerPoint template so diagrams match a corporate brand.",
+    "developerName": "Pascal Göllner",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Write"],
+    "defaultPrompt": ["Draw an architecture diagram of this repository"],
+    "screenshots": []
+  }
+}

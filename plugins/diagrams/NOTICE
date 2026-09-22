@@ -1,0 +1,58 @@
+diagrams
+Copyright 2026 Pascal Göllner
+
+This plugin combines ideas and values from two MIT-licensed upstream
+projects. No upstream file is vendored verbatim; the files below were
+written for this plugin and carry upstream design values, structure,
+and rules, restated in this repository's own words.
+
+Upstream 1: Cocoon-AI/architecture-diagram-generator
+  https://github.com/Cocoon-AI/architecture-diagram-generator
+  commit 4b9087d55268c79a935105439dbcd37b630fc3f3 at time of adaptation
+  MIT License, Copyright (c) 2025 Cocoon AI
+
+Upstream 2: tt-a1i/archify (itself based on upstream 1)
+  https://github.com/tt-a1i/archify
+  commit 1bb61c69538e37d80793b25843f620e55469f3a2 at time of adaptation
+  MIT License, Copyright (c) 2026 tt-a1i (Archify), Copyright (c) 2025 Cocoon AI
+
+Per-file mapping:
+
+  - skills/creating-diagrams/references/template.html
+      Page layout (header, diagram card, summary cards, footer), the
+      opaque mask technique, grid pattern, arrow marker geometry, and
+      SVG text sizes follow upstream 1's resources/template.html. The
+      semantic class vocabulary (c-*, a-*, t-*), the CSS custom property
+      names (--bg, --mask, --<type>-fill, --<type>-stroke), and the
+      [data-theme] light/dark switch follow upstream 2's
+      archify/assets/template.html. The export code, per-color markers,
+      color-mix() fills, and the THEME block are original.
+  - themes/classic/theme.css
+      Dark stroke and neutral values from upstream 1's SKILL.md palette;
+      light values from upstream 2's classic light palette, with the
+      light --arrow darkened from #94a3b8 to #64748b to meet the 3:1
+      contrast floor.
+  - skills/creating-diagrams/references/diagram-types.md
+      The five diagram types, the seven component types, and the
+      lifecycle state-to-color mapping follow upstream 2's SKILL.md and
+      authoring contract; boundary styles (region, security group) follow
+      upstream 1's SKILL.md.
+  - skills/creating-diagrams/references/layout-and-review.md
+      The 40px minimum gap and legend-outside-boundaries rule follow
+      upstream 1's SKILL.md. The label width estimate, segment length
+      minimums, main-path rule, review checks, and repair order are
+      adapted from upstream 2's SKILL.md and
+      references/authoring-contract.md, reworked from a CLI validator
+      into a manual screenshot review.
+
+Original work under this repository's MIT license: SKILL.md,
+references/theming.md, themes/README.md, README.md, both plugin
+manifests, and every part of the files above not attributed here.
+
+Not carried over from upstream 2: its Node CLI, JSON schemas,
+renderers, viewer runtime, embedded JetBrains Mono font (OFL 1.1), and
+brand-mark icons (Simple Icons with mixed per-mark licenses). None of
+those bytes ship in this plugin.
+
+No em-dash or en-dash substitution clause applies: no upstream text
+was copied verbatim.
