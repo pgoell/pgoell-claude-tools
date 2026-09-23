@@ -85,7 +85,7 @@
     {
       "name": "diagrams",
       "source": "./plugins/diagrams",
-      "description": "Draw themeable architecture, workflow, sequence, data-flow, and lifecycle diagrams as HTML.",
+      "description": "Draw validated, themeable architecture and flow diagrams as interactive HTML.",
       "version": "0.1.0"
     },
     {

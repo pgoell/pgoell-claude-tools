@@ -2,7 +2,10 @@
   "json": {},
   "markdown": {},
   "toml": {},
-  "excludes": ["mise.lock"],
+  "excludes": [
+    "mise.lock",
+    "plugins/diagrams/skills/creating-diagrams/engine/**"
+  ],
   "plugins": [
     "https://plugins.dprint.dev/json-0.23.0.wasm",
     "https://plugins.dprint.dev/markdown-0.22.1.wasm",

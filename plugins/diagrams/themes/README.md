@@ -31,20 +31,23 @@ Required in both blocks:
 
 Optional:
 
-| Variable                             | Default when absent                              |
-| ------------------------------------ | ------------------------------------------------ |
-| `--<type>-fill` for any of the seven | `color-mix()` of the stroke at `--fill-strength` |
-| `--region-fill`                      | Cloud stroke at 5%                               |
-| `--lane-fill`, `--lane-stroke`       | Text color at 3%; `--panel-border`               |
-| `--font-ui`                          | `--font-diagram` (page header, cards, footer)    |
+| Variable                                                                                     | Default when absent                                                     |
+| -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `--<type>-fill` for any of the seven                                                         | `color-mix()` of the stroke at `--fill-strength`                        |
+| `--region-fill`                                                                              | Cloud stroke at 5%                                                      |
+| `--lane-fill`, `--lane-stroke`                                                               | Text color at 3%; `--panel-border`                                      |
+| `--font-ui`                                                                                  | `--font-diagram` (page header, cards, footer; hand-drawn template only) |
+| `--text-faint`                                                                               | `--text-muted` (engine viewer chrome)                                   |
+| `--toolbar-bg`, `--toolbar-border`, `--toolbar-text`, `--toolbar-hover`, `--toolbar-menu-bg` | Panel, border, text, and mask colors (engine viewer toolbar)            |
 
 ## Rules
 
 - Theme names are kebab-case and name the brand or look, for example `acme-corp` or `classic`.
 - Values only. No selectors other than the two `[data-theme]` blocks, no imports, no `url()`, no web fonts. A diagram must render offline, so fonts come from the stack and fall back to system faces.
+- The seven `*-stroke` values and `--text` are plain `#rrggbb` or `rgb()`/`rgba()`. The engine computes fills from them and rejects `var()` or `color-mix()` there.
 - Contrast floors, checked in both modes: `--text` and `--text-muted` at least 4.5:1 against `--bg` and `--mask`; every `*-stroke` and `--arrow` at least 3:1 against `--bg`. A brand color that fails (bright greens and yellows on white often do) gets a darker step of the same hue for that mode, recorded in the manifest.
 - The seven semantic strokes stay distinguishable from each other: no two within the same hue family unless one is `--external-stroke`.
-- Diagrams embed a verbatim copy of `theme.css`; the theme file stays the source of truth. Changing a bundled theme is a plugin change and bumps the plugin version.
+- Consumers: the engine reads `theme.css` through `--theme` and embeds a completed copy in each artifact; the hand-drawn template embeds a verbatim copy between its `THEME` markers. Either way the theme file stays the source of truth. Changing a bundled theme is a plugin change and bumps the plugin version.
 
 ## Selection
 

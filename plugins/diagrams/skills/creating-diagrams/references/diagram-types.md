@@ -1,5 +1,7 @@
 # Diagram types
 
+> Fallback path only. With Node 18+, the bundled engine lays out, routes, and validates diagrams itself (see `SKILL.md`); use this file when drawing SVG by hand.
+
 Five types share one SVG vocabulary (the classes in `template.html`). Pick the type from the question the reader asks, not from the input format.
 
 | Type         | Answers                              | Use for                                                          |

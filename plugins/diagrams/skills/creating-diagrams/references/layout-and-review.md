@@ -1,5 +1,7 @@
 # Layout and review
 
+> Fallback path only. With Node 18+, the bundled engine lays out, routes, and validates diagrams itself (see `SKILL.md`); use this file when drawing SVG by hand.
+
 There is no layout engine. You place every element, so place it from grid math, not by eye, and then check the render in a browser. The rules below turn the two failure modes of hand-placed SVG (overlaps and tangled edges) into arithmetic you can verify.
 
 ## 1. Plan on a grid

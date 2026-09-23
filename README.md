@@ -45,7 +45,7 @@ Bundles 17 plugins across Atlassian, Google Workspace, Databricks, agent-system 
 | `creating-presentations`          | `presentations`           | Build multi-slide HTML decks from brand presets, with a presenter view and an opt-in review-to-done loop                    |
 | `exporting-presentations-to-pptx` | `presentations`           | Convert a finished HTML deck into a native, editable PowerPoint (.pptx) via python-pptx                                     |
 | `extracting-presets`              | `presentations`           | Turn brand material (PPTX templates, PDF guidelines, decks) into reusable presentation presets                              |
-| `creating-diagrams`               | `diagrams`                | Draw architecture, workflow, sequence, data-flow, and lifecycle diagrams as themeable standalone HTML with inline SVG       |
+| `creating-diagrams`               | `diagrams`                | Draw validated architecture, workflow, sequence, data-flow, and lifecycle diagrams as themeable interactive HTML            |
 | `ponytail`                        | `ponytail`                | Force the laziest solution that works: YAGNI, stdlib first, one line over fifty                                             |
 | `ponytail-review`                 | `ponytail`                | Review a diff for over-engineering only: what to delete and what replaces it                                                |
 | `ponytail-audit`                  | `ponytail`                | Whole-repo over-engineering audit, ranked by what to delete, simplify, or replace                                           |
@@ -281,15 +281,15 @@ Styling flows through presets (contract in `plugins/presentations/presets/README
 
 ### diagrams
 
-Diagrams as one self-contained HTML file: inline SVG, light and dark modes, and SVG, PNG, and clipboard export, with no dependencies or network requests. Combines ideas from [Cocoon-AI/architecture-diagram-generator](https://github.com/Cocoon-AI/architecture-diagram-generator) and [tt-a1i/archify](https://github.com/tt-a1i/archify), both MIT (see `plugins/diagrams/NOTICE`).
+Diagrams as one self-contained HTML file, rendered by a bundled engine that validates layout geometry before delivery. The viewer has light and dark modes, pan and zoom, search, focus, guided views, presentation mode, and PNG, JPEG, WebP, SVG, and WebM export, with no network requests. The engine is a vendored copy of [tt-a1i/archify](https://github.com/tt-a1i/archify) (MIT); the hand-drawn fallback adapts [Cocoon-AI/architecture-diagram-generator](https://github.com/Cocoon-AI/architecture-diagram-generator) (MIT). See `plugins/diagrams/NOTICE`.
 
 **Skills:**
 
-- `/diagrams:creating-diagrams`: Draw an architecture, workflow, sequence, data-flow, or lifecycle diagram from a description, pasted Mermaid, or a repository scan. Plans the layout on a grid, renders both modes in headless Chromium, and reviews the screenshots against a fixed checklist.
+- `/diagrams:creating-diagrams`: Draw an architecture, workflow, sequence, data-flow, or lifecycle diagram from a description, pasted Mermaid, or a repository scan. The agent writes a typed JSON spec; the engine lays it out, routes edges, runs nine geometry checks, delivers the HTML with SHA-256 receipts, and checks it in headless Chrome. It can also diff two architecture versions and verify cited source lines against the repo.
 
-Colors come only from theme variables (contract in `plugins/diagrams/themes/README.md`). The plugin bundles a `classic` theme; the skill can derive a brand theme from a `presentations` preset or straight from a PPTX template and saves it under `.pgoell/diagrams/` in the project you are working in.
+Colors come only from themes (contract in `plugins/diagrams/themes/README.md`). The plugin bundles a `classic` theme; the skill can derive a brand theme from a `presentations` preset or straight from a PPTX template and saves it under `.pgoell/diagrams/` in the project you are working in.
 
-**Setup:** optional. A Chromium-based browser (Chrome, Chromium, or Edge) enables the visual review step; without one, the skill reports the review as skipped.
+**Setup:** Node 18 or later runs the engine (no install step); without it, the skill falls back to hand-drawn SVG. A Chromium-based browser (Chrome, Chromium, or Edge) enables the browser check and visual review.
 
 ### prose-styles
 

@@ -5,8 +5,8 @@ The theme contract (variables, rules, selection order) lives in `../../../themes
 ## Applying a theme
 
 1. Resolve the theme in the contract's selection order.
-2. Copy the resolved `theme.css` verbatim between the `THEME:START` and `THEME:END` comments in the diagram, replacing the classic block.
-3. Never write a color literal into the SVG or the page CSS. Every color comes from a variable, which is what makes a theme swap a one-block edit.
+2. Engine path: pass `--theme <theme directory>` to `validate`, `deliver`, `preview`, and `render` (omit it for `classic`, the engine's built-in palette). The engine injects the theme as one `<style>` block that wins over all four built-in looks, and computes any fill, lane, region, and toolbar colors the theme leaves out.
+3. Fallback path: copy the resolved `theme.css` verbatim between the `THEME:START` and `THEME:END` comments of the hand-drawn template, replacing the classic block. Never write a color literal into the SVG or the page CSS.
 4. State which theme you used, and where it came from, in your reply.
 
 ## Deriving a theme from brand material
@@ -39,9 +39,14 @@ The primary brand color goes to `--backend-stroke` because services are the most
 Assign in this order: backend, security, external, then frontend, database, cloud, messagebus. When a table cell yields a color whose hue sits within 30 degrees of one already assigned (corporate palettes often hold three greens or two reds), the contract's distinct-hue rule wins: skip that color and take the next candidate. Candidates, in order:
 
 1. The cell's own source from the table.
-2. The remaining raw brand colors, skipping any that fail contrast in both modes (a near-black used as the dark `--bg` is useless as a stroke).
+2. The remaining raw brand colors. Skip near-neutrals (inks, off-whites, grays; saturation under about 15%, where hue means nothing) and any color the theme uses as a background in either mode.
 3. The preset's `--status-*` colors (info, warning, success).
-4. The classic theme's stroke for the same role, darkened or lightened to pass contrast. This is off-brand; say so in the manifest.
+4. The classic theme's stroke for the same role.
+5. Any classic stroke (including other roles), then a hand-picked hue, at least 30 degrees from every hue already assigned.
+
+Candidates from 4 and 5 are off-brand; say so in the manifest. A candidate that fails contrast in a mode gets a darker (light mode) or lighter (dark mode) step of the same hue for that mode, per the contrast rules below.
+
+`--arrow` and `--external-stroke` both default to `--fg-muted`. When they come out identical, move `--external-stroke` one lightness step away so external nodes and plain edges stay distinguishable.
 
 Record every skip and every fallback in the manifest.
 
@@ -49,16 +54,18 @@ Dark mode:
 
 - From a preset: its `.dark` or `[data-theme="dark"]` scope supplies `--bg`, `--fg`, and the muted steps. When the preset has no dark scope, use its deepest brand color (`--bg-inverse`, a navy, a deep green) as `--bg`.
 - From a PPTX: `dk2` as `--bg` when it is dark enough for white text, otherwise `dk1`.
-- Strokes: reuse the light-mode hues, lightened until each clears 3:1 on the dark `--bg`. Set `--fill-strength` to about 30%.
-- `--mask` in dark mode is an opaque step slightly lighter than `--bg`. Never use an `rgba()` value: the mask exists to hide lines.
-- Preset values in `rgba()` (dark scopes often use them for muted text, surfaces, and borders): flatten each over the mode's `--bg` to an opaque hex before checking contrast. `--text-*` and `--panel-border` may stay `rgba()` in the theme, `--mask` never.
+- Strokes: per role, use the raw brand color when it clears 3:1 on the dark `--bg` (a ramp step used only because the raw color failed on light does not carry over); otherwise lighten the same hue. Aim for about 3.5:1, since exactly 3:1 looks dim. Set `--fill-strength` to about 30%.
+- `--mask` in dark mode is an opaque step slightly lighter than `--bg` (for example, white at 6% flattened over `--bg`). Never use an `rgba()` value: the mask exists to hide lines.
+- Preset values in `rgba()` (dark scopes often use them for muted text, surfaces, and borders): flatten each over the mode's `--bg` to an opaque hex before checking contrast. Everything may stay `rgba()` in the theme except the seven strokes, `--text`, and `--mask`.
+
+Stroke values must be plain `#rrggbb` or `rgb()`/`rgba()`: the engine derives fills from them and rejects `var()` or `color-mix()`.
 
 Fonts: diagrams render offline, so name the brand face first and follow it with system faces (`"Brand Sans", "Segoe UI", Arial, sans-serif`). Where the brand face is not installed, the diagram falls back to the system face; say so when you hand over a screenshot. A monospace face is not required. Sans-serif corporate faces work fine at the template's sizes.
 
 Contrast: check every pair the contract names, in both modes, before saving. A throwaway script is the quickest check:
 
 ```bash
-uv run python -c '
+python3 -c '
 def l(h):
     c=[int(h[i:i+2],16)/255 for i in (1,3,5)]
     c=[x/12.92 if x<=0.03928 else ((x+0.055)/1.055)**2.4 for x in c]
@@ -80,6 +87,6 @@ Save the result:
    Name: <name>
    ```
 
-4. Render the template's sample diagram with the new theme in both modes (see `layout-and-review.md`, section 6) and look at it before using the theme for real work.
+4. Try the theme before real work: `node "$ENGINE/bin/archify.mjs" render architecture "$ENGINE/examples/web-app.architecture.json" <scratch>/theme-check.html --theme .pgoell/diagrams/themes/<name>`, screenshot it in both modes (`--force-dark-mode` for dark), and look. Without Node, render the hand-drawn template's sample instead.
 
 A derived theme is user-owned: it lives in the working repo, not in the plugin, and needs no plugin change.

@@ -225,7 +225,7 @@
       "category": "Productivity",
       "interface": {
         "displayName": "Diagrams",
-        "shortDescription": "Draw themeable architecture and flow diagrams as HTML"
+        "shortDescription": "Draw validated, themeable diagrams as interactive HTML"
       }
     },
     {
