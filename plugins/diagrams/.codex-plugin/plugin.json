@@ -1,0 +1,33 @@
+{
+  "name": "diagrams",
+  "version": "0.1.0",
+  "description": "Draw validated, themeable architecture, workflow, sequence, data-flow, and lifecycle diagrams as interactive HTML",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "license": "MIT",
+  "keywords": [
+    "diagrams",
+    "architecture",
+    "svg",
+    "sequence",
+    "workflow",
+    "themes"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Diagrams",
+    "shortDescription": "Draw validated, themeable diagrams as interactive HTML",
+    "longDescription": "One skill, creating-diagrams, that draws architecture, workflow, sequence, data-flow, and lifecycle diagrams as self-contained interactive HTML. A bundled engine (vendored archify, Node 18+, no install) lays out and routes the diagram, runs geometry checks, and delivers it with receipts; the viewer offers light and dark modes, search, focus, guided views, and PNG/JPEG/WebP/SVG/WebM export. Colors come only from themes, which can be derived from a presentations preset or a PowerPoint template so diagrams match a corporate brand.",
+    "developerName": "Pascal Göllner",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Draw an architecture diagram of this repository"
+    ],
+    "screenshots": []
+  }
+}

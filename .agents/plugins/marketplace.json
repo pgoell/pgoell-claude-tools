@@ -213,6 +213,22 @@
       }
     },
     {
+      "name": "diagrams",
+      "source": {
+        "source": "local",
+        "path": "./plugins/diagrams"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity",
+      "interface": {
+        "displayName": "Diagrams",
+        "shortDescription": "Draw validated, themeable diagrams as interactive HTML"
+      }
+    },
+    {
       "name": "ponytail",
       "source": {
         "source": "url",

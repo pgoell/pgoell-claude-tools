@@ -1,0 +1,108 @@
+diagrams
+Copyright 2026 Pascal Göllner
+
+This plugin vendors the archify diagram engine and adapts design values
+from its upstream, Cocoon AI's architecture diagram generator. Both are
+MIT licensed.
+
+Upstream 1: tt-a1i/archify
+  https://github.com/tt-a1i/archify
+  commit 1bb61c69538e37d80793b25843f620e55469f3a2 at time of port
+  (skill package version 2.17.0-dev.1)
+  MIT License, Copyright (c) 2026 tt-a1i (Archify),
+  Copyright (c) 2025 Cocoon AI. Vendored verbatim at
+  skills/creating-diagrams/engine/LICENSE.
+
+Upstream 2: Cocoon-AI/architecture-diagram-generator
+  https://github.com/Cocoon-AI/architecture-diagram-generator
+  commit 4b9087d55268c79a935105439dbcd37b630fc3f3 at time of adaptation
+  MIT License, Copyright (c) 2025 Cocoon AI
+
+Vendored from upstream 1 (archify/ in the upstream repo maps to
+skills/creating-diagrams/engine/ here):
+
+  - LICENSE, THIRD_PARTY_NOTICES.md
+  - assets/template.html, assets/JetBrainsMono-OFL.txt (the template
+      embeds JetBrains Mono under the SIL Open Font License 1.1)
+  - bin/archify.mjs, bin/preview.mjs, bin/visual-check.mjs,
+      bin/open-artifact.mjs
+  - brand-marks/catalog.json, brand-marks/README.md
+  - delta/architecture-delta.mjs, migrations/workflow-v2.mjs,
+      recipes/scenarios.mjs
+  - references/*.md
+  - renderers/** (every renderer and shared module)
+  - schemas/*.json, schemas/README.md
+  - scripts/check-render-output.mjs, scripts/render-examples.mjs
+  - examples/*.json
+
+Modifications to vendored files:
+
+  - renderers/shared/brand-theme.mjs (new file, original work under
+      MIT): reads a diagrams-plugin theme.css and returns the style
+      block described below.
+  - renderers/shared/cli.mjs: imports brand-theme.mjs and injects its
+      style block before </head> when ARCHIFY_THEME is set.
+  - bin/archify.mjs: accepts a global --theme <path> flag and exports it
+      to the renderers as ARCHIFY_THEME.
+  - assets/template.html: adds --region-fill and --font-diagram tokens
+      to the classic palette; body text, exported SVG text, and region
+      fills read those tokens instead of literals; the classic light
+      --arrow changes from #94a3b8 to #64748b (2.45:1 to 4.55:1 against
+      the light background).
+  - brand-marks/catalog.json and renderers/shared/generated-brand-marks.mjs:
+      the vue, jenkins, and rust marks are removed because their
+      recorded licenses are non-commercial (CC-BY-NC-SA-4.0) or
+      share-alike (CC-BY-SA-3.0, CC-BY-SA-4.0). THIRD_PARTY_NOTICES.md
+      records the removal.
+  - package.json: trimmed to name, version, type, license, bin, and
+      engines; development scripts and devDependencies removed.
+  - Em-dash (U+2014) and en-dash (U+2013) substitution across every
+      vendored text file, per the rules below.
+
+Not vendored: the upstream SKILL.md (this plugin's SKILL.md is
+original, adapted from its workflow), the update notifier
+(scripts/check-update.mjs, skill-release.json), development generators
+(scripts/generate-*.mjs, scripts/update-contract.mjs), the test suite,
+package-lock.json, and the pre-rendered example HTML files (the engine's
+`examples` command regenerates them).
+
+Em-dash and en-dash substitution rules applied at port time:
+
+  - <space>U+2014<space> as a sentence pause in prose or comments
+    becomes ", " (comma + space)
+  - <label><space>U+2014<space><description> in labelled bullets,
+    headings, and comment banners becomes ": " (colon + space)
+  - <digit>U+2013<digit> in numeric ranges becomes "-" (hyphen)
+  - U+2014 or U+2013 inside a JavaScript string, template literal,
+    regular expression, or JSON string becomes the escape \u2014 or
+    \u2013, so runtime output (diagnostic messages, viewer labels)
+    stays byte-identical
+
+Verification at port time: the upstream test suite (1398 tests) ran
+against the modified engine. Every render, geometry, validation,
+routing, and export test passed. The failures were limited to tests
+asserting the exact upstream comment wording, checked-in artifacts
+rendered from the unmodified template, the exact upstream brand-mark
+license inventory, and two release-staging tests that also fail on the
+unmodified upstream in this environment.
+
+Adapted from upstream 2 and upstream 1 without vendoring (original text
+in this repository's words, MIT):
+
+  - skills/creating-diagrams/references/template.html: the hand-drawn
+      fallback. Page layout, opaque mask technique, grid pattern, arrow
+      marker geometry, and SVG text sizes follow upstream 2's
+      resources/template.html; the semantic class names and CSS custom
+      property names follow upstream 1's template.
+  - themes/classic/theme.css: dark values from upstream 2's palette,
+      light values from upstream 1's classic light palette, with the
+      same --arrow contrast fix as above.
+  - skills/creating-diagrams/references/diagram-types.md and
+      references/layout-and-review.md: the component taxonomy, spacing
+      rules, review checks, and repair order restate rules from both
+      upstreams for hand drawing.
+
+Original work under this repository's MIT license: SKILL.md,
+references/theming.md, themes/README.md, README.md, both plugin
+manifests, renderers/shared/brand-theme.mjs, and every part of the
+files above not attributed here.

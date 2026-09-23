@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[DIAGRAM TITLE]</title>
+<script>
+  /* Resolve the mode before first paint: ?theme= wins, then the saved choice, then the OS. */
+  (function () {
+    var mode = new URLSearchParams(location.search).get('theme');
+    try { mode = mode || localStorage.getItem('diagram-theme'); } catch (e) {}
+    mode = mode || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.dataset.theme = mode;
+  })();
+</script>
+<style>
+  /* THEME:START (replace this block with the resolved theme.css, verbatim) */
+  [data-theme="light"] {
+    --bg:             #f8fafc;
+    --grid:           #e2e8f0;
+    --panel:          #ffffff;
+    --panel-border:   #e2e8f0;
+    --text:           #0f172a;
+    --text-muted:     #64748b;
+    --text-dim:       #94a3b8;
+    --mask:           #ffffff;
+    --arrow:          #64748b;
+    --arrow-emphasis: #059669;
+    --fill-strength:  16%;
+
+    --frontend-stroke:   #0891b2;
+    --backend-stroke:    #059669;
+    --database-stroke:   #7c3aed;
+    --cloud-stroke:      #d97706;
+    --security-stroke:   #e11d48;
+    --messagebus-stroke: #ea580c;
+    --external-stroke:   #64748b;
+
+    --font-diagram: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  [data-theme="dark"] {
+    --bg:             #020617;
+    --grid:           #1e293b;
+    --panel:          rgba(15, 23, 42, 0.5);
+    --panel-border:   #1e293b;
+    --text:           #ffffff;
+    --text-muted:     #94a3b8;
+    --text-dim:       #475569;
+    --mask:           #0f172a;
+    --arrow:          #64748b;
+    --arrow-emphasis: #34d399;
+    --fill-strength:  30%;
+
+    --frontend-stroke:   #22d3ee;
+    --backend-stroke:    #34d399;
+    --database-stroke:   #a78bfa;
+    --cloud-stroke:      #fbbf24;
+    --security-stroke:   #fb7185;
+    --messagebus-stroke: #fb923c;
+    --external-stroke:   #94a3b8;
+
+    --font-diagram: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  /* THEME:END */
+
+  /* ---------- Page chrome (reads only theme tokens) ---------- */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: var(--font-ui, var(--font-diagram));
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; }
+  .header-text { flex: 1; min-width: 0; }
+  h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.2; }
+  .subtitle { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.375rem; }
+  .toolbar { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .toolbar button {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    color: var(--text-muted);
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    font: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+  }
+  .toolbar button:hover { color: var(--text); border-color: var(--text-dim); }
+  .diagram {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    overflow-x: auto;
+  }
+  .diagram svg { display: block; width: 100%; height: auto; }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .card { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 0.75rem; padding: 1.25rem; }
+  .card h3 { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.75rem; }
+  .card h3::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--dot, var(--text-dim)); }
+  .card ul { list-style: none; color: var(--text-muted); font-size: 0.75rem; line-height: 1.55; }
+  .card li + li { margin-top: 0.375rem; }
+  .card code { color: var(--text); }
+  .dot-frontend   { --dot: var(--frontend-stroke); }
+  .dot-backend    { --dot: var(--backend-stroke); }
+  .dot-database   { --dot: var(--database-stroke); }
+  .dot-cloud      { --dot: var(--cloud-stroke); }
+  .dot-security   { --dot: var(--security-stroke); }
+  .dot-messagebus { --dot: var(--messagebus-stroke); }
+  .dot-external   { --dot: var(--external-stroke); }
+  .footer { text-align: center; margin-top: 1.5rem; color: var(--text-dim); font-size: 0.75rem; }
+  @media (max-width: 640px) { body { padding: 1rem; } .header { flex-direction: column; } }
+  @media print { .toolbar { display: none; } }
+
+  /* ---------- SVG vocabulary (semantic classes only, no inline colors) ---------- */
+  svg text { font-family: var(--font-diagram); }
+  .c-grid { fill: none; stroke: var(--grid); stroke-width: 0.5; }
+  .c-mask { fill: var(--mask); stroke: none; }
+
+  /* Nodes: stroke from the theme, fill mixed from the stroke unless the theme pins one. */
+  .c-frontend, .c-backend, .c-database, .c-cloud, .c-security, .c-messagebus, .c-external { stroke-width: 1.5; }
+  .c-frontend   { stroke: var(--frontend-stroke);   fill: var(--frontend-fill,   color-mix(in srgb, var(--frontend-stroke)   var(--fill-strength), transparent)); }
+  .c-backend    { stroke: var(--backend-stroke);    fill: var(--backend-fill,    color-mix(in srgb, var(--backend-stroke)    var(--fill-strength), transparent)); }
+  .c-database   { stroke: var(--database-stroke);   fill: var(--database-fill,   color-mix(in srgb, var(--database-stroke)   var(--fill-strength), transparent)); }
+  .c-cloud      { stroke: var(--cloud-stroke);      fill: var(--cloud-fill,      color-mix(in srgb, var(--cloud-stroke)      var(--fill-strength), transparent)); }
+  .c-security   { stroke: var(--security-stroke);   fill: var(--security-fill,   color-mix(in srgb, var(--security-stroke)   var(--fill-strength), transparent)); }
+  .c-messagebus { stroke: var(--messagebus-stroke); fill: var(--messagebus-fill, color-mix(in srgb, var(--messagebus-stroke) var(--fill-strength), transparent)); }
+  .c-external   { stroke: var(--external-stroke);   fill: var(--external-fill,   color-mix(in srgb, var(--external-stroke)   var(--fill-strength), transparent)); }
+  .v-emphasis { stroke-width: 2.5; }
+  .v-dashed   { stroke-dasharray: 4 3; }
+  .v-outline  { fill: none; }
+
+  /* Boundaries */
+  .b-region   { fill: var(--region-fill, color-mix(in srgb, var(--cloud-stroke) 5%, transparent)); stroke: var(--cloud-stroke); stroke-width: 1; stroke-dasharray: 8 4; }
+  .b-security { fill: none; stroke: var(--security-stroke); stroke-width: 1; stroke-dasharray: 4 4; }
+  .b-group    { fill: none; stroke: var(--external-stroke); stroke-width: 1; stroke-dasharray: 6 4; }
+  .b-lane     { fill: var(--lane-fill, color-mix(in srgb, var(--text) 3%, transparent)); stroke: var(--lane-stroke, var(--panel-border)); stroke-width: 1; }
+  .b-lifeline { fill: none; stroke: var(--text-dim); stroke-width: 1; stroke-dasharray: 4 4; }
+
+  /* Edges */
+  .a-default, .a-emphasis, .a-async, .a-security, .a-return { fill: none; stroke-width: 1.5; }
+  .a-default  { stroke: var(--arrow); }
+  .a-emphasis { stroke: var(--arrow-emphasis); stroke-width: 2; }
+  .a-async    { stroke: var(--messagebus-stroke); stroke-dasharray: 4 4; }
+  .a-security { stroke: var(--security-stroke); stroke-dasharray: 5 5; }
+  .a-return   { stroke: var(--arrow); stroke-dasharray: 3 3; }
+  .m-default  { fill: var(--arrow); }
+  .m-emphasis { fill: var(--arrow-emphasis); }
+  .m-async    { fill: var(--messagebus-stroke); }
+  .m-security { fill: var(--security-stroke); }
+
+  /* Text */
+  .t-name     { fill: var(--text); font-size: 11px; font-weight: 600; }
+  .t-sub      { fill: var(--text-muted); font-size: 9px; }
+  .t-tag      { fill: var(--text-dim); font-size: 8px; }
+  .t-edge     { fill: var(--text-muted); font-size: 8px; }
+  .t-legend   { fill: var(--text-muted); font-size: 8px; }
+  .t-boundary { font-size: 10px; font-weight: 600; }
+  .t-title    { fill: var(--text); font-size: 12px; font-weight: 700; }
+  .t-frontend   { fill: var(--frontend-stroke); }
+  .t-backend    { fill: var(--backend-stroke); }
+  .t-database   { fill: var(--database-stroke); }
+  .t-cloud      { fill: var(--cloud-stroke); }
+  .t-security   { fill: var(--security-stroke); }
+  .t-messagebus { fill: var(--messagebus-stroke); }
+  .t-external   { fill: var(--external-stroke); }
+</style>
+</head>
+<body>
+<div class="container">
+  <header class="header">
+    <div class="header-text">
+      <h1>[DIAGRAM TITLE]</h1>
+      <p class="subtitle">[One sentence: what this diagram answers]</p>
+    </div>
+    <div class="toolbar">
+      <button type="button" onclick="toggleTheme()">Theme</button>
+      <button type="button" onclick="exportSVG()">SVG</button>
+      <button type="button" onclick="exportPNG()">PNG</button>
+      <button type="button" onclick="copyPNG(this)">Copy</button>
+    </div>
+  </header>
+
+  <main class="diagram">
+    <!-- Sample architecture diagram. Replace everything inside <svg> except <defs> and the grid rect. -->
+    <svg id="diagram" viewBox="0 0 860 410" role="img" aria-labelledby="diagram-title diagram-desc" xmlns="http://www.w3.org/2000/svg">
+      <title id="diagram-title">[DIAGRAM TITLE]</title>
+      <desc id="diagram-desc">[One sentence describing the main path, for screen readers]</desc>
+      <defs>
+        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path class="c-grid" d="M 40 0 L 0 0 0 40"/>
+        </pattern>
+        <marker id="arrow-default" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon class="m-default" points="0 0, 10 3.5, 0 7"/></marker>
+        <marker id="arrow-emphasis" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon class="m-emphasis" points="0 0, 10 3.5, 0 7"/></marker>
+        <marker id="arrow-async" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon class="m-async" points="0 0, 10 3.5, 0 7"/></marker>
+        <marker id="arrow-security" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon class="m-security" points="0 0, 10 3.5, 0 7"/></marker>
+      </defs>
+
+      <!-- 1. Background grid -->
+      <rect width="100%" height="100%" fill="url(#grid)"/>
+
+      <!-- 2. Boundaries -->
+      <rect class="b-region" x="210" y="60" width="620" height="280" rx="12"/>
+      <text class="t-boundary t-cloud" x="224" y="80">Cloud region: eu-west-1</text>
+
+      <!-- 3. Edges (drawn before nodes so boxes sit on top) -->
+      <path class="a-emphasis" d="M 170 204 H 250" marker-end="url(#arrow-emphasis)"/>
+      <path class="a-emphasis" d="M 390 204 H 450" marker-end="url(#arrow-emphasis)"/>
+      <path class="a-emphasis" d="M 590 204 H 650" marker-end="url(#arrow-emphasis)"/>
+      <path class="a-security" d="M 520 174 V 134" marker-end="url(#arrow-security)"/>
+      <path class="a-async" d="M 520 234 V 274" marker-end="url(#arrow-async)"/>
+      <path class="a-async" d="M 590 296 H 650" marker-end="url(#arrow-async)"/>
+      <path class="a-default" d="M 720 274 V 234" marker-end="url(#arrow-default)"/>
+
+      <!-- 4. Edge labels (mask rect first, width = 6.5px per character + 13px) -->
+      <rect class="c-mask" x="400" y="190" width="39" height="11" rx="2"/>
+      <text class="t-edge" x="420" y="198" text-anchor="middle">REST</text>
+      <rect class="c-mask" x="601" y="190" width="39" height="11" rx="2"/>
+      <text class="t-edge" x="620" y="198" text-anchor="middle">SQL</text>
+      <text class="t-edge" x="528" y="158">JWT</text>
+      <text class="t-edge" x="528" y="258">enqueue</text>
+      <text class="t-edge" x="728" y="258">write</text>
+
+      <!-- 5. Nodes: opaque mask, styled rect, name, sublabel -->
+      <rect class="c-mask" x="30" y="174" width="140" height="60" rx="6"/>
+      <rect class="c-external" x="30" y="174" width="140" height="60" rx="6"/>
+      <text class="t-name" x="100" y="200" text-anchor="middle">Users</text>
+      <text class="t-sub" x="100" y="216" text-anchor="middle">browser, mobile</text>
+
+      <rect class="c-mask" x="250" y="174" width="140" height="60" rx="6"/>
+      <rect class="c-cloud" x="250" y="174" width="140" height="60" rx="6"/>
+      <text class="t-name" x="320" y="200" text-anchor="middle">CDN</text>
+      <text class="t-sub" x="320" y="216" text-anchor="middle">edge cache</text>
+
+      <rect class="c-mask" x="450" y="174" width="140" height="60" rx="6"/>
+      <rect class="c-backend v-emphasis" x="450" y="174" width="140" height="60" rx="6"/>
+      <text class="t-name" x="520" y="200" text-anchor="middle">API</text>
+      <text class="t-sub" x="520" y="216" text-anchor="middle">Node.js :8080</text>
+
+      <rect class="c-mask" x="650" y="174" width="140" height="60" rx="6"/>
+      <rect class="c-database" x="650" y="174" width="140" height="60" rx="6"/>
+      <text class="t-name" x="720" y="200" text-anchor="middle">Postgres</text>
+      <text class="t-sub" x="720" y="216" text-anchor="middle">primary store</text>
+
+      <rect class="c-mask" x="450" y="90" width="140" height="44" rx="6"/>
+      <rect class="c-security" x="450" y="90" width="140" height="44" rx="6"/>
+      <text class="t-name" x="520" y="108" text-anchor="middle">Auth</text>
+      <text class="t-sub" x="520" y="122" text-anchor="middle">OIDC</text>
+
+      <rect class="c-mask" x="450" y="274" width="140" height="44" rx="6"/>
+      <rect class="c-messagebus" x="450" y="274" width="140" height="44" rx="6"/>
+      <text class="t-name" x="520" y="292" text-anchor="middle">Queue</text>
+      <text class="t-sub" x="520" y="306" text-anchor="middle">jobs topic</text>
+
+      <rect class="c-mask" x="650" y="274" width="140" height="44" rx="6"/>
+      <rect class="c-backend" x="650" y="274" width="140" height="44" rx="6"/>
+      <text class="t-name" x="720" y="292" text-anchor="middle">Worker</text>
+      <text class="t-sub" x="720" y="306" text-anchor="middle">async jobs</text>
+
+      <!-- 6. Legend: outside every boundary, only for classes this diagram uses -->
+      <rect class="c-external" x="30" y="362" width="16" height="10" rx="2"/><text class="t-legend" x="52" y="370">external</text>
+      <rect class="c-cloud" x="140" y="362" width="16" height="10" rx="2"/><text class="t-legend" x="162" y="370">cloud</text>
+      <rect class="c-backend" x="250" y="362" width="16" height="10" rx="2"/><text class="t-legend" x="272" y="370">backend</text>
+      <rect class="c-database" x="360" y="362" width="16" height="10" rx="2"/><text class="t-legend" x="382" y="370">database</text>
+      <rect class="c-security" x="470" y="362" width="16" height="10" rx="2"/><text class="t-legend" x="492" y="370">security</text>
+      <rect class="c-messagebus" x="580" y="362" width="16" height="10" rx="2"/><text class="t-legend" x="602" y="370">message bus</text>
+      <path class="a-emphasis" d="M 30 391 H 46"/><text class="t-legend" x="52" y="394">main path</text>
+      <path class="a-default" d="M 140 391 H 156"/><text class="t-legend" x="162" y="394">sync call</text>
+      <path class="a-async" d="M 250 391 H 266"/><text class="t-legend" x="272" y="394">async event</text>
+      <path class="a-security" d="M 360 391 H 376"/><text class="t-legend" x="382" y="394">auth flow</text>
+    </svg>
+  </main>
+
+  <!-- 0 to 4 cards. Each card answers one question the diagram raises; drop the section if none does. -->
+  <section class="cards">
+    <article class="card dot-backend">
+      <h3>[Card title]</h3>
+      <ul>
+        <li>[Fact, with <code>path/to/file.ts</code> when the diagram came from a repo]</li>
+      </ul>
+    </article>
+  </section>
+
+  <footer class="footer">[Source, date, or repo commit]</footer>
+</div>
+
+<script>
+  function toggleTheme() {
+    var next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem('diagram-theme', next); } catch (e) {}
+  }
+
+  /* Serialize the SVG with every computed style inlined, so the file renders
+     without this page's CSS (slides, docs, image viewers). */
+  var PROPS = ['fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'opacity',
+               'font-family', 'font-size', 'font-weight', 'text-anchor', 'letter-spacing'];
+  function snapshot() {
+    var svg = document.getElementById('diagram');
+    var clone = svg.cloneNode(true);
+    var src = svg.querySelectorAll('*'), dst = clone.querySelectorAll('*');
+    for (var i = 0; i < src.length; i++) {
+      var cs = getComputedStyle(src[i]);
+      PROPS.forEach(function (p) { dst[i].style.setProperty(p, cs.getPropertyValue(p)); });
+      dst[i].removeAttribute('class');
+    }
+    var vb = svg.viewBox.baseVal;
+    clone.setAttribute('width', vb.width);
+    clone.setAttribute('height', vb.height);
+    var bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    bg.setAttribute('width', '100%');
+    bg.setAttribute('height', '100%');
+    bg.setAttribute('fill', getComputedStyle(document.body).backgroundColor);
+    clone.insertBefore(bg, clone.querySelector('rect'));
+    return { text: new XMLSerializer().serializeToString(clone), width: vb.width, height: vb.height };
+  }
+  function fileName(ext) {
+    var slug = document.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return (slug || 'diagram') + '-' + document.documentElement.dataset.theme + '.' + ext;
+  }
+  function save(blob, name) {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+  function exportSVG() {
+    save(new Blob([snapshot().text], { type: 'image/svg+xml' }), fileName('svg'));
+  }
+  function renderPNG(scale) {
+    var snap = snapshot();
+    return new Promise(function (resolve, reject) {
+      var img = new Image();
+      img.onload = function () {
+        var canvas = document.createElement('canvas');
+        canvas.width = snap.width * scale;
+        canvas.height = snap.height * scale;
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(resolve, 'image/png');
+      };
+      img.onerror = reject;
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(snap.text);
+    });
+  }
+  function exportPNG() {
+    renderPNG(3).then(function (blob) { save(blob, fileName('png')); });
+  }
+  function copyPNG(button) {
+    /* The Clipboard API needs a secure context (https or localhost); file:// often refuses. */
+    var label = button.textContent;
+    navigator.clipboard.write([new ClipboardItem({ 'image/png': renderPNG(3) })])
+      .then(function () { button.textContent = 'Copied'; })
+      .catch(function () { button.textContent = 'Use PNG'; })
+      .finally(function () { setTimeout(function () { button.textContent = label; }, 1500); });
+  }
+</script>
+</body>
+</html>

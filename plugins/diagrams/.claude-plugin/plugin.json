@@ -1,0 +1,17 @@
+{
+  "name": "diagrams",
+  "version": "0.1.0",
+  "description": "Draw validated, themeable architecture, workflow, sequence, data-flow, and lifecycle diagrams as interactive HTML",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "license": "MIT",
+  "keywords": [
+    "diagrams",
+    "architecture",
+    "svg",
+    "sequence",
+    "workflow",
+    "themes"
+  ]
+}
