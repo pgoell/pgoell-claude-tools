@@ -136,6 +136,23 @@
     --slide-h:       1080px;
 
     /* =====================================================
+       PAGE GRID AND RULES (newspaper page on 1920x1080)
+       Six columns inside the 96px side margins:
+       6 x 248 + 5 x 48 = 1728. Headlines span five
+       columns, running text four (about 55 to 60 characters
+       at body size), margin figures and notes two.
+       ===================================================== */
+    --grid-col:      248px;
+    --grid-gutter:   48px;
+    --span-2:        544px;     /* 2 columns: margin figure, text column */
+    --span-3:        840px;
+    --span-4:        1136px;    /* running text measure */
+    --span-5:        1432px;    /* headline measure */
+    --rule-hair:     2px;       /* column rules, table hairlines, gridlines */
+    --rule-figure:   3px;       /* ink rule above every figure */
+    --rule-zero:     4px;       /* zero line: the heaviest line in a chart */
+
+    /* =====================================================
        RADIUS
        ===================================================== */
     --r-0:       0;
@@ -262,43 +279,81 @@
     flex-direction: column;
   }
 
-  /* ==== Shared bits ==== */
-  /* Action title: the dominant heading on every content slide,
-     in the same place and size on every slide. */
+  /* ==== Shared bits: the editorial page ==== */
+  /* Sentence headline: serif, top left, five columns wide, the
+     dominant heading on every content slide, same place and size. */
   h1.action {
     font-family: var(--font-display);
     font-size: var(--fs-h1); font-weight: var(--weight-semibold);
     letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
-    margin: 0; max-width: 1560px;
+    margin: 0; max-width: var(--span-5);
     text-wrap: balance;
   }
-  /* Footer: Source line on the left when the slide shows numbers, the
-     page number on the right. No rule, no slide counter. */
+  /* Standfirst: the plain line under the headline. On chart slides
+     it carries the measure, the units, and the dates. */
+  .standfirst {
+    font-size: var(--fs-subtitle); line-height: var(--lh-snug);
+    color: var(--fg-muted); margin: 20px 0 0;
+  }
+  /* Figure: every chart, table, or margin figure hangs from an ink
+     rule; nothing else on the slide is boxed or carded. */
+  .figure {
+    border-top: var(--rule-figure) solid var(--fg);
+    padding-top: 28px; margin: 44px 0 0;
+  }
+  /* Footer: source and note line bottom left in the sans, page
+     number bottom right. No rule, no slide counter. */
   .footer {
     position: absolute;
-    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 48px;
+    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 44px;
     display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
-    font-size: var(--fs-micro);
+    font-size: var(--fs-micro); line-height: var(--lh-snug);
     color: var(--fg-subtle);
   }
-  /* Evidence block under the action title: centered in the space
-     left between title and footer. */
-  .evidence { margin: auto 0; padding: 48px 0 88px; }
-  /* Numbers align: tabular lining figures in charts and big numbers. */
-  .chart, .num { font-variant-numeric: tabular-nums lining-nums; }
+  .footer .source { max-width: var(--span-5); }
+  /* Body block on text-led slides: centered in the space between the
+     headline and the footer, so no dead band opens under the text. */
+  .body { margin: auto 0; padding-bottom: 72px; }
+  /* Chart grammar: horizontal gridlines only, value labels sitting
+     on top of their gridline at the left edge, a heavier ink zero
+     line, direct labels and annotations in the sans. */
+  .chart { display: block; overflow: visible; }
+  .chart text { font-family: var(--font-sans); font-size: var(--fs-caption); fill: var(--fg-muted); }
+  .chart text.hi { fill: var(--fg); font-weight: var(--weight-semibold); }
+  .chart text.ann { fill: var(--fg); }
+  .chart .grid { stroke: var(--chart-grid); stroke-width: var(--rule-hair); }
+  .chart .zero { stroke: var(--fg); stroke-width: var(--rule-zero); }
+  .chart .leader { stroke: var(--fg-subtle); stroke-width: 2; fill: none; }
+  .chart, .num, table { font-variant-numeric: tabular-nums lining-nums; }
 
   /* ==== This slide ==== */
-  .s-divider { justify-content: flex-end; padding-bottom: 180px; }
+  /* Magazine section opener: an ink rule, the part name hanging in
+     the first column, the section headline and its standfirst in
+     columns two to six. */
+  .s-divider { justify-content: center; }
+  .s-divider .opener {
+    display: grid;
+    grid-template-columns: var(--grid-col) 1fr;
+    column-gap: var(--grid-gutter);
+    border-top: var(--rule-figure) solid var(--fg);
+    padding-top: 56px;
+  }
   .s-divider .part {
-    font-size: var(--fs-caption); color: var(--fg-muted);
-    margin-bottom: 40px;
+    font-family: var(--font-display);
+    font-size: var(--fs-body-lg); color: var(--fg-muted);
+    line-height: var(--lh-tight); padding-top: 26px;
   }
   .s-divider h1 {
     font-family: var(--font-display);
-    font-size: var(--fs-section); font-weight: var(--weight-semibold);
+    font-size: var(--fs-display); font-weight: var(--weight-semibold);
     line-height: var(--lh-tight); letter-spacing: var(--tracking-tight);
-    margin: 0; max-width: 1500px;
+    margin: 0; max-width: 1300px;
     text-wrap: balance;
+  }
+  .s-divider .standfirst {
+    grid-column: 2;
+    font-size: var(--fs-body-lg); line-height: var(--lh-normal);
+    margin-top: 40px; max-width: var(--span-4);
   }
 </style>
 <script>
@@ -317,8 +372,11 @@
 <body>
 <div class="frame">
 <section class="s-divider dark" data-screen-label="02 Section divider">
-    <div class="part" data-role="label">Part 2 of 3</div>
-    <h1>What the lanes cost</h1>
+    <div class="opener">
+      <div class="part">Part 2</div>
+      <h1>What the lanes cost, and what they saved</h1>
+      <p class="standfirst">Build and upkeep costs for the 6 protected corridors, set against the collisions that no longer happen on them</p>
+    </div>
   </section>
 </div>
 </body>

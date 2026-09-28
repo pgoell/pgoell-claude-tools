@@ -12,10 +12,10 @@ Training, facilitation, and mixed or low-vision audiences. Invitational "you" ti
 
 ## Coverage
 
-- `colors.css`: warm light scope and a deep green `.dark` scope with swapped inverse tokens; the chart group with `--chart-highlight`, `--chart-context`, `--chart-grid`, and five Okabe-Ito colors per scope; the type scale (72px titles, 44px body, 30px captions).
+- `colors.css`: layout tokens for the grammar (`--grid-cols`, `--grid-col`, `--grid-gutter`, `--panel-pad`, `--panel-gap`, `--r-xl`, `--r-2xl`); warm light scope and a deep green `.dark` scope with swapped inverse tokens; the chart group with `--chart-highlight`, `--chart-context`, `--chart-grid`, and five Okabe-Ito colors per scope; the type scale (72px titles, 44px body, 30px captions).
 - `typography.css`: Fraunces for titles and Atkinson Hyperlegible Next for everything else, both vendored, plus `--font-display-settings` for the softened upright title cut.
-- `guidelines.md`, `language.md`: voice, skeleton, and the ten wording rules with the workshop tone line.
-- `slides/`: TitleSlide, SectionDivider, ContentSlide, BarChartSlide, StatSlide, ClosingSlide. Each embeds a synced copy of the variable files and makes no network request.
+- `guidelines.md`: voice, skeleton, and the layout grammar (grid, panels, density, signature moves, accent job, never list). `language.md`: the ten wording rules with the workshop tone line.
+- `slides/`: built from this preset's layout grammar, not from the default layouts: TitleSlide, AgendaSlide, SectionDivider, ContentSlide, BarChartSlide, StatSlide, ProcessStepsSlide, ExerciseSlide, DiscussionSlide, RecapSlide, ClosingSlide. Each embeds a synced copy of the variable files and makes no network request.
 - `assets/fonts/`: the vendored font files with their licenses.
 
 ## What this direction avoids
@@ -23,6 +23,10 @@ Training, facilitation, and mixed or low-vision audiences. Invitational "you" ti
 Warm paper with a teal accent, a soft serif for titles, and a hyperlegible sans; avoids the cream canvas with muted red, italic flourishes, and clip-art workshop slides.
 
 ## Decisions
+
+- 2026-09 rebuild: the six base slides were rebuilt from the layout grammar in `guidelines.md` (12 x 96px columns, content in 40px-radius panels, ink time box, dashed writing space, real numbered steps, session map on dividers), and five signature slides were added. No slide keeps the default preset's composition.
+- The time box is an ink pill on `--bg-inverse`, not the accent, so the accent keeps one job: where the room is or what it does next.
+- The example story is one consistent session: 90 minutes on 30 April 2026 from 10:00 to 11:30 (agenda blocks 10 + 20 + 25 + 10 + 20 + 5), a 60-minute retro in five steps (5 + 15 + 20 + 15 + 5, the phases from Derby and Larsen, Agile Retrospectives, 2006), and the next session on 14 May. Survey figures (78, 55, 41, 22%; 6 and 12 issues) are invented placeholders.
 
 - `--chart-4` (`#CC79A7`, 2.89:1 on the light paper) stays below 3:1 as the report specifies, so it needs a direct label on every mark.
 - `--accent-partner` (`#B4531A`, 4.73:1) marks shapes on `--bg-subtle` only, never text there.
@@ -41,6 +45,6 @@ Each family directory carries its `OFL.txt`, copied from the same package. Files
 
 ## Gaps
 
-- Not yet built from the catalog for this voice: agenda, statement, chart with insight, comparison, 2x2 matrix, process, timeline, diagram, quote, full-bleed image, capabilities, and the exercise or prompt slide the report lists as a gap.
+- Still adapted from the default preset when needed: comparison, 2x2 matrix, timeline, diagram, quote, full-bleed image, capabilities. Rebuild them in this grammar (panels, 12-column splits) before shipping them here.
 - Atkinson Hyperlegible Next has no peer-reviewed effect sizes; the choice rests on its design intent.
 - No wordmark or `icons/` library: the preset serves a context, not a brand.

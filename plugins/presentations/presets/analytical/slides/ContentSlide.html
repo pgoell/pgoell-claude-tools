@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>03 Content</title>
+<title>04 Content</title>
 <style>
   /* ==========================================================
      Synced copy of ../colors.css. Source of truth is the file;
@@ -145,6 +145,18 @@
     --slide-w:       1920px;
     --slide-h:       1080px;
 
+    /* Layout grid (see guidelines.md, Layout grammar).
+       12 columns of 122px with 24px gutters fill the 1728px
+       between the 96px side margins. Chrome sits at fixed
+       heights so nothing moves when you flip slides. */
+    --grid-cols:     12;
+    --grid-col:      122px;
+    --grid-gutter:   24px;
+    --tracker-top:   48px;      /* tracker and sticker row */
+    --title-top:     120px;     /* action title, first line */
+    --body-top:      300px;     /* evidence starts here on every content slide */
+    --body-bottom:   124px;     /* evidence ends this far above the canvas bottom */
+
     /* =====================================================
        RADIUS
        ===================================================== */
@@ -267,63 +279,90 @@
     position: relative;
     width: 1920px;
     height: 1080px;
-    padding: var(--slide-pad-y) var(--slide-pad-x);
     background: var(--bg);
     color: var(--fg);
     overflow: hidden;
     font-family: var(--font-sans);
     font-weight: var(--weight-regular);
-    display: flex;
-    flex-direction: column;
   }
 
-  /* ==== Shared bits ==== */
-  /* Action title: the dominant heading on every content slide,
-     in the same place and size on every slide. */
+  /* ==== Shared chrome (Layout grammar in ../guidelines.md) ==== */
+  /* Every piece of chrome sits at a fixed position, so nothing moves
+     when you flip through the deck. */
+  /* Tracker: the deck's sections, current one marked by the accent.
+     Each section spans 2 grid columns. */
+  .tracker {
+    position: absolute; top: var(--tracker-top); left: var(--slide-pad-x);
+    display: flex; gap: var(--grid-gutter);
+    font-size: var(--fs-micro); line-height: 1.2; color: var(--fg-subtle);
+  }
+  .tracker span {
+    width: calc(2 * var(--grid-col) + var(--grid-gutter));
+    padding-top: 12px; border-top: 4px solid var(--border-strong);
+  }
+  /* Accent job, shared: the current section. */
+  .tracker span.on {
+    border-top-color: var(--accent); color: var(--fg);
+    font-weight: var(--weight-semibold);
+  }
+  /* Sticker: status of the numbers, top right, only when true. */
+  .sticker {
+    position: absolute; top: var(--tracker-top); right: var(--slide-pad-x);
+    font-size: var(--fs-caption); line-height: 1.2; color: var(--fg-muted);
+    border: 2px solid var(--fg-subtle); padding: 6px 20px;
+  }
+  /* Action title: same place, same size on every content slide. */
   h1.action {
+    position: absolute; top: var(--title-top); left: var(--slide-pad-x);
+    width: calc(11 * var(--grid-col) + 10 * var(--grid-gutter));
     font-family: var(--font-display);
     font-size: var(--fs-h1); font-weight: var(--weight-semibold);
     letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
-    margin: 0; max-width: 1560px;
-    text-wrap: balance;
+    margin: 0; text-wrap: balance;
   }
-  /* Footer: Source line on the left when the slide shows numbers, the
-     page number on the right. No rule, no slide counter. */
+  /* Evidence area: fixed box under the title band. */
+  .body {
+    position: absolute; top: var(--body-top); bottom: var(--body-bottom);
+    left: var(--slide-pad-x); right: var(--slide-pad-x);
+  }
+  /* Exhibit subtitle: the measure, its units, and its dates. */
+  .exhibit {
+    font-size: var(--fs-body); line-height: 1.2; color: var(--fg-muted);
+    margin: 0;
+  }
+  /* Footer: source bottom left, page number bottom right. */
   .footer {
     position: absolute;
     left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 48px;
     display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
-    font-size: var(--fs-micro);
+    font-size: var(--fs-micro); line-height: 1.2;
     color: var(--fg-subtle);
   }
-  /* Evidence block under the action title: centered in the space
-     left between title and footer. */
-  .evidence { margin: auto 0; padding: 48px 0 88px; }
-  /* Numbers align: tabular lining figures in charts and big numbers. */
-  .chart, .num { font-variant-numeric: tabular-nums lining-nums; }
+  .chart, .num, table { font-variant-numeric: tabular-nums lining-nums; }
+  svg { display: block; overflow: visible; }
 
   /* ==== This slide ==== */
-  .s-content ul {
-    list-style: none;
-    /* Top-anchored under the title, not centered: a list reads as a
-       continuation of the claim, and centering left a dead band. */
-    margin: 0; padding-top: 80px;
-    display: flex; flex-direction: column; gap: 48px;
-    max-width: 1500px;
-  }
-  .s-content li {
-    position: relative;
-    padding-left: 56px;
+  /* Three rows that prove the title: lead in columns 1 to 3, evidence
+     sentence in 4 to 10, the figure in 11 and 12, right aligned. */
+  .s-content .rows { margin: 0; padding: 0; list-style: none; border-bottom: 2px solid var(--border-strong); }
+  .s-content .rows li {
+    display: grid;
+    grid-template-columns:
+      calc(3 * var(--grid-col) + 2 * var(--grid-gutter))
+      1fr
+      calc(2 * var(--grid-col) + var(--grid-gutter));
+    column-gap: var(--grid-gutter); align-items: start;
+    padding: 44px 0; border-top: 2px solid var(--border-strong);
     font-size: var(--fs-body); line-height: var(--lh-normal);
-    color: var(--fg);
-    text-wrap: pretty;
   }
-  .s-content li::before {
-    content: ''; position: absolute;
-    left: 0; top: 0.5em;
-    width: 16px; height: 16px;
-    background: var(--fg-subtle);
-  }
+  .s-content .rows li:first-child { border-top-color: var(--fg); }
+  .s-content .lead { font-weight: var(--weight-semibold); }
+  .s-content .text { color: var(--fg-muted); text-wrap: pretty; }
+  .s-content .fig { text-align: right; }
+  .s-content .fig .num { font-weight: var(--weight-semibold); display: block; }
+  .s-content .fig .unit { font-size: var(--fs-caption); color: var(--fg-subtle); display: block; }
+  /* Accent job: the figure the title states. */
+  .s-content .fig.hi .num { color: var(--accent); }
 </style>
 <script>
   function fit() {
@@ -340,15 +379,18 @@
 </head>
 <body>
 <div class="frame">
-<section class="s-content" data-screen-label="03 Content">
+<section class="s-content" data-screen-label="04 Content">
+    <nav class="tracker" data-role="footer" aria-label="Deck sections"><span class="on">Where cost sits</span><span>What closing saves</span><span>Options</span><span>Plan</span></nav>
     <h1 class="action">3 depots carry 31% of network cost but handle 12% of parcels</h1>
-    <ul class="evidence">
-      <li>Hull, Swindon, and Leeds run below 60% of capacity on every weekday</li>
-      <li>Their parcels reach customers a day later than the network median</li>
-      <li>The other 8 depots absorb the volume with 2 added shifts each</li>
-    </ul>
+    <div class="body">
+      <ul class="rows">
+        <li><span class="lead">Cost</span><span class="text">Hull, Swindon, and Leeds cost €40M a year to run, of €129M for the whole network</span><span class="fig hi"><span class="num">31%</span><span class="unit" data-role="caption">of network cost</span></span></li>
+        <li><span class="lead">Volume</span><span class="text">They handle 12% of parcels and run below 60% of capacity on every weekday</span><span class="fig"><span class="num">12%</span><span class="unit" data-role="caption">of parcels</span></span></li>
+        <li><span class="lead">Service</span><span class="text">Their parcels reach customers a day later than the network median</span><span class="fig"><span class="num">+1 day</span><span class="unit" data-role="caption">to delivery</span></span></li>
+      </ul>
+    </div>
     <div class="footer">
-      <span class="source" data-role="source">Source: Kestrel depot cost ledger and parcel scans, 2025; team analysis</span>
+      <span class="source" data-role="source">Sources: Kestrel depot cost ledger and parcel scans, 2025; team analysis</span>
       <span class="page" data-role="footer">4</span>
     </div>
   </section>

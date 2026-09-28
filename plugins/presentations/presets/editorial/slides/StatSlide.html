@@ -136,6 +136,23 @@
     --slide-h:       1080px;
 
     /* =====================================================
+       PAGE GRID AND RULES (newspaper page on 1920x1080)
+       Six columns inside the 96px side margins:
+       6 x 248 + 5 x 48 = 1728. Headlines span five
+       columns, running text four (about 55 to 60 characters
+       at body size), margin figures and notes two.
+       ===================================================== */
+    --grid-col:      248px;
+    --grid-gutter:   48px;
+    --span-2:        544px;     /* 2 columns: margin figure, text column */
+    --span-3:        840px;
+    --span-4:        1136px;    /* running text measure */
+    --span-5:        1432px;    /* headline measure */
+    --rule-hair:     2px;       /* column rules, table hairlines, gridlines */
+    --rule-figure:   3px;       /* ink rule above every figure */
+    --rule-zero:     4px;       /* zero line: the heaviest line in a chart */
+
+    /* =====================================================
        RADIUS
        ===================================================== */
     --r-0:       0;
@@ -262,52 +279,81 @@
     flex-direction: column;
   }
 
-  /* ==== Shared bits ==== */
-  /* Action title: the dominant heading on every content slide,
-     in the same place and size on every slide. */
+  /* ==== Shared bits: the editorial page ==== */
+  /* Sentence headline: serif, top left, five columns wide, the
+     dominant heading on every content slide, same place and size. */
   h1.action {
     font-family: var(--font-display);
     font-size: var(--fs-h1); font-weight: var(--weight-semibold);
     letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
-    margin: 0; max-width: 1560px;
+    margin: 0; max-width: var(--span-5);
     text-wrap: balance;
   }
-  /* Footer: Source line on the left when the slide shows numbers, the
-     page number on the right. No rule, no slide counter. */
+  /* Standfirst: the plain line under the headline. On chart slides
+     it carries the measure, the units, and the dates. */
+  .standfirst {
+    font-size: var(--fs-subtitle); line-height: var(--lh-snug);
+    color: var(--fg-muted); margin: 20px 0 0;
+  }
+  /* Figure: every chart, table, or margin figure hangs from an ink
+     rule; nothing else on the slide is boxed or carded. */
+  .figure {
+    border-top: var(--rule-figure) solid var(--fg);
+    padding-top: 28px; margin: 44px 0 0;
+  }
+  /* Footer: source and note line bottom left in the sans, page
+     number bottom right. No rule, no slide counter. */
   .footer {
     position: absolute;
-    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 48px;
+    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 44px;
     display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
-    font-size: var(--fs-micro);
+    font-size: var(--fs-micro); line-height: var(--lh-snug);
     color: var(--fg-subtle);
   }
-  /* Evidence block under the action title: centered in the space
-     left between title and footer. */
-  .evidence { margin: auto 0; padding: 48px 0 88px; }
-  /* Numbers align: tabular lining figures in charts and big numbers. */
-  .chart, .num { font-variant-numeric: tabular-nums lining-nums; }
+  .footer .source { max-width: var(--span-5); }
+  /* Body block on text-led slides: centered in the space between the
+     headline and the footer, so no dead band opens under the text. */
+  .body { margin: auto 0; padding-bottom: 72px; }
+  /* Chart grammar: horizontal gridlines only, value labels sitting
+     on top of their gridline at the left edge, a heavier ink zero
+     line, direct labels and annotations in the sans. */
+  .chart { display: block; overflow: visible; }
+  .chart text { font-family: var(--font-sans); font-size: var(--fs-caption); fill: var(--fg-muted); }
+  .chart text.hi { fill: var(--fg); font-weight: var(--weight-semibold); }
+  .chart text.ann { fill: var(--fg); }
+  .chart .grid { stroke: var(--chart-grid); stroke-width: var(--rule-hair); }
+  .chart .zero { stroke: var(--fg); stroke-width: var(--rule-zero); }
+  .chart .leader { stroke: var(--fg-subtle); stroke-width: 2; fill: none; }
+  .chart, .num, table { font-variant-numeric: tabular-nums lining-nums; }
 
   /* ==== This slide ==== */
-  .s-stat .evidence {
-    display: grid; grid-template-columns: 560px 1fr;
-    gap: 120px; align-items: center;
+  /* The figure set like a newspaper "by the numbers" line: the serif
+     number with its sentence beside it, and under both a dot strip
+     that shows where the number comes from. */
+  .s-stat .lead {
+    display: grid;
+    grid-template-columns: var(--span-2) var(--span-3);
+    column-gap: var(--grid-gutter);
+    align-items: end;
   }
   .s-stat .num {
-    font-family: var(--font-sans);
-    font-size: var(--fs-hero); font-weight: var(--weight-semibold);
-    line-height: 0.9; letter-spacing: var(--tracking-tight);
-    color: var(--fg);
+    font-family: var(--font-display);
+    font-size: var(--fs-hero); font-weight: var(--weight-medium);
+    line-height: 1; padding-top: 12px; letter-spacing: var(--tracking-tight);
+    color: var(--accent);
   }
   .s-stat .label {
     font-size: var(--fs-body); line-height: var(--lh-normal);
-    color: var(--fg-muted); margin-top: 40px; max-width: 620px;
+    margin: 0 0 12px; max-width: var(--span-3);
   }
-  .s-stat svg { display: block; overflow: visible; }
-  .s-stat svg text { font-size: var(--fs-caption); fill: var(--fg-muted); }
-  .s-stat svg text.hi { fill: var(--fg); font-weight: var(--weight-semibold); }
-  .s-stat .bar { fill: var(--chart-context); }
-  /* Accent job: marks the value the big number states. */
-  .s-stat .bar.hi { fill: var(--chart-highlight); }
+  .s-stat .strip { margin-top: 72px; }
+  .s-stat .axis { stroke: var(--border-strong); stroke-width: var(--rule-hair); }
+  .s-stat .tick { stroke: var(--border-strong); stroke-width: var(--rule-hair); }
+  .s-stat .span { stroke: var(--chart-context); stroke-width: 6; }
+  .s-stat .dot { fill: var(--chart-context); }
+  /* Accent job: marks the figure the headline names, in the number
+     and in the strip. */
+  .s-stat .dot.hi { fill: var(--chart-highlight); }
 </style>
 <script>
   function fit() {
@@ -326,43 +372,41 @@
 <div class="frame">
 <section class="s-stat" data-screen-label="05 Stat">
     <h1 class="action">Collisions involving cyclists on the protected corridors fell by half</h1>
-    <div class="evidence">
-      <div>
+    <figure class="figure body">
+      <div class="lead">
         <div class="num">52%</div>
-        <div class="label">fewer collisions in 2025 than in 2022</div>
+        <p class="label">fewer collisions involving cyclists on the 6 protected corridors in 2025 than in 2022</p>
       </div>
-      <svg class="chart" width="900" height="300" role="img"
+      <svg class="chart strip" width="1728" height="170" role="img"
            aria-label="Collisions involving cyclists on protected corridors: 118 in 2022, 57 in 2025"
-           data-chart="bar" data-orientation="horizontal" data-unit="collisions"
+           data-chart="dot" data-unit="collisions"
            data-labels='["2022", "2025"]'
            data-series='[{"name": "Collisions involving cyclists", "values": [118, 57]}]'
            data-highlight="1"></svg>
-    </div>
+    </figure>
     <div class="footer">
       <span class="source" data-role="source">Source: Brenford police collision records, 2022 and 2025</span>
-      <span class="page" data-role="footer">6</span>
+      <span class="page" data-role="footer">5</span>
     </div>
   </section>
 </div>
 <script>
-  function chartData(el) {
-    return {
-      labels: JSON.parse(el.dataset.labels || '[]'),
-      series: JSON.parse(el.dataset.series || '[]'),
-      highlight: el.dataset.highlight === undefined ? -1 : Number(el.dataset.highlight),
-      unit: el.dataset.unit || ''
-    };
-  }
   (function () {
     const el = document.querySelector('.s-stat .chart');
-    const d = chartData(el), v = d.series[0].values;
-    const W = 900, max = Math.max(...v);
-    const fmt = x => x + ' collisions';
-    let out = '';
-    v.forEach((val, i) => {
-      const y = i * 150, hi = i === d.highlight ? ' hi' : '';
-      out += '<text class="' + hi + '" x="0" y="' + (y + 28) + '">' + d.labels[i] + ': ' + fmt(val) + '</text>';
-      out += '<rect class="bar' + hi + '" x="0" y="' + (y + 48) + '" width="' + (val / max * W) + '" height="64"/>';
+    const labels = JSON.parse(el.dataset.labels), v = JSON.parse(el.dataset.series)[0].values;
+    const hl = Number(el.dataset.highlight);
+    const x0 = 0, x1 = 1600, y = 70, max = 120;
+    const X = n => x0 + n / max * (x1 - x0);
+    let out = '<line class="axis" x1="' + x0 + '" x2="' + x1 + '" y1="' + y + '" y2="' + y + '"/>';
+    [0, 40, 80, 120].forEach(t => {
+      out += '<line class="tick" x1="' + X(t) + '" x2="' + X(t) + '" y1="' + (y - 12) + '" y2="' + (y + 12) + '"/>';
+      out += '<text x="' + X(t) + '" y="' + (y + 64) + '" text-anchor="' + (t === 0 ? 'start' : 'middle') + '">' + t + (t === max ? ' collisions' : '') + '</text>';
+    });
+    out += '<line class="span" x1="' + X(Math.min(...v)) + '" x2="' + X(Math.max(...v)) + '" y1="' + y + '" y2="' + y + '"/>';
+    v.forEach((n, i) => {
+      const hi = i === hl ? ' hi' : '';
+      out += '<circle class="dot' + hi + '" cx="' + X(n) + '" cy="' + y + '" r="20"/>';
+      out += '<text class="' + hi.trim() + '" x="' + X(n) + '" y="' + (y - 36) + '" text-anchor="middle">' + n + ' in ' + labels[i] + '</text>';
     });
     el.innerHTML = out;
   })();

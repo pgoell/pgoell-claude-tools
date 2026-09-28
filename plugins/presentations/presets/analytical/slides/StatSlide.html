@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>05 Stat</title>
+<title>09 Stat</title>
 <style>
   /* ==========================================================
      Synced copy of ../colors.css. Source of truth is the file;
@@ -145,6 +145,18 @@
     --slide-w:       1920px;
     --slide-h:       1080px;
 
+    /* Layout grid (see guidelines.md, Layout grammar).
+       12 columns of 122px with 24px gutters fill the 1728px
+       between the 96px side margins. Chrome sits at fixed
+       heights so nothing moves when you flip slides. */
+    --grid-cols:     12;
+    --grid-col:      122px;
+    --grid-gutter:   24px;
+    --tracker-top:   48px;      /* tracker and sticker row */
+    --title-top:     120px;     /* action title, first line */
+    --body-top:      300px;     /* evidence starts here on every content slide */
+    --body-bottom:   124px;     /* evidence ends this far above the canvas bottom */
+
     /* =====================================================
        RADIUS
        ===================================================== */
@@ -267,61 +279,91 @@
     position: relative;
     width: 1920px;
     height: 1080px;
-    padding: var(--slide-pad-y) var(--slide-pad-x);
     background: var(--bg);
     color: var(--fg);
     overflow: hidden;
     font-family: var(--font-sans);
     font-weight: var(--weight-regular);
-    display: flex;
-    flex-direction: column;
   }
 
-  /* ==== Shared bits ==== */
-  /* Action title: the dominant heading on every content slide,
-     in the same place and size on every slide. */
+  /* ==== Shared chrome (Layout grammar in ../guidelines.md) ==== */
+  /* Every piece of chrome sits at a fixed position, so nothing moves
+     when you flip through the deck. */
+  /* Tracker: the deck's sections, current one marked by the accent.
+     Each section spans 2 grid columns. */
+  .tracker {
+    position: absolute; top: var(--tracker-top); left: var(--slide-pad-x);
+    display: flex; gap: var(--grid-gutter);
+    font-size: var(--fs-micro); line-height: 1.2; color: var(--fg-subtle);
+  }
+  .tracker span {
+    width: calc(2 * var(--grid-col) + var(--grid-gutter));
+    padding-top: 12px; border-top: 4px solid var(--border-strong);
+  }
+  /* Accent job, shared: the current section. */
+  .tracker span.on {
+    border-top-color: var(--accent); color: var(--fg);
+    font-weight: var(--weight-semibold);
+  }
+  /* Sticker: status of the numbers, top right, only when true. */
+  .sticker {
+    position: absolute; top: var(--tracker-top); right: var(--slide-pad-x);
+    font-size: var(--fs-caption); line-height: 1.2; color: var(--fg-muted);
+    border: 2px solid var(--fg-subtle); padding: 6px 20px;
+  }
+  /* Action title: same place, same size on every content slide. */
   h1.action {
+    position: absolute; top: var(--title-top); left: var(--slide-pad-x);
+    width: calc(11 * var(--grid-col) + 10 * var(--grid-gutter));
     font-family: var(--font-display);
     font-size: var(--fs-h1); font-weight: var(--weight-semibold);
     letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
-    margin: 0; max-width: 1560px;
-    text-wrap: balance;
+    margin: 0; text-wrap: balance;
   }
-  /* Footer: Source line on the left when the slide shows numbers, the
-     page number on the right. No rule, no slide counter. */
+  /* Evidence area: fixed box under the title band. */
+  .body {
+    position: absolute; top: var(--body-top); bottom: var(--body-bottom);
+    left: var(--slide-pad-x); right: var(--slide-pad-x);
+  }
+  /* Exhibit subtitle: the measure, its units, and its dates. */
+  .exhibit {
+    font-size: var(--fs-body); line-height: 1.2; color: var(--fg-muted);
+    margin: 0;
+  }
+  /* Footer: source bottom left, page number bottom right. */
   .footer {
     position: absolute;
     left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 48px;
     display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
-    font-size: var(--fs-micro);
+    font-size: var(--fs-micro); line-height: 1.2;
     color: var(--fg-subtle);
   }
-  /* Evidence block under the action title: centered in the space
-     left between title and footer. */
-  .evidence { margin: auto 0; padding: 48px 0 88px; }
-  /* Numbers align: tabular lining figures in charts and big numbers. */
-  .chart, .num { font-variant-numeric: tabular-nums lining-nums; }
+  .chart, .num, table { font-variant-numeric: tabular-nums lining-nums; }
+  svg { display: block; overflow: visible; }
 
   /* ==== This slide ==== */
-  .s-stat .evidence {
-    display: grid; grid-template-columns: 640px 1fr;
-    gap: 120px; align-items: center;
+  /* Number in columns 1 to 5, the arithmetic behind it in 7 to 12. */
+  .s-stat .body {
+    display: grid;
+    grid-template-columns: calc(5 * var(--grid-col) + 4 * var(--grid-gutter)) 1fr;
+    column-gap: calc(var(--grid-col) + 2 * var(--grid-gutter));
+    align-items: center;
   }
   .s-stat .num {
-    font-family: var(--font-sans);
     font-size: var(--fs-hero); font-weight: var(--weight-semibold);
     line-height: 0.9; letter-spacing: var(--tracking-tight);
-    color: var(--fg);
   }
   .s-stat .label {
     font-size: var(--fs-body); line-height: var(--lh-normal);
-    color: var(--fg-muted); margin-top: 40px; max-width: 620px;
+    color: var(--fg-muted); margin: 40px 0 0;
+    border-top: 2px solid var(--fg); padding-top: 32px;
   }
-  .s-stat svg { display: block; overflow: visible; }
-  .s-stat svg text { font-size: var(--fs-caption); fill: var(--fg-muted); }
-  .s-stat svg text.hi { fill: var(--fg); font-weight: var(--weight-semibold); }
+  .s-stat svg text { font-size: var(--fs-body); fill: var(--fg-muted); }
+  .s-stat svg text.v { fill: var(--fg); font-weight: var(--weight-semibold); }
   .s-stat .bar { fill: var(--chart-context); }
-  /* Accent job: marks the value the big number states. */
+  .s-stat .sum { stroke: var(--fg); stroke-width: 3; }
+  .s-stat .tie { stroke: var(--fg-subtle); stroke-width: 2; stroke-dasharray: 6 6; }
+  /* Accent job: the net saving the number states. */
   .s-stat .bar.hi { fill: var(--chart-highlight); }
 </style>
 <script>
@@ -339,19 +381,20 @@
 </head>
 <body>
 <div class="frame">
-<section class="s-stat" data-screen-label="05 Stat">
+<section class="s-stat" data-screen-label="09 Stat">
+    <nav class="tracker" data-role="footer" aria-label="Deck sections"><span>Where cost sits</span><span class="on">What closing saves</span><span>Options</span><span>Plan</span></nav>
     <h1 class="action">Closing 3 depots saves €18M a year from 2027</h1>
-    <div class="evidence">
+    <div class="body">
       <div>
         <div class="num">€18M</div>
-        <div class="label">Yearly saving in cost to serve once the volume moves to the 8 remaining depots</div>
+        <p class="label">Net yearly saving once the 8 other depots take the volume</p>
       </div>
-      <svg class="chart" width="900" height="300" role="img"
-           aria-label="Yearly cost to serve: €129M today, €111M after the 3 closures"
-           data-chart="bar" data-orientation="horizontal" data-unit="€M"
-           data-labels='["Cost to serve today", "After the 3 closures"]'
-           data-series='[{"name": "Yearly cost to serve", "values": [129, 111]}]'
-           data-highlight="1"></svg>
+      <svg class="chart" width="852" height="480" role="img"
+           aria-label="How the saving adds up: €40M running cost of the 3 depots, less €22M added cost at the 8 others, gives €18M"
+           data-chart="waterfall" data-orientation="horizontal" data-unit="€M"
+           data-labels='["Running cost of the 3 depots", "Added cost at the 8 others", "Net yearly saving"]'
+           data-series='[{"name": "Yearly cost, €M", "values": [40, -22, 18]}]'
+           data-highlight="2"></svg>
     </div>
     <div class="footer">
       <span class="source" data-role="source">Source: Kestrel depot cost ledger, 2025; team analysis</span>
@@ -369,15 +412,22 @@
     };
   }
   (function () {
+    // Horizontal bridge: start, change, result. Each row is a label line
+    // with the value on the right, then the bar under it.
     const el = document.querySelector('.s-stat .chart');
     const d = chartData(el), v = d.series[0].values;
-    const W = 900, max = Math.max(...v);
-    const fmt = x => '€' + x + 'M a year';
-    let out = '';
+    const W = 852, rowH = 160, barH = 56, scale = W / v[0];
+    const fmt = x => (x < 0 ? '\u2212' : '') + '€' + Math.abs(x) + 'M';
+    let out = '', run = 0;
     v.forEach((val, i) => {
-      const y = i * 150, hi = i === d.highlight ? ' hi' : '';
-      out += '<text class="' + hi + '" x="0" y="' + (y + 28) + '">' + d.labels[i] + ': ' + fmt(val) + '</text>';
-      out += '<rect class="bar' + hi + '" x="0" y="' + (y + 48) + '" width="' + (val / max * W) + '" height="64"/>';
+      const y = i * rowH, last = i === v.length - 1, hi = i === d.highlight ? ' hi' : '';
+      const from = last ? 0 : Math.min(run, run + val), len = last ? val : Math.abs(val);
+      if (last) out += '<line class="sum" x1="0" x2="' + W + '" y1="' + (y - 20) + '" y2="' + (y - 20) + '"/>';
+      out += '<text x="0" y="' + (y + 36) + '">' + d.labels[i] + '</text>';
+      out += '<text class="v" x="' + W + '" y="' + (y + 36) + '" text-anchor="end">' + fmt(val) + '</text>';
+      out += '<rect class="bar' + hi + '" x="' + (from * scale) + '" y="' + (y + 60) + '" width="' + (len * scale) + '" height="' + barH + '"/>';
+      if (i === 1) out += '<line class="tie" x1="' + (18 * scale) + '" x2="' + (18 * scale) + '" y1="' + (y + 60 + barH) + '" y2="' + (y + rowH + 60) + '"/>';
+      run = last ? val : run + val;
     });
     el.innerHTML = out;
   })();

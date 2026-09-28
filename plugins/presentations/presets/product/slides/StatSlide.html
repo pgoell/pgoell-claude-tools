@@ -104,7 +104,9 @@
     --lh-normal:        1.35;    /* body */
     --lh-relaxed:       1.5;
 
-    --tracking-tight:   -0.02em;  /* 72px and above */
+    --tracking-tight:   -0.02em;  /* 60px to 96px */
+    --tracking-display: -0.035em; /* 128px display lines */
+    --tracking-hero:    -0.05em;  /* 240px product names and metrics */
     --tracking-normal:  0;
     --tracking-wide:    0.04em;
     --tracking-caps:    0.08em;  /* kept for token parity; tracked caps are banned on slides */
@@ -129,6 +131,19 @@
     --space-9:   80px;
     --space-10:  120px;
     --space-11:  160px;
+
+    /* Layout grid (1920x1080): the ruled page. Two vertical rails
+       at the 96px side margins bound 12 columns of 144px. Column n
+       starts at 96 + (n-1) * 144px; a span of k columns is 144k px.
+       Hairlines sit on column lines; text insets --cell-pad from the
+       line it sits against, so neighboring columns of text keep a
+       64px gutter. Two horizontal rules cut the page into a title
+       band (0 to 288px), an evidence band, and a footer band (992
+       to 1080px). */
+    --grid-col:      144px;
+    --cell-pad:      32px;
+    --band-title:    288px;     /* rule under the title band */
+    --band-foot:     992px;     /* rule over the footer band */
 
     /* Slide margins (1920x1080) */
     --slide-pad-x:   96px;
@@ -210,12 +225,14 @@
      Product preset, font stacks
      ============================================================
      Geist for titles and body, one family in several weights.
-     The variable file (weight axis 100 to 900) from Vercel's
-     geist npm build ships unmodified in assets/fonts/geist/ with
-     its OFL.txt and loads from that relative path, so slides
-     make no network request. Tables and chart labels switch on
-     tabular figures with font-variant-numeric. Geist Mono is for
-     code blocks only, never labels, and is not vendored.
+     Geist Mono for commands, code, version numbers, and other
+     literal identifiers the audience would type or search for;
+     never for labels or metadata. Both variable files (weight
+     axis 100 to 900) from Vercel's geist npm build ship
+     unmodified in assets/fonts/ with their OFL.txt and load from
+     that relative path, so slides make no network request.
+     Tables, metrics, and chart labels switch on tabular figures
+     with font-variant-numeric.
      ============================================================ */
 
   @font-face {
@@ -226,10 +243,18 @@
     font-display: block;
   }
 
+  @font-face {
+    font-family: 'Geist Mono';
+    src: url('../assets/fonts/geist-mono/GeistMono-Variable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: block;
+  }
+
   :root {
     --font-sans:    'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
     --font-display: var(--font-sans);
-    --font-mono:    'Geist Mono', 'SF Mono', Menlo, Consolas, monospace;   /* code blocks only */
+    --font-mono:    'Geist Mono', 'SF Mono', Menlo, Consolas, monospace;   /* commands and identifiers only */
   }
 
   /* ==== Standalone viewer shell ==== */
@@ -244,62 +269,89 @@
     position: relative;
     width: 1920px;
     height: 1080px;
-    padding: var(--slide-pad-y) var(--slide-pad-x);
     background: var(--bg);
     color: var(--fg);
     overflow: hidden;
     font-family: var(--font-sans);
     font-weight: var(--weight-regular);
-    display: flex;
-    flex-direction: column;
   }
 
-  /* ==== Shared bits ==== */
-  /* Action title: the dominant heading on every content slide,
-     in the same place and size on every slide. */
+  /* ==== The ruled page ====
+     Rails at the 96px margins and the two band rules are drawn as
+     hairlines in --border-strong, full bleed, in a layer above the
+     content so filled cells never hide them. Crosshairs (.x) mark where a band rule meets
+     a rail. Everything below positions on the 144px columns. */
+  .ruled::before {
+    content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background:
+      linear-gradient(var(--border-strong), var(--border-strong)) 96px 0 / 1px 100% no-repeat,
+      linear-gradient(var(--border-strong), var(--border-strong)) 1823px 0 / 1px 100% no-repeat,
+      linear-gradient(var(--border-strong), var(--border-strong)) 0 var(--band-title) / 100% 1px no-repeat,
+      linear-gradient(var(--border-strong), var(--border-strong)) 0 var(--band-foot) / 100% 1px no-repeat;
+  }
+  .x {
+    position: absolute; z-index: 2; width: 33px; height: 33px; margin: -16px 0 0 -16px;
+    background:
+      linear-gradient(var(--fg-subtle), var(--fg-subtle)) 16px 0 / 1px 100% no-repeat,
+      linear-gradient(var(--fg-subtle), var(--fg-subtle)) 0 16px / 100% 1px no-repeat;
+  }
+
+  /* Action title: top left of the title band, same place and size on
+     every content slide, text inset one cell pad from the left rail. */
   h1.action {
+    position: absolute; left: calc(96px + var(--cell-pad)); top: 80px;
+    width: 1520px; margin: 0;
     font-family: var(--font-display);
     font-size: var(--fs-h1); font-weight: var(--weight-semibold);
     letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
-    margin: 0; max-width: 1560px;
     text-wrap: balance;
   }
-  /* Footer: Source line on the left, only when the slide shows
-     numbers. No rule, no slide counter. */
-  .footer {
-    position: absolute;
-    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 48px;
-    display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
-    font-size: var(--fs-micro);
-    color: var(--fg-subtle);
+  /* Evidence band: between the two band rules, rail to rail. */
+  .ev {
+    position: absolute; left: 96px; top: var(--band-title);
+    width: 1728px; height: calc(var(--band-foot) - var(--band-title));
   }
-  /* Evidence block under the action title: centered in the space
-     left between title and footer. */
-  .evidence { margin: auto 0; padding: 48px 0 88px; }
-  /* Numbers align: tabular lining figures in charts and big numbers. */
-  .chart, .num { font-variant-numeric: tabular-nums lining-nums; }
+  /* Footer band: source line only, and only when the slide shows numbers. */
+  .source {
+    position: absolute; left: calc(96px + var(--cell-pad)); top: var(--band-foot);
+    height: calc(1080px - var(--band-foot)); display: flex; align-items: center;
+    font-size: var(--fs-micro); color: var(--fg-subtle);
+  }
+  /* Elevated panel: the surface for product objects (UI frames,
+     terminals, charts). Flat cells carry text; panels carry things. */
+  .panel {
+    background: var(--bg-elev);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-lg);
+  }
+  .mono { font-family: var(--font-mono); }
+  /* Numbers align: tabular lining figures everywhere a number sits. */
+  .chart, .num, table { font-variant-numeric: tabular-nums lining-nums; }
 
   /* ==== This slide ==== */
-  .s-stat .evidence {
-    display: grid; grid-template-columns: 560px 1fr;
-    gap: 120px; align-items: center;
+  /* One number at hero size with tight tracking, then the week it
+     comes from as a single full-width strip: what CI still takes in
+     --chart-context, what came back in --chart-highlight. */
+  .s-stat .top {
+    position: absolute; left: 0; top: 48px; width: 1728px;
+    display: grid; grid-template-columns: 864px 864px; align-items: last baseline;
   }
-  .s-stat .num {
-    font-family: var(--font-sans);
+  .s-stat .big { margin: 0; padding: 0 var(--cell-pad); display: flex; align-items: baseline; gap: 24px; }
+  .s-stat .big .n {
     font-size: var(--fs-hero); font-weight: var(--weight-semibold);
-    line-height: 0.9; letter-spacing: var(--tracking-tight);
-    color: var(--fg);
+    letter-spacing: var(--tracking-hero); line-height: 1;
   }
-  .s-stat .label {
-    font-size: var(--fs-body); line-height: var(--lh-normal);
-    color: var(--fg-muted); margin-top: 40px; max-width: 620px;
+  .s-stat .big .u { font-size: var(--fs-h1); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-tight); }
+  .s-stat .ctx {
+    margin: 0; padding: 0 var(--cell-pad);
+    font-size: var(--fs-body); line-height: var(--lh-snug); color: var(--fg-muted); text-wrap: balance;
   }
-  .s-stat svg { display: block; overflow: visible; }
-  .s-stat svg text { font-size: var(--fs-caption); fill: var(--fg-muted); }
+  .s-stat svg { position: absolute; left: var(--cell-pad); top: 400px; overflow: visible; }
+  .s-stat svg text { font-size: var(--fs-body); fill: var(--fg-muted); }
   .s-stat svg text.hi { fill: var(--fg); font-weight: var(--weight-semibold); }
-  .s-stat .bar { fill: var(--chart-context); }
-  /* Accent job: marks the value the big number states. */
-  .s-stat .bar.hi { fill: var(--chart-highlight); }
+  .s-stat .seg { fill: var(--chart-context); }
+  .s-stat .seg.hi { fill: var(--chart-highlight); }
+  .s-stat .tick { stroke: var(--fg); stroke-width: 2; }
 </style>
 <script>
   function fit() {
@@ -316,47 +368,43 @@
 </head>
 <body>
 <div class="frame">
-<section class="s-stat" data-screen-label="05 Stat">
+<section class="s-stat ruled" data-screen-label="05 Stat">
+    <i class="x" aria-hidden="true" style="left:96px;top:288px"></i>
+    <i class="x" aria-hidden="true" style="left:1823px;top:288px"></i>
+    <i class="x" aria-hidden="true" style="left:96px;top:992px"></i>
+    <i class="x" aria-hidden="true" style="left:1823px;top:992px"></i>
     <h1 class="action">Each beta team got back 38 hours of CI time a week</h1>
-    <div class="evidence">
-      <div>
-        <div class="num">38</div>
-        <div class="label">hours of CI time back each week, per team of 20 engineers</div>
+    <div class="ev">
+      <div class="top">
+        <p class="big num"><span class="n">38</span><span class="u">hours</span></p>
+        <p class="ctx">Per team, every week, across all 14 beta teams</p>
       </div>
-      <svg class="chart" width="900" height="300" role="img"
-           aria-label="CI hours a week per team: 64 on Relay 2, 26 on Relay 3"
-           data-chart="bar" data-orientation="horizontal" data-unit="hours a week"
-           data-labels='["Relay 2", "Relay 3"]'
-           data-series='[{"name": "CI hours a week per team", "values": [64, 26]}]'
+      <svg class="chart" width="1664" height="200" role="img"
+           aria-label="CI hours per team per week: 26 still spent, 38 returned, 64 before Relay 3"
+           data-chart="bar" data-orientation="horizontal" data-stacked="true" data-unit="h"
+           data-labels='["still spent on CI", "returned by Relay 3"]'
+           data-series='[{"name": "CI hours per team per week", "values": [26, 38]}]'
            data-highlight="1"></svg>
     </div>
-    <div class="footer">
-      <span class="source" data-role="source">Source: Relay beta telemetry, 120 repositories, April 2026</span>
-    </div>
+    <div class="source" data-role="source">Source: Relay beta telemetry, 14 teams, 120 repositories, April 2026</div>
   </section>
-</div>
 <script>
-  function chartData(el) {
-    return {
-      labels: JSON.parse(el.dataset.labels || '[]'),
-      series: JSON.parse(el.dataset.series || '[]'),
-      highlight: el.dataset.highlight === undefined ? -1 : Number(el.dataset.highlight),
-      unit: el.dataset.unit || ''
-    };
-  }
   (function () {
     const el = document.querySelector('.s-stat .chart');
-    const d = chartData(el), v = d.series[0].values;
-    const W = 900, max = Math.max(...v);
-    const fmt = x => x + ' hours a week';
-    let out = '';
+    const labels = JSON.parse(el.dataset.labels), v = JSON.parse(el.dataset.series)[0].values;
+    const hiIdx = Number(el.dataset.highlight), W = 1664, total = v.reduce((a, b) => a + b, 0);
+    let x = 0, out = '';
     v.forEach((val, i) => {
-      const y = i * 150, hi = i === d.highlight ? ' hi' : '';
-      out += '<text class="' + hi + '" x="0" y="' + (y + 28) + '">' + d.labels[i] + ': ' + fmt(val) + '</text>';
-      out += '<rect class="bar' + hi + '" x="0" y="' + (y + 48) + '" width="' + (val / max * W) + '" height="64"/>';
+      const w = val / total * W, hi = i === hiIdx ? ' hi' : '';
+      out += '<rect class="seg' + hi + '" x="' + x + '" y="72" width="' + (w - (i < v.length - 1 ? 4 : 0)) + '" height="72"/>';
+      out += '<text class="' + hi.trim() + '" x="' + x + '" y="40">' + val + ' h ' + labels[i] + '</text>';
+      x += w;
     });
+    out += '<line class="tick" x1="0" x2="0" y1="60" y2="156"/><line class="tick" x1="' + W + '" x2="' + W + '" y1="60" y2="156"/>';
+    out += '<text x="' + W + '" y="196" text-anchor="end">' + total + ' h a week before Relay 3</text>';
     el.innerHTML = out;
   })();
 </script>
+</div>
 </body>
 </html>

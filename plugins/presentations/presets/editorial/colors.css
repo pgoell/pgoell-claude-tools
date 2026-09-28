@@ -126,6 +126,23 @@
   --slide-h:       1080px;
 
   /* =====================================================
+     PAGE GRID AND RULES (newspaper page on 1920x1080)
+     Six columns inside the 96px side margins:
+     6 x 248 + 5 x 48 = 1728. Headlines span five
+     columns, running text four (about 55 to 60 characters
+     at body size), margin figures and notes two.
+     ===================================================== */
+  --grid-col:      248px;
+  --grid-gutter:   48px;
+  --span-2:        544px;     /* 2 columns: margin figure, text column */
+  --span-3:        840px;
+  --span-4:        1136px;    /* running text measure */
+  --span-5:        1432px;    /* headline measure */
+  --rule-hair:     2px;       /* column rules, table hairlines, gridlines */
+  --rule-figure:   3px;       /* ink rule above every figure */
+  --rule-zero:     4px;       /* zero line: the heaviest line in a chart */
+
+  /* =====================================================
      RADIUS
      ===================================================== */
   --r-0:       0;

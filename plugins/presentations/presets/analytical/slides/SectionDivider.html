@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>02 Section divider</title>
+<title>07 Section divider</title>
 <style>
   /* ==========================================================
      Synced copy of ../colors.css. Source of truth is the file;
@@ -145,6 +145,18 @@
     --slide-w:       1920px;
     --slide-h:       1080px;
 
+    /* Layout grid (see guidelines.md, Layout grammar).
+       12 columns of 122px with 24px gutters fill the 1728px
+       between the 96px side margins. Chrome sits at fixed
+       heights so nothing moves when you flip slides. */
+    --grid-cols:     12;
+    --grid-col:      122px;
+    --grid-gutter:   24px;
+    --tracker-top:   48px;      /* tracker and sticker row */
+    --title-top:     120px;     /* action title, first line */
+    --body-top:      300px;     /* evidence starts here on every content slide */
+    --body-bottom:   124px;     /* evidence ends this far above the canvas bottom */
+
     /* =====================================================
        RADIUS
        ===================================================== */
@@ -267,54 +279,96 @@
     position: relative;
     width: 1920px;
     height: 1080px;
-    padding: var(--slide-pad-y) var(--slide-pad-x);
     background: var(--bg);
     color: var(--fg);
     overflow: hidden;
     font-family: var(--font-sans);
     font-weight: var(--weight-regular);
-    display: flex;
-    flex-direction: column;
   }
 
-  /* ==== Shared bits ==== */
-  /* Action title: the dominant heading on every content slide,
-     in the same place and size on every slide. */
+  /* ==== Shared chrome (Layout grammar in ../guidelines.md) ==== */
+  /* Every piece of chrome sits at a fixed position, so nothing moves
+     when you flip through the deck. */
+  /* Tracker: the deck's sections, current one marked by the accent.
+     Each section spans 2 grid columns. */
+  .tracker {
+    position: absolute; top: var(--tracker-top); left: var(--slide-pad-x);
+    display: flex; gap: var(--grid-gutter);
+    font-size: var(--fs-micro); line-height: 1.2; color: var(--fg-subtle);
+  }
+  .tracker span {
+    width: calc(2 * var(--grid-col) + var(--grid-gutter));
+    padding-top: 12px; border-top: 4px solid var(--border-strong);
+  }
+  /* Accent job, shared: the current section. */
+  .tracker span.on {
+    border-top-color: var(--accent); color: var(--fg);
+    font-weight: var(--weight-semibold);
+  }
+  /* Sticker: status of the numbers, top right, only when true. */
+  .sticker {
+    position: absolute; top: var(--tracker-top); right: var(--slide-pad-x);
+    font-size: var(--fs-caption); line-height: 1.2; color: var(--fg-muted);
+    border: 2px solid var(--fg-subtle); padding: 6px 20px;
+  }
+  /* Action title: same place, same size on every content slide. */
   h1.action {
+    position: absolute; top: var(--title-top); left: var(--slide-pad-x);
+    width: calc(11 * var(--grid-col) + 10 * var(--grid-gutter));
     font-family: var(--font-display);
     font-size: var(--fs-h1); font-weight: var(--weight-semibold);
     letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
-    margin: 0; max-width: 1560px;
-    text-wrap: balance;
+    margin: 0; text-wrap: balance;
   }
-  /* Footer: Source line on the left when the slide shows numbers, the
-     page number on the right. No rule, no slide counter. */
+  /* Evidence area: fixed box under the title band. */
+  .body {
+    position: absolute; top: var(--body-top); bottom: var(--body-bottom);
+    left: var(--slide-pad-x); right: var(--slide-pad-x);
+  }
+  /* Exhibit subtitle: the measure, its units, and its dates. */
+  .exhibit {
+    font-size: var(--fs-body); line-height: 1.2; color: var(--fg-muted);
+    margin: 0;
+  }
+  /* Footer: source bottom left, page number bottom right. */
   .footer {
     position: absolute;
     left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 48px;
     display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
-    font-size: var(--fs-micro);
+    font-size: var(--fs-micro); line-height: 1.2;
     color: var(--fg-subtle);
   }
-  /* Evidence block under the action title: centered in the space
-     left between title and footer. */
-  .evidence { margin: auto 0; padding: 48px 0 88px; }
-  /* Numbers align: tabular lining figures in charts and big numbers. */
-  .chart, .num { font-variant-numeric: tabular-nums lining-nums; }
+  .chart, .num, table { font-variant-numeric: tabular-nums lining-nums; }
+  svg { display: block; overflow: visible; }
 
   /* ==== This slide ==== */
-  .s-divider { justify-content: flex-end; padding-bottom: 180px; }
-  .s-divider .part {
-    font-size: var(--fs-caption); color: var(--fg-muted);
-    margin-bottom: 40px;
+  .s-divider .deck {
+    position: absolute; top: var(--tracker-top); left: var(--slide-pad-x);
+    font-size: var(--fs-caption); line-height: 1.2; color: var(--fg-muted);
   }
-  .s-divider h1 {
-    font-family: var(--font-display);
+  /* The agenda, repeated: the current section grows to the heading,
+     the others stay in the muted tier. */
+  .s-divider ol {
+    position: absolute; left: var(--slide-pad-x); right: var(--slide-pad-x);
+    top: 240px; margin: 0; padding: 0; list-style: none;
+    border-bottom: 2px solid var(--border);
+  }
+  .s-divider li {
+    display: grid;
+    grid-template-columns: var(--grid-col) 1fr calc(2 * var(--grid-col) + var(--grid-gutter));
+    column-gap: var(--grid-gutter); align-items: baseline;
+    border-top: 2px solid var(--border); padding: 36px 0;
+    font-size: var(--fs-body-lg); line-height: var(--lh-snug); color: var(--fg-muted);
+  }
+  .s-divider li .p { font-size: var(--fs-caption); text-align: right; color: var(--fg-subtle); }
+  .s-divider li.on { padding: 56px 0; border-top: 4px solid var(--accent); }
+  .s-divider li.on .n { color: var(--accent); font-weight: var(--weight-semibold); }
+  .s-divider li.on h1 {
+    margin: 0; font-family: var(--font-display);
     font-size: var(--fs-section); font-weight: var(--weight-semibold);
-    line-height: var(--lh-tight); letter-spacing: var(--tracking-tight);
-    margin: 0; max-width: 1500px;
-    text-wrap: balance;
+    line-height: var(--lh-tight); letter-spacing: var(--tracking-tight); color: var(--fg);
   }
+  .s-divider li.on .n { font-size: var(--fs-section); line-height: var(--lh-tight); }
 </style>
 <script>
   function fit() {
@@ -331,9 +385,14 @@
 </head>
 <body>
 <div class="frame">
-<section class="s-divider dark" data-screen-label="02 Section divider">
-    <div class="part" data-role="label">Part 2 of 3</div>
-    <h1>What moving the volume costs</h1>
+<section class="s-divider dark" data-screen-label="07 Section divider">
+    <div class="deck" data-role="caption">Kestrel depot network review</div>
+    <ol>
+      <li><span class="n">1</span><span>Where cost sits</span><span class="p" data-role="caption">p. 4</span></li>
+      <li class="on"><span class="n">2</span><h1>What closing saves</h1><span class="p" data-role="caption">p. 8</span></li>
+      <li><span class="n">3</span><span>Options</span><span class="p" data-role="caption">p. 10</span></li>
+      <li><span class="n">4</span><span>Plan</span><span class="p" data-role="caption">p. 12</span></li>
+    </ol>
   </section>
 </div>
 </body>

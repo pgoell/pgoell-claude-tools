@@ -145,6 +145,18 @@
     --slide-w:       1920px;
     --slide-h:       1080px;
 
+    /* Layout grid (see guidelines.md, Layout grammar).
+       12 columns of 122px with 24px gutters fill the 1728px
+       between the 96px side margins. Chrome sits at fixed
+       heights so nothing moves when you flip slides. */
+    --grid-cols:     12;
+    --grid-col:      122px;
+    --grid-gutter:   24px;
+    --tracker-top:   48px;      /* tracker and sticker row */
+    --title-top:     120px;     /* action title, first line */
+    --body-top:      300px;     /* evidence starts here on every content slide */
+    --body-bottom:   124px;     /* evidence ends this far above the canvas bottom */
+
     /* =====================================================
        RADIUS
        ===================================================== */
@@ -267,59 +279,99 @@
     position: relative;
     width: 1920px;
     height: 1080px;
-    padding: var(--slide-pad-y) var(--slide-pad-x);
     background: var(--bg);
     color: var(--fg);
     overflow: hidden;
     font-family: var(--font-sans);
     font-weight: var(--weight-regular);
-    display: flex;
-    flex-direction: column;
   }
 
-  /* ==== Shared bits ==== */
-  /* Action title: the dominant heading on every content slide,
-     in the same place and size on every slide. */
+  /* ==== Shared chrome (Layout grammar in ../guidelines.md) ==== */
+  /* Every piece of chrome sits at a fixed position, so nothing moves
+     when you flip through the deck. */
+  /* Tracker: the deck's sections, current one marked by the accent.
+     Each section spans 2 grid columns. */
+  .tracker {
+    position: absolute; top: var(--tracker-top); left: var(--slide-pad-x);
+    display: flex; gap: var(--grid-gutter);
+    font-size: var(--fs-micro); line-height: 1.2; color: var(--fg-subtle);
+  }
+  .tracker span {
+    width: calc(2 * var(--grid-col) + var(--grid-gutter));
+    padding-top: 12px; border-top: 4px solid var(--border-strong);
+  }
+  /* Accent job, shared: the current section. */
+  .tracker span.on {
+    border-top-color: var(--accent); color: var(--fg);
+    font-weight: var(--weight-semibold);
+  }
+  /* Sticker: status of the numbers, top right, only when true. */
+  .sticker {
+    position: absolute; top: var(--tracker-top); right: var(--slide-pad-x);
+    font-size: var(--fs-caption); line-height: 1.2; color: var(--fg-muted);
+    border: 2px solid var(--fg-subtle); padding: 6px 20px;
+  }
+  /* Action title: same place, same size on every content slide. */
   h1.action {
+    position: absolute; top: var(--title-top); left: var(--slide-pad-x);
+    width: calc(11 * var(--grid-col) + 10 * var(--grid-gutter));
     font-family: var(--font-display);
     font-size: var(--fs-h1); font-weight: var(--weight-semibold);
     letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
-    margin: 0; max-width: 1560px;
-    text-wrap: balance;
+    margin: 0; text-wrap: balance;
   }
-  /* Footer: Source line on the left when the slide shows numbers, the
-     page number on the right. No rule, no slide counter. */
+  /* Evidence area: fixed box under the title band. */
+  .body {
+    position: absolute; top: var(--body-top); bottom: var(--body-bottom);
+    left: var(--slide-pad-x); right: var(--slide-pad-x);
+  }
+  /* Exhibit subtitle: the measure, its units, and its dates. */
+  .exhibit {
+    font-size: var(--fs-body); line-height: 1.2; color: var(--fg-muted);
+    margin: 0;
+  }
+  /* Footer: source bottom left, page number bottom right. */
   .footer {
     position: absolute;
     left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 48px;
     display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
-    font-size: var(--fs-micro);
+    font-size: var(--fs-micro); line-height: 1.2;
     color: var(--fg-subtle);
   }
-  /* Evidence block under the action title: centered in the space
-     left between title and footer. */
-  .evidence { margin: auto 0; padding: 48px 0 88px; }
-  /* Numbers align: tabular lining figures in charts and big numbers. */
-  .chart, .num { font-variant-numeric: tabular-nums lining-nums; }
+  .chart, .num, table { font-variant-numeric: tabular-nums lining-nums; }
+  svg { display: block; overflow: visible; }
 
   /* ==== This slide ==== */
-  .s-title { justify-content: flex-end; padding-bottom: 150px; }
+  .s-title .client {
+    position: absolute; top: var(--tracker-top); left: var(--slide-pad-x);
+    font-size: var(--fs-caption); line-height: 1.2; color: var(--fg);
+    font-weight: var(--weight-semibold);
+  }
   .s-title h1 {
+    position: absolute; top: 380px; left: var(--slide-pad-x);
+    width: calc(10 * var(--grid-col) + 9 * var(--grid-gutter));
     font-family: var(--font-display);
     font-size: var(--fs-display); font-weight: var(--weight-semibold);
     line-height: var(--lh-tight); letter-spacing: var(--tracking-tight);
-    margin: 0; max-width: 1600px;
-    text-wrap: balance;
+    margin: 0; text-wrap: balance;
   }
   .s-title .sub {
-    font-size: var(--fs-subtitle); line-height: var(--lh-normal);
-    color: var(--fg-muted);
-    margin: 40px 0 0; max-width: 1400px;
+    position: absolute; top: 640px; left: var(--slide-pad-x);
+    width: calc(10 * var(--grid-col) + 9 * var(--grid-gutter));
+    font-size: var(--fs-subtitle); line-height: var(--lh-snug);
+    color: var(--fg-muted); margin: 0;
   }
+  /* Document block: who it is for, when, by whom, on the 12-column grid. */
   .s-title .meta {
-    position: absolute; top: var(--slide-pad-y); left: var(--slide-pad-x);
-    font-size: var(--fs-caption); color: var(--fg-subtle);
+    position: absolute; left: var(--slide-pad-x); right: var(--slide-pad-x);
+    bottom: 120px;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    column-gap: var(--grid-gutter);
+    border-top: 2px solid var(--border-strong); padding-top: 32px;
+    font-size: var(--fs-caption); line-height: var(--lh-snug);
   }
+  .s-title .meta .k { color: var(--fg-subtle); }
+  .s-title .meta .v { color: var(--fg); font-weight: var(--weight-semibold); margin-top: 4px; }
 </style>
 <script>
   function fit() {
@@ -337,9 +389,15 @@
 <body>
 <div class="frame">
 <section class="s-title" data-screen-label="01 Title">
-    <div class="meta" data-role="caption">Board pre-read, March 2026</div>
+    <div class="client" data-role="caption">Kestrel Logistics</div>
+    <div class="sticker" data-role="label">Draft for discussion</div>
     <h1>Kestrel can cut cost to serve by 14% by closing 3 of 11 depots</h1>
-    <p class="sub">Network review for the Kestrel Logistics board</p>
+    <p class="sub">Depot network review for the board</p>
+    <div class="meta">
+      <div><div class="k" data-role="caption">Prepared for</div><div class="v" data-role="caption">Kestrel Logistics board</div></div>
+      <div><div class="k" data-role="caption">Date</div><div class="v" data-role="caption">12 March 2026</div></div>
+      <div><div class="k" data-role="caption">Prepared by</div><div class="v" data-role="caption">Network strategy team</div></div>
+    </div>
   </section>
 </div>
 </body>

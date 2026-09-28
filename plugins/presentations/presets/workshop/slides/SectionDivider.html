@@ -135,6 +135,15 @@
     --slide-w:       1920px;
     --slide-h:       1080px;
 
+    /* Layout grid (1920x1080): 12 columns of 96px with 48px
+       gutters inside the 120px side margins (12 x 96 + 11 x 48
+       = 1680). Panels snap to whole columns. */
+    --grid-cols:     12;
+    --grid-col:      96px;
+    --grid-gutter:   48px;
+    --panel-pad:     48px;     /* inner padding of every panel */
+    --panel-gap:     32px;     /* gap between stacked panels */
+
     /* =====================================================
        RADIUS
        ===================================================== */
@@ -142,6 +151,8 @@
     --r-sm:      4px;
     --r-md:      6px;
     --r-lg:      8px;
+    --r-xl:      24px;     /* small panels, rows, chips with text */
+    --r-2xl:     40px;     /* content panels and writing space */
     --r-pill:    999px;
 
     /* =====================================================
@@ -263,46 +274,105 @@
     flex-direction: column;
   }
 
-  /* ==== Shared bits ==== */
-  /* Action title: the dominant heading on every content slide,
-     in the same place and size on every slide. */
-  h1.action {
-    font-family: var(--font-display);
-    font-size: var(--fs-h1); font-weight: var(--weight-semibold);
-    letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
-    margin: 0; max-width: 1560px;
-    text-wrap: balance;
+  /* ==== Shared bits (workshop layout grammar) ==== */
+  /* 12-column grid: 96px columns, 48px gutters, 120px margins. */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-cols), var(--grid-col));
+    column-gap: var(--grid-gutter);
   }
-  /* Footer: Source line on the left, only when the slide shows
+  /* Title row: the title top left over 9 columns, the time box and
+     group chips top right. The title talks to the room. */
+  .head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: var(--grid-gutter);
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-variation-settings: var(--font-display-settings);
+    font-style: normal; font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
+    margin: 0; text-wrap: balance;
+  }
+  h1.action { font-size: var(--fs-h1); max-width: 1248px; }
+  /* Panel: every block of content sits in its own warm panel with
+     a large radius, never loose on the canvas. */
+  .panel {
+    background: var(--bg-elev);
+    border: 2px solid var(--border);
+    border-radius: var(--r-2xl);
+    padding: var(--panel-pad);
+  }
+  .panel.subtle { background: var(--bg-subtle); border-color: transparent; }
+  /* Writing space: an empty panel the facilitator fills on the
+     whiteboard or flip chart while the room talks. */
+  .write {
+    border: 4px dashed var(--border-strong);
+    border-radius: var(--r-2xl);
+    padding: var(--panel-pad);
+    display: flex; flex-direction: column;
+  }
+  /* Chips: time box and group size, top right on activity slides.
+     The time box is an ink pill (inverse surface), never the accent. */
+  .chips { display: flex; gap: 16px; flex-shrink: 0; padding-top: 8px; }
+  .chip {
+    font-size: var(--fs-caption); font-weight: var(--weight-semibold);
+    line-height: 1; padding: 18px 32px;
+    border-radius: var(--r-pill);
+    background: transparent; color: var(--fg);
+    border: 3px solid var(--border-strong);
+    white-space: nowrap;
+  }
+  .chip.time { background: var(--bg-inverse); color: var(--fg-inverse); border-color: var(--bg-inverse); }
+  /* Step disc: a real step number in a real sequence only. */
+  .disc {
+    flex-shrink: 0;
+    width: 88px; height: 88px; border-radius: 50%;
+    border: 4px solid var(--fg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: var(--fs-body); font-weight: var(--weight-bold);
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  /* Footer: source line bottom left, only when the slide shows
      numbers. No rule, no slide counter. */
   .footer {
     position: absolute;
-    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 48px;
-    display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
+    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 40px;
     font-size: var(--fs-micro);
     color: var(--fg-subtle);
   }
-  /* Evidence block under the action title: centered in the space
-     left between title and footer. */
-  .evidence { margin: auto 0; padding: 48px 0 88px; }
-  /* Numbers align: tabular lining figures in charts and big numbers. */
   .chart, .num { font-variant-numeric: tabular-nums lining-nums; }
-  /* Fraunces titles: upright, softened. Numbers stay in the sans stack. */
-  h1 { font-variation-settings: var(--font-display-settings); font-style: normal; }
 
   /* ==== This slide ==== */
-  .s-divider { justify-content: flex-end; padding-bottom: 180px; }
-  .s-divider .part {
+  /* Part number in a large disc, the part name, its time box, and
+     the session map along the bottom: done, now, next. */
+  .s-divider .main { display: flex; align-items: center; gap: 64px; margin: auto 0; }
+  .s-divider .big {
+    flex-shrink: 0; width: 240px; height: 240px; border-radius: 50%;
+    background: var(--accent); color: var(--accent-fg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: var(--fs-display); font-weight: var(--weight-bold);
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  .s-divider h1 { font-size: var(--fs-display); }
+  .s-divider .chips { margin-top: 40px; padding-top: 0; }
+  .s-divider .map { row-gap: 0; }
+  .s-divider .map > div {
+    grid-column: span 4;
+    display: flex; align-items: center; gap: 28px;
+    padding: 32px 40px; border-radius: var(--r-xl);
+    border: 3px solid var(--border);
+  }
+  .s-divider .map .disc {
+    width: 72px; height: 72px; border-width: 3px; border-color: var(--fg-subtle);
     font-size: var(--fs-caption); color: var(--fg-muted);
-    margin-bottom: 40px;
   }
-  .s-divider h1 {
-    font-family: var(--font-display);
-    font-size: var(--fs-section); font-weight: var(--weight-semibold);
-    line-height: var(--lh-tight); letter-spacing: var(--tracking-tight);
-    margin: 0; max-width: 1500px;
-    text-wrap: balance;
-  }
+  .s-divider .map .name { font-size: var(--fs-body); line-height: var(--lh-snug); }
+  .s-divider .map .when { font-size: var(--fs-caption); color: var(--fg-subtle); margin-top: 4px; }
+  .s-divider .map .done .name { color: var(--fg-muted); }
+  /* Accent job: marks the part the room is in now. */
+  .s-divider .map .now { background: var(--bg-elev); border-color: var(--accent); }
+  .s-divider .map .now .disc { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
 </style>
 <script>
   function fit() {
@@ -320,8 +390,21 @@
 <body>
 <div class="frame">
 <section class="s-divider dark" data-screen-label="02 Section divider">
-    <div class="part" data-role="label">Part 2 of 3</div>
-    <h1>Try a silent start</h1>
+    <div class="main">
+      <div class="big" aria-label="Part 2 of 3">2</div>
+      <div>
+        <h1>Try a silent start</h1>
+        <div class="chips">
+          <span class="chip time">25 min</span>
+          <span class="chip">In pairs</span>
+        </div>
+      </div>
+    </div>
+    <div class="grid map" aria-label="Session map">
+      <div class="done"><span class="disc">1</span><div><div class="name">Why retros stall</div><div class="when">Done</div></div></div>
+      <div class="now"><span class="disc">2</span><div><div class="name">Try a silent start</div><div class="when">Now</div></div></div>
+      <div class="next"><span class="disc">3</span><div><div class="name">Pick one change</div><div class="when">After the break</div></div></div>
+    </div>
   </section>
 </div>
 </body>

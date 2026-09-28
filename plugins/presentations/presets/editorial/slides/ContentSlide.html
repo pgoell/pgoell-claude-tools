@@ -136,6 +136,23 @@
     --slide-h:       1080px;
 
     /* =====================================================
+       PAGE GRID AND RULES (newspaper page on 1920x1080)
+       Six columns inside the 96px side margins:
+       6 x 248 + 5 x 48 = 1728. Headlines span five
+       columns, running text four (about 55 to 60 characters
+       at body size), margin figures and notes two.
+       ===================================================== */
+    --grid-col:      248px;
+    --grid-gutter:   48px;
+    --span-2:        544px;     /* 2 columns: margin figure, text column */
+    --span-3:        840px;
+    --span-4:        1136px;    /* running text measure */
+    --span-5:        1432px;    /* headline measure */
+    --rule-hair:     2px;       /* column rules, table hairlines, gridlines */
+    --rule-figure:   3px;       /* ink rule above every figure */
+    --rule-zero:     4px;       /* zero line: the heaviest line in a chart */
+
+    /* =====================================================
        RADIUS
        ===================================================== */
     --r-0:       0;
@@ -262,53 +279,81 @@
     flex-direction: column;
   }
 
-  /* ==== Shared bits ==== */
-  /* Action title: the dominant heading on every content slide,
-     in the same place and size on every slide. */
+  /* ==== Shared bits: the editorial page ==== */
+  /* Sentence headline: serif, top left, five columns wide, the
+     dominant heading on every content slide, same place and size. */
   h1.action {
     font-family: var(--font-display);
     font-size: var(--fs-h1); font-weight: var(--weight-semibold);
     letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
-    margin: 0; max-width: 1560px;
+    margin: 0; max-width: var(--span-5);
     text-wrap: balance;
   }
-  /* Footer: Source line on the left when the slide shows numbers, the
-     page number on the right. No rule, no slide counter. */
+  /* Standfirst: the plain line under the headline. On chart slides
+     it carries the measure, the units, and the dates. */
+  .standfirst {
+    font-size: var(--fs-subtitle); line-height: var(--lh-snug);
+    color: var(--fg-muted); margin: 20px 0 0;
+  }
+  /* Figure: every chart, table, or margin figure hangs from an ink
+     rule; nothing else on the slide is boxed or carded. */
+  .figure {
+    border-top: var(--rule-figure) solid var(--fg);
+    padding-top: 28px; margin: 44px 0 0;
+  }
+  /* Footer: source and note line bottom left in the sans, page
+     number bottom right. No rule, no slide counter. */
   .footer {
     position: absolute;
-    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 48px;
+    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 44px;
     display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
-    font-size: var(--fs-micro);
+    font-size: var(--fs-micro); line-height: var(--lh-snug);
     color: var(--fg-subtle);
   }
-  /* Evidence block under the action title: centered in the space
-     left between title and footer. */
-  .evidence { margin: auto 0; padding: 48px 0 88px; }
-  /* Numbers align: tabular lining figures in charts and big numbers. */
-  .chart, .num { font-variant-numeric: tabular-nums lining-nums; }
+  .footer .source { max-width: var(--span-5); }
+  /* Body block on text-led slides: centered in the space between the
+     headline and the footer, so no dead band opens under the text. */
+  .body { margin: auto 0; padding-bottom: 72px; }
+  /* Chart grammar: horizontal gridlines only, value labels sitting
+     on top of their gridline at the left edge, a heavier ink zero
+     line, direct labels and annotations in the sans. */
+  .chart { display: block; overflow: visible; }
+  .chart text { font-family: var(--font-sans); font-size: var(--fs-caption); fill: var(--fg-muted); }
+  .chart text.hi { fill: var(--fg); font-weight: var(--weight-semibold); }
+  .chart text.ann { fill: var(--fg); }
+  .chart .grid { stroke: var(--chart-grid); stroke-width: var(--rule-hair); }
+  .chart .zero { stroke: var(--fg); stroke-width: var(--rule-zero); }
+  .chart .leader { stroke: var(--fg-subtle); stroke-width: 2; fill: none; }
+  .chart, .num, table { font-variant-numeric: tabular-nums lining-nums; }
 
   /* ==== This slide ==== */
-  .s-content ul {
-    list-style: none;
-    /* Top-anchored under the title, not centered: a list reads as a
-       continuation of the claim, and centering left a dead band. */
-    margin: 0; padding-top: 80px;
-    display: flex; flex-direction: column; gap: 48px;
-    max-width: 1500px;
+  /* Running text in the four-column measure on the left, a margin
+     figure in columns five and six, a column rule between them.
+     Points are short paragraphs parted by hairlines, not bullets. */
+  .s-content .spread {
+    display: grid;
+    grid-template-columns: var(--span-4) var(--span-2);
+    column-gap: var(--grid-gutter);
   }
-  .s-content li {
-    position: relative;
-    padding-left: 56px;
+  .s-content .points {
+    list-style: none; margin: 0; padding: 0;
+    border-top: var(--rule-figure) solid var(--fg);
+  }
+  .s-content .points li {
     font-size: var(--fs-body); line-height: var(--lh-normal);
-    color: var(--fg);
+    padding: 36px 0;
+    border-bottom: var(--rule-hair) solid var(--border-strong);
     text-wrap: pretty;
   }
-  .s-content li::before {
-    content: ''; position: absolute;
-    left: 0; top: 0.5em;
-    width: 16px; height: 16px;
-    background: var(--fg-subtle);
+  .s-content .aside { margin-top: 0; }
+  .s-content .aside .head {
+    font-size: var(--fs-caption); line-height: var(--lh-snug);
+    color: var(--fg-muted); margin: 0 0 16px;
   }
+  .s-content .line { fill: none; stroke: var(--chart-context); stroke-width: 5; }
+  .s-content .line.hi { stroke: var(--chart-highlight); stroke-width: 6; }
+  .s-content .pt { fill: var(--chart-context); }
+  .s-content .pt.hi { fill: var(--chart-highlight); }
 </style>
 <script>
   function fit() {
@@ -327,16 +372,52 @@
 <div class="frame">
 <section class="s-content" data-screen-label="03 Content">
     <h1 class="action">Riders kept cycling through winter where the lanes were protected</h1>
-    <ul class="evidence">
-      <li>Winter trips rose from 4k to 12k a day on the 6 protected corridors</li>
-      <li>Painted-lane corridors stayed flat at about 3k a day</li>
-      <li>Collisions involving cyclists fell by half on the protected corridors</li>
-    </ul>
+    <div class="spread body">
+      <ul class="points">
+        <li>Winter trips rose from 4k to 12k a day on the 6 protected corridors</li>
+        <li>Painted-lane corridors stayed flat at about 3k a day</li>
+        <li>Collisions involving cyclists fell by half on the protected corridors</li>
+      </ul>
+      <figure class="figure aside">
+        <p class="head" data-role="caption">Weekday bike trips in January</p>
+        <svg class="chart" width="544" height="420" role="img"
+             aria-label="Weekday bike trips in January: protected corridors 4k in 2022 and 12k in 2025; painted corridors 3k in both years"
+             data-chart="line" data-unit="k"
+             data-labels='["2022", "2025"]'
+             data-series='[{"name": "Protected", "values": [4, 12]}, {"name": "Painted", "values": [3, 3]}]'
+             data-highlight-series="0"></svg>
+      </figure>
+    </div>
     <div class="footer">
-      <span class="source" data-role="source">Source: Brenford bike counters, January 2022 to 2025</span>
+      <span class="source" data-role="source">Source: Brenford bike counters, January 2022 to 2025; police collision records</span>
       <span class="page" data-role="footer">3</span>
     </div>
   </section>
 </div>
+<script>
+  (function () {
+    const el = document.querySelector('.s-content .chart');
+    const s = JSON.parse(el.dataset.series), labels = JSON.parse(el.dataset.labels);
+    const hs = Number(el.dataset.highlightSeries);
+    const x0 = 80, x1 = 300, base = 360, top = 40, max = 12;
+    const Y = v => base - v / max * (base - top);
+    let out = '';
+    // Draw context first so the story line sits on top.
+    const order = s.map((_, i) => i).sort((a, b) => (a === hs) - (b === hs));
+    order.forEach(k => {
+      const v = s[k].values, hi = k === hs ? ' hi' : '';
+      out += '<line class="line' + hi + '" x1="' + x0 + '" y1="' + Y(v[0]) + '" x2="' + x1 + '" y2="' + Y(v[1]) + '"/>';
+      out += '<circle class="pt' + hi + '" cx="' + x0 + '" cy="' + Y(v[0]) + '" r="9"/>';
+      out += '<circle class="pt' + hi + '" cx="' + x1 + '" cy="' + Y(v[1]) + '" r="9"/>';
+      // Left labels: story series nudged up, context nudged down, so close values never touch.
+      const dy = k === hs ? -8 : 30;
+      out += '<text class="' + hi.trim() + '" x="' + (x0 - 18) + '" y="' + (Y(v[0]) + dy) + '" text-anchor="end">' + v[0] + 'k</text>';
+      out += '<text class="' + hi.trim() + '" x="' + (x1 + 18) + '" y="' + (Y(v[1]) + 10) + '">' + v[1] + 'k ' + s[k].name + '</text>';
+    });
+    out += '<text x="' + x0 + '" y="' + (base + 56) + '" text-anchor="middle">' + labels[0] + '</text>';
+    out += '<text x="' + x1 + '" y="' + (base + 56) + '" text-anchor="middle">' + labels[1] + '</text>';
+    el.innerHTML = out;
+  })();
+</script>
 </body>
 </html>

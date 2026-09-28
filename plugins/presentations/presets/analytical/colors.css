@@ -135,6 +135,18 @@
   --slide-w:       1920px;
   --slide-h:       1080px;
 
+  /* Layout grid (see guidelines.md, Layout grammar).
+     12 columns of 122px with 24px gutters fill the 1728px
+     between the 96px side margins. Chrome sits at fixed
+     heights so nothing moves when you flip slides. */
+  --grid-cols:     12;
+  --grid-col:      122px;
+  --grid-gutter:   24px;
+  --tracker-top:   48px;      /* tracker and sticker row */
+  --title-top:     120px;     /* action title, first line */
+  --body-top:      300px;     /* evidence starts here on every content slide */
+  --body-bottom:   124px;     /* evidence ends this far above the canvas bottom */
+
   /* =====================================================
      RADIUS
      ===================================================== */

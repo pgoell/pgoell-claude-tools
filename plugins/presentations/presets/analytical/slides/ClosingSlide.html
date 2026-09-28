@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>06 Closing</title>
+<title>14 Closing</title>
 <style>
   /* ==========================================================
      Synced copy of ../colors.css. Source of truth is the file;
@@ -145,6 +145,18 @@
     --slide-w:       1920px;
     --slide-h:       1080px;
 
+    /* Layout grid (see guidelines.md, Layout grammar).
+       12 columns of 122px with 24px gutters fill the 1728px
+       between the 96px side margins. Chrome sits at fixed
+       heights so nothing moves when you flip slides. */
+    --grid-cols:     12;
+    --grid-col:      122px;
+    --grid-gutter:   24px;
+    --tracker-top:   48px;      /* tracker and sticker row */
+    --title-top:     120px;     /* action title, first line */
+    --body-top:      300px;     /* evidence starts here on every content slide */
+    --body-bottom:   124px;     /* evidence ends this far above the canvas bottom */
+
     /* =====================================================
        RADIUS
        ===================================================== */
@@ -267,53 +279,103 @@
     position: relative;
     width: 1920px;
     height: 1080px;
-    padding: var(--slide-pad-y) var(--slide-pad-x);
     background: var(--bg);
     color: var(--fg);
     overflow: hidden;
     font-family: var(--font-sans);
     font-weight: var(--weight-regular);
-    display: flex;
-    flex-direction: column;
   }
 
-  /* ==== Shared bits ==== */
-  /* Action title: the dominant heading on every content slide,
-     in the same place and size on every slide. */
+  /* ==== Shared chrome (Layout grammar in ../guidelines.md) ==== */
+  /* Every piece of chrome sits at a fixed position, so nothing moves
+     when you flip through the deck. */
+  /* Tracker: the deck's sections, current one marked by the accent.
+     Each section spans 2 grid columns. */
+  .tracker {
+    position: absolute; top: var(--tracker-top); left: var(--slide-pad-x);
+    display: flex; gap: var(--grid-gutter);
+    font-size: var(--fs-micro); line-height: 1.2; color: var(--fg-subtle);
+  }
+  .tracker span {
+    width: calc(2 * var(--grid-col) + var(--grid-gutter));
+    padding-top: 12px; border-top: 4px solid var(--border-strong);
+  }
+  /* Accent job, shared: the current section. */
+  .tracker span.on {
+    border-top-color: var(--accent); color: var(--fg);
+    font-weight: var(--weight-semibold);
+  }
+  /* Sticker: status of the numbers, top right, only when true. */
+  .sticker {
+    position: absolute; top: var(--tracker-top); right: var(--slide-pad-x);
+    font-size: var(--fs-caption); line-height: 1.2; color: var(--fg-muted);
+    border: 2px solid var(--fg-subtle); padding: 6px 20px;
+  }
+  /* Action title: same place, same size on every content slide. */
   h1.action {
+    position: absolute; top: var(--title-top); left: var(--slide-pad-x);
+    width: calc(11 * var(--grid-col) + 10 * var(--grid-gutter));
     font-family: var(--font-display);
     font-size: var(--fs-h1); font-weight: var(--weight-semibold);
     letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
-    margin: 0; max-width: 1560px;
-    text-wrap: balance;
+    margin: 0; text-wrap: balance;
   }
-  /* Footer: Source line on the left when the slide shows numbers, the
-     page number on the right. No rule, no slide counter. */
+  /* Evidence area: fixed box under the title band. */
+  .body {
+    position: absolute; top: var(--body-top); bottom: var(--body-bottom);
+    left: var(--slide-pad-x); right: var(--slide-pad-x);
+  }
+  /* Exhibit subtitle: the measure, its units, and its dates. */
+  .exhibit {
+    font-size: var(--fs-body); line-height: 1.2; color: var(--fg-muted);
+    margin: 0;
+  }
+  /* Footer: source bottom left, page number bottom right. */
   .footer {
     position: absolute;
     left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 48px;
     display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
-    font-size: var(--fs-micro);
+    font-size: var(--fs-micro); line-height: 1.2;
     color: var(--fg-subtle);
   }
-  /* Evidence block under the action title: centered in the space
-     left between title and footer. */
-  .evidence { margin: auto 0; padding: 48px 0 88px; }
-  /* Numbers align: tabular lining figures in charts and big numbers. */
-  .chart, .num { font-variant-numeric: tabular-nums lining-nums; }
+  .chart, .num, table { font-variant-numeric: tabular-nums lining-nums; }
+  svg { display: block; overflow: visible; }
 
   /* ==== This slide ==== */
-  .s-close { justify-content: flex-end; gap: 120px; padding-bottom: 150px; }
+  .s-close .ask {
+    position: absolute; top: var(--tracker-top); left: var(--slide-pad-x);
+    font-size: var(--fs-caption); line-height: 1.2; color: var(--fg-muted);
+  }
   .s-close h1 {
+    position: absolute; top: var(--title-top); left: var(--slide-pad-x);
+    width: calc(11 * var(--grid-col) + 10 * var(--grid-gutter));
     font-family: var(--font-display);
     font-size: var(--fs-section); font-weight: var(--weight-semibold);
     line-height: var(--lh-tight); letter-spacing: var(--tracking-tight);
-    margin: 0; max-width: 1680px;
-    text-wrap: balance;
+    margin: 0; text-wrap: balance;
   }
-  .s-close .contact { display: flex; gap: 120px; }
-  .s-close .contact .k { font-size: var(--fs-caption); color: var(--fg-muted); margin-bottom: 8px; }
-  .s-close .contact .v { font-size: var(--fs-body); color: var(--fg); }
+  .s-close table {
+    position: absolute; top: 380px; left: var(--slide-pad-x); right: var(--slide-pad-x);
+    width: calc(100% - 2 * var(--slide-pad-x));
+    border-collapse: collapse;
+  }
+  .s-close th {
+    font-size: var(--fs-caption); font-weight: var(--weight-regular); color: var(--fg-muted);
+    text-align: left; padding: 0 0 16px; border-bottom: 2px solid var(--fg);
+  }
+  .s-close td {
+    font-size: var(--fs-body); line-height: var(--lh-snug);
+    padding: 26px 0; border-bottom: 2px solid var(--border-strong);
+  }
+  .s-close td.o, .s-close td.d { color: var(--fg-muted); }
+  .s-close .c-step { width: calc(7 * var(--grid-col) + 7 * var(--grid-gutter)); }
+  .s-close .c-owner { width: calc(3 * var(--grid-col) + 3 * var(--grid-gutter)); }
+  /* Accent job: the decision asked of this meeting. */
+  .s-close tr.now td:first-child { color: var(--accent); font-weight: var(--weight-semibold); }
+  .s-close .contact {
+    position: absolute; left: var(--slide-pad-x); bottom: 72px;
+    font-size: var(--fs-caption); color: var(--fg-muted);
+  }
 </style>
 <script>
   function fit() {
@@ -330,22 +392,19 @@
 </head>
 <body>
 <div class="frame">
-<section class="s-close dark" data-screen-label="06 Closing">
+<section class="s-close dark" data-screen-label="14 Closing">
+    <div class="ask" data-role="caption">Decision for the board meeting of 24 April 2026</div>
     <h1>Approve the depot plan in April to save €18M a year from 2027</h1>
-    <div class="contact">
-      <div>
-        <div class="k" data-role="label">Engagement lead</div>
-        <div class="v">M. Okafor</div>
-      </div>
-      <div>
-        <div class="k" data-role="label">Team</div>
-        <div class="v">Network strategy</div>
-      </div>
-      <div>
-        <div class="k" data-role="label">Email</div>
-        <div class="v">network@kestrel.example</div>
-      </div>
-    </div>
+    <table>
+      <thead><tr><th class="c-step">Next step</th><th class="c-owner">Owner</th><th>By</th></tr></thead>
+      <tbody>
+        <tr class="now"><td>Approve closing Hull, Swindon, and Leeds</td><td class="o">Board</td><td class="d">24 Apr 2026</td></tr>
+        <tr><td>Open consultation with staff and unions</td><td class="o">HR director</td><td class="d">May 2026</td></tr>
+        <tr><td>Add shifts at the 8 receiving depots</td><td class="o">Operations</td><td class="d">Aug 2026</td></tr>
+        <tr><td>Close Hull, the first depot</td><td class="o">Network team</td><td class="d">Jan 2027</td></tr>
+      </tbody>
+    </table>
+    <div class="contact" data-role="caption">Questions to M. Okafor, engagement lead, network@kestrel.example</div>
   </section>
 </div>
 </body>

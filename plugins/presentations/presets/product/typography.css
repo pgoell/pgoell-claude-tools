@@ -2,12 +2,14 @@
    Product preset, font stacks
    ============================================================
    Geist for titles and body, one family in several weights.
-   The variable file (weight axis 100 to 900) from Vercel's
-   geist npm build ships unmodified in assets/fonts/geist/ with
-   its OFL.txt and loads from that relative path, so slides
-   make no network request. Tables and chart labels switch on
-   tabular figures with font-variant-numeric. Geist Mono is for
-   code blocks only, never labels, and is not vendored.
+   Geist Mono for commands, code, version numbers, and other
+   literal identifiers the audience would type or search for;
+   never for labels or metadata. Both variable files (weight
+   axis 100 to 900) from Vercel's geist npm build ship
+   unmodified in assets/fonts/ with their OFL.txt and load from
+   that relative path, so slides make no network request.
+   Tables, metrics, and chart labels switch on tabular figures
+   with font-variant-numeric.
    ============================================================ */
 
 @font-face {
@@ -18,8 +20,16 @@
   font-display: block;
 }
 
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('assets/fonts/geist-mono/GeistMono-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+}
+
 :root {
   --font-sans:    'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
   --font-display: var(--font-sans);
-  --font-mono:    'Geist Mono', 'SF Mono', Menlo, Consolas, monospace;   /* code blocks only */
+  --font-mono:    'Geist Mono', 'SF Mono', Menlo, Consolas, monospace;   /* commands and identifiers only */
 }

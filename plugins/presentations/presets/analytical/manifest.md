@@ -12,11 +12,11 @@ Consulting-style decks read by or presented to decision makers: board papers, st
 
 ## Coverage
 
-- `colors.css`: semantic light scope (white paper, navy ink, blue accent) and a navy `.dark` scope with swapped inverse tokens; the chart group with `--chart-highlight`, `--chart-context`, `--chart-grid`, six categorical colors per scope, plus `--chart-seq-1` to `--chart-seq-5` (ColorBrewer Blues 5) and `--chart-div-1` to `--chart-div-5` (ColorBrewer RdBu 5); the slide type scale (60px action title, 36px body, 24px source line); spacing, radius, shadows, and motion as in the default preset.
+- `colors.css`: layout grid tokens (`--grid-col`, `--grid-gutter`, `--tracker-top`, `--title-top`, `--body-top`, `--body-bottom`), semantic light scope (white paper, navy ink, blue accent) and a navy `.dark` scope with swapped inverse tokens; the chart group with `--chart-highlight`, `--chart-context`, `--chart-grid`, six categorical colors per scope, plus `--chart-seq-1` to `--chart-seq-5` (ColorBrewer Blues 5) and `--chart-div-1` to `--chart-div-5` (ColorBrewer RdBu 5); the slide type scale (60px action title, 36px body, 24px source line); spacing, radius, shadows, and motion as in the default preset.
 - `typography.css`: IBM Plex Serif 600 for titles, IBM Plex Sans 400 and 600 for everything else, all vendored.
 - `guidelines.md`: voice, use, skeleton (margins, footer with page number, sticker), color, type, imagery, and layout coverage.
 - `language.md`: the ten wording rules with the analytical tone line, the facts rule, and before and after pairs.
-- `slides/`: TitleSlide, SectionDivider, ContentSlide, BarChartSlide (with a "Preliminary" sticker), StatSlide, ClosingSlide. Each embeds a synced copy of the variable files and makes no network request.
+- `slides/`: 11 layouts built from the layout grammar in `guidelines.md`, not adapted from `default`: TitleSlide, ExecSummarySlide, SectionDivider, ContentSlide, BarChartSlide, ChartTakeawaySlide, IssueTreeSlide, StatSlide, ScorecardSlide, ProcessSlide, ClosingSlide. They tell one consistent story (Kestrel depot review: €129M cost to serve, 3 depots at €40M, €22M added elsewhere, €18M net). Each embeds a synced copy of the variable files and makes no network request.
 - `assets/fonts/`: the vendored font files with their licenses.
 
 ## What this direction avoids
@@ -30,6 +30,12 @@ White paper, navy ink, and one blue accent with a serif title; avoids the off-wh
 - The dark scope redeclares `--border-accent` and `--chart-highlight` so they pick up the dark accent instead of inheriting the resolved light value.
 - IBM Plex ships as IBM's own unmodified static files, not a Fontsource latin subset, because Plex carries a Reserved Font Name and subsetting counts as modification.
 - The mono stack is not vendored: slides never use it.
+- Layout rebuild (2026-09-28): the six base slides were copies of the `default` compositions with swapped variables. They are rebuilt on a 12-column consulting grid with fixed chrome (tracker, sticker, title, evidence area, source and page number), and five signature layouts were added. Grammar and sources are in `guidelines.md`, Layout grammar.
+- Layout tokens were added to `colors.css` next to the spacing tokens; no color changed, so contrast figures stand.
+- The tracker renders at `--fs-micro` (24px) and is marked `data-role="footer"`: it is navigation chrome like the page number, and the report sizes it with the footer.
+- The section divider repeats the agenda with the current section grown, instead of a lone heading: consulting decks use the agenda as the divider.
+- The closing slide is a decision plus a next-steps table on the navy scope, not a slogan.
+- Charts keep their values in `data-*` attributes and draw in SVG from them; Harvey balls draw from `data-score` (0 to 4 quarters, full is best). The issue tree and the workplan are static inline SVG diagrams using CSS variables.
 
 ## Fonts
 
@@ -42,6 +48,6 @@ Each family directory carries its `OFL.txt`, copied from the same package. Files
 
 ## Gaps
 
-- Gallery covers six of the layouts the catalog assigns to this voice. Not yet built: agenda, executive summary, chart with insight, waterfall, table, comparison, 2x2 matrix, process, timeline, issue tree, quote, capabilities. The default preset's gallery shows each of these and adapts by swapping in this preset's variable blocks.
-- Layouts the report names as gaps for this voice: Harvey-ball scorecard, a dashboard of four to six tiles, and an appendix divider.
+- Still adapted from `default` (swap in this preset's variable blocks, then apply the fixed chrome and grid from the layout grammar): agenda (use the SectionDivider list with no section current), waterfall, table, comparison, 2x2 matrix, timeline, quote, capabilities.
+- Report gaps still open for this voice: a dashboard of four to six tiles and an appendix divider. The Harvey-ball scorecard is now built.
 - No wordmark or `icons/` library: the preset serves a context, not a brand.

@@ -104,7 +104,9 @@
     --lh-normal:        1.35;    /* body */
     --lh-relaxed:       1.5;
 
-    --tracking-tight:   -0.02em;  /* 72px and above */
+    --tracking-tight:   -0.02em;  /* 60px to 96px */
+    --tracking-display: -0.035em; /* 128px display lines */
+    --tracking-hero:    -0.05em;  /* 240px product names and metrics */
     --tracking-normal:  0;
     --tracking-wide:    0.04em;
     --tracking-caps:    0.08em;  /* kept for token parity; tracked caps are banned on slides */
@@ -129,6 +131,19 @@
     --space-9:   80px;
     --space-10:  120px;
     --space-11:  160px;
+
+    /* Layout grid (1920x1080): the ruled page. Two vertical rails
+       at the 96px side margins bound 12 columns of 144px. Column n
+       starts at 96 + (n-1) * 144px; a span of k columns is 144k px.
+       Hairlines sit on column lines; text insets --cell-pad from the
+       line it sits against, so neighboring columns of text keep a
+       64px gutter. Two horizontal rules cut the page into a title
+       band (0 to 288px), an evidence band, and a footer band (992
+       to 1080px). */
+    --grid-col:      144px;
+    --cell-pad:      32px;
+    --band-title:    288px;     /* rule under the title band */
+    --band-foot:     992px;     /* rule over the footer band */
 
     /* Slide margins (1920x1080) */
     --slide-pad-x:   96px;
@@ -210,12 +225,14 @@
      Product preset, font stacks
      ============================================================
      Geist for titles and body, one family in several weights.
-     The variable file (weight axis 100 to 900) from Vercel's
-     geist npm build ships unmodified in assets/fonts/geist/ with
-     its OFL.txt and loads from that relative path, so slides
-     make no network request. Tables and chart labels switch on
-     tabular figures with font-variant-numeric. Geist Mono is for
-     code blocks only, never labels, and is not vendored.
+     Geist Mono for commands, code, version numbers, and other
+     literal identifiers the audience would type or search for;
+     never for labels or metadata. Both variable files (weight
+     axis 100 to 900) from Vercel's geist npm build ship
+     unmodified in assets/fonts/ with their OFL.txt and load from
+     that relative path, so slides make no network request.
+     Tables, metrics, and chart labels switch on tabular figures
+     with font-variant-numeric.
      ============================================================ */
 
   @font-face {
@@ -226,10 +243,18 @@
     font-display: block;
   }
 
+  @font-face {
+    font-family: 'Geist Mono';
+    src: url('../assets/fonts/geist-mono/GeistMono-Variable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: block;
+  }
+
   :root {
     --font-sans:    'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
     --font-display: var(--font-sans);
-    --font-mono:    'Geist Mono', 'SF Mono', Menlo, Consolas, monospace;   /* code blocks only */
+    --font-mono:    'Geist Mono', 'SF Mono', Menlo, Consolas, monospace;   /* commands and identifiers only */
   }
 
   /* ==== Standalone viewer shell ==== */
@@ -244,62 +269,84 @@
     position: relative;
     width: 1920px;
     height: 1080px;
-    padding: var(--slide-pad-y) var(--slide-pad-x);
     background: var(--bg);
     color: var(--fg);
     overflow: hidden;
     font-family: var(--font-sans);
     font-weight: var(--weight-regular);
-    display: flex;
-    flex-direction: column;
   }
 
-  /* ==== Shared bits ==== */
-  /* Action title: the dominant heading on every content slide,
-     in the same place and size on every slide. */
+  /* ==== The ruled page ====
+     Rails at the 96px margins and the two band rules are drawn as
+     hairlines in --border-strong, full bleed, in a layer above the
+     content so filled cells never hide them. Crosshairs (.x) mark where a band rule meets
+     a rail. Everything below positions on the 144px columns. */
+  .ruled::before {
+    content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background:
+      linear-gradient(var(--border-strong), var(--border-strong)) 96px 0 / 1px 100% no-repeat,
+      linear-gradient(var(--border-strong), var(--border-strong)) 1823px 0 / 1px 100% no-repeat,
+      linear-gradient(var(--border-strong), var(--border-strong)) 0 var(--band-title) / 100% 1px no-repeat,
+      linear-gradient(var(--border-strong), var(--border-strong)) 0 var(--band-foot) / 100% 1px no-repeat;
+  }
+  .x {
+    position: absolute; z-index: 2; width: 33px; height: 33px; margin: -16px 0 0 -16px;
+    background:
+      linear-gradient(var(--fg-subtle), var(--fg-subtle)) 16px 0 / 1px 100% no-repeat,
+      linear-gradient(var(--fg-subtle), var(--fg-subtle)) 0 16px / 100% 1px no-repeat;
+  }
+
+  /* Action title: top left of the title band, same place and size on
+     every content slide, text inset one cell pad from the left rail. */
   h1.action {
+    position: absolute; left: calc(96px + var(--cell-pad)); top: 80px;
+    width: 1520px; margin: 0;
     font-family: var(--font-display);
     font-size: var(--fs-h1); font-weight: var(--weight-semibold);
     letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
-    margin: 0; max-width: 1560px;
     text-wrap: balance;
   }
-  /* Footer: Source line on the left, only when the slide shows
-     numbers. No rule, no slide counter. */
-  .footer {
-    position: absolute;
-    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 48px;
-    display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
-    font-size: var(--fs-micro);
-    color: var(--fg-subtle);
+  /* Evidence band: between the two band rules, rail to rail. */
+  .ev {
+    position: absolute; left: 96px; top: var(--band-title);
+    width: 1728px; height: calc(var(--band-foot) - var(--band-title));
   }
-  /* Evidence block under the action title: centered in the space
-     left between title and footer. */
-  .evidence { margin: auto 0; padding: 48px 0 88px; }
-  /* Numbers align: tabular lining figures in charts and big numbers. */
-  .chart, .num { font-variant-numeric: tabular-nums lining-nums; }
+  /* Footer band: source line only, and only when the slide shows numbers. */
+  .source {
+    position: absolute; left: calc(96px + var(--cell-pad)); top: var(--band-foot);
+    height: calc(1080px - var(--band-foot)); display: flex; align-items: center;
+    font-size: var(--fs-micro); color: var(--fg-subtle);
+  }
+  /* Elevated panel: the surface for product objects (UI frames,
+     terminals, charts). Flat cells carry text; panels carry things. */
+  .panel {
+    background: var(--bg-elev);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-lg);
+  }
+  .mono { font-family: var(--font-mono); }
+  /* Numbers align: tabular lining figures everywhere a number sits. */
+  .chart, .num, table { font-variant-numeric: tabular-nums lining-nums; }
 
   /* ==== This slide ==== */
-  .s-content ul {
-    list-style: none;
-    /* Top-anchored under the title, not centered: a list reads as a
-       continuation of the claim, and centering left a dead band. */
-    margin: 0; padding-top: 80px;
-    display: flex; flex-direction: column; gap: 48px;
-    max-width: 1500px;
+  /* Spec rows: each point is a ruled row across the evidence band,
+     name in columns 1 to 4, what it does in 5 to 10, the number that
+     proves it right-aligned in 11 to 12. Parallel rows, no bullets. */
+  .s-content .rows {
+    display: grid; grid-template-rows: repeat(3, 1fr); height: 100%;
+    margin: 0; padding: 0; list-style: none;
   }
-  .s-content li {
-    position: relative;
-    padding-left: 56px;
-    font-size: var(--fs-body); line-height: var(--lh-normal);
-    color: var(--fg);
-    text-wrap: pretty;
+  .s-content .rows li {
+    display: grid; grid-template-columns: 576px 864px 288px; align-items: center;
+    border-top: 1px solid var(--border);
   }
-  .s-content li::before {
-    content: ''; position: absolute;
-    left: 0; top: 0.5em;
-    width: 16px; height: 16px;
-    background: var(--fg-subtle);
+  .s-content .rows li:first-child { border-top: 0; }
+  .s-content .rows li > * { padding: 0 var(--cell-pad); }
+  .s-content .k { font-size: var(--fs-body); font-weight: var(--weight-semibold); }
+  .s-content .d { font-size: var(--fs-body); line-height: var(--lh-snug); color: var(--fg-muted); text-wrap: pretty; }
+  .s-content .v {
+    text-align: right; font-size: var(--fs-h1); font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight);
   }
 </style>
 <script>
@@ -317,13 +364,20 @@
 </head>
 <body>
 <div class="frame">
-<section class="s-content" data-screen-label="03 Content">
+<section class="s-content ruled" data-screen-label="03 Content">
+    <i class="x" aria-hidden="true" style="left:96px;top:288px"></i>
+    <i class="x" aria-hidden="true" style="left:1823px;top:288px"></i>
+    <i class="x" aria-hidden="true" style="left:96px;top:992px"></i>
+    <i class="x" aria-hidden="true" style="left:1823px;top:992px"></i>
     <h1 class="action">Relay 3 caches every step and shares the cache with your team</h1>
-    <ul class="evidence">
-      <li>Remote cache: a build one engineer ran never runs again</li>
-      <li>Incremental tests: only the tests your change touches</li>
-      <li>One config file replaces 4 per-language setups</li>
-    </ul>
+    <div class="ev">
+      <ul class="rows">
+        <li><span class="k">Remote cache</span><span class="d">Share of steps served from the team cache</span><span class="v num">81%</span></li>
+        <li><span class="k">Incremental tests</span><span class="d">Share of the suite a typical change runs</span><span class="v num">23%</span></li>
+        <li><span class="k">One config file</span><span class="d">Setups that <span class="mono">relay.toml</span> replaces</span><span class="v num">4</span></li>
+      </ul>
+    </div>
+    <div class="source" data-role="source">Source: Relay beta telemetry, 120 repositories, April 2026</div>
   </section>
 </div>
 </body>

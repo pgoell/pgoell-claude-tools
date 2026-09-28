@@ -124,9 +124,18 @@ grep -nP '[\x{2014}\x{2013}\x{00B7}]' <deck>.html
 
 ## Type size probe (H7)
 
-Checks the rendered font size of every text element by role on the 1920x1080 canvas (set `noscale` first, as for the geometry probe). Floors are starting points, derived from the exporter's 0.5 pt per px constant: body 36 px (18 pt; the preset target is 40), captions, chart labels, and table cells 28 px, footer and source line 24 px. Roles come from an explicit `data-role` attribute when the slide sets one (`body`, `caption`, `label`, `footer`, `source`), otherwise from context: text inside `footer`, `.footer`, `.source`, or `.slide-number` is footer; text inside `figcaption`, `th`, `td`, an `<svg>`, `.meta`, or an element whose class contains `caption` or `label` is caption; everything else is body. Mark small text with `data-role` when its class does not say what it is. SVG text is measured at its effective size (computed size times the SVG's scale), because a chart drawn in a small viewBox and stretched renders larger than its `font-size` says.
+Checks the rendered font size of every text element by role on the 1920x1080 canvas (set `noscale` first, as for the geometry probe). Floors are starting points, derived from the exporter's 0.5 pt per px constant: body 36 px (18 pt; the preset target is 40), captions, chart labels, and table cells 28 px, footer and source line 24 px. Roles come from an explicit `data-role` attribute when the slide sets one, otherwise from context: text inside `footer`, `.footer`, `.source`, or `.slide-number` is footer; text inside `figcaption`, `th`, `td`, an `<svg>`, `.meta`, or an element whose class contains `caption` or `label` is caption; everything else is body. Mark small text with `data-role` when its class does not say what it is. The allowed values and the floor each one maps to:
 
-More than three distinct sizes among body and caption text on one slide goes to `forJudges`, not `issues`: the three-size rule is a type-scale rule the visual judge checks against the screenshot.
+| `data-role`                  | Floor          | Notes                                                                                           |
+| ---------------------------- | -------------- | ----------------------------------------------------------------------------------------------- |
+| `body`                       | body, 36 px    | The default for untagged text                                                                   |
+| `caption`, `label`, `legend` | caption, 28 px | Diagram labels, table cells, chart legends and keys                                             |
+| `footer`, `source`           | footer, 24 px  | Also a section tracker or page number marked `data-role="footer"`, even when it sits at the top |
+| `hero`                       | body, 36 px    | A hero number or a workshop time box; left out of the three-size count                          |
+
+SVG text is measured at its effective size (computed size times the SVG's scale), because a chart drawn in a small viewBox and stretched renders larger than its `font-size` says.
+
+More than three distinct sizes among body and caption text on one slide goes to `forJudges`, not `issues`: the three-size rule is a type-scale rule the visual judge checks against the screenshot. Text marked `data-role="hero"` (one hero number, or the time box on a workshop activity slide) does not count toward the three sizes.
 
 ```js
 (() => {
@@ -138,7 +147,7 @@ More than three distinct sizes among body and caption text on one slide goes to 
   const gist = (el) => `"${el.textContent.trim().replace(/\s+/g, ' ').slice(0, 50)}"`;
   const role = (el) => {
     const tagged = el.closest('[data-role]')?.dataset.role;
-    if (tagged) return ['footer', 'source'].includes(tagged) ? 'footer' : ['caption', 'label'].includes(tagged) ? 'caption' : 'body';
+    if (tagged) return ['footer', 'source'].includes(tagged) ? 'footer' : ['caption', 'label', 'legend'].includes(tagged) ? 'caption' : 'body';
     if (el.closest('footer, .footer, .source, .slide-number')) return 'footer';
     if (el.closest('figcaption, th, td, svg, [class*="caption"], [class*="label"], .meta')) return 'caption';
     return 'body';
@@ -165,7 +174,7 @@ More than three distinct sizes among body and caption text on one slide goes to 
       const r = el.getBoundingClientRect();
       if (!r.width || !r.height || el.textContent.trim().length <= 2) return;
       const rl = role(el), px = size(el);
-      if (rl !== 'footer') sizes.add(Math.round(px));
+      if (rl !== 'footer' && !el.closest('[data-role="hero"]')) sizes.add(Math.round(px));
       if (px < FLOOR[rl] - 0.5) issues.push({ gate: 'H7', slide: n, what: `${rl} text ${gist(el)} renders at ${px.toFixed(1)}px < ${FLOOR[rl]}px` });
     });
     if (sizes.size > MAX_SIZES) forJudges.push({ kind: 'type-sizes', slide: n, what: `${sizes.size} text sizes: ${[...sizes].sort((a, b) => b - a).join(', ')}px` });
@@ -189,7 +198,8 @@ Definitions the probe uses:
 - **Box**: an element with a visible surface (background color or image, border, or shadow), or an `img`, `svg`, `canvas`, `video`, `iframe`, or `table`. An element covering at least 90% of the slide in both axes is a background layer and is ignored; so are descendants of an `svg` or `table` (the container counts once).
 - **Text block**: the nearest block-level ancestor of a rendered text node.
 - **Unit**: every box and text block. Units in a DOM ancestor relation are never compared with each other.
-- **Structural slide**: a slide whose `data-screen-label` names a title, cover, section, divider, quote, or closing slide. Empty-region warnings skip these.
+- **Structural slide**: a slide whose `data-screen-label` names a title, cover, section, divider, quote, closing, statement, question, number, or image slide. Empty-region warnings skip these.
+- **Footer**: content inside `footer`, `.footer`, `.slide-number`, or any element marked `data-role="footer"`, which includes a section tracker at the top of the slide.
 
 Thresholds are tunable defaults in the `T` object:
 
@@ -231,7 +241,7 @@ Top edges of two text blocks are compared only when they share a font size (diff
   const inFooter = (el) => !!el.closest('footer, .footer, .slide-number, [data-role="footer"]');
   slides.forEach((slide, i) => {
     const n = i + 1, S = slide.getBoundingClientRect(), W = S.width, H = S.height;
-    const structural = /title|cover|section|divider|quote|closing/i.test(slide.dataset.screenLabel || '');
+    const structural = /title|cover|section|divider|quote|closing|statement|question|number|image/i.test(slide.dataset.screenLabel || '');
     const full = (r) => r.width >= 0.9 * W && r.height >= 0.9 * H;
     const inside = (el) => el.parentElement?.closest('svg, table') && slide.contains(el.parentElement.closest('svg, table'));
     const units = new Map();
@@ -337,7 +347,7 @@ H9 findings name elements by tag and text; when a finding is wrong for a deliber
 
 ## Per-slide screenshots
 
-Capture after the probe, with `noscale` removed and the thumbnail rail suppressed so judges see what the audience sees. Resize the viewport to 1920x1080, then for each slide navigate to `<url>#N` (1-based), reload if the hash change does not repaint, wait for the slide to be active, and screenshot to `.deck-review/round-<R>/slide-NN.png`. The deck hides its overlay chrome after about two seconds of mouse idle; avoid moving the mouse between navigate and capture. Keep screenshots at the full 1920x1080; never downscale them for the judges, since small text is exactly what they must read. The default render check writes to `.deck-review/check-<N>/` instead of `round-<R>/`.
+Capture after the probe, with `noscale` removed and the thumbnail rail suppressed so judges see what the audience sees. Resize the viewport to 1920x1080 (with a real viewport API, such as Puppeteer's `setViewport` or the browser MCP's resize tool), then for each slide navigate to `<url>#N` (1-based), reload if the hash change does not repaint, wait for the slide to be active, and screenshot to `.deck-review/round-<R>/slide-NN.png`. The deck hides its overlay chrome after about two seconds of mouse idle; avoid moving the mouse between navigate and capture. Keep screenshots at the full 1920x1080; never downscale them for the judges, since small text is exactly what they must read. The default render check writes to `.deck-review/check-<N>/` instead of `round-<R>/`.
 
 Fallback without a driveable browser: the deck-stage print stylesheet lays one slide per page, so
 
@@ -347,6 +357,8 @@ pdftoppm -png -r 96 deck.pdf slide
 ```
 
 produces equivalent per-slide images (console and network gates still need a live page).
+
+Headless Chrome's `--screenshot` flag sizes the window, not the viewport: `--window-size=1920,1080` yields a viewport about 993 px tall, which cuts off the bottom of every slide. Pass `--window-size=1920,1167` for a true 1920x1080 viewport, or set the viewport through a proper API as above.
 
 ## Output
 

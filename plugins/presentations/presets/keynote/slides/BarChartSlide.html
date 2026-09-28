@@ -76,13 +76,35 @@
     --chart-2:            #8E8E93;      /* 3.26; second series */
 
     /* =====================================================
+       IMAGE SLOT (ImageSlide)
+       --image-placeholder paints a dim, stage-lit "photograph"
+       (warm key light, cool rim, floor falloff, vignette, grain)
+       so an unfilled slot reads as a deliberate dark frame, not a
+       gray box. It is a stand-in only: a finished deck always
+       swaps in a real image (data-image on the slot). --scrim is
+       the 60% dark band under a caption on any image; it uses
+       the dark --bg value in both scopes because image slides
+       always run dark.
+       ===================================================== */
+    --image-placeholder:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E"),
+      radial-gradient(ellipse 130% 90% at 50% 45%, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.7) 100%),
+      radial-gradient(ellipse 38% 46% at 68% 34%, rgba(255, 196, 140, 0.34) 0%, rgba(214, 140, 84, 0.14) 45%, rgba(0, 0, 0, 0) 75%),
+      radial-gradient(ellipse 30% 55% at 18% 62%, rgba(96, 128, 170, 0.22) 0%, rgba(0, 0, 0, 0) 70%),
+      radial-gradient(ellipse 70% 30% at 55% 100%, rgba(150, 120, 100, 0.18) 0%, rgba(0, 0, 0, 0) 70%),
+      linear-gradient(180deg, #16161B 0%, #0E0E12 55%, #121113 100%);
+    --scrim:              rgba(12, 12, 14, 0.6);
+
+    /* =====================================================
        TYPE, slide scale (1920x1080 reference)
        Floors by role (checked by gate H7): body >= 36px,
        captions and chart labels >= 28px, footer and source
        line >= 24px. Use at most three sizes per slide. Never
        shrink text to fit: split the slide or cut words.
        ===================================================== */
-    --fs-hero:        320px;     /* One number */
+    --fs-mega:        720px;     /* BigNumberSlide: a 3 to 4 character number spans about 80% of the width */
+    --fs-hero:        320px;     /* One number beside its context (StatSlide) */
+    --fs-statement:   200px;     /* Title line, statement, divider: one idea at display size */
     --fs-display:     168px;     /* Title, closing */
     --fs-section:     128px;     /* Divider */
     --fs-h1:          104px;     /* Statement title, 7 words or fewer, 1 to 2 lines */
@@ -130,6 +152,14 @@
     --slide-pad-y:   96px;
     --slide-w:       1920px;
     --slide-h:       1080px;
+
+    /* Rule-of-thirds grid (Presentation Zen crossing points).
+       Vertical lines at 640 and 1280, horizontal at 360 and 720.
+       Content anchors on a line or sits dead center; nothing
+       floats between them. */
+    --third-x:       640px;
+    --third-y:       360px;
+    --measure:       1680px;    /* full width inside the side margins */
 
     /* =====================================================
        RADIUS
@@ -238,53 +268,49 @@
     position: relative;
     width: 1920px;
     height: 1080px;
-    padding: var(--slide-pad-y) var(--slide-pad-x);
     background: var(--bg);
     color: var(--fg);
     overflow: hidden;
     font-family: var(--font-sans);
     font-weight: var(--weight-regular);
-    display: flex;
-    flex-direction: column;
   }
 
-  /* ==== Shared bits ==== */
-  /* Action title: the dominant heading on every content slide,
-     in the same place and size on every slide. */
-  h1.action {
+  /* ==== Shared bits (keynote layout grammar) ==== */
+  /* Everything is placed absolutely on the thirds grid
+     (--third-x, --third-y) or dead center; there is no header
+     band, no footer band, and no page number. */
+  h1, p, blockquote, figure, ol { margin: 0; }
+  .display {
     font-family: var(--font-display);
-    font-size: var(--fs-h1); font-weight: var(--weight-semibold);
+    font-weight: var(--weight-semibold);
     letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
-    margin: 0; max-width: 1560px;
     text-wrap: balance;
   }
-  /* Footer: Source line on the left, only when the slide shows
-     numbers. No rule, no slide counter. */
-  .footer {
-    position: absolute;
-    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 48px;
-    display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
-    font-size: var(--fs-micro);
-    color: var(--fg-subtle);
+  /* Source line: bottom left at --fs-micro, only on slides that
+     show a number. It is the only small text the preset allows. */
+  .source {
+    position: absolute; left: var(--slide-pad-x); bottom: 64px;
+    font-size: var(--fs-micro); color: var(--fg-subtle);
   }
-  /* Evidence block under the action title: centered in the space
-     left between title and footer. */
-  .evidence { margin: auto 0; padding: 48px 0 88px; }
   /* Numbers align: tabular lining figures in charts and big numbers. */
   .chart, .num { font-variant-numeric: tabular-nums lining-nums; }
 
   /* ==== This slide ==== */
-  .s-bar .sub {
-    font-size: var(--fs-subtitle); line-height: var(--lh-snug);
-    color: var(--fg-muted); margin: 24px 0 0; max-width: 1600px;
+  /* Title in the left third, three columns in the right two
+     thirds, all standing on the lower thirds line plus one row.
+     Values sit on the columns, names under them; no axis, no
+     gridlines, no legend. */
+  .s-bar h1 {
+    position: absolute; left: var(--slide-pad-x); top: var(--third-y);
+    width: 520px;
+    font-size: var(--fs-h2);
   }
-  .s-bar svg { display: block; overflow: visible; }
-  .s-bar svg text { font-size: var(--fs-body); fill: var(--fg-muted); }
-  .s-bar svg text.hi { fill: var(--fg); font-weight: var(--weight-semibold); }
+  .s-bar svg { position: absolute; left: 700px; top: 120px; display: block; overflow: visible; }
+  .s-bar svg text { font-size: var(--fs-caption); fill: var(--fg-muted); }
+  .s-bar svg text.val { font-size: var(--fs-body); font-weight: var(--weight-semibold); fill: var(--fg-muted); }
+  .s-bar svg text.hi { fill: var(--fg); }
   .s-bar .bar { fill: var(--chart-context); }
-  .s-bar .grid { stroke: var(--chart-grid); stroke-width: 2; }
-  .s-bar .axis { stroke: var(--fg); stroke-width: 3; }
-  /* Accent job: marks the team size the title names. */
+  /* Accent job: the one column the title names. */
   .s-bar .bar.hi { fill: var(--chart-highlight); }
 </style>
 <script>
@@ -303,19 +329,15 @@
 <body>
 <div class="frame">
 <section class="s-bar dark" data-screen-label="04 Bar chart">
-    <h1 class="action">Teams of four shipped twice as fast</h1>
-    <div class="evidence">
-      <svg class="chart" width="1680" height="460" role="img"
-           aria-label="Median weeks from kickoff to launch: 6 for teams of 4, 12 for teams of 8, 15 for teams of 12"
-           data-chart="bar" data-orientation="horizontal" data-unit="weeks"
-           data-labels='["4 people", "8 people", "12 people"]'
-           data-series='[{"name": "Median weeks from kickoff to launch", "values": [6, 12, 15]}]'
-           data-highlight="0"></svg>
-    </div>
-    <div class="footer">
-      <span class="source" data-role="source">Source: Lumen launch log, 40 launches, 2023 to 2025</span>
-    </div>
-  </section>
+  <h1 class="display">Teams of four shipped twice as fast</h1>
+  <svg class="chart" width="1100" height="840" role="img"
+       aria-label="Median weeks from kickoff to launch: 6 for teams of 4, 12 for teams of 8, 15 for teams of 12"
+       data-chart="bar" data-orientation="vertical" data-unit="weeks"
+       data-labels='["4 people", "8 people", "12 people"]'
+       data-series='[{"name": "Median weeks from kickoff to launch", "values": [6, 12, 15]}]'
+       data-highlight="0"></svg>
+  <p class="source" data-role="source">Median weeks from kickoff to launch. Source: Lumen launch log, 40 launches, 2023 to 2025</p>
+</section>
 </div>
 <script>
   function chartData(el) {
@@ -329,14 +351,13 @@
   (function () {
     const el = document.querySelector('.s-bar .chart');
     const d = chartData(el), v = d.series[0].values;
-    const lx = 360, W = 1000, rowH = 160, barH = 96, max = Math.max(...v);
-    const fmt = x => x + ' weeks';
+    const base = 700, H = 560, colW = 240, step = 360, max = Math.max(...v);
     let out = '';
     v.forEach((val, i) => {
-      const y = i * rowH, hi = i === d.highlight ? ' hi' : '';
-      out += '<text class="' + hi + '" x="0" y="' + (y + barH / 2) + '" dominant-baseline="central">' + d.labels[i] + '</text>';
-      out += '<rect class="bar' + hi + '" x="' + lx + '" y="' + y + '" width="' + (val / max * W) + '" height="' + barH + '"/>';
-      out += '<text class="' + hi + '" x="' + (lx + val / max * W + 24) + '" y="' + (y + barH / 2) + '" dominant-baseline="central">' + fmt(val) + '</text>';
+      const x = i * step, h = val / max * H, hi = i === d.highlight ? ' hi' : '';
+      out += '<rect class="bar' + hi + '" x="' + x + '" y="' + (base - h) + '" width="' + colW + '" height="' + h + '"/>';
+      out += '<text class="val' + hi + '" x="' + x + '" y="' + (base - h - 28) + '">' + val + ' ' + d.unit + '</text>';
+      out += '<text class="' + hi + '" x="' + x + '" y="' + (base + 64) + '">' + d.labels[i] + '</text>';
     });
     el.innerHTML = out;
   })();

@@ -4,7 +4,7 @@ Choose the look of a deck before composing it. Without a concrete direction, a m
 
 ## When to run it
 
-- **New deck on the `default` preset:** run the full step. The five bundled voice presets (`analytical`, `keynote`, `product`, `editorial`, `workshop`) are ready-made directions: when one fits the subject, render it as a candidate next to the ones you draw from the subject, and when it wins, switch the deck to that preset instead of writing `direction.css`.
+- **New deck on the `default` preset:** run the full step. The six bundled voice presets (`analytical`, `keynote`, `product`, `editorial`, `workshop`, `technical`) are ready-made directions. Each is a layout grammar, not only a palette: its grid tokens and `## Layout grammar` in `guidelines.md` set where titles, evidence, and structure sit, so a candidate rendered from one uses its gallery layouts, not the default's composition in its colors. When one fits the subject, render it as a candidate next to the ones you draw from the subject, and when it wins, switch the deck to that preset instead of writing `direction.css`.
 - **Client or voice preset active** (any preset other than `default`): colors and type belong to the preset. Skip palette and type; propose only the motif and the layout concept (two or three options), render them in the preset's own tokens, and pick the same way.
 - **Skip entirely** when the user already fixed the look (named colors, a reference deck, "keep it plain"), when a `direction.md` already sits next to the deck, or when the task is only to review an existing deck.
 

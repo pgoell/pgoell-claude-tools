@@ -135,6 +135,15 @@
     --slide-w:       1920px;
     --slide-h:       1080px;
 
+    /* Layout grid (1920x1080): 12 columns of 96px with 48px
+       gutters inside the 120px side margins (12 x 96 + 11 x 48
+       = 1680). Panels snap to whole columns. */
+    --grid-cols:     12;
+    --grid-col:      96px;
+    --grid-gutter:   48px;
+    --panel-pad:     48px;     /* inner padding of every panel */
+    --panel-gap:     32px;     /* gap between stacked panels */
+
     /* =====================================================
        RADIUS
        ===================================================== */
@@ -142,6 +151,8 @@
     --r-sm:      4px;
     --r-md:      6px;
     --r-lg:      8px;
+    --r-xl:      24px;     /* small panels, rows, chips with text */
+    --r-2xl:     40px;     /* content panels and writing space */
     --r-pill:    999px;
 
     /* =====================================================
@@ -263,44 +274,91 @@
     flex-direction: column;
   }
 
-  /* ==== Shared bits ==== */
-  /* Action title: the dominant heading on every content slide,
-     in the same place and size on every slide. */
-  h1.action {
-    font-family: var(--font-display);
-    font-size: var(--fs-h1); font-weight: var(--weight-semibold);
-    letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
-    margin: 0; max-width: 1560px;
-    text-wrap: balance;
+  /* ==== Shared bits (workshop layout grammar) ==== */
+  /* 12-column grid: 96px columns, 48px gutters, 120px margins. */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-cols), var(--grid-col));
+    column-gap: var(--grid-gutter);
   }
-  /* Footer: Source line on the left, only when the slide shows
+  /* Title row: the title top left over 9 columns, the time box and
+     group chips top right. The title talks to the room. */
+  .head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: var(--grid-gutter);
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-variation-settings: var(--font-display-settings);
+    font-style: normal; font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
+    margin: 0; text-wrap: balance;
+  }
+  h1.action { font-size: var(--fs-h1); max-width: 1248px; }
+  /* Panel: every block of content sits in its own warm panel with
+     a large radius, never loose on the canvas. */
+  .panel {
+    background: var(--bg-elev);
+    border: 2px solid var(--border);
+    border-radius: var(--r-2xl);
+    padding: var(--panel-pad);
+  }
+  .panel.subtle { background: var(--bg-subtle); border-color: transparent; }
+  /* Writing space: an empty panel the facilitator fills on the
+     whiteboard or flip chart while the room talks. */
+  .write {
+    border: 4px dashed var(--border-strong);
+    border-radius: var(--r-2xl);
+    padding: var(--panel-pad);
+    display: flex; flex-direction: column;
+  }
+  /* Chips: time box and group size, top right on activity slides.
+     The time box is an ink pill (inverse surface), never the accent. */
+  .chips { display: flex; gap: 16px; flex-shrink: 0; padding-top: 8px; }
+  .chip {
+    font-size: var(--fs-caption); font-weight: var(--weight-semibold);
+    line-height: 1; padding: 18px 32px;
+    border-radius: var(--r-pill);
+    background: transparent; color: var(--fg);
+    border: 3px solid var(--border-strong);
+    white-space: nowrap;
+  }
+  .chip.time { background: var(--bg-inverse); color: var(--fg-inverse); border-color: var(--bg-inverse); }
+  /* Step disc: a real step number in a real sequence only. */
+  .disc {
+    flex-shrink: 0;
+    width: 88px; height: 88px; border-radius: 50%;
+    border: 4px solid var(--fg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: var(--fs-body); font-weight: var(--weight-bold);
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  /* Footer: source line bottom left, only when the slide shows
      numbers. No rule, no slide counter. */
   .footer {
     position: absolute;
-    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 48px;
-    display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
+    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 40px;
     font-size: var(--fs-micro);
     color: var(--fg-subtle);
   }
-  /* Evidence block under the action title: centered in the space
-     left between title and footer. */
-  .evidence { margin: auto 0; padding: 48px 0 88px; }
-  /* Numbers align: tabular lining figures in charts and big numbers. */
   .chart, .num { font-variant-numeric: tabular-nums lining-nums; }
-  /* Fraunces titles: upright, softened. Numbers stay in the sans stack. */
-  h1 { font-variation-settings: var(--font-display-settings); font-style: normal; }
 
   /* ==== This slide ==== */
-  .s-bar .sub {
-    font-size: var(--fs-subtitle); line-height: var(--lh-snug);
-    color: var(--fg-muted); margin: 24px 0 0; max-width: 1600px;
+  /* Chart in a panel over 8 columns; the right 4 columns ask the
+     room to place itself on the chart. */
+  .s-bar .grid { flex: 1; margin-top: 56px; margin-bottom: 64px; }
+  .s-bar .chartp { grid-column: 1 / span 8; display: flex; flex-direction: column; }
+  .s-bar .chartp .sub {
+    font-size: var(--fs-caption); line-height: var(--lh-snug);
+    color: var(--fg-muted); margin: 0 0 40px;
   }
+  .s-bar .ask { grid-column: 9 / span 4; display: flex; flex-direction: column; justify-content: center; gap: 32px; }
+  .s-bar .ask .q { font-size: var(--fs-body); font-weight: var(--weight-bold); line-height: var(--lh-snug); margin: 0; }
+  .s-bar .ask .hint { font-size: var(--fs-caption); color: var(--fg-muted); line-height: var(--lh-snug); margin: 0; }
   .s-bar svg { display: block; overflow: visible; }
-  .s-bar svg text { font-size: var(--fs-body); fill: var(--fg-muted); }
-  .s-bar svg text.hi { fill: var(--fg); font-weight: var(--weight-semibold); }
+  .s-bar svg text { font-size: 36px; fill: var(--fg-muted); }
+  .s-bar svg text.hi { fill: var(--fg); font-weight: var(--weight-bold); }
   .s-bar .bar { fill: var(--chart-context); }
-  .s-bar .grid { stroke: var(--chart-grid); stroke-width: 2; }
-  .s-bar .axis { stroke: var(--fg); stroke-width: 3; }
   /* Accent job: marks the option the title names. */
   .s-bar .bar.hi { fill: var(--chart-highlight); }
 </style>
@@ -320,15 +378,23 @@
 <body>
 <div class="frame">
 <section class="s-bar" data-screen-label="04 Bar chart">
-    <h1 class="action">You keep most changes when you agree on just one</h1>
-    <p class="sub">Agreed changes still in place 4 weeks later, %</p>
-    <div class="evidence">
-      <svg class="chart" width="1680" height="500" role="img"
-           aria-label="Agreed changes still in place 4 weeks later: 78% with 1 change, 55% with 2, 41% with 3, 22% with 4 or more"
-           data-chart="bar" data-orientation="horizontal" data-unit="%"
-           data-labels='["1 change", "2 changes", "3 changes", "4 or more"]'
-           data-series='[{"name": "Agreed changes still in place after 4 weeks", "values": [78, 55, 41, 22]}]'
-           data-highlight="0"></svg>
+    <div class="head">
+      <h1 class="action">You keep most changes when you agree on just one</h1>
+    </div>
+    <div class="grid">
+      <div class="panel chartp">
+        <p class="sub">Changes still in place 4 weeks later, % by how many the team agreed</p>
+        <svg class="chart" width="1000" height="440" role="img"
+             aria-label="Changes still in place 4 weeks later: 78% with 1 change, 55% with 2, 41% with 3, 22% with 4 or more"
+             data-chart="bar" data-orientation="horizontal" data-unit="%"
+             data-labels='["1 change", "2 changes", "3 changes", "4 or more"]'
+             data-series='[{"name": "Changes still in place after 4 weeks", "values": [78, 55, 41, 22]}]'
+             data-highlight="0"></svg>
+      </div>
+      <div class="panel subtle ask">
+        <p class="q">How many changes did your last retro agree?</p>
+        <p class="hint">Hands up for 1, 2, 3, or 4 or more</p>
+      </div>
     </div>
     <div class="footer">
       <span class="source" data-role="source">Source: spring cohort survey, 64 teams, 2025</span>
@@ -347,13 +413,13 @@
   (function () {
     const el = document.querySelector('.s-bar .chart');
     const d = chartData(el), v = d.series[0].values;
-    const lx = 340, W = 1100, rowH = 120, barH = 72, max = Math.max(...v);
+    const lx = 220, W = 620, rowH = 112, barH = 72, max = Math.max(...v);
     const fmt = x => x + '%';
     let out = '';
     v.forEach((val, i) => {
       const y = i * rowH, hi = i === d.highlight ? ' hi' : '';
       out += '<text class="' + hi + '" x="0" y="' + (y + barH / 2) + '" dominant-baseline="central">' + d.labels[i] + '</text>';
-      out += '<rect class="bar' + hi + '" x="' + lx + '" y="' + y + '" width="' + (val / max * W) + '" height="' + barH + '"/>';
+      out += '<rect class="bar' + hi + '" x="' + lx + '" y="' + y + '" width="' + (val / max * W) + '" height="' + barH + '" rx="12"/>';
       out += '<text class="' + hi + '" x="' + (lx + val / max * W + 24) + '" y="' + (y + barH / 2) + '" dominant-baseline="central">' + fmt(val) + '</text>';
     });
     el.innerHTML = out;

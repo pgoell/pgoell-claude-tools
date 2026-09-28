@@ -125,6 +125,15 @@
   --slide-w:       1920px;
   --slide-h:       1080px;
 
+  /* Layout grid (1920x1080): 12 columns of 96px with 48px
+     gutters inside the 120px side margins (12 x 96 + 11 x 48
+     = 1680). Panels snap to whole columns. */
+  --grid-cols:     12;
+  --grid-col:      96px;
+  --grid-gutter:   48px;
+  --panel-pad:     48px;     /* inner padding of every panel */
+  --panel-gap:     32px;     /* gap between stacked panels */
+
   /* =====================================================
      RADIUS
      ===================================================== */
@@ -132,6 +141,8 @@
   --r-sm:      4px;
   --r-md:      6px;
   --r-lg:      8px;
+  --r-xl:      24px;     /* small panels, rows, chips with text */
+  --r-2xl:     40px;     /* content panels and writing space */
   --r-pill:    999px;
 
   /* =====================================================

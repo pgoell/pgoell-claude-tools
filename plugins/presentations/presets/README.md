@@ -2,7 +2,7 @@
 
 A preset packages one brand or context for reuse: colors, typography, assets, and example slides rebuilt as HTML. Skills carry the procedures; presets carry the content. Presets live in two homes that share this contract:
 
-- **Bundled presets** in this directory, next to `skills/` at the plugin root. They ship with the plugin: `default` plus five voice presets (see Bundled presets below).
+- **Bundled presets** in this directory, next to `skills/` at the plugin root. They ship with the plugin: `default` plus six voice presets (see Bundled presets below).
 - **Local presets** in `.pgoell/presentations/presets/<name>/` at the root of the repo being worked in. They are user-owned, never ship with the plugin, and are where the `extracting-presets` skill places new presets by default.
 
 ## Directory shape
@@ -10,15 +10,19 @@ A preset packages one brand or context for reuse: colors, typography, assets, an
 ```
 presets/<name>/
   manifest.md     required. The preset's single home for provenance: who the preset serves, sources and their dates, coverage, extraction decisions, gaps, and one direction line naming the generic default the preset's look avoids. All other preset files carry rules and values only.
-  colors.css      required. :root CSS custom properties for colors (including the chart group below) and font sizes, plus optional variant scopes (for example .dark or .inverse) that override the semantic variables.
+  colors.css      required. :root CSS custom properties for colors (including the chart group below), font sizes, and layout grid tokens, plus optional variant scopes (for example .dark or .inverse) that override the semantic variables.
   typography.css  optional. :root font stack overrides, plus @font-face rules for vendored fonts that point at assets/fonts/ by relative path.
-  guidelines.md   optional. Brand expression guidance with no variable to ride on: personality attributes, tone of voice, imagery rules. Consumers read it before composing slides and review finished slides against it.
+  guidelines.md   optional. Brand expression guidance with no variable to ride on: personality attributes, tone of voice, imagery rules, and a `## Layout grammar` section. Consumers read it before composing slides and review finished slides against it.
   language.md     optional. A positive style contract for slide copy: what good copy does (everyday words, active voice, one claim per title with its proof inside), before/after title rewrites, the anti-fabrication rule (never add a fact, figure, name, or arithmetic the source lacks), plus brand terminology, citations, and required legal language. Consumers apply it to every written surface and honor its legal elements, which can dictate footer content and back-cover legal blocks. A preset without one falls back to default/language.md.
   assets/         optional. Wordmarks and brand imagery. SVG preferred, it inlines as text.
     fonts/<family>/  optional. Vendored font files (woff2), unmodified, each family with its license as OFL.txt (or the family's own license file). Provenance and license go in the manifest.
   icons/          optional. Brand icon library as one SVG per icon, organized in subdirectories, with an index.tsv (one row per icon: path, name, variant, category, section, aliases, keywords, colors) and a README.md documenting search and usage. Monochrome icons use currentColor so CSS color recolors them; consumers grep the index, then inline the SVG. Icons come only from this library, never drawn freehand; a preset without one gets no icons.
   slides/         optional. Example slides as self-contained HTML on a 1920x1080 canvas.
 ```
+
+## Layout grammar
+
+Each bundled preset is a layout grammar, not only a palette. It declares its grid as layout tokens in `colors.css` (for example `--grid-cols`, `--grid-col`, `--grid-gutter`, and zone tokens such as `--tracker-top`, `--title-top`, `--body-top`, `--body-bottom`) and documents in `guidelines.md` under `## Layout grammar` how its slides use that grid: the column splits, where the title and the evidence sit, and the compositions that set the preset apart. A preset's grid tokens win over the 12-column, 32 px gutter default in the `creating-presentations` skill. Consumers read the grammar before composing and build any layout the gallery lacks from it.
 
 ## Chart tokens
 
@@ -34,6 +38,16 @@ Charts read a dedicated token group in `colors.css`, declared in `:root` and aga
 | `--chart-div-1` to `--chart-div-<n>` | no       | Diverging scale, with the neutral midpoint in the middle.                                                                                 |
 
 Highlight mode is the default: one series in `--chart-highlight`, the rest in `--chart-context`, labels placed next to the marks instead of a legend, and `font-variant-numeric: tabular-nums lining-nums` on chart labels and tables. Categorical colors should each clear 3:1 on `--bg` and stay distinct under a color-vision-deficiency simulation; a color that does not clear 3:1 is recorded in the manifest and only ever appears with a direct label. A deck that needs more series than the preset declares splits the chart. A custom property declared as `var(--accent)` in `:root` resolves there, so a dark scope must redeclare `--chart-highlight` (and `--border-accent`) to pick up the dark accent.
+
+### Optional token families
+
+Some presets declare token families for content only they draw. Any preset that draws the same content should reuse these names:
+
+| Family                                                                                 | Declared by | Job                                                                                  |
+| -------------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------ |
+| `--node-*` (for example `--node-service`, `--node-service-fill`), `--edge`, `--edge-*` | `technical` | Diagram nodes by type, each a stroke plus a fill, and the edges between them         |
+| `--code-*` (for example `--code-bg`, `--code-keyword`, `--code-highlight-line`)        | `technical` | Code panels: background, syntax colors, the highlighted line, the line-number gutter |
+| `--image-placeholder`, `--scrim`                                                       | `keynote`   | The fill of an empty image slot, and the overlay that carries text on a photo        |
 
 When the preset's `--accent` is too light for text, it declares `--accent-ink`, a darker step that holds 4.5:1 on `--bg`, `--bg-elev`, and `--bg-subtle`, for accent-colored words and numbers.
 
@@ -60,14 +74,15 @@ Consumers resolve the active preset in this order:
 
 ## Bundled presets
 
-| Preset       | Voice                                                                           | Suits                                                                                         |
-| ------------ | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `default`    | Quiet: near-white, ink, one green accent, Figtree                               | General-purpose decks and proposals when nothing else fits; the neutral starting point        |
-| `analytical` | Claim plus number: white, navy, blue accent, Plex Serif and Sans                | Decks read by or presented to decision makers: board papers, strategy reviews, business cases |
-| `keynote`    | One idea per slide, dark by default, Inter                                      | Stage talks and town halls in dark rooms; not for decks read alone                            |
-| `product`    | Short declaratives: near-achromatic, signal orange, Geist                       | Launches, product reviews, engineering all-hands                                              |
-| `editorial`  | Sentence headlines on tinted paper, claret accent, Newsreader and Source Sans 3 | Data stories, research readouts, reports presented as decks                                   |
-| `workshop`   | Invitational: warm paper, teal accent, Fraunces and Atkinson Hyperlegible Next  | Training, facilitation, mixed and low-vision audiences                                        |
+| Preset       | Voice                                                                                        | Suits                                                                                         |
+| ------------ | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `default`    | Quiet: near-white, ink, one green accent, Figtree                                            | General-purpose decks and proposals when nothing else fits; the neutral starting point        |
+| `analytical` | Claim plus number: white, navy, blue accent, Plex Serif and Sans                             | Decks read by or presented to decision makers: board papers, strategy reviews, business cases |
+| `keynote`    | One idea per slide, dark by default, Inter                                                   | Stage talks and town halls in dark rooms; not for decks read alone                            |
+| `product`    | Short declaratives: near-achromatic, signal orange, Geist                                    | Launches, product reviews, engineering all-hands                                              |
+| `editorial`  | Sentence headlines on tinted paper, claret accent, Newsreader and Source Sans 3              | Data stories, research readouts, reports presented as decks                                   |
+| `workshop`   | Invitational: warm paper, teal accent, Fraunces and Atkinson Hyperlegible Next               | Training, facilitation, mixed and low-vision audiences                                        |
+| `technical`  | Dense and exact: graphite, amber path highlight, Red Hat Display, Text, and Mono; dark first | Engineering deep dives, architecture reviews, design docs presented live, incident reviews    |
 
 A `deck.md` with `deck_mode: keynote` points to `keynote`; `reading` and `briefing` point to `analytical` or `editorial`.
 

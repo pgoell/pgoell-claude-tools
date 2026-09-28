@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>07 Agenda</title>
+<style>
+  /* ==========================================================
+     Synced copy of ../colors.css. Source of truth is the file;
+     refresh this block whenever it changes.
+     ========================================================== */
+  /* ============================================================
+     Workshop preset, design tokens ("warm teal" direction)
+     ============================================================
+     Source of truth for every slide's embedded variable block.
+     Semantic layer only: this preset serves a context, not a
+     brand, so it carries no raw brand layer. Slides read these
+     names and nothing else.
+
+     Training, facilitation, mixed and low-vision audiences:
+     warm off-white paper, a teal accent with a warm partner,
+     and a deep green dark scope. Large captions and a
+     hyperlegible body face.
+
+     Color rule: one accent with one job. The accent marks the
+     single thing the audience should look at. Everything else
+     is ink or gray. Every text tier holds 4.5:1 or better on
+     --bg, --bg-elev, and --bg-subtle in both scopes, and
+     --accent holds 4.5:1 on --bg, so it can mark a word or a
+     number. Borders are decorative only.
+     ============================================================ */
+
+  :root {
+    /* =====================================================
+       COLOR, Semantic (light theme)
+       ===================================================== */
+    --bg:                 #FBF8F3;
+    --bg-elev:            #FFFFFF;
+    --bg-subtle:          #F2EDE4;
+    --bg-inverse:         #1C2B28;
+
+    --fg:                 #1F1D1A;      /* 15.87 */
+    --fg-muted:           #4D4943;      /* 8.44 */
+    --fg-subtle:          #65605A;      /* 5.88 */
+    --fg-inverse:         #F5F1EA;
+    --fg-inverse-muted:   #CDD6D2;
+    --fg-inverse-subtle:  #9FB0AB;
+
+    --border:             #E5DFD4;      /* decorative only */
+    --border-strong:      #CCC4B6;
+    --border-inverse:     #33473F;
+    --border-accent:      var(--accent);
+
+    --accent:             #0B6E63;      /* 5.79; teal, not muted red */
+    --accent-fg:          #FFFFFF;
+    --accent-partner:     #B4531A;      /* 4.73; shapes only on --bg-subtle */
+
+    /* Status (rare on slides, but useful) */
+    --status-success:     #2F7A1C;
+    --status-warning:     #C77700;
+    --status-danger:      #B0271A;
+    --status-info:        #00638A;
+
+    /* =====================================================
+       COLOR, Charts
+       Gray plus one: --chart-highlight marks the story series,
+       every other series is --chart-context. The numbered
+       categorical colors are for charts where the categories
+       are the point, at most 6 series.
+       The story series in highlight mode is --accent against
+       --chart-context. The Okabe-Ito set is for charts where the
+       categories are the point.
+       ===================================================== */
+    --chart-highlight:    var(--accent);  /* story series in highlight mode */
+    --chart-context:      #B8B1A6;      /* 2.01 */
+    --chart-grid:         var(--border);
+    --chart-1:            #0072B2;      /* 4.89; Okabe-Ito */
+    --chart-2:            #D55E00;      /* 3.65 */
+    --chart-3:            #009E73;      /* 3.23 */
+    --chart-4:            #CC79A7;      /* 2.89; labels required */
+    --chart-5:            #000000;
+
+    /* =====================================================
+       TYPE, slide scale (1920x1080 reference)
+       Floors by role (checked by gate H7): body >= 36px,
+       captions and chart labels >= 28px, footer and source
+       line >= 24px. Use at most three sizes per slide. Never
+       shrink text to fit: split the slide or cut words.
+       ===================================================== */
+    --fs-hero:        240px;     /* The single big number */
+    --fs-display:     128px;     /* Structure slides */
+    --fs-section:     96px;      /* Spare large step */
+    --fs-h1:          72px;      /* Action title */
+    --fs-h2:          64px;
+    --fs-h3:          58px;
+    --fs-subtitle:    52px;      /* Deck subtitle, chart subtitle */
+    --fs-body-lg:     48px;
+    --fs-body:        44px;      /* Body text; x-height 21.8px, 2.0% of 1080 */
+    --fs-caption:     30px;      /* Captions raised above the floor */
+    --fs-micro:       24px;      /* Source line; do not go below */
+
+    --lh-tight:         1.12;    /* titles */
+    --lh-snug:          1.22;
+    --lh-normal:        1.4;     /* body */
+    --lh-relaxed:       1.55;
+
+    --tracking-tight:   0;       /* Atkinson is already wide */
+    --tracking-normal:  0;
+    --tracking-wide:    0.04em;
+    --tracking-caps:    0.08em;  /* kept for token parity; tracked caps are banned on slides */
+
+    --weight-regular:   400;
+    --weight-medium:    500;
+    --weight-semibold:  600;
+    --weight-bold:      700;
+
+    /* =====================================================
+       SPACING (8pt grid)
+       ===================================================== */
+    --space-0:   0;
+    --space-1:   4px;
+    --space-2:   8px;
+    --space-3:   12px;
+    --space-4:   16px;
+    --space-5:   24px;
+    --space-6:   32px;
+    --space-7:   48px;
+    --space-8:   64px;
+    --space-9:   80px;
+    --space-10:  120px;
+    --space-11:  160px;
+
+    /* Slide margins (1920x1080) */
+    --slide-pad-x:   120px;
+    --slide-pad-y:   96px;
+    --slide-w:       1920px;
+    --slide-h:       1080px;
+
+    /* Layout grid (1920x1080): 12 columns of 96px with 48px
+       gutters inside the 120px side margins (12 x 96 + 11 x 48
+       = 1680). Panels snap to whole columns. */
+    --grid-cols:     12;
+    --grid-col:      96px;
+    --grid-gutter:   48px;
+    --panel-pad:     48px;     /* inner padding of every panel */
+    --panel-gap:     32px;     /* gap between stacked panels */
+
+    /* =====================================================
+       RADIUS
+       ===================================================== */
+    --r-0:       0;
+    --r-sm:      4px;
+    --r-md:      6px;
+    --r-lg:      8px;
+    --r-xl:      24px;     /* small panels, rows, chips with text */
+    --r-2xl:     40px;     /* content panels and writing space */
+    --r-pill:    999px;
+
+    /* =====================================================
+       SHADOWS (use sparingly, flat is default)
+       ===================================================== */
+    --shadow-0:  none;
+    --shadow-1:  0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-2:  0 10px 24px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+
+    /* =====================================================
+       MOTION
+       ===================================================== */
+    --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+    --ease-in-out: cubic-bezier(0.7, 0, 0.3, 1);
+    --dur-fast:    150ms;
+    --dur-base:    240ms;
+    --dur-slow:    400ms;
+  }
+
+  /* =====================================================
+     DARK SLIDE THEME, apply `.dark` to a slide root.
+     Inverse tokens swap to the light values here.
+     ===================================================== */
+  .dark,
+  [data-theme="dark"] {
+    --bg:                 #1C2B28;      /* deep green */
+    --bg-elev:            #243733;
+    --bg-subtle:          #20312D;
+    --bg-inverse:         #FBF8F3;
+
+    --fg:                 #F5F1EA;      /* 13.08 */
+    --fg-muted:           #CDD6D2;      /* 9.92 */
+    --fg-subtle:          #9FB0AB;      /* 6.50 */
+    --fg-inverse:         #1F1D1A;
+    --fg-inverse-muted:   #4D4943;
+    --fg-inverse-subtle:  #65605A;
+
+    --border:             #33473F;
+    --border-strong:      #46605A;
+    --border-inverse:     #E5DFD4;
+    --border-accent:      var(--accent);  /* redeclared so it picks up the dark accent */
+
+    --accent:             #5CD1BF;      /* 7.95 */
+    --accent-fg:          #1C2B28;
+    --accent-partner:     #F5A06A;      /* 7.10 */
+
+    --chart-highlight:    var(--accent);  /* redeclared so it picks up the dark accent */
+    --chart-context:      #4A5C57;      /* 2.08 */
+    --chart-grid:         var(--border);
+    --chart-1:            #56B4E9;      /* 6.38; Okabe-Ito, reordered for contrast */
+    --chart-2:            #E69F00;      /* 6.54 */
+    --chart-3:            #CC79A7;      /* 4.81 */
+    --chart-4:            #009E73;      /* 4.31 */
+    --chart-5:            #F0E442;      /* 11.14 */
+  }
+
+  /* ==========================================================
+     Synced copy of ../typography.css. Source of truth is the
+     file; refresh this block whenever it changes. Font URLs
+     gain a ../ prefix here because this file sits in slides/.
+     ========================================================== */
+  /* ============================================================
+     Workshop preset, font stacks
+     ============================================================
+     Fraunces for titles (upright only, SOFT axis raised) over
+     Atkinson Hyperlegible Next for body, labels, and numbers.
+     Atkinson separates confusable glyphs (B and 8, O and 0, 1
+     and I and l) for low-vision readers. Fraunces has no tabular
+     figures, so numbers never go in Fraunces: big numbers, chart
+     labels, and tables use the sans stack with tabular figures.
+     Both ship unmodified in assets/fonts/ with their OFL.txt and
+     load from that relative path, so slides make no network
+     request. The mono stack is for code samples only and is not
+     vendored.
+     ============================================================ */
+
+  @font-face {
+    font-family: 'Fraunces';
+    src: url('../assets/fonts/fraunces/Fraunces-Variable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: block;
+  }
+  @font-face {
+    font-family: 'Atkinson Hyperlegible Next';
+    src: url('../assets/fonts/atkinson-hyperlegible-next/AtkinsonHyperlegibleNext-Variable.woff2') format('woff2');
+    font-weight: 200 800;
+    font-style: normal;
+    font-display: block;
+  }
+
+  :root {
+    --font-display: 'Fraunces', Georgia, serif;   /* titles only; never numbers */
+    --font-sans:    'Atkinson Hyperlegible Next', -apple-system, 'Segoe UI', Helvetica, sans-serif;
+    --font-mono:    'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    --font-display-settings: 'SOFT' 50, 'WONK' 0;   /* upright, softened; set on titles */
+  }
+
+  /* ==== Standalone viewer shell ==== */
+  html, body { margin: 0; height: 100vh; background: #000; overflow: hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+  .frame {
+    position: absolute;
+    width: 1920px; height: 1080px;
+    transform-origin: top left;
+  }
+  .frame > section {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    padding: var(--slide-pad-y) var(--slide-pad-x);
+    background: var(--bg);
+    color: var(--fg);
+    overflow: hidden;
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ==== Shared bits (workshop layout grammar) ==== */
+  /* 12-column grid: 96px columns, 48px gutters, 120px margins. */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-cols), var(--grid-col));
+    column-gap: var(--grid-gutter);
+  }
+  /* Title row: the title top left over 9 columns, the time box and
+     group chips top right. The title talks to the room. */
+  .head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: var(--grid-gutter);
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-variation-settings: var(--font-display-settings);
+    font-style: normal; font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
+    margin: 0; text-wrap: balance;
+  }
+  h1.action { font-size: var(--fs-h1); max-width: 1248px; }
+  /* Panel: every block of content sits in its own warm panel with
+     a large radius, never loose on the canvas. */
+  .panel {
+    background: var(--bg-elev);
+    border: 2px solid var(--border);
+    border-radius: var(--r-2xl);
+    padding: var(--panel-pad);
+  }
+  .panel.subtle { background: var(--bg-subtle); border-color: transparent; }
+  /* Writing space: an empty panel the facilitator fills on the
+     whiteboard or flip chart while the room talks. */
+  .write {
+    border: 4px dashed var(--border-strong);
+    border-radius: var(--r-2xl);
+    padding: var(--panel-pad);
+    display: flex; flex-direction: column;
+  }
+  /* Chips: time box and group size, top right on activity slides.
+     The time box is an ink pill (inverse surface), never the accent. */
+  .chips { display: flex; gap: 16px; flex-shrink: 0; padding-top: 8px; }
+  .chip {
+    font-size: var(--fs-caption); font-weight: var(--weight-semibold);
+    line-height: 1; padding: 18px 32px;
+    border-radius: var(--r-pill);
+    background: transparent; color: var(--fg);
+    border: 3px solid var(--border-strong);
+    white-space: nowrap;
+  }
+  .chip.time { background: var(--bg-inverse); color: var(--fg-inverse); border-color: var(--bg-inverse); }
+  /* Step disc: a real step number in a real sequence only. */
+  .disc {
+    flex-shrink: 0;
+    width: 88px; height: 88px; border-radius: 50%;
+    border: 4px solid var(--fg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: var(--fs-body); font-weight: var(--weight-bold);
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  /* Footer: source line bottom left, only when the slide shows
+     numbers. No rule, no slide counter. */
+  .footer {
+    position: absolute;
+    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 40px;
+    font-size: var(--fs-micro);
+    color: var(--fg-subtle);
+  }
+  .chart, .num { font-variant-numeric: tabular-nums lining-nums; }
+
+  /* ==== This slide ==== */
+  /* Vertical timeline over 8 columns: start time, a rail with one
+     dot per block, the block in its own row panel with its length.
+     The right 4 columns are a parking lot for the room's questions. */
+  .s-agenda .grid { flex: 1; margin-top: 48px; }
+  .s-agenda ol {
+    grid-column: 1 / span 8; position: relative;
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .s-agenda ol::before {
+    content: ''; position: absolute; left: 186px; top: 40px; bottom: 40px;
+    width: 4px; background: var(--border-strong);
+  }
+  .s-agenda li { flex: 1; display: grid; grid-template-columns: 150px 72px 1fr; column-gap: 0; align-items: center; }
+  .s-agenda .t { font-size: var(--fs-body); font-variant-numeric: tabular-nums lining-nums; color: var(--fg-muted); }
+  .s-agenda .dot {
+    position: relative; justify-self: center;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--bg); border: 4px solid var(--fg-subtle);
+  }
+  .s-agenda .blk {
+    height: 100%; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; margin-left: 24px;
+    border-radius: var(--r-xl);
+    background: var(--bg-elev); border: 2px solid var(--border);
+    font-size: var(--fs-body); line-height: var(--lh-snug);
+  }
+  .s-agenda .blk .d { font-size: var(--fs-caption); color: var(--fg-muted); font-variant-numeric: tabular-nums lining-nums; }
+  .s-agenda .brk .blk { background: transparent; border: 3px dashed var(--border-strong); color: var(--fg-muted); }
+  /* Accent job: marks the block the room is in now. */
+  .s-agenda .now .dot { background: var(--accent); border-color: var(--accent); }
+  .s-agenda .now .blk { border: 4px solid var(--accent); }
+  .s-agenda .write { grid-column: 9 / span 4; justify-content: space-between; }
+  .s-agenda .write .q { font-size: var(--fs-body); font-weight: var(--weight-bold); line-height: var(--lh-snug); margin: 0; }
+  .s-agenda .write .hint { font-size: var(--fs-caption); color: var(--fg-subtle); line-height: var(--lh-snug); margin: 0; }
+</style>
+<script>
+  function fit() {
+    const f = document.querySelector('.frame');
+    const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    f.style.transform = 'scale(' + s + ')';
+    const sw = 1920 * s, sh = 1080 * s;
+    f.style.left = ((window.innerWidth - sw) / 2) + 'px';
+    f.style.top  = ((window.innerHeight - sh) / 2) + 'px';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+</script>
+</head>
+<body>
+<div class="frame">
+<section class="s-agenda" data-screen-label="07 Agenda">
+    <div class="head">
+      <h1 class="action">Here is what you will do in the next 90 minutes</h1>
+    </div>
+    <div class="grid">
+      <ol>
+        <li class="now"><span class="t">10:00</span><span class="dot"></span><div class="blk"><span>Welcome and check-in</span><span class="d">10 min</span></div></li>
+        <li><span class="t">10:10</span><span class="dot"></span><div class="blk"><span>Why retros stall</span><span class="d">20 min</span></div></li>
+        <li><span class="t">10:30</span><span class="dot"></span><div class="blk"><span>Try a silent start</span><span class="d">25 min</span></div></li>
+        <li class="brk"><span class="t">10:55</span><span class="dot"></span><div class="blk"><span>Break</span><span class="d">10 min</span></div></li>
+        <li><span class="t">11:05</span><span class="dot"></span><div class="blk"><span>Pick one change</span><span class="d">20 min</span></div></li>
+        <li><span class="t">11:25</span><span class="dot"></span><div class="blk"><span>Commit and close</span><span class="d">5 min</span></div></li>
+      </ol>
+      <div class="write">
+        <p class="q">What do you want answered by 11:30?</p>
+        <p class="hint">Put one question per sticky note here. We answer them at 11:25.</p>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

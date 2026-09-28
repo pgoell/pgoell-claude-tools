@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>04 Bar chart</title>
+<title>05 Bar chart</title>
 <style>
   /* ==========================================================
      Synced copy of ../colors.css. Source of truth is the file;
@@ -145,6 +145,18 @@
     --slide-w:       1920px;
     --slide-h:       1080px;
 
+    /* Layout grid (see guidelines.md, Layout grammar).
+       12 columns of 122px with 24px gutters fill the 1728px
+       between the 96px side margins. Chrome sits at fixed
+       heights so nothing moves when you flip slides. */
+    --grid-cols:     12;
+    --grid-col:      122px;
+    --grid-gutter:   24px;
+    --tracker-top:   48px;      /* tracker and sticker row */
+    --title-top:     120px;     /* action title, first line */
+    --body-top:      300px;     /* evidence starts here on every content slide */
+    --body-bottom:   124px;     /* evidence ends this far above the canvas bottom */
+
     /* =====================================================
        RADIUS
        ===================================================== */
@@ -267,60 +279,78 @@
     position: relative;
     width: 1920px;
     height: 1080px;
-    padding: var(--slide-pad-y) var(--slide-pad-x);
     background: var(--bg);
     color: var(--fg);
     overflow: hidden;
     font-family: var(--font-sans);
     font-weight: var(--weight-regular);
-    display: flex;
-    flex-direction: column;
   }
 
-  /* ==== Shared bits ==== */
-  /* Action title: the dominant heading on every content slide,
-     in the same place and size on every slide. */
+  /* ==== Shared chrome (Layout grammar in ../guidelines.md) ==== */
+  /* Every piece of chrome sits at a fixed position, so nothing moves
+     when you flip through the deck. */
+  /* Tracker: the deck's sections, current one marked by the accent.
+     Each section spans 2 grid columns. */
+  .tracker {
+    position: absolute; top: var(--tracker-top); left: var(--slide-pad-x);
+    display: flex; gap: var(--grid-gutter);
+    font-size: var(--fs-micro); line-height: 1.2; color: var(--fg-subtle);
+  }
+  .tracker span {
+    width: calc(2 * var(--grid-col) + var(--grid-gutter));
+    padding-top: 12px; border-top: 4px solid var(--border-strong);
+  }
+  /* Accent job, shared: the current section. */
+  .tracker span.on {
+    border-top-color: var(--accent); color: var(--fg);
+    font-weight: var(--weight-semibold);
+  }
+  /* Sticker: status of the numbers, top right, only when true. */
+  .sticker {
+    position: absolute; top: var(--tracker-top); right: var(--slide-pad-x);
+    font-size: var(--fs-caption); line-height: 1.2; color: var(--fg-muted);
+    border: 2px solid var(--fg-subtle); padding: 6px 20px;
+  }
+  /* Action title: same place, same size on every content slide. */
   h1.action {
+    position: absolute; top: var(--title-top); left: var(--slide-pad-x);
+    width: calc(11 * var(--grid-col) + 10 * var(--grid-gutter));
     font-family: var(--font-display);
     font-size: var(--fs-h1); font-weight: var(--weight-semibold);
     letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
-    margin: 0; max-width: 1560px;
-    text-wrap: balance;
+    margin: 0; text-wrap: balance;
   }
-  /* Footer: Source line on the left when the slide shows numbers, the
-     page number on the right. No rule, no slide counter. */
+  /* Evidence area: fixed box under the title band. */
+  .body {
+    position: absolute; top: var(--body-top); bottom: var(--body-bottom);
+    left: var(--slide-pad-x); right: var(--slide-pad-x);
+  }
+  /* Exhibit subtitle: the measure, its units, and its dates. */
+  .exhibit {
+    font-size: var(--fs-body); line-height: 1.2; color: var(--fg-muted);
+    margin: 0;
+  }
+  /* Footer: source bottom left, page number bottom right. */
   .footer {
     position: absolute;
     left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 48px;
     display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
-    font-size: var(--fs-micro);
+    font-size: var(--fs-micro); line-height: 1.2;
     color: var(--fg-subtle);
   }
-  /* Evidence block under the action title: centered in the space
-     left between title and footer. */
-  .evidence { margin: auto 0; padding: 48px 0 88px; }
-  /* Numbers align: tabular lining figures in charts and big numbers. */
-  .chart, .num { font-variant-numeric: tabular-nums lining-nums; }
+  .chart, .num, table { font-variant-numeric: tabular-nums lining-nums; }
+  svg { display: block; overflow: visible; }
 
   /* ==== This slide ==== */
-  .s-bar .sub {
-    font-size: var(--fs-subtitle); line-height: var(--lh-snug);
-    color: var(--fg-muted); margin: 24px 0 0; max-width: 1600px;
-  }
-  .s-bar svg { display: block; overflow: visible; }
-  .s-bar svg text { font-size: var(--fs-body); fill: var(--fg-muted); }
+  .s-bar .chart { margin-top: 24px; }
+  .s-bar svg text { font-size: var(--fs-caption); fill: var(--fg-muted); }
   .s-bar svg text.hi { fill: var(--fg); font-weight: var(--weight-semibold); }
   .s-bar .bar { fill: var(--chart-context); }
-  .s-bar .grid { stroke: var(--chart-grid); stroke-width: 2; }
-  .s-bar .axis { stroke: var(--fg); stroke-width: 3; }
-  /* Accent job: marks the depot the title names. */
+  /* Accent job: the depot the title names. */
   .s-bar .bar.hi { fill: var(--chart-highlight); }
-  /* Sticker: marks the status of the numbers, top right. */
-  .s-bar .sticker {
-    position: absolute; top: var(--slide-pad-y); right: var(--slide-pad-x);
-    font-size: var(--fs-caption); color: var(--fg-muted);
-    border: 2px solid var(--border-strong); padding: 6px 20px;
-  }
+  .s-bar .ref { stroke: var(--fg); stroke-width: 2; stroke-dasharray: 8 8; }
+  .s-bar .ref-label { fill: var(--fg); }
+  .s-bar .bracket { stroke: var(--fg-subtle); stroke-width: 2; fill: none; }
 </style>
 <script>
   function fit() {
@@ -337,21 +367,22 @@
 </head>
 <body>
 <div class="frame">
-<section class="s-bar" data-screen-label="04 Bar chart">
+<section class="s-bar" data-screen-label="05 Bar chart">
+    <nav class="tracker" data-role="footer" aria-label="Deck sections"><span class="on">Where cost sits</span><span>What closing saves</span><span>Options</span><span>Plan</span></nav>
     <div class="sticker" data-role="label">Preliminary</div>
     <h1 class="action">Hull costs €4.10 per parcel, twice the network median of €2.05</h1>
-    <p class="sub">Cost to serve per parcel, €, 2025, the 6 costliest of 11 depots</p>
-    <div class="evidence">
-      <svg class="chart" width="1728" height="560" role="img"
-           aria-label="Cost to serve per parcel by depot, 2025: Hull €4.10, the network median €2.05"
-           data-chart="bar" data-orientation="horizontal" data-unit="€"
-           data-labels='["Hull", "Swindon", "Leeds", "Bristol", "York", "Derby"]'
-           data-series='[{"name": "Cost to serve per parcel", "values": [4.1, 3.45, 3.2, 2.3, 2.1, 2.05]}]'
-           data-highlight="0"></svg>
+    <div class="body">
+      <p class="exhibit">Cost to serve per parcel by depot, €, 2025</p>
+      <svg class="chart" width="1728" height="584" role="img"
+           aria-label="Cost to serve per parcel for all 11 depots, 2025: Hull €4.10, the network median €2.05"
+           data-chart="bar" data-orientation="horizontal" data-unit="€" data-reference="2.05"
+           data-labels='["Hull", "Swindon", "Leeds", "Bristol", "York", "Derby", "Luton", "Crewe", "Reading", "Coventry", "Doncaster"]'
+           data-series='[{"name": "Cost to serve per parcel", "values": [4.1, 3.45, 3.2, 2.3, 2.1, 2.05, 1.95, 1.9, 1.85, 1.8, 1.7]}]'
+           data-highlight="0" data-bracket="0,2" data-bracket-label="Proposed for closure"></svg>
     </div>
     <div class="footer">
       <span class="source" data-role="source">Source: Kestrel depot cost ledger, 2025; team analysis</span>
-      <span class="page" data-role="footer">7</span>
+      <span class="page" data-role="footer">5</span>
     </div>
   </section>
 </div>
@@ -367,15 +398,25 @@
   (function () {
     const el = document.querySelector('.s-bar .chart');
     const d = chartData(el), v = d.series[0].values;
-    const lx = 260, W = 1240, rowH = 92, barH = 60, max = Math.max(...v);
+    const lx = 200, W = 1000, top = 48, rowH = 49, barH = 32, max = Math.max(...v);
+    const ref = Number(el.dataset.reference);
     const fmt = x => '€' + x.toFixed(2);
     let out = '';
     v.forEach((val, i) => {
-      const y = i * rowH, hi = i === d.highlight ? ' hi' : '';
+      const y = top + i * rowH, hi = i === d.highlight ? ' hi' : '';
       out += '<text class="' + hi + '" x="0" y="' + (y + barH / 2) + '" dominant-baseline="central">' + d.labels[i] + '</text>';
       out += '<rect class="bar' + hi + '" x="' + lx + '" y="' + y + '" width="' + (val / max * W) + '" height="' + barH + '"/>';
-      out += '<text class="' + hi + '" x="' + (lx + val / max * W + 24) + '" y="' + (y + barH / 2) + '" dominant-baseline="central">' + fmt(val) + '</text>';
+      out += '<text class="' + hi + '" x="' + (lx + W + 120) + '" y="' + (y + barH / 2) + '" text-anchor="end" dominant-baseline="central">' + fmt(val) + '</text>';
     });
+    // Reference line with a direct label, no legend.
+    const rx = lx + ref / max * W, bottom = top + v.length * rowH - (rowH - barH);
+    out += '<line class="ref" x1="' + rx + '" x2="' + rx + '" y1="' + (top - 8) + '" y2="' + (bottom + 8) + '"/>';
+    out += '<text class="ref-label" x="' + (rx - 12) + '" y="20" text-anchor="start">Network median ' + fmt(ref) + '</text>';
+    // Bracket on the rows the recommendation names.
+    const [a, b] = el.dataset.bracket.split(',').map(Number);
+    const bx = lx + W + 200, y1 = top + a * rowH, y2 = top + b * rowH + barH;
+    out += '<path class="bracket" d="M' + (bx - 16) + ' ' + y1 + ' H' + bx + ' V' + y2 + ' H' + (bx - 16) + '"/>';
+    out += '<text x="' + (bx + 24) + '" y="' + ((y1 + y2) / 2) + '" dominant-baseline="central">' + el.dataset.bracketLabel + '</text>';
     el.innerHTML = out;
   })();
 </script>

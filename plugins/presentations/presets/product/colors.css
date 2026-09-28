@@ -94,7 +94,9 @@
   --lh-normal:        1.35;    /* body */
   --lh-relaxed:       1.5;
 
-  --tracking-tight:   -0.02em;  /* 72px and above */
+  --tracking-tight:   -0.02em;  /* 60px to 96px */
+  --tracking-display: -0.035em; /* 128px display lines */
+  --tracking-hero:    -0.05em;  /* 240px product names and metrics */
   --tracking-normal:  0;
   --tracking-wide:    0.04em;
   --tracking-caps:    0.08em;  /* kept for token parity; tracked caps are banned on slides */
@@ -119,6 +121,19 @@
   --space-9:   80px;
   --space-10:  120px;
   --space-11:  160px;
+
+  /* Layout grid (1920x1080): the ruled page. Two vertical rails
+     at the 96px side margins bound 12 columns of 144px. Column n
+     starts at 96 + (n-1) * 144px; a span of k columns is 144k px.
+     Hairlines sit on column lines; text insets --cell-pad from the
+     line it sits against, so neighboring columns of text keep a
+     64px gutter. Two horizontal rules cut the page into a title
+     band (0 to 288px), an evidence band, and a footer band (992
+     to 1080px). */
+  --grid-col:      144px;
+  --cell-pad:      32px;
+  --band-title:    288px;     /* rule under the title band */
+  --band-foot:     992px;     /* rule over the footer band */
 
   /* Slide margins (1920x1080) */
   --slide-pad-x:   96px;
