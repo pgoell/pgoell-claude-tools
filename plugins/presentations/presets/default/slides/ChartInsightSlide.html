@@ -19,21 +19,27 @@
      Color rule: one accent with one job. The accent marks the
      single thing the audience should look at (the highlighted
      series, the current step, the new state). Everything else
-     is ink or gray. The ember and lava values stay for charts
-     that need a second series color; slides do not use them as
-     a second accent.
+     is ink or gray. The bright green is for graphics only
+     (bars, rules, dots); accent-colored text uses --accent-ink.
+     Charts read the --chart-* group: gray plus one, with
+     --chart-highlight as the story series.
+
+     Contrast: every text tier holds 4.5:1 or better on --bg,
+     --bg-elev, and --bg-subtle in both scopes; --accent-ink
+     holds 4.5:1 on all three.
      ============================================================ */
 
   :root {
     /* =====================================================
        COLOR, Brand (raw layer)
        ===================================================== */
-    --brand-green:        #86BC24;   /* Bright accent green; graphics only, fails as text on white */
-    --brand-green-dark:   #5C8A18;   /* Pressed / hover variant, text-safe ramp step */
+    --brand-green:        #86BC24;   /* Bright accent green; graphics only (2.2:1 on --bg), never text */
+    --brand-green-dark:   #5C8A18;   /* Pressed / hover variant; 3.9:1 on --bg, not text-safe */
+    --brand-green-ink:    #567817;   /* Text-safe step: 4.9:1 on --bg, 4.6:1 on --bg-subtle */
     --brand-green-tint:   #E5F2C9;   /* Background wash */
     --brand-ink:          #0F0B0B;   /* Headlines, warmer than pure black */
 
-    --brand-ember:        #FF3621;   /* Warm red-orange, secondary accent */
+    --brand-ember:        #FF3621;   /* Warm red-orange; raw only, never charted next to the green (red-green pair) */
     --brand-ember-dark:   #D62914;   /* Pressed */
     --brand-ember-tint:   #FFE3DE;
     --brand-deep:         #1B3139;   /* Deep blue-green for dark slides */
@@ -54,7 +60,7 @@
     --fg-subtle:          #6F6B68;   /* Tertiary text: source lines, footer (about 5:1 on --bg) */
     --fg-inverse:         #FAFAF7;   /* Text on dark bg */
     --fg-inverse-muted:   rgba(250, 250, 247, 0.72);
-    --fg-inverse-subtle:  rgba(250, 250, 247, 0.50);
+    --fg-inverse-subtle:  rgba(250, 250, 247, 0.62);   /* 6.0:1 on --bg-inverse */
 
     --border:             #E8E8E3;
     --border-strong:      #D2D2CB;
@@ -62,14 +68,32 @@
     --border-accent:      var(--brand-green);   /* Accent hairline */
 
     --accent:             var(--brand-green);   /* The one accent: graphics that mark the focus */
+    --accent-ink:         var(--brand-green-ink);   /* Accent-colored text: a word or number the accent marks */
     --accent-fg:          var(--brand-ink);
-    --accent-partner:     var(--brand-ember);   /* Second chart series only, never a second accent */
+    --accent-partner:     #1F5FA8;   /* Second chart series only (= --chart-2), never a second accent */
 
     /* Status (rare on slides, but useful) */
     --status-success:     #2F7A1C;
     --status-warning:     #C77700;
     --status-danger:      #B0271A;
     --status-info:        #00638A;
+
+    /* =====================================================
+       COLOR, Charts
+       Gray plus one: --chart-highlight marks the story series,
+       every other series is --chart-context. The numbered
+       categorical colors only when the categories are the
+       point, at most 4 here. Direct
+       labels instead of legends. The set passes a Machado 2009
+       protan, deutan, and tritan simulation at CIEDE2000 >= 14.
+       ===================================================== */
+    --chart-highlight:    var(--brand-green-ink);   /* 4.9:1; story series in highlight mode (the bright accent is under 3:1) */
+    --chart-context:      #ABA8A2;   /* 2.3:1; the series that are not the story */
+    --chart-grid:         var(--border);
+    --chart-1:            var(--brand-green-ink);   /* 4.9:1 */
+    --chart-2:            #1F5FA8;   /* 6.2:1 */
+    --chart-3:            #592637;   /* 11.4:1 */
+    --chart-4:            #C2707E;   /* 3.4:1 */
 
     /* =====================================================
        TYPE, slide scale (1920x1080 reference)
@@ -168,27 +192,45 @@
     --fg-subtle:     var(--fg-inverse-subtle);
     --border:        var(--border-inverse);
     --border-strong: rgba(255, 255, 255, 0.24);
-    --accent-fg:     var(--fg-inverse);
+    --accent-ink:    var(--brand-green);   /* 6.0:1 on --brand-deep */
+    --accent-partner: #7FA8F5;
+
+    --chart-highlight: var(--brand-green);   /* 6.0:1 */
+    --chart-context: #5E747B;   /* 2.8:1 */
+    --chart-grid:    var(--border-inverse);
+    --chart-1:       var(--brand-green);   /* 6.0:1 */
+    --chart-2:       #7FA8F5;   /* 5.7:1 */
+    --chart-3:       #BA5E7D;   /* 3.2:1 */
+    --chart-4:       #E0BEB8;   /* 7.9:1 */
   }
 
   /* ==========================================================
      Synced copy of ../typography.css. Source of truth is the
-     file; refresh this block whenever it changes.
+     file; refresh this block whenever it changes. Font URLs
+     gain a ../ prefix here because this file sits in slides/.
      ========================================================== */
   /* ============================================================
      Default preset, font stacks
      ============================================================
-     Webfonts: "DM Sans" and "JetBrains Mono" (both on Google
-     Fonts, OFL-licensed). The preset does not vendor or import
-     them, so standalone slides render on the system fallbacks
-     below. Deck builds that must render identically offline
-     vendor the webfont files per the creating-presentations
-     caveats. The gallery sets all text in the sans stack; the
-     mono stack is for code samples only, never for labels.
+     Figtree (OFL-1.1, no Reserved Font Name) ships unmodified in
+     assets/fonts/figtree/ with its OFL.txt and loads from that
+     relative path, so slides make no network request. Tables and
+     chart labels set font-variant-numeric: tabular-nums
+     lining-nums so figures align in columns. JetBrains Mono is
+     not vendored: the mono stack is for code samples only, never
+     for labels, and falls back to the system mono face.
      ============================================================ */
 
+  @font-face {
+    font-family: 'Figtree';
+    src: url('../assets/fonts/figtree/Figtree-Variable.woff2') format('woff2');
+    font-weight: 300 900;
+    font-style: normal;
+    font-display: block;
+  }
+
   :root {
-    --font-sans:    'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+    --font-sans:    'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
     --font-mono:    'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
     --font-display: var(--font-sans);
   }
@@ -250,8 +292,8 @@
   /* ==== This slide ==== */
   .s-ci .plot { position: relative; width: 1680px; height: 560px; }
   .s-ci svg { position: absolute; left: 0; top: 0; overflow: visible; }
-  .s-ci svg text { font-size: var(--fs-caption); fill: var(--fg-subtle); }
-  .s-ci .grid { stroke: var(--border); stroke-width: 1; }
+  .s-ci svg text { font-size: var(--fs-caption); fill: var(--fg-subtle); font-variant-numeric: tabular-nums lining-nums; }
+  .s-ci .grid { stroke: var(--chart-grid); stroke-width: 1; }
   .s-ci .zero { stroke: var(--fg-subtle); stroke-width: 2; }
   .s-ci .line { fill: none; stroke: var(--fg-subtle); stroke-width: 4; }
   .s-ci .pt { fill: var(--fg-subtle); }
@@ -259,7 +301,7 @@
   .s-ci .arrow { stroke: var(--fg); stroke-width: 3; fill: none; }
   .s-ci .arrow-head { fill: var(--fg); }
   /* Accent job: marks the data point the callout explains. */
-  .s-ci .pt.hi { fill: var(--accent); stroke: var(--fg); stroke-width: 3; }
+  .s-ci .pt.hi { fill: var(--chart-highlight); stroke: var(--fg); stroke-width: 3; }
   .s-ci .callout {
     position: absolute; left: 1180px; width: 500px;
     font-size: var(--fs-body); line-height: 1.3;

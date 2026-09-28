@@ -1,0 +1,35 @@
+/* ============================================================
+   Editorial preset, font stacks
+   ============================================================
+   Newsreader for titles (display optical size, 500 to 600)
+   over Source Sans 3 for body, subtitles, labels, and the
+   source line. Both ship unmodified in assets/fonts/ with their
+   OFL.txt and load from that relative path, so slides make no
+   network request. Source Sans 3 carries the Reserved Font
+   Name "Source": never subset or otherwise modify its file.
+   Both families set tabular figures by default, so every
+   number in a chart aligns. Newsreader has a low x-height:
+   keep titles at 72px or more. The mono stack is for code
+   samples only and is not vendored.
+   ============================================================ */
+
+@font-face {
+  font-family: 'Newsreader';
+  src: url('assets/fonts/newsreader/Newsreader-Variable.woff2') format('woff2');
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: 'Source Sans 3';
+  src: url('assets/fonts/source-sans-3/SourceSans3VF-Upright.ttf.woff2') format('woff2');
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: block;
+}
+
+:root {
+  --font-display: 'Newsreader', Georgia, serif;
+  --font-sans:    'Source Sans 3', -apple-system, 'Segoe UI', Helvetica, sans-serif;
+  --font-mono:    'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+}

@@ -4,8 +4,8 @@ Choose the look of a deck before composing it. Without a concrete direction, a m
 
 ## When to run it
 
-- **New deck on the `default` preset:** run the full step.
-- **Client preset active** (any preset other than `default`): colors and type belong to the brand. Skip palette and type; propose only the motif and the layout concept (two or three options), render them in the preset's own tokens, and pick the same way.
+- **New deck on the `default` preset:** run the full step. The five bundled voice presets (`analytical`, `keynote`, `product`, `editorial`, `workshop`) are ready-made directions: when one fits the subject, render it as a candidate next to the ones you draw from the subject, and when it wins, switch the deck to that preset instead of writing `direction.css`.
+- **Client or voice preset active** (any preset other than `default`): colors and type belong to the preset. Skip palette and type; propose only the motif and the layout concept (two or three options), render them in the preset's own tokens, and pick the same way.
 - **Skip entirely** when the user already fixed the look (named colors, a reference deck, "keep it plain"), when a `direction.md` already sits next to the deck, or when the task is only to review an existing deck.
 
 ## 1. Propose three or four directions
@@ -47,6 +47,6 @@ Pick the deck's most important content slide (the one carrying the governing ide
 Write the winner as two files next to the deck:
 
 - `direction.md`: the spec table for the chosen direction, including the accent's job. Judges cite it through V2 and V3, and later edits to the deck keep to it.
-- `direction.css`: `:root` overrides of the preset's semantic variables only (in the default preset `--bg`, `--bg-inverse`, `--fg`, `--fg-muted`, `--fg-subtle`, `--accent`, `--border`, and the font stacks `--font-sans` and `--font-display`), plus any motif as a CSS class. Inline it into the deck head after the preset's `colors.css` and `typography.css`, so it wins the cascade.
+- `direction.css`: `:root` overrides of the preset's semantic variables only (in the default preset `--bg`, `--bg-inverse`, `--fg`, `--fg-muted`, `--fg-subtle`, `--accent`, `--accent-ink`, `--border`, the chart tokens `--chart-highlight` and `--chart-context`, and the font stacks `--font-sans` and `--font-display`), plus any motif as a CSS class. A new accent needs a `--chart-highlight` of at least 3:1 on the background. Inline it into the deck head after the preset's `colors.css` and `typography.css`, so it wins the cascade.
 
 Never override the type scale, spacing, or canvas tokens: the H7 floors and the gallery layouts depend on them. Vendor any webfont the direction uses (see the Caveats in `SKILL.md`), or pick families that ship with the system. After locking, every slide reads its colors and fonts from these variables; no hex values in slide markup.

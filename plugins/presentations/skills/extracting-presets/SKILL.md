@@ -61,7 +61,9 @@ Write `colors.css` and, when the font stacks diverge from the defaults, `typogra
 
 The semantic mapping is a design decision, not extraction: propose which raw colors become the default look and whether a variant is worth encoding (a dark inverse for title and divider slides is common), then let the user decide. Encode each variant as a class scope after `:root` (`.inverse { --bg: ...; }`) so a slide or region opts in with one class and every `var()` reference flips.
 
-Check accent contrast in both directions before mapping. A brand accent often works as a graphic on white yet fails as text (a bright brand green on white can land around 2.3:1); map a darker ramp step as `--accent-ink` for accent-colored text and keep the bright value in `--accent` for graphics.
+Check accent contrast in both directions before mapping. A brand accent often works as a graphic on white yet fails as text (a bright brand green on white can land around 2.2:1); map a darker ramp step as `--accent-ink` for accent-colored text and keep the bright value in `--accent` for graphics. Hold every text tier and the text accent at 4.5:1 or better on `--bg`, `--bg-elev`, and `--bg-subtle` in every scope.
+
+Map the brand's chart colors onto the chart token group the contract defines (`--chart-highlight`, `--chart-context`, `--chart-grid`, `--chart-1` onward, optional `--chart-seq-*` and `--chart-div-*`), in the order the brand's charts use them. `--chart-highlight` is the story series and must clear 3:1 on the background; when the accent is lighter, point it at `--accent-ink`. Run the categorical set through a color-vision-deficiency simulation and record any pair that merges, or any color under 3:1, in the manifest.
 
 Not every rule has a variable to ride on. Brand expression guidance (personality attributes, tone of voice, imagery selection rules) goes into `guidelines.md`, condensed to what steers a slide decision; skip the portal boilerplate. Keep guidance files rule-only: source attributions, capture dates, and divergence notes belong in the manifest (step 6), not in the files every deck build loads, where each provenance sentence is a recurring token cost.
 
@@ -79,7 +81,7 @@ One self-contained HTML file per slide in `slides/`, on a 1920x1080 canvas: inli
 
 ### 5. Collect assets
 
-Prefer SVG, it inlines as text. Small rasters (logos, badges) base64-inline. Photographic imagery keeps its source quality: when inlining would force lossy recompression, keep the original file in `assets/` and have the slide reference it by relative path (`../assets/<file>`), noting the choice in the manifest; the slide still opens standalone from the preset directory. Compressing a source photo until it squeezes inline trades away exactly the fidelity the preset exists to keep. Record font licensing in the manifest when the brand typeface is licensed rather than free; the deck skill must know whether it can embed the font or must fall back.
+Prefer SVG, it inlines as text. Small rasters (logos, badges) base64-inline. Photographic imagery keeps its source quality: when inlining would force lossy recompression, keep the original file in `assets/` and have the slide reference it by relative path (`../assets/<file>`), noting the choice in the manifest; the slide still opens standalone from the preset directory. Compressing a source photo until it squeezes inline trades away exactly the fidelity the preset exists to keep. Record font licensing in the manifest when the brand typeface is licensed rather than free; the deck skill must know whether it can embed the font or must fall back. An open-licensed brand face is vendored as unmodified woff2 files with its license under `assets/fonts/<family>/`, declared by `@font-face` in `typography.css`, with provenance (source, version, license, Reserved Font Name) in the manifest; never subset a family that carries a Reserved Font Name.
 
 Official logo and wordmark downloads need their own care:
 

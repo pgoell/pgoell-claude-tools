@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>04 Bar chart</title>
+<style>
+  /* ==========================================================
+     Synced copy of ../colors.css. Source of truth is the file;
+     refresh this block whenever it changes.
+     ========================================================== */
+  /* ============================================================
+     Product preset, design tokens ("signal orange" direction)
+     ============================================================
+     Source of truth for every slide's embedded variable block.
+     Semantic layer only: this preset serves a context, not a
+     brand, so it carries no raw brand layer. Slides read these
+     names and nothing else.
+
+     Tech launches, product reviews, engineering all-hands:
+     near-achromatic grays with one rationed signal-orange
+     accent, and a near-black dark scope.
+
+     Color rule: one accent with one job. The accent marks the
+     single thing the audience should look at. Everything else
+     is ink or gray. Every text tier holds 4.5:1 or better on
+     --bg, --bg-elev, and --bg-subtle in both scopes, and
+     --accent holds 4.5:1 on --bg, so it can mark a word or a
+     number. Borders are decorative only.
+     ============================================================ */
+
+  :root {
+    /* =====================================================
+       COLOR, Semantic (light theme)
+       ===================================================== */
+    --bg:                 #FAFAFA;
+    --bg-elev:            #FFFFFF;
+    --bg-subtle:          #F2F2F2;
+    --bg-inverse:         #0A0A0A;
+
+    --fg:                 #171717;      /* 17.18 */
+    --fg-muted:           #4D4D4D;      /* 8.10 */
+    --fg-subtle:          #666666;      /* 5.50 */
+    --fg-inverse:         #EDEDED;
+    --fg-inverse-muted:   #A1A1A1;
+    --fg-inverse-subtle:  #8A8A8A;
+
+    --border:             #E6E6E6;      /* decorative only */
+    --border-strong:      #CFCFCF;
+    --border-inverse:     #262626;
+    --border-accent:      var(--accent);
+
+    --accent:             #C2410C;      /* 4.96; signal orange */
+    --accent-fg:          #FFFFFF;
+    --accent-partner:     #0369A1;      /* second chart series only */
+
+    /* Status (rare on slides, but useful) */
+    --status-success:     #2F7A1C;
+    --status-warning:     #C77700;
+    --status-danger:      #B0271A;
+    --status-info:        #00638A;
+
+    /* =====================================================
+       COLOR, Charts
+       Gray plus one: --chart-highlight marks the story series,
+       every other series is --chart-context. The numbered
+       categorical colors are for charts where the categories
+       are the point, at most 6 series.
+       Default is highlight mode: --accent for the story series,
+       --chart-context for the rest. The --chart-1 to --chart-6
+       Carbon order is for charts where the categories are the
+       point, used in strict order.
+       ===================================================== */
+    --chart-highlight:    var(--accent);  /* story series in highlight mode */
+    --chart-context:      #A3A3A3;      /* 2.42 */
+    --chart-grid:         var(--border);
+    --chart-1:            #6929C4;      /* 7.41; Carbon categorical order */
+    --chart-2:            #1192E8;      /* 3.19 */
+    --chart-3:            #0C5C57;      /* 7.50; Carbon #005D5D, adjusted for CVD */
+    --chart-4:            #9F1853;      /* 7.37 */
+    --chart-5:            #FA4D56;      /* 3.21 */
+    --chart-6:            #028229;      /* 4.76; Carbon #198038, adjusted for CVD */
+
+    /* =====================================================
+       TYPE, slide scale (1920x1080 reference)
+       Floors by role (checked by gate H7): body >= 36px,
+       captions and chart labels >= 28px, footer and source
+       line >= 24px. Use at most three sizes per slide. Never
+       shrink text to fit: split the slide or cut words.
+       ===================================================== */
+    --fs-hero:        240px;     /* The single big number */
+    --fs-display:     128px;     /* Structure slides */
+    --fs-section:     96px;      /* Spare large step */
+    --fs-h1:          72px;      /* Action title */
+    --fs-h2:          60px;
+    --fs-h3:          52px;
+    --fs-subtitle:    48px;      /* Deck subtitle, chart subtitle */
+    --fs-body-lg:     44px;
+    --fs-body:        40px;      /* Body text (floor 36px) */
+    --fs-caption:     28px;      /* Captions, chart labels */
+    --fs-micro:       24px;      /* Source line; do not go below */
+
+    --lh-tight:         1.1;     /* titles */
+    --lh-snug:          1.2;
+    --lh-normal:        1.35;    /* body */
+    --lh-relaxed:       1.5;
+
+    --tracking-tight:   -0.02em;  /* 72px and above */
+    --tracking-normal:  0;
+    --tracking-wide:    0.04em;
+    --tracking-caps:    0.08em;  /* kept for token parity; tracked caps are banned on slides */
+
+    --weight-regular:   400;
+    --weight-medium:    500;
+    --weight-semibold:  600;
+    --weight-bold:      700;
+
+    /* =====================================================
+       SPACING (8pt grid)
+       ===================================================== */
+    --space-0:   0;
+    --space-1:   4px;
+    --space-2:   8px;
+    --space-3:   12px;
+    --space-4:   16px;
+    --space-5:   24px;
+    --space-6:   32px;
+    --space-7:   48px;
+    --space-8:   64px;
+    --space-9:   80px;
+    --space-10:  120px;
+    --space-11:  160px;
+
+    /* Slide margins (1920x1080) */
+    --slide-pad-x:   96px;
+    --slide-pad-y:   80px;
+    --slide-w:       1920px;
+    --slide-h:       1080px;
+
+    /* =====================================================
+       RADIUS
+       ===================================================== */
+    --r-0:       0;
+    --r-sm:      4px;
+    --r-md:      6px;
+    --r-lg:      8px;
+    --r-pill:    999px;
+
+    /* =====================================================
+       SHADOWS (use sparingly, flat is default)
+       ===================================================== */
+    --shadow-0:  none;
+    --shadow-1:  0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-2:  0 10px 24px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+
+    /* =====================================================
+       MOTION
+       ===================================================== */
+    --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+    --ease-in-out: cubic-bezier(0.7, 0, 0.3, 1);
+    --dur-fast:    150ms;
+    --dur-base:    240ms;
+    --dur-slow:    400ms;
+  }
+
+  /* =====================================================
+     DARK SLIDE THEME, apply `.dark` to a slide root.
+     Inverse tokens swap to the light values here.
+     ===================================================== */
+  .dark,
+  [data-theme="dark"] {
+    --bg:                 #0A0A0A;
+    --bg-elev:            #161616;
+    --bg-subtle:          #111111;
+    --bg-inverse:         #FAFAFA;
+
+    --fg:                 #EDEDED;      /* 16.91 */
+    --fg-muted:           #A1A1A1;      /* 7.66 */
+    --fg-subtle:          #8A8A8A;      /* 5.73 */
+    --fg-inverse:         #171717;
+    --fg-inverse-muted:   #4D4D4D;
+    --fg-inverse-subtle:  #666666;
+
+    --border:             #262626;
+    --border-strong:      #3A3A3A;
+    --border-inverse:     #E6E6E6;
+    --border-accent:      var(--accent);  /* redeclared so it picks up the dark accent */
+
+    --accent:             #FF7A45;      /* 7.66 */
+    --accent-fg:          #0A0A0A;
+    --accent-partner:     #38BDF8;      /* 9.24 */
+
+    --chart-highlight:    var(--accent);  /* redeclared so it picks up the dark accent */
+    --chart-context:      #525252;      /* 2.53 */
+    --chart-grid:         var(--border);
+    --chart-1:            #8A3FFC;      /* 3.96 */
+    --chart-2:            #33B1FF;      /* 8.37 */
+    --chart-3:            #007D79;      /* 3.97 */
+    --chart-4:            #FF7EB6;      /* 8.40 */
+    --chart-5:            #FA4D56;      /* 5.90 */
+    --chart-6:            #6FDC8C;      /* 11.59 */
+  }
+
+  /* ==========================================================
+     Synced copy of ../typography.css. Source of truth is the
+     file; refresh this block whenever it changes. Font URLs
+     gain a ../ prefix here because this file sits in slides/.
+     ========================================================== */
+  /* ============================================================
+     Product preset, font stacks
+     ============================================================
+     Geist for titles and body, one family in several weights.
+     The variable file (weight axis 100 to 900) from Vercel's
+     geist npm build ships unmodified in assets/fonts/geist/ with
+     its OFL.txt and loads from that relative path, so slides
+     make no network request. Tables and chart labels switch on
+     tabular figures with font-variant-numeric. Geist Mono is for
+     code blocks only, never labels, and is not vendored.
+     ============================================================ */
+
+  @font-face {
+    font-family: 'Geist';
+    src: url('../assets/fonts/geist/Geist-Variable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: block;
+  }
+
+  :root {
+    --font-sans:    'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+    --font-display: var(--font-sans);
+    --font-mono:    'Geist Mono', 'SF Mono', Menlo, Consolas, monospace;   /* code blocks only */
+  }
+
+  /* ==== Standalone viewer shell ==== */
+  html, body { margin: 0; height: 100vh; background: #000; overflow: hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+  .frame {
+    position: absolute;
+    width: 1920px; height: 1080px;
+    transform-origin: top left;
+  }
+  .frame > section {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    padding: var(--slide-pad-y) var(--slide-pad-x);
+    background: var(--bg);
+    color: var(--fg);
+    overflow: hidden;
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ==== Shared bits ==== */
+  /* Action title: the dominant heading on every content slide,
+     in the same place and size on every slide. */
+  h1.action {
+    font-family: var(--font-display);
+    font-size: var(--fs-h1); font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
+    margin: 0; max-width: 1560px;
+    text-wrap: balance;
+  }
+  /* Footer: Source line on the left, only when the slide shows
+     numbers. No rule, no slide counter. */
+  .footer {
+    position: absolute;
+    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 48px;
+    display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
+    font-size: var(--fs-micro);
+    color: var(--fg-subtle);
+  }
+  /* Evidence block under the action title: centered in the space
+     left between title and footer. */
+  .evidence { margin: auto 0; padding: 48px 0 88px; }
+  /* Numbers align: tabular lining figures in charts and big numbers. */
+  .chart, .num { font-variant-numeric: tabular-nums lining-nums; }
+
+  /* ==== This slide ==== */
+  .s-bar .sub {
+    font-size: var(--fs-subtitle); line-height: var(--lh-snug);
+    color: var(--fg-muted); margin: 24px 0 0; max-width: 1600px;
+  }
+  .s-bar svg { display: block; overflow: visible; }
+  .s-bar svg text { font-size: var(--fs-body); fill: var(--fg-muted); }
+  .s-bar svg text.hi { fill: var(--fg); font-weight: var(--weight-semibold); }
+  .s-bar .bar { fill: var(--chart-context); }
+  .s-bar .grid { stroke: var(--chart-grid); stroke-width: 2; }
+  .s-bar .axis { stroke: var(--fg); stroke-width: 3; }
+  /* Accent job: marks the release the title names. */
+  .s-bar .bar.hi { fill: var(--chart-highlight); }
+</style>
+<script>
+  function fit() {
+    const f = document.querySelector('.frame');
+    const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    f.style.transform = 'scale(' + s + ')';
+    const sw = 1920 * s, sh = 1080 * s;
+    f.style.left = ((window.innerWidth - sw) / 2) + 'px';
+    f.style.top  = ((window.innerHeight - sh) / 2) + 'px';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+</script>
+</head>
+<body>
+<div class="frame">
+<section class="s-bar" data-screen-label="04 Bar chart">
+    <h1 class="action">Relay 3 cuts median CI time from 22 to 9 minutes</h1>
+    <p class="sub">Median CI run in minutes, April 2026 beta, 120 repositories</p>
+    <div class="evidence">
+      <svg class="chart" width="1728" height="500" role="img"
+           aria-label="Median CI run in minutes: Relay 3 9, Relay 2 22, custom scripts 27, plain make 31"
+           data-chart="bar" data-orientation="horizontal" data-unit="min"
+           data-labels='["Relay 3", "Relay 2", "Custom scripts", "Plain make"]'
+           data-series='[{"name": "Median CI run", "values": [9, 22, 27, 31]}]'
+           data-highlight="0"></svg>
+    </div>
+    <div class="footer">
+      <span class="source" data-role="source">Source: Relay beta telemetry, 120 repositories, April 2026</span>
+    </div>
+  </section>
+</div>
+<script>
+  function chartData(el) {
+    return {
+      labels: JSON.parse(el.dataset.labels || '[]'),
+      series: JSON.parse(el.dataset.series || '[]'),
+      highlight: el.dataset.highlight === undefined ? -1 : Number(el.dataset.highlight),
+      unit: el.dataset.unit || ''
+    };
+  }
+  (function () {
+    const el = document.querySelector('.s-bar .chart');
+    const d = chartData(el), v = d.series[0].values;
+    const lx = 380, W = 1100, rowH = 120, barH = 72, max = Math.max(...v);
+    const fmt = x => x + ' min';
+    let out = '';
+    v.forEach((val, i) => {
+      const y = i * rowH, hi = i === d.highlight ? ' hi' : '';
+      out += '<text class="' + hi + '" x="0" y="' + (y + barH / 2) + '" dominant-baseline="central">' + d.labels[i] + '</text>';
+      out += '<rect class="bar' + hi + '" x="' + lx + '" y="' + y + '" width="' + (val / max * W) + '" height="' + barH + '"/>';
+      out += '<text class="' + hi + '" x="' + (lx + val / max * W + 24) + '" y="' + (y + barH / 2) + '" dominant-baseline="central">' + fmt(val) + '</text>';
+    });
+    el.innerHTML = out;
+  })();
+</script>
+</body>
+</html>

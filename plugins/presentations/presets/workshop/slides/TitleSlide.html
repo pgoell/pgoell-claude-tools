@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>01 Title</title>
+<style>
+  /* ==========================================================
+     Synced copy of ../colors.css. Source of truth is the file;
+     refresh this block whenever it changes.
+     ========================================================== */
+  /* ============================================================
+     Workshop preset, design tokens ("warm teal" direction)
+     ============================================================
+     Source of truth for every slide's embedded variable block.
+     Semantic layer only: this preset serves a context, not a
+     brand, so it carries no raw brand layer. Slides read these
+     names and nothing else.
+
+     Training, facilitation, mixed and low-vision audiences:
+     warm off-white paper, a teal accent with a warm partner,
+     and a deep green dark scope. Large captions and a
+     hyperlegible body face.
+
+     Color rule: one accent with one job. The accent marks the
+     single thing the audience should look at. Everything else
+     is ink or gray. Every text tier holds 4.5:1 or better on
+     --bg, --bg-elev, and --bg-subtle in both scopes, and
+     --accent holds 4.5:1 on --bg, so it can mark a word or a
+     number. Borders are decorative only.
+     ============================================================ */
+
+  :root {
+    /* =====================================================
+       COLOR, Semantic (light theme)
+       ===================================================== */
+    --bg:                 #FBF8F3;
+    --bg-elev:            #FFFFFF;
+    --bg-subtle:          #F2EDE4;
+    --bg-inverse:         #1C2B28;
+
+    --fg:                 #1F1D1A;      /* 15.87 */
+    --fg-muted:           #4D4943;      /* 8.44 */
+    --fg-subtle:          #65605A;      /* 5.88 */
+    --fg-inverse:         #F5F1EA;
+    --fg-inverse-muted:   #CDD6D2;
+    --fg-inverse-subtle:  #9FB0AB;
+
+    --border:             #E5DFD4;      /* decorative only */
+    --border-strong:      #CCC4B6;
+    --border-inverse:     #33473F;
+    --border-accent:      var(--accent);
+
+    --accent:             #0B6E63;      /* 5.79; teal, not muted red */
+    --accent-fg:          #FFFFFF;
+    --accent-partner:     #B4531A;      /* 4.73; shapes only on --bg-subtle */
+
+    /* Status (rare on slides, but useful) */
+    --status-success:     #2F7A1C;
+    --status-warning:     #C77700;
+    --status-danger:      #B0271A;
+    --status-info:        #00638A;
+
+    /* =====================================================
+       COLOR, Charts
+       Gray plus one: --chart-highlight marks the story series,
+       every other series is --chart-context. The numbered
+       categorical colors are for charts where the categories
+       are the point, at most 6 series.
+       The story series in highlight mode is --accent against
+       --chart-context. The Okabe-Ito set is for charts where the
+       categories are the point.
+       ===================================================== */
+    --chart-highlight:    var(--accent);  /* story series in highlight mode */
+    --chart-context:      #B8B1A6;      /* 2.01 */
+    --chart-grid:         var(--border);
+    --chart-1:            #0072B2;      /* 4.89; Okabe-Ito */
+    --chart-2:            #D55E00;      /* 3.65 */
+    --chart-3:            #009E73;      /* 3.23 */
+    --chart-4:            #CC79A7;      /* 2.89; labels required */
+    --chart-5:            #000000;
+
+    /* =====================================================
+       TYPE, slide scale (1920x1080 reference)
+       Floors by role (checked by gate H7): body >= 36px,
+       captions and chart labels >= 28px, footer and source
+       line >= 24px. Use at most three sizes per slide. Never
+       shrink text to fit: split the slide or cut words.
+       ===================================================== */
+    --fs-hero:        240px;     /* The single big number */
+    --fs-display:     128px;     /* Structure slides */
+    --fs-section:     96px;      /* Spare large step */
+    --fs-h1:          72px;      /* Action title */
+    --fs-h2:          64px;
+    --fs-h3:          58px;
+    --fs-subtitle:    52px;      /* Deck subtitle, chart subtitle */
+    --fs-body-lg:     48px;
+    --fs-body:        44px;      /* Body text; x-height 21.8px, 2.0% of 1080 */
+    --fs-caption:     30px;      /* Captions raised above the floor */
+    --fs-micro:       24px;      /* Source line; do not go below */
+
+    --lh-tight:         1.12;    /* titles */
+    --lh-snug:          1.22;
+    --lh-normal:        1.4;     /* body */
+    --lh-relaxed:       1.55;
+
+    --tracking-tight:   0;       /* Atkinson is already wide */
+    --tracking-normal:  0;
+    --tracking-wide:    0.04em;
+    --tracking-caps:    0.08em;  /* kept for token parity; tracked caps are banned on slides */
+
+    --weight-regular:   400;
+    --weight-medium:    500;
+    --weight-semibold:  600;
+    --weight-bold:      700;
+
+    /* =====================================================
+       SPACING (8pt grid)
+       ===================================================== */
+    --space-0:   0;
+    --space-1:   4px;
+    --space-2:   8px;
+    --space-3:   12px;
+    --space-4:   16px;
+    --space-5:   24px;
+    --space-6:   32px;
+    --space-7:   48px;
+    --space-8:   64px;
+    --space-9:   80px;
+    --space-10:  120px;
+    --space-11:  160px;
+
+    /* Slide margins (1920x1080) */
+    --slide-pad-x:   120px;
+    --slide-pad-y:   96px;
+    --slide-w:       1920px;
+    --slide-h:       1080px;
+
+    /* =====================================================
+       RADIUS
+       ===================================================== */
+    --r-0:       0;
+    --r-sm:      4px;
+    --r-md:      6px;
+    --r-lg:      8px;
+    --r-pill:    999px;
+
+    /* =====================================================
+       SHADOWS (use sparingly, flat is default)
+       ===================================================== */
+    --shadow-0:  none;
+    --shadow-1:  0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-2:  0 10px 24px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+
+    /* =====================================================
+       MOTION
+       ===================================================== */
+    --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+    --ease-in-out: cubic-bezier(0.7, 0, 0.3, 1);
+    --dur-fast:    150ms;
+    --dur-base:    240ms;
+    --dur-slow:    400ms;
+  }
+
+  /* =====================================================
+     DARK SLIDE THEME, apply `.dark` to a slide root.
+     Inverse tokens swap to the light values here.
+     ===================================================== */
+  .dark,
+  [data-theme="dark"] {
+    --bg:                 #1C2B28;      /* deep green */
+    --bg-elev:            #243733;
+    --bg-subtle:          #20312D;
+    --bg-inverse:         #FBF8F3;
+
+    --fg:                 #F5F1EA;      /* 13.08 */
+    --fg-muted:           #CDD6D2;      /* 9.92 */
+    --fg-subtle:          #9FB0AB;      /* 6.50 */
+    --fg-inverse:         #1F1D1A;
+    --fg-inverse-muted:   #4D4943;
+    --fg-inverse-subtle:  #65605A;
+
+    --border:             #33473F;
+    --border-strong:      #46605A;
+    --border-inverse:     #E5DFD4;
+    --border-accent:      var(--accent);  /* redeclared so it picks up the dark accent */
+
+    --accent:             #5CD1BF;      /* 7.95 */
+    --accent-fg:          #1C2B28;
+    --accent-partner:     #F5A06A;      /* 7.10 */
+
+    --chart-highlight:    var(--accent);  /* redeclared so it picks up the dark accent */
+    --chart-context:      #4A5C57;      /* 2.08 */
+    --chart-grid:         var(--border);
+    --chart-1:            #56B4E9;      /* 6.38; Okabe-Ito, reordered for contrast */
+    --chart-2:            #E69F00;      /* 6.54 */
+    --chart-3:            #CC79A7;      /* 4.81 */
+    --chart-4:            #009E73;      /* 4.31 */
+    --chart-5:            #F0E442;      /* 11.14 */
+  }
+
+  /* ==========================================================
+     Synced copy of ../typography.css. Source of truth is the
+     file; refresh this block whenever it changes. Font URLs
+     gain a ../ prefix here because this file sits in slides/.
+     ========================================================== */
+  /* ============================================================
+     Workshop preset, font stacks
+     ============================================================
+     Fraunces for titles (upright only, SOFT axis raised) over
+     Atkinson Hyperlegible Next for body, labels, and numbers.
+     Atkinson separates confusable glyphs (B and 8, O and 0, 1
+     and I and l) for low-vision readers. Fraunces has no tabular
+     figures, so numbers never go in Fraunces: big numbers, chart
+     labels, and tables use the sans stack with tabular figures.
+     Both ship unmodified in assets/fonts/ with their OFL.txt and
+     load from that relative path, so slides make no network
+     request. The mono stack is for code samples only and is not
+     vendored.
+     ============================================================ */
+
+  @font-face {
+    font-family: 'Fraunces';
+    src: url('../assets/fonts/fraunces/Fraunces-Variable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: block;
+  }
+  @font-face {
+    font-family: 'Atkinson Hyperlegible Next';
+    src: url('../assets/fonts/atkinson-hyperlegible-next/AtkinsonHyperlegibleNext-Variable.woff2') format('woff2');
+    font-weight: 200 800;
+    font-style: normal;
+    font-display: block;
+  }
+
+  :root {
+    --font-display: 'Fraunces', Georgia, serif;   /* titles only; never numbers */
+    --font-sans:    'Atkinson Hyperlegible Next', -apple-system, 'Segoe UI', Helvetica, sans-serif;
+    --font-mono:    'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    --font-display-settings: 'SOFT' 50, 'WONK' 0;   /* upright, softened; set on titles */
+  }
+
+  /* ==== Standalone viewer shell ==== */
+  html, body { margin: 0; height: 100vh; background: #000; overflow: hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+  .frame {
+    position: absolute;
+    width: 1920px; height: 1080px;
+    transform-origin: top left;
+  }
+  .frame > section {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    padding: var(--slide-pad-y) var(--slide-pad-x);
+    background: var(--bg);
+    color: var(--fg);
+    overflow: hidden;
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ==== Shared bits ==== */
+  /* Action title: the dominant heading on every content slide,
+     in the same place and size on every slide. */
+  h1.action {
+    font-family: var(--font-display);
+    font-size: var(--fs-h1); font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
+    margin: 0; max-width: 1560px;
+    text-wrap: balance;
+  }
+  /* Footer: Source line on the left, only when the slide shows
+     numbers. No rule, no slide counter. */
+  .footer {
+    position: absolute;
+    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 48px;
+    display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
+    font-size: var(--fs-micro);
+    color: var(--fg-subtle);
+  }
+  /* Evidence block under the action title: centered in the space
+     left between title and footer. */
+  .evidence { margin: auto 0; padding: 48px 0 88px; }
+  /* Numbers align: tabular lining figures in charts and big numbers. */
+  .chart, .num { font-variant-numeric: tabular-nums lining-nums; }
+  /* Fraunces titles: upright, softened. Numbers stay in the sans stack. */
+  h1 { font-variation-settings: var(--font-display-settings); font-style: normal; }
+
+  /* ==== This slide ==== */
+  .s-title { justify-content: flex-end; padding-bottom: 150px; }
+  .s-title h1 {
+    font-family: var(--font-display);
+    font-size: var(--fs-display); font-weight: var(--weight-semibold);
+    line-height: var(--lh-tight); letter-spacing: var(--tracking-tight);
+    margin: 0; max-width: 1600px;
+    text-wrap: balance;
+  }
+  .s-title .sub {
+    font-size: var(--fs-subtitle); line-height: var(--lh-normal);
+    color: var(--fg-muted);
+    margin: 40px 0 0; max-width: 1400px;
+  }
+  .s-title .meta {
+    position: absolute; top: var(--slide-pad-y); left: var(--slide-pad-x);
+    font-size: var(--fs-caption); color: var(--fg-subtle);
+  }
+</style>
+<script>
+  function fit() {
+    const f = document.querySelector('.frame');
+    const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    f.style.transform = 'scale(' + s + ')';
+    const sw = 1920 * s, sh = 1080 * s;
+    f.style.left = ((window.innerWidth - sw) / 2) + 'px';
+    f.style.top  = ((window.innerHeight - sh) / 2) + 'px';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+</script>
+</head>
+<body>
+<div class="frame">
+<section class="s-title" data-screen-label="01 Title">
+    <div class="meta" data-role="caption">Facilitator guide, spring cohort 2026</div>
+    <h1>Run retrospectives your team wants to attend</h1>
+    <p class="sub">A 90-minute workshop for team leads</p>
+  </section>
+</div>
+</body>
+</html>
