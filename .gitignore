@@ -5,3 +5,4 @@ notes/
 .workbench/
 .claude/*.lock
 plugins/databricks/references/research/
+plugins/presentations/evals/results/
