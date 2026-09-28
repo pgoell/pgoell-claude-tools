@@ -5,7 +5,7 @@ description: Use when the user wants to design the content of a slide presentati
 
 # Designing Presentations
 
-End-to-end content design for slide decks. Five sequential phases produce: an audience brief, a message architecture, a storyboard, per-slide drafts, and a critique report. The deliverable is a single `deck.md` file with YAML front-matter per slide. This skill stops at `deck.md`; rendering, styling, and presenting are the deck builder's job.
+End-to-end content design for slide decks. Five sequential phases produce: an audience brief, a message architecture, a storyboard chosen from competing storylines, per-slide drafts, and a critique report. The deliverable is a single `deck.md` file with YAML front-matter per slide. This skill stops at `deck.md`; rendering, styling, and presenting are the deck builder's job.
 
 ## When to Use
 
@@ -28,20 +28,27 @@ Working directory: a `<topic-slug>/` directory under the current project unless 
 
 ### Step 1: Intake
 
-**Goal:** establish who the audience is, what the deck must accomplish, and what success looks like.
+**Goal:** establish who the audience is, what they must decide, and how the deck will be used.
 
-**Inputs:** the user's request, `references/audience-brief-template.md`, `references/time-budget.md`.
+**Inputs:** the user's request and material, `references/audience-brief-template.md`, `references/time-budget.md`.
 
-**Process:** ask the user the following questions, one at a time (in autonomous runs, self-answer each):
+**Process:** ask the user these questions one at a time, skipping any their material already answers:
 
-1. Who is the audience? Capture role, seniority, prior knowledge of the topic, what is at stake for them, and the two most likely objections.
-2. What is the genre and length? Choose one of: executive briefing, keynote, training, pitch, technical talk. State the planned duration in minutes.
-3. What is the governing idea, in one sentence under 20 words, no jargon? This becomes the title slide's headline.
-4. What is the call to action? Capture actor (who must act), action (what they must do), timing (when), and consequence (what happens if they delay).
+1. Who is the audience? Role, seniority, prior knowledge, and their objections, strongest first.
+2. What evidence would overcome the strongest objection?
+3. What is at stake for them if they say no?
+4. Genre and length: executive briefing, keynote, training, pitch, or technical talk; duration in minutes.
+5. Deck mode: `presented`, `keynote`, `briefing`, or `reading`. It sets the word budget and notes density (`references/time-budget.md`).
+6. Do you expect them to agree? This sets sequencing: direct (answer first) for agree or neutral, indirect (answer once the strongest objection is met) for skeptical or under-informed.
+7. The governing idea: one sentence under 20 words, a point of view plus what is at stake.
+8. The call to action: actor, action, timing, consequence of delay.
+9. One emotional lever (hope, urgency, relief, adrenaline) and, optionally, a S.T.A.R. moment.
+
+**Autonomous runs do not answer these from general knowledge.** Derive each field from the user's material only and mark it `sourced` or `assumed` (see the template). If the decision or the strongest objection is assumed, ask one question when a user is reachable; otherwise continue and list the assumptions on the title-only read-through in Step 3.
 
 **Output:** `audience-brief.md`, filled in from the template. It doubles as the deck brief when the rendered deck later enters the perfecting loop, so the audience is named once and reused.
 
-**Pass condition:** every field in `audience-brief.md` is populated and the governing idea fits one sentence.
+**Pass condition:** every field is populated and marked sourced or assumed, and the governing idea fits one sentence.
 
 ### Step 2: Message Architecture
 
@@ -53,66 +60,69 @@ Working directory: a `<topic-slug>/` directory under the current project unless 
 
 1. Write the SCQA opener: Situation (stable context the audience already accepts), Complication (the tension), Question (the question the complication forces), Answer (the governing idea as resolution).
 2. Build the answer-first pyramid: one governing idea, two to four MECE grouped reasons, evidence under each reason. Each reason must be a sentence that states a conclusion, not a topic noun.
-3. Write the transformation arc: current state, insight, future state. The arc is what the audience moves from and to; without a delta, the deck is a report rather than a persuasion.
+3. Write the transformation arc: current state, insight, future state. The arc is what the audience moves from and to; without a delta, the deck is a report rather than a persuasion. The future state answers the stakes-if-no field; the insight is phrased for the emotional lever.
 4. Restate the CTA from intake in operational terms: actor, action, timing, consequence.
 
 **Output:** `message-architecture.md`.
 
-**Pass condition:** the four artifacts (SCQA, pyramid, transformation arc, CTA) are present and the pyramid's reasons stated as conclusions not topics.
+**Pass condition:** the four artifacts (SCQA, pyramid, transformation arc, CTA) are present, the pyramid's reasons are stated as conclusions not topics, and every piece of evidence comes from the user's material. This file is the committed argument that Phase 5 judges critic findings against; the pyramid is the logic, not the slide order.
 
 ### Step 3: Storyboard
 
-**Goal:** order the slides and assign each one a slide_type, a one-line sentence headline, and a one-line visual brief.
+**Goal:** choose a storyline from competing candidates, then give each slide a slide_type, a sentence headline, and a visual brief naming its proof object.
 
-**Inputs:** `audience-brief.md`, `message-architecture.md`, `references/storyboard-template.md`, `references/slide-type-catalog.md`, `references/time-budget.md`.
+**Inputs:** `audience-brief.md`, `message-architecture.md`, `references/storyboard-template.md`, `references/slide-type-catalog.md`, `references/time-budget.md`, the active preset's `language.md`.
 
-**Process:**
+**Process** (details and a worked example in `references/storyboard-template.md`):
 
-1. Compute the recommended slide-count band: look up the genre and duration captured in Phase 1 in `references/time-budget.md` and read off the band (for example a 20-minute executive briefing recommends 8 to 12 slides).
-2. Draft the slide sequence. Use the eight content-side slide types from `references/slide-type-catalog.md`: Title, Agenda, SectionDivider, Decision, Evidence, Transformation, Closing, Appendix. The recommended ordering is Title, Agenda (optional for talks under 10 minutes), SectionDivider blocks for the body, Decision and Evidence and Transformation slides inside the body, Closing, then any Appendix slides parked at the end.
-3. Check for a known preset. When the user names a preset or a specific layout, or exactly one preset is installed under `../../presets/` at the plugin root, list that preset's `slides/` gallery: those file names are the concrete layouts the deck will render into, and the user may already know which they want. A visual brief may pin a gallery layout by name ("adapt chevron-process"); a pinned layout overrides the mapping recommendation in `references/slide-type-catalog.md`.
-4. For each slide write: slide number, slide_type, the sentence-takeaway headline (not a topic noun), and a one-line visual brief naming the dominant proof object. The headline is the action title; layouts that pair a short topic title with a subtitle render it as the subtitle.
+1. Read the slide-count band for the genre and duration from `references/time-budget.md` (a `reading` deck has none).
+2. Draft two or three competing storylines, titles only, each a different shape: answer-first, indirect, what is / what could be. Include the shape that matches the brief's sequencing. Build them from the audience brief (strongest objection, its evidence, stakes if no), not from the order of the source material.
+3. Pick one. The user picks when present; in autonomous runs compare two at a time with the order swapped, and break a disagreement with the brief's sequencing. Record the choice.
+4. Add structure slides only by length: no Agenda or SectionDivider under 15 body slides (tunable defaults in the template). A direct storyline may carry an exec summary at slide 2.
+5. Check for a known preset. When the user names a preset or a specific layout, or the deck's use points at one of the bundled presets under `../../presets/` at the plugin root (the "Bundled presets" table in `../../presets/README.md`; for example `analytical` for a board paper, `keynote` for a stage talk, `technical` for an architecture review, design doc, or incident review), list that preset's `slides/` gallery and record it as `preset` in the `deck.md` header. A visual brief may pin a gallery layout by name; a pinned layout overrides the mapping in `references/slide-type-catalog.md`.
+6. For each slide write: slide number, slide_type, the sentence headline, and a visual brief naming the proof object. Every content slide carries one (chart with insight, single number, highlighted bar, waterfall, table, process, 2x2, diagram, image, quote). Write headlines to the active preset's `language.md` (fall back to `../../presets/default/language.md`). Layouts that pair a short topic title with a subtitle render the headline as the subtitle.
+7. Write the title-only read-through (three sentences) with the list of assumed fields, and show it to the user before Step 4.
 
 **Output:** `storyboard.md`.
 
-**Pass condition:** every slide has a sentence headline (not a noun phrase), slide count falls within the recommended band (or the user explicitly overrides), and the body covers each reason from the message architecture's pyramid.
+**Pass condition:** a choice record names the candidates and the pick; every slide has a sentence headline and a proof object; slide count falls within the band (or the user overrides); the body covers each reason from the pyramid; the read-through and assumptions list are written.
 
 ### Step 4: Slide Drafts
 
 **Goal:** expand every slide in the storyboard to the full per-slide YAML front-matter schema plus an ASCII layout sketch.
 
-**Inputs:** `storyboard.md`, `audience-brief.md`, `message-architecture.md`, `references/slide-brief-template.md`, `references/slide-type-catalog.md`.
+**Inputs:** `storyboard.md`, `audience-brief.md`, `message-architecture.md`, `references/slide-brief-template.md`, `references/slide-type-catalog.md`, `references/time-budget.md`, the active preset's `language.md`.
 
-**Process:** for each slide in the storyboard, produce a `## Slide NN: <headline>` block followed by a fenced `yaml` block matching the schema in `references/slide-brief-template.md`. The schema's top-level keys are `slide_type`, an optional short `title` (the topic label, for layouts that pair a title with an action subtitle), `headline`, `visual`, `speaker_notes`, and optional `sources`. Below the YAML, include an ASCII layout sketch using only plain ASCII characters (`-`, `|`, `+`, no Unicode box drawing) so the storyboard reader sees the spatial intent without needing an HTML render.
+**Process:** open `deck.md` with the deck header (`deck_mode`, `governing_idea`, `sequencing`, and the other optional keys in `references/slide-brief-template.md`). Then, for each slide in the storyboard, produce a `## Slide NN: <headline>` block followed by a fenced `yaml` block matching the schema in `references/slide-brief-template.md`. The schema's top-level keys are `slide_type`, an optional short `title` (the topic label, for layouts that pair a title with an action subtitle), `headline`, `visual`, `speaker_notes`, and optional `sources`. Below the YAML, include an ASCII layout sketch using only plain ASCII characters (`-`, `|`, `+`, no Unicode box drawing) so the storyboard reader sees the spatial intent without needing an HTML render.
 
-Apply the assertion-evidence pattern: the slide states (headline) and shows (visual); the speaker explains (speaker_notes). Do not duplicate the headline in the visual brief; do not duplicate the visual brief in the speaker notes.
+Apply the assertion-evidence pattern: the slide states (headline) and shows (visual); the speaker explains (speaker_notes). Notes complement the slide and never repeat it: short cues for `presented`, `keynote`, and `briefing` decks (a few words, the key number, the transition), fuller prose only for `reading` decks, sized at about 130 spoken words a minute. Keep on-screen words inside the deck mode's budget. Never add a fact, figure, name, or arithmetic that is not in the user's material.
 
 **Output:** `deck.md`.
 
 **Pass condition:** every slide in the storyboard has a corresponding block in `deck.md`; every block contains all required YAML keys; ASCII layout sketches are present.
 
-### Step 5: Critique Panel
+### Step 5: Checks and Critique
 
-**Goal:** audit `deck.md` against deterministic constraints and qualitative critic personas, then either pass or surface remaining issues for user decision.
+**Goal:** audit `deck.md` with checks that write their working down, then with critic personas bound to the committed argument, and either pass or surface remaining issues for user decision.
 
 **Inputs:** all earlier artifacts, `references/audit-checklist.md`, `references/critic-prompts.md`.
 
-**Process (two tiers, in order):**
+**Process (in order):**
 
-1. **Heuristic audit** (inline, deterministic). Walk every slide in `deck.md` and check each item in `references/audit-checklist.md`. Slide types `SectionDivider` and `Appendix` are exempt from item (a) (sentence-headline requirement). Append a numbered violation list to `audit-report.md` with slide references.
+1. **Heuristic audit** (inline). Run every check in `references/audit-checklist.md`: form checks A to E, then written-output checks F to K (title-only read-through against the governing idea, specificity test on every headline, exec-summary mapping, recommendation position, document order when a source document was the input, and the copy lint by reference). Each written check puts its output in `audit-report.md` before it judges.
 
-2. **Critic personas** (three subagents in parallel via the Agent tool). Each persona reads its assigned upstream artifacts and `deck.md`, then returns CRITICAL, MAJOR, or MINOR findings. The three personas are documented in `references/critic-prompts.md`:
-   - Audience critic: fit to the named audience.
+2. **Critic personas** (three subagents in parallel via the Agent tool; prompts in `references/critic-prompts.md`):
+   - Audience critic: a sequential walkthrough as one audience member, noting where understanding breaks.
    - Argument critic: logical force, evidence sufficiency, objection preemption, close landing.
    - Visual critic: one focal point per slide, one chart one comparison, no read-aloud redundancy.
 
-   Append the consolidated critic findings to `audit-report.md`.
+3. **Judge findings against `message-architecture.md`.** Accept a finding that serves the committed argument; reject one that would change the governing idea, drop a reason, or soften the CTA, and surface it to the user if it shows the architecture itself is wrong. Mark each finding accepted or rejected in `audit-report.md`.
 
-3. **Gate.** If any CRITICAL findings remain after this iteration, re-dispatch up to one more time (two iterations total). After two iterations, present the remaining CRITICAL issues to the user and ask whether to mark the deck ready with known issues, pause for manual intervention, or cancel.
+4. **Gate.** If any accepted CRITICAL findings remain, fix and re-dispatch once more (two iterations total). After two iterations, present the remaining CRITICAL issues to the user and ask whether to mark the deck ready with known issues, pause for manual intervention, or cancel.
 
 **Output:** `audit-report.md`.
 
-**Pass condition:** zero CRITICAL findings, or explicit user decision to proceed with known issues.
+**Pass condition:** zero accepted CRITICAL findings, or explicit user decision to proceed with known issues.
 
 ## Audit Mode
 
@@ -122,7 +132,7 @@ Audit mode reviews content in markdown, and that is its boundary: it judges what
 
 Audit mode is markdown-only. If the user asks to audit a PowerPoint, Keynote, or Google Slides export, ask them to paste or convert the content into a `deck.md` first. Binary slide-format import is out of scope.
 
-Audit mode skips the upstream artifacts (`audience-brief.md`, `message-architecture.md`, `storyboard.md`) which the critic personas would normally read. In their absence, the critics work from `deck.md` alone and flag any missing context they need; the user may then provide a one-paragraph audience and intent summary and request a re-run.
+Audit mode skips the upstream artifacts (`audience-brief.md`, `message-architecture.md`, `storyboard.md`) which the critic personas would normally read. In their absence, the critics work from `deck.md` alone and flag any missing context they need; the user may then provide a one-paragraph audience and intent summary and request a re-run. Without `message-architecture.md`, the checks and the findings judgement use the deck header's `governing_idea` (or, failing that, the Title slide's headline) as the committed claim. A `deck.md` without a header is treated as `deck_mode: presented`, and the report says so.
 
 ## State and Resume
 
@@ -152,7 +162,9 @@ Format: **markdown only**. There is no HTML output mode for this skill; renderin
 ## Key Principles
 
 - One message per slide. If a slide is making two points, split it into two slides.
-- Sentence headlines, not topic nouns. "Churn rose after response times crossed 12 hours" beats "Churn trends". Layouts that pair a title with a subtitle put the short topic label in the title and the sentence, the action title, in the subtitle; the takeaway obligation does not disappear, it just has a surface.
+- Nothing invented. Every fact, figure, name, and derived number on a slide or in the notes comes from the user's material; a gap is raised, not filled.
+- Real audience inputs. Autonomous runs mark each intake field sourced or assumed, and show the assumptions before rendering.
+- Sentence headlines, not topic nouns, and specific ones: a headline names a number, actor, or comparison from the material and would not fit an unrelated deck. "Churn rose after response times crossed 12 hours" beats "Churn trends". Layouts that pair a title with a subtitle put the short topic label in the title and the sentence, the action title, in the subtitle; the takeaway obligation does not disappear, it just has a surface.
 - The slide states and shows; the speaker explains and connects. Reading slide text aloud wastes the spoken channel and increases cognitive load (Mayer redundancy principle).
 - Audience first. The deck is a means to move someone from one state to another; if the audience or the desired delta is unclear, the deck cannot succeed.
 - Transformation contrast. Show current state versus future state explicitly; without a delta, the deck is a report not a persuasion.

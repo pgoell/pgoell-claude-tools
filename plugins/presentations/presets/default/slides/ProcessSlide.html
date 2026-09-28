@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>16 Process</title>
+<style>
+  /* ==========================================================
+     Synced copy of ../colors.css. Source of truth is the file;
+     refresh this block whenever it changes.
+     ========================================================== */
+  /* ============================================================
+     Default preset, design tokens ("quiet" direction)
+     ============================================================
+     Source of truth for every slide's embedded variable block.
+     Raw brand layer first, semantic layer second; slides read
+     only the semantic names unless a specific raw value is the
+     point (charts, swatches).
+
+     Color rule: one accent with one job. The accent marks the
+     single thing the audience should look at (the highlighted
+     series, the current step, the new state). Everything else
+     is ink or gray. The bright green is for graphics only
+     (bars, rules, dots); accent-colored text uses --accent-ink.
+     Charts read the --chart-* group: gray plus one, with
+     --chart-highlight as the story series.
+
+     Contrast: every text tier holds 4.5:1 or better on --bg,
+     --bg-elev, and --bg-subtle in both scopes; --accent-ink
+     holds 4.5:1 on all three.
+     ============================================================ */
+
+  :root {
+    /* =====================================================
+       COLOR, Brand (raw layer)
+       ===================================================== */
+    --brand-green:        #86BC24;   /* Bright accent green; graphics only (2.2:1 on --bg), never text */
+    --brand-green-dark:   #5C8A18;   /* Pressed / hover variant; 3.9:1 on --bg, not text-safe */
+    --brand-green-ink:    #567817;   /* Text-safe step: 4.9:1 on --bg, 4.6:1 on --bg-subtle */
+    --brand-green-tint:   #E5F2C9;   /* Background wash */
+    --brand-ink:          #0F0B0B;   /* Headlines, warmer than pure black */
+
+    --brand-ember:        #FF3621;   /* Warm red-orange; raw only, never charted next to the green (red-green pair) */
+    --brand-ember-dark:   #D62914;   /* Pressed */
+    --brand-ember-tint:   #FFE3DE;
+    --brand-deep:         #1B3139;   /* Deep blue-green for dark slides */
+    --brand-oat:          #EEEDE9;   /* Warm off-white */
+    --brand-lava:         #FF8B6B;   /* Secondary warm */
+    --brand-navy:         #00263A;   /* Secondary deep */
+
+    /* =====================================================
+       COLOR, Semantic (light theme, default)
+       ===================================================== */
+    --bg:                 #FAFAF7;   /* Slide background, warmer than #fff */
+    --bg-elev:            #FFFFFF;   /* Card / tile surface */
+    --bg-subtle:          #F2F2EC;   /* Subtle wash for sections */
+    --bg-inverse:         #1B3139;   /* Dark slide background */
+
+    --fg:                 #0F0B0B;   /* Primary text */
+    --fg-muted:           #595452;   /* Secondary text */
+    --fg-subtle:          #6F6B68;   /* Tertiary text: source lines, footer (about 5:1 on --bg) */
+    --fg-inverse:         #FAFAF7;   /* Text on dark bg */
+    --fg-inverse-muted:   rgba(250, 250, 247, 0.72);
+    --fg-inverse-subtle:  rgba(250, 250, 247, 0.62);   /* 6.0:1 on --bg-inverse */
+
+    --border:             #E8E8E3;
+    --border-strong:      #D2D2CB;
+    --border-inverse:     rgba(255, 255, 255, 0.12);
+    --border-accent:      var(--brand-green);   /* Accent hairline */
+
+    --accent:             var(--brand-green);   /* The one accent: graphics that mark the focus */
+    --accent-ink:         var(--brand-green-ink);   /* Accent-colored text: a word or number the accent marks */
+    --accent-fg:          var(--brand-ink);
+    --accent-partner:     #1F5FA8;   /* Second chart series only (= --chart-2), never a second accent */
+
+    /* Status (rare on slides, but useful) */
+    --status-success:     #2F7A1C;
+    --status-warning:     #C77700;
+    --status-danger:      #B0271A;
+    --status-info:        #00638A;
+
+    /* =====================================================
+       COLOR, Charts
+       Gray plus one: --chart-highlight marks the story series,
+       every other series is --chart-context. The numbered
+       categorical colors only when the categories are the
+       point, at most 4 here. Direct
+       labels instead of legends. The set passes a Machado 2009
+       protan, deutan, and tritan simulation at CIEDE2000 >= 14.
+       ===================================================== */
+    --chart-highlight:    var(--brand-green-ink);   /* 4.9:1; story series in highlight mode (the bright accent is under 3:1) */
+    --chart-context:      #ABA8A2;   /* 2.3:1; the series that are not the story */
+    --chart-grid:         var(--border);
+    --chart-1:            var(--brand-green-ink);   /* 4.9:1 */
+    --chart-2:            #1F5FA8;   /* 6.2:1 */
+    --chart-3:            #592637;   /* 11.4:1 */
+    --chart-4:            #C2707E;   /* 3.4:1 */
+
+    /* =====================================================
+       TYPE, slide scale (1920x1080 reference)
+       Floors by role (starting points, checked by gate H7):
+       body >= 36px, captions and chart labels >= 28px,
+       footer and source line >= 24px. Use at most three
+       sizes per slide. Never shrink text to fit: split the
+       slide or cut words.
+       ===================================================== */
+    --fs-hero:        280px;   /* The single big number */
+    --fs-display:     128px;   /* Structure slides: title, divider, closing */
+    --fs-section:     96px;    /* Spare large step */
+    --fs-h1:          72px;    /* Action title on content slides */
+    --fs-h2:          56px;    /* Quote text, large subheads */
+    --fs-h3:          48px;    /* Subheads */
+    --fs-subtitle:    44px;    /* Deck subtitle */
+    --fs-body-lg:     44px;    /* Emphasis body (agenda rows) */
+    --fs-body:        40px;    /* Body text, list items (floor 36px) */
+    --fs-caption:     28px;    /* Captions, labels, source line, footer */
+    --fs-micro:       24px;    /* Floor for footer and source line; do not go below */
+
+    --lh-tight:       1.05;
+    --lh-snug:        1.18;
+    --lh-normal:      1.35;
+    --lh-relaxed:     1.55;
+
+    --tracking-tight:   -0.02em;
+    --tracking-normal:  0;
+    --tracking-wide:    0.04em;
+    --tracking-caps:    0.08em;
+
+    --weight-regular:   400;
+    --weight-medium:    500;
+    --weight-semibold:  600;
+    --weight-bold:      700;
+
+    /* =====================================================
+       SPACING (8pt grid)
+       ===================================================== */
+    --space-0:   0;
+    --space-1:   4px;
+    --space-2:   8px;
+    --space-3:   12px;
+    --space-4:   16px;
+    --space-5:   24px;
+    --space-6:   32px;
+    --space-7:   48px;
+    --space-8:   64px;
+    --space-9:   80px;
+    --space-10:  120px;
+    --space-11:  160px;
+
+    /* Slide margins (1920x1080) */
+    --slide-pad-x:   120px;
+    --slide-pad-y:   96px;
+    --slide-w:       1920px;
+    --slide-h:       1080px;
+
+    /* =====================================================
+       RADIUS
+       ===================================================== */
+    --r-0:       0;
+    --r-sm:      4px;
+    --r-md:      6px;
+    --r-lg:      8px;
+    --r-pill:    999px;
+
+    /* =====================================================
+       SHADOWS (use sparingly, flat is default)
+       ===================================================== */
+    --shadow-0:  none;
+    --shadow-1:  0 1px 2px rgba(15, 11, 11, 0.04), 0 1px 3px rgba(15, 11, 11, 0.06);
+    --shadow-2:  0 10px 24px rgba(15, 11, 11, 0.08), 0 2px 6px rgba(15, 11, 11, 0.04);
+
+    /* =====================================================
+       MOTION
+       ===================================================== */
+    --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+    --ease-in-out: cubic-bezier(0.7, 0, 0.3, 1);
+    --dur-fast:    150ms;
+    --dur-base:    240ms;
+    --dur-slow:    400ms;
+  }
+
+  /* =====================================================
+     DARK SLIDE THEME, apply `.dark` to a slide root
+     ===================================================== */
+  .dark,
+  [data-theme="dark"] {
+    --bg:            var(--brand-deep);
+    --bg-elev:       rgba(255, 255, 255, 0.04);
+    --bg-subtle:     rgba(255, 255, 255, 0.02);
+    --fg:            var(--fg-inverse);
+    --fg-muted:      var(--fg-inverse-muted);
+    --fg-subtle:     var(--fg-inverse-subtle);
+    --border:        var(--border-inverse);
+    --border-strong: rgba(255, 255, 255, 0.24);
+    --accent-ink:    var(--brand-green);   /* 6.0:1 on --brand-deep */
+    --accent-partner: #7FA8F5;
+
+    --chart-highlight: var(--brand-green);   /* 6.0:1 */
+    --chart-context: #5E747B;   /* 2.8:1 */
+    --chart-grid:    var(--border-inverse);
+    --chart-1:       var(--brand-green);   /* 6.0:1 */
+    --chart-2:       #7FA8F5;   /* 5.7:1 */
+    --chart-3:       #BA5E7D;   /* 3.2:1 */
+    --chart-4:       #E0BEB8;   /* 7.9:1 */
+  }
+
+  /* ==========================================================
+     Synced copy of ../typography.css. Source of truth is the
+     file; refresh this block whenever it changes. Font URLs
+     gain a ../ prefix here because this file sits in slides/.
+     ========================================================== */
+  /* ============================================================
+     Default preset, font stacks
+     ============================================================
+     Figtree (OFL-1.1, no Reserved Font Name) ships unmodified in
+     assets/fonts/figtree/ with its OFL.txt and loads from that
+     relative path, so slides make no network request. Tables and
+     chart labels set font-variant-numeric: tabular-nums
+     lining-nums so figures align in columns. JetBrains Mono is
+     not vendored: the mono stack is for code samples only, never
+     for labels, and falls back to the system mono face.
+     ============================================================ */
+
+  @font-face {
+    font-family: 'Figtree';
+    src: url('../assets/fonts/figtree/Figtree-Variable.woff2') format('woff2');
+    font-weight: 300 900;
+    font-style: normal;
+    font-display: block;
+  }
+
+  :root {
+    --font-sans:    'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+    --font-mono:    'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    --font-display: var(--font-sans);
+  }
+
+  /* ==== Standalone viewer shell ==== */
+  html, body { margin: 0; height: 100vh; background: #000; overflow: hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+  .frame {
+    position: absolute;
+    width: 1920px; height: 1080px;
+    transform-origin: top left;
+  }
+  .frame > section {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    padding: var(--slide-pad-y) var(--slide-pad-x);
+    background: var(--bg);
+    color: var(--fg);
+    overflow: hidden;
+    font-family: var(--font-sans);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ==== Shared bits ==== */
+  .wordmark {
+    display: inline-flex; align-items: center; gap: 0.4em;
+    font-family: var(--font-display);
+    font-weight: var(--weight-semibold);
+    letter-spacing: 0.06em;
+  }
+  .wordmark .wordmark-dot {
+    width: 0.55em; height: 0.55em; border-radius: var(--r-pill);
+    background: var(--accent);
+  }
+  /* Action title: the dominant heading on every content slide. */
+  h1.action {
+    font-size: var(--fs-h1); font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight); line-height: 1.1;
+    margin: 0; max-width: 1560px;
+    text-wrap: balance;
+  }
+  /* Footer: optional. Source line on the left when the slide
+     shows numbers, the wordmark on the right when the brand
+     needs it. No rule, no slide counter. */
+  .footer {
+    position: absolute;
+    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 64px;
+    display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
+    font-size: var(--fs-caption);
+    color: var(--fg-subtle);
+  }
+  /* Evidence block under the action title: centered in the space
+     left between title and footer. */
+  .evidence { margin: auto 0; padding: 64px 0 96px; }
+  .footer .wordmark { margin-left: auto; font-size: var(--fs-caption); color: var(--fg-subtle); }
+
+  /* ==== This slide ==== */
+  .s-proc .steps { display: flex; align-items: stretch; gap: 64px; }
+  .s-proc .step {
+    position: relative;
+    flex: 1 1 0;
+    padding: 32px 28px;
+    background: var(--bg-elev);
+    border: 2px solid var(--border-strong);
+    border-top-width: 8px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .s-proc .name { font-size: var(--fs-body); font-weight: var(--weight-semibold); line-height: 1.1; }
+  .s-proc .desc { font-size: var(--fs-caption); line-height: var(--lh-normal); color: var(--fg-muted); text-wrap: balance; }
+  /* Connector arrow in the gap before each step after the first. */
+  .s-proc .step + .step::before {
+    content: ''; position: absolute;
+    left: -54px; top: 50%; width: 28px; height: 3px; margin-top: -1.5px;
+    background: var(--fg-subtle);
+  }
+  .s-proc .step + .step::after {
+    content: ''; position: absolute;
+    left: -28px; top: 50%; margin-top: -10px;
+    border-left: 16px solid var(--fg-subtle);
+    border-top: 10px solid transparent; border-bottom: 10px solid transparent;
+  }
+  /* Accent job: marks the step the title names. */
+  .s-proc .step.hi { border-color: var(--fg); border-top-color: var(--accent); }
+</style>
+<script>
+  function fit() {
+    const f = document.querySelector('.frame');
+    const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    f.style.transform = 'scale(' + s + ')';
+    const sw = 1920 * s, sh = 1080 * s;
+    f.style.left = ((window.innerWidth - sw) / 2) + 'px';
+    f.style.top  = ((window.innerHeight - sh) / 2) + 'px';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+</script>
+</head>
+<body>
+<div class="frame">
+<section class="s-proc" data-screen-label="16 Process">
+    <h1 class="action">Each workload keeps its old stack running until parity tests pass</h1>
+    <div class="steps evidence">
+      <div class="step">
+        <div class="name">Inventory</div>
+        <div class="desc" data-role="label">Jobs, tables, and users to move</div>
+      </div>
+      <div class="step">
+        <div class="name">Convert</div>
+        <div class="desc" data-role="label">Code and schemas ported by tooling</div>
+      </div>
+      <div class="step hi">
+        <div class="name">Parity test</div>
+        <div class="desc" data-role="label">Old and new match for 10 days</div>
+      </div>
+      <div class="step">
+        <div class="name">Cut over</div>
+        <div class="desc" data-role="label">Users switch, rollback ready</div>
+      </div>
+      <div class="step">
+        <div class="name">Retire</div>
+        <div class="desc" data-role="label">Old jobs and licenses end</div>
+      </div>
+    </div>
+    <div class="footer">
+      <span class="source">Source: Acme migration playbook, 2026</span>
+      <div class="wordmark"><span class="wordmark-dot"></span>ACME</div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # python-pptx recipes for HTML deck exports
 
-Durable raw material for the per-deck generator script: the coordinate system, the helper-layer shape, and twelve gotchas. Each gotcha cost a render-fix cycle to discover; apply them up front. All examples are generic; lift concrete values (colors, sizes) from the deck's own CSS.
+Durable raw material for the per-deck generator script: the coordinate system, the helper-layer shape, thirteen gotchas, and proof-object recipes. Each gotcha cost a render-fix cycle to discover; apply them up front. All examples are generic; lift concrete values (colors, sizes) from the deck's own CSS.
 
 ## Coordinate conversion
 
@@ -23,7 +23,7 @@ Keep the generator thin and uniform:
 - One builder per repeated component (editor window, facts strip, pill stamp, layers stack).
 - `est_lines(text, width_px, font_px, cpw)`: greedy wrap estimator; see gotcha 7.
 
-## The twelve gotchas
+## The thirteen gotchas
 
 1. **Strip `<p:style>` from every autoshape.** The `add_shape` template carries a theme style reference with `effectRef idx="2"`, which renders as an unwanted drop shadow in LibreOffice and some Office themes, even with an empty `effectLst`:
 
@@ -56,6 +56,20 @@ Keep the generator thin and uniform:
 11. **Fonts.** Prefer widely installed faces over the deck's webfonts: Aptos for sans (M365 default), Consolas for mono (safer than JetBrains Mono on arbitrary Windows installs). When the deck comes from a client preset whose corporate font the recipients have installed, use that font instead; the preset's `typography.css` names it. Accept that the verification renderer substitutes either way; treat renders as geometry and color checks, not glyph checks.
 
 12. **Speaker notes and metadata.** `slide.notes_slide.notes_text_frame.text = ...` from the HTML's speaker-notes JSON, keyed by 1-based slide number. Set `core_properties.title` and `core_properties.author`.
+
+13. **Autofit off, size never reduced.** Set `tf.auto_size = MSO_AUTO_SIZE.NONE` and `tf.word_wrap = True` on every text frame, and never call `fit_text()` or write `normAutofit`: both shrink type below the CSS size, which breaks the deck's type floors (body 40 px = 20 pt, captions 28 px = 14 pt, footer 24 px = 12 pt). At these sizes a line holds fewer characters, so run `est_lines()` against each box; when it predicts overflow, flag the slide to the user rather than shrink it.
+
+## Proof objects
+
+Read the data from the slide markup (`data-*` attributes, SVG bar geometry, text labels), never from memory, and lift colors from the deck tokens.
+
+- **Charts** (bar, column, ChartInsightSlide, BarChartSlide): build a native chart with `slide.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, x, y, cx, cy, CategoryChartData())` so the client can edit the numbers. Gray every point, then color the highlighted one: `series.points[i].format.fill.solid()` plus `.fore_color.rgb`. Match the HTML: no legend when the slide labels bars directly (`chart.has_legend = False`, `plot.has_data_labels = True`), light or no gridlines, axis and data label font at the CSS label size (28 px = 14 pt). The insight callout and its arrow stay text boxes and a connector (`add_connector(MSO_CONNECTOR.STRAIGHT, ...)` with a `tailEnd type="triangle"` on its `a:ln`).
+- **Chart attributes without a recipe**: `data-chart="dot"` (a dot plot), `data-highlight-series` (the index of the story series, drawn in `--chart-highlight`), and `data-annotations` (labels pinned to points). Honor `data-highlight-series` when a native chart is possible; when no recipe covers the chart type or its annotations, use the picture fallback below.
+- **Waterfall**: a stacked column chart with an invisible base series (`fill.background()`) under the visible delta series; python-pptx has no native waterfall type.
+- **Picture fallback**: when the data cannot be read back (a hand-drawn diagram, a DiagramSlide's freeform SVG), rasterize the SVG at 4x per the asset rules and place it as a picture. Tell the user which charts ship as pictures, since they are not editable.
+- **Tables** (TableSlide): `add_table(rows, cols, ...)` with per-cell fills and fonts from the CSS; cell text at the CSS size, never smaller to fit. Clear the default table style banding if the HTML has none.
+- **2x2 and process flows** (MatrixSlide, ProcessSlide): autoshapes plus text boxes through `rect()` and `tb()`, arrows as connectors, so each box stays editable.
+- **Full-bleed image with overlay** (ImageOverlaySlide): the picture at `E(0), E(0), E(1920), E(1080)`, then a `rect()` in the overlay color with alpha set in XML (python-pptx has no API): append `<a:alpha val="50000"/>` (50 percent) inside the fill's `a:srgbClr`, matching the CSS opacity. Text goes on top as normal text boxes.
 
 ## Render verification
 

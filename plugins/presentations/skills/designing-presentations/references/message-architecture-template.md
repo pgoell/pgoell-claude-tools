@@ -2,6 +2,12 @@
 
 Fill this in after the audience brief and before the storyboard. The message architecture turns the governing idea into a defensible argument shape (SCQA opener, answer-first pyramid, transformation arc, operational CTA) that every slide later traces back to. If the architecture is weak, no amount of slide polish will save the deck.
 
+The message architecture is the committed argument. Phase 5 judges every critic finding against it, so a change to the governing idea, the reasons, or the CTA happens here, on purpose, not as a side effect of a critique.
+
+The pyramid is the logic, not the slide order. It states the answer first because that makes the logic checkable; the storyboard (Phase 3) decides the order the audience meets it in, direct or indirect.
+
+Evidence comes from the user's material only. If a reason has no evidence in the material, write "none in material" under it; do not supply a plausible number.
+
 ## SCQA opener
 
 One-sentence subfields. The opener earns the audience's attention by stating a shared Situation, naming the Complication that disturbs it, posing the Question that the complication forces, and previewing the Answer the deck will defend.
@@ -36,6 +42,8 @@ Three sentences that map the audience's mental journey across the deck. Current 
 - **Current state:** [one sentence]
 - **Insight:** [one sentence: the pivot that the audience does not yet hold]
 - **Future state:** [one sentence: the outcome the CTA produces]
+
+The arc swings between what is and what could be. Pull its emotional weight from the audience brief: the future state answers the stakes-if-no field, and the insight is phrased for the chosen emotional lever (urgency: the cost of waiting; relief: the problem goes away; hope: what becomes possible; adrenaline: the race and the win).
 
 ## Call to action spec
 

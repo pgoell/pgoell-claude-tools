@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>04 Bar chart</title>
+<style>
+  /* ==========================================================
+     Synced copy of ../colors.css. Source of truth is the file;
+     refresh this block whenever it changes.
+     ========================================================== */
+  /* ============================================================
+     Editorial preset, design tokens ("paper and claret" direction)
+     ============================================================
+     Source of truth for every slide's embedded variable block.
+     Semantic layer only: this preset serves a context, not a
+     brand, so it carries no raw brand layer. Slides read these
+     names and nothing else.
+
+     Data stories, research readouts, reports presented as
+     decks: tinted paper, warm ink, one claret accent, and a
+     slate dark scope. Chart grammar follows newsroom practice:
+     headline, subtitle with units and dates, source line,
+     horizontal gridlines only, direct labels.
+
+     Color rule: one accent with one job. The accent marks the
+     single thing the audience should look at. Everything else
+     is ink or gray. Every text tier holds 4.5:1 or better on
+     --bg, --bg-elev, and --bg-subtle in both scopes, and
+     --accent holds 4.5:1 on --bg, so it can mark a word or a
+     number. Borders are decorative only.
+     ============================================================ */
+
+  :root {
+    /* =====================================================
+       COLOR, Semantic (light theme)
+       ===================================================== */
+    --bg:                 #FBF4EA;      /* tinted paper */
+    --bg-elev:            #FFFAF3;
+    --bg-subtle:          #F3E8DA;
+    --bg-inverse:         #1F2229;
+
+    --fg:                 #221C18;      /* 15.42 */
+    --fg-muted:           #52473F;      /* 8.25 */
+    --fg-subtle:          #6A5E55;      /* 5.75 */
+    --fg-inverse:         #F4EEE6;
+    --fg-inverse-muted:   #CFC6BA;
+    --fg-inverse-subtle:  #A69D92;
+
+    --border:             #E6D9C8;      /* decorative only */
+    --border-strong:      #CDBCA6;
+    --border-inverse:     #383C45;
+    --border-accent:      var(--accent);
+
+    --accent:             #9E1B3C;      /* 7.19; claret */
+    --accent-fg:          #FFFFFF;
+    --accent-partner:     #1F5A8A;      /* second chart series only */
+
+    /* Status (rare on slides, but useful) */
+    --status-success:     #2F7A1C;
+    --status-warning:     #C77700;
+    --status-danger:      #B0271A;
+    --status-info:        #00638A;
+
+    /* =====================================================
+       COLOR, Charts
+       Gray plus one: --chart-highlight marks the story series,
+       every other series is --chart-context. The numbered
+       categorical colors are for charts where the categories
+       are the point, at most 6 series.
+       Zero line in --fg. Categorical set passes a Machado 2009
+       protan, deutan, and tritan simulation at CIEDE2000 >= 13.
+       ===================================================== */
+    --chart-highlight:    var(--accent);  /* story series in highlight mode */
+    --chart-context:      #B9AD9E;      /* 2.02 */
+    --chart-grid:         #E6D9C8;      /* lighter than axis labels */
+    --chart-1:            #9E1B3C;      /* 7.19 */
+    --chart-2:            #13415C;      /* 9.92 */
+    --chart-3:            #0D7680;      /* 4.91 */
+    --chart-4:            #6544A3;      /* 6.61 */
+    --chart-5:            #B8860B;      /* 2.98; only with direct labels */
+
+    /* =====================================================
+       TYPE, slide scale (1920x1080 reference)
+       Floors by role (checked by gate H7): body >= 36px,
+       captions and chart labels >= 28px, footer and source
+       line >= 24px. Use at most three sizes per slide. Never
+       shrink text to fit: split the slide or cut words.
+       ===================================================== */
+    --fs-hero:        220px;     /* The single big number */
+    --fs-display:     120px;     /* Structure slides */
+    --fs-section:     96px;      /* Spare large step */
+    --fs-h1:          72px;      /* Sentence headline */
+    --fs-h2:          56px;
+    --fs-h3:          52px;
+    --fs-subtitle:    48px;      /* Chart subtitle with units and dates */
+    --fs-body-lg:     44px;
+    --fs-body:        40px;      /* Body text (floor 36px) */
+    --fs-caption:     30px;      /* Chart labels */
+    --fs-micro:       24px;      /* Source line, page number; do not go below */
+
+    --lh-tight:         1.1;     /* titles */
+    --lh-snug:          1.2;
+    --lh-normal:        1.4;     /* body */
+    --lh-relaxed:       1.55;
+
+    --tracking-tight:   0;       /* serif titles: no negative tracking */
+    --tracking-normal:  0;
+    --tracking-wide:    0.04em;
+    --tracking-caps:    0.08em;  /* kept for token parity; tracked caps are banned on slides */
+
+    --weight-regular:   400;
+    --weight-medium:    500;
+    --weight-semibold:  600;
+    --weight-bold:      700;
+
+    /* =====================================================
+       SPACING (8pt grid)
+       ===================================================== */
+    --space-0:   0;
+    --space-1:   4px;
+    --space-2:   8px;
+    --space-3:   12px;
+    --space-4:   16px;
+    --space-5:   24px;
+    --space-6:   32px;
+    --space-7:   48px;
+    --space-8:   64px;
+    --space-9:   80px;
+    --space-10:  120px;
+    --space-11:  160px;
+
+    /* Slide margins (1920x1080) */
+    --slide-pad-x:   96px;
+    --slide-pad-y:   80px;
+    --slide-w:       1920px;
+    --slide-h:       1080px;
+
+    /* =====================================================
+       PAGE GRID AND RULES (newspaper page on 1920x1080)
+       Six columns inside the 96px side margins:
+       6 x 248 + 5 x 48 = 1728. Headlines span five
+       columns, running text four (about 55 to 60 characters
+       at body size), margin figures and notes two.
+       ===================================================== */
+    --grid-col:      248px;
+    --grid-gutter:   48px;
+    --span-2:        544px;     /* 2 columns: margin figure, text column */
+    --span-3:        840px;
+    --span-4:        1136px;    /* running text measure */
+    --span-5:        1432px;    /* headline measure */
+    --rule-hair:     2px;       /* column rules, table hairlines, gridlines */
+    --rule-figure:   3px;       /* ink rule above every figure */
+    --rule-zero:     4px;       /* zero line: the heaviest line in a chart */
+
+    /* =====================================================
+       RADIUS
+       ===================================================== */
+    --r-0:       0;
+    --r-sm:      4px;
+    --r-md:      6px;
+    --r-lg:      8px;
+    --r-pill:    999px;
+
+    /* =====================================================
+       SHADOWS (use sparingly, flat is default)
+       ===================================================== */
+    --shadow-0:  none;
+    --shadow-1:  0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-2:  0 10px 24px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+
+    /* =====================================================
+       MOTION
+       ===================================================== */
+    --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+    --ease-in-out: cubic-bezier(0.7, 0, 0.3, 1);
+    --dur-fast:    150ms;
+    --dur-base:    240ms;
+    --dur-slow:    400ms;
+  }
+
+  /* =====================================================
+     DARK SLIDE THEME, apply `.dark` to a slide root.
+     Inverse tokens swap to the light values here.
+     ===================================================== */
+  .dark,
+  [data-theme="dark"] {
+    --bg:                 #1F2229;      /* slate */
+    --bg-elev:            #292D35;
+    --bg-subtle:          #252830;
+    --bg-inverse:         #FBF4EA;
+
+    --fg:                 #F4EEE6;      /* 13.81 */
+    --fg-muted:           #CFC6BA;      /* 9.43 */
+    --fg-subtle:          #A69D92;      /* 5.96 */
+    --fg-inverse:         #221C18;
+    --fg-inverse-muted:   #52473F;
+    --fg-inverse-subtle:  #6A5E55;
+
+    --border:             #383C45;
+    --border-strong:      #4B505B;
+    --border-inverse:     #E6D9C8;
+    --border-accent:      var(--accent);  /* redeclared so it picks up the dark accent */
+
+    --accent:             #F08BA3;      /* 6.77 */
+    --accent-fg:          #1F2229;
+    --accent-partner:     #8CB8E0;      /* 7.62 */
+
+    --chart-highlight:    var(--accent);  /* redeclared so it picks up the dark accent */
+    --chart-context:      #6E6760;      /* 2.86 */
+    --chart-grid:         var(--border);
+    --chart-1:            #F08BA3;      /* 6.77 */
+    --chart-2:            #5D83A1;      /* 3.96 */
+    --chart-3:            #5FD1DB;      /* 8.82 */
+    --chart-4:            #DFBE61;      /* 8.85 */
+    --chart-5:            #AA8EEE;      /* 5.92 */
+  }
+
+  /* ==========================================================
+     Synced copy of ../typography.css. Source of truth is the
+     file; refresh this block whenever it changes. Font URLs
+     gain a ../ prefix here because this file sits in slides/.
+     ========================================================== */
+  /* ============================================================
+     Editorial preset, font stacks
+     ============================================================
+     Newsreader for titles (display optical size, 500 to 600)
+     over Source Sans 3 for body, subtitles, labels, and the
+     source line. Both ship unmodified in assets/fonts/ with their
+     OFL.txt and load from that relative path, so slides make no
+     network request. Source Sans 3 carries the Reserved Font
+     Name "Source": never subset or otherwise modify its file.
+     Both families set tabular figures by default, so every
+     number in a chart aligns. Newsreader has a low x-height:
+     keep titles at 72px or more. The mono stack is for code
+     samples only and is not vendored.
+     ============================================================ */
+
+  @font-face {
+    font-family: 'Newsreader';
+    src: url('../assets/fonts/newsreader/Newsreader-Variable.woff2') format('woff2');
+    font-weight: 200 800;
+    font-style: normal;
+    font-display: block;
+  }
+  @font-face {
+    font-family: 'Source Sans 3';
+    src: url('../assets/fonts/source-sans-3/SourceSans3VF-Upright.ttf.woff2') format('woff2');
+    font-weight: 200 900;
+    font-style: normal;
+    font-display: block;
+  }
+
+  :root {
+    --font-display: 'Newsreader', Georgia, serif;
+    --font-sans:    'Source Sans 3', -apple-system, 'Segoe UI', Helvetica, sans-serif;
+    --font-mono:    'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+  }
+
+  /* ==== Standalone viewer shell ==== */
+  html, body { margin: 0; height: 100vh; background: #000; overflow: hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+  .frame {
+    position: absolute;
+    width: 1920px; height: 1080px;
+    transform-origin: top left;
+  }
+  .frame > section {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    padding: var(--slide-pad-y) var(--slide-pad-x);
+    background: var(--bg);
+    color: var(--fg);
+    overflow: hidden;
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ==== Shared bits: the editorial page ==== */
+  /* Sentence headline: serif, top left, five columns wide, the
+     dominant heading on every content slide, same place and size. */
+  h1.action {
+    font-family: var(--font-display);
+    font-size: var(--fs-h1); font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
+    margin: 0; max-width: var(--span-5);
+    text-wrap: balance;
+  }
+  /* Standfirst: the plain line under the headline. On chart slides
+     it carries the measure, the units, and the dates. */
+  .standfirst {
+    font-size: var(--fs-subtitle); line-height: var(--lh-snug);
+    color: var(--fg-muted); margin: 20px 0 0;
+  }
+  /* Figure: every chart, table, or margin figure hangs from an ink
+     rule; nothing else on the slide is boxed or carded. */
+  .figure {
+    border-top: var(--rule-figure) solid var(--fg);
+    padding-top: 28px; margin: 44px 0 0;
+  }
+  /* Footer: source and note line bottom left in the sans, page
+     number bottom right. No rule, no slide counter. */
+  .footer {
+    position: absolute;
+    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 44px;
+    display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
+    font-size: var(--fs-micro); line-height: var(--lh-snug);
+    color: var(--fg-subtle);
+  }
+  .footer .source { max-width: var(--span-5); }
+  /* Body block on text-led slides: centered in the space between the
+     headline and the footer, so no dead band opens under the text. */
+  .body { margin: auto 0; padding-bottom: 72px; }
+  /* Chart grammar: horizontal gridlines only, value labels sitting
+     on top of their gridline at the left edge, a heavier ink zero
+     line, direct labels and annotations in the sans. */
+  .chart { display: block; overflow: visible; }
+  .chart text { font-family: var(--font-sans); font-size: var(--fs-caption); fill: var(--fg-muted); }
+  .chart text.hi { fill: var(--fg); font-weight: var(--weight-semibold); }
+  .chart text.ann { fill: var(--fg); }
+  .chart .grid { stroke: var(--chart-grid); stroke-width: var(--rule-hair); }
+  .chart .zero { stroke: var(--fg); stroke-width: var(--rule-zero); }
+  .chart .leader { stroke: var(--fg-subtle); stroke-width: 2; fill: none; }
+  .chart, .num, table { font-variant-numeric: tabular-nums lining-nums; }
+
+  /* ==== This slide ==== */
+  /* Column chart as a newspaper graphic: standfirst with the measure,
+     ink rule, gridline labels sitting on their lines, a heavy zero
+     line, and one annotation in the chart instead of value labels. */
+  .s-bar .bar { fill: var(--chart-context); }
+  /* Accent job: marks the year the headline names. */
+  .s-bar .bar.hi { fill: var(--chart-highlight); }
+</style>
+<script>
+  function fit() {
+    const f = document.querySelector('.frame');
+    const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    f.style.transform = 'scale(' + s + ')';
+    const sw = 1920 * s, sh = 1080 * s;
+    f.style.left = ((window.innerWidth - sw) / 2) + 'px';
+    f.style.top  = ((window.innerHeight - sh) / 2) + 'px';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+</script>
+</head>
+<body>
+<div class="frame">
+<section class="s-bar" data-screen-label="04 Bar chart">
+    <h1 class="action">Winter bike trips on protected corridors tripled in three years</h1>
+    <p class="standfirst">Average weekday bike trips in January, 6 protected corridors, 2022 to 2025</p>
+    <figure class="figure">
+      <svg class="chart" width="1728" height="520" role="img"
+           aria-label="Average weekday bike trips in January on protected corridors: 4k in 2022, 5k in 2023, 9k in 2024, 12k in 2025"
+           data-chart="bar" data-orientation="vertical" data-unit="k"
+           data-labels='["2022", "2023", "2024", "2025"]'
+           data-series='[{"name": "Average weekday bike trips in January, thousands", "values": [4, 5, 9, 12]}]'
+           data-highlight="3"
+           data-annotations='[{"index": 3, "text": ["12k trips a day,", "three times the", "2022 level"]}]'></svg>
+    </figure>
+    <div class="footer">
+      <span class="source" data-role="source">Source: Brenford bike counters, January 2022 to 2025</span>
+      <span class="page" data-role="footer">4</span>
+    </div>
+  </section>
+</div>
+<script>
+  (function () {
+    const el = document.querySelector('.s-bar .chart');
+    const labels = JSON.parse(el.dataset.labels), v = JSON.parse(el.dataset.series)[0].values;
+    const hl = Number(el.dataset.highlight), ann = JSON.parse(el.dataset.annotations);
+    const x0 = 120, x1 = 1260, base = 440, top = 44, max = 12, colW = 180;
+    const Y = x => base - x / max * (base - top);
+    const step = (x1 - x0) / v.length, cx = i => x0 + step * i + step / 2;
+    let out = '';
+    [4, 8, 12].forEach(t => {
+      out += '<line class="grid" x1="0" x2="' + x1 + '" y1="' + Y(t) + '" y2="' + Y(t) + '"/>';
+      out += '<text x="0" y="' + (Y(t) - 12) + '">' + t + 'k</text>';
+    });
+    v.forEach((val, i) => {
+      const hi = i === hl ? ' hi' : '';
+      out += '<rect class="bar' + hi + '" x="' + (cx(i) - colW / 2) + '" y="' + Y(val) + '" width="' + colW + '" height="' + (base - Y(val)) + '"/>';
+      out += '<text class="' + hi.trim() + '" x="' + cx(i) + '" y="' + (base + 52) + '" text-anchor="middle">' + labels[i] + '</text>';
+    });
+    out += '<line class="zero" x1="0" x2="' + x1 + '" y1="' + base + '" y2="' + base + '"/>';
+    out += '<text x="0" y="' + (base - 12) + '">0</text>';
+    // Annotation to the right of the highlighted column, level with its top.
+    ann.forEach(a => {
+      const bx = cx(a.index) + colW / 2, by = Y(v[a.index]);
+      const tx = 1320;
+      out += '<path class="leader" d="M' + (bx + 12) + ' ' + (by + 20) + ' H' + (tx - 16) + '"/>';
+      a.text.forEach((line, j) => {
+        out += '<text class="ann" x="' + tx + '" y="' + (by + 30 + j * 40) + '">' + line + '</text>';
+      });
+    });
+    el.innerHTML = out;
+  })();
+</script>
+</body>
+</html>

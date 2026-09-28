@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>04 Bar chart</title>
+<style>
+  /* ==========================================================
+     Synced copy of ../colors.css. Source of truth is the file;
+     refresh this block whenever it changes.
+     ========================================================== */
+  /* ============================================================
+     Keynote preset, design tokens ("one idea per slide" direction)
+     ============================================================
+     Source of truth for every slide's embedded variable block.
+     Semantic layer only: this preset serves a context, not a
+     brand, so it carries no raw brand layer. Slides read these
+     names and nothing else.
+
+     Stage talks in dark rooms: near-black canvas, off-white
+     text, one blue accent used at most once per slide. Slides
+     default to the dark scope (class="dark" on every slide
+     root); the light scope serves lit rooms and PDFs.
+
+     Color rule: one accent with one job. The accent marks the
+     single thing the audience should look at. Everything else
+     is ink or gray. Every text tier holds 4.5:1 or better on
+     --bg, --bg-elev, and --bg-subtle in both scopes, and
+     --accent holds 4.5:1 on --bg, so it can mark a word or a
+     number. Borders are decorative only.
+     ============================================================ */
+
+  :root {
+    /* =====================================================
+       COLOR, Semantic (light theme)
+       ===================================================== */
+    --bg:                 #FFFFFF;
+    --bg-elev:            #F5F5F7;
+    --bg-subtle:          #F5F5F7;
+    --bg-inverse:         #0C0C0E;
+
+    --fg:                 #1A1A1C;      /* 17.38 */
+    --fg-muted:           #4A4A4F;      /* 8.81 */
+    --fg-subtle:          #6A6A70;      /* 5.37 */
+    --fg-inverse:         #EDEDF0;
+    --fg-inverse-muted:   #C4C4CA;
+    --fg-inverse-subtle:  #909097;
+
+    --border:             #E4E4E8;      /* decorative only */
+    --border-strong:      #C9C9CF;
+    --border-inverse:     #2A2A2E;
+    --border-accent:      var(--accent);
+
+    --accent:             #0A63D1;      /* 5.65; at most once per slide */
+    --accent-fg:          #FFFFFF;
+    --accent-partner:     #C2410C;      /* second chart series only */
+
+    /* Status (rare on slides, but useful) */
+    --status-success:     #2F7A1C;
+    --status-warning:     #C77700;
+    --status-danger:      #B0271A;
+    --status-info:        #00638A;
+
+    /* =====================================================
+       COLOR, Charts
+       Gray plus one: --chart-highlight marks the story series,
+       every other series is --chart-context. The numbered
+       categorical colors are for charts where the categories
+       are the point, at most 6 series.
+       Two to four bars per chart, one chart per slide. Accent
+       against context: luminance contrast 3.46 dark, 3.35 light.
+       ===================================================== */
+    --chart-highlight:    var(--accent);  /* story series in highlight mode */
+    --chart-context:      #C7C7CC;      /* 1.68 */
+    --chart-grid:         var(--border);
+    --chart-1:            #0A63D1;      /* 5.65 */
+    --chart-2:            #8E8E93;      /* 3.26; second series */
+
+    /* =====================================================
+       IMAGE SLOT (ImageSlide)
+       --image-placeholder paints a dim, stage-lit "photograph"
+       (warm key light, cool rim, floor falloff, vignette, grain)
+       so an unfilled slot reads as a deliberate dark frame, not a
+       gray box. It is a stand-in only: a finished deck always
+       swaps in a real image (data-image on the slot). --scrim is
+       the 60% dark band under a caption on any image; it uses
+       the dark --bg value in both scopes because image slides
+       always run dark.
+       ===================================================== */
+    --image-placeholder:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E"),
+      radial-gradient(ellipse 130% 90% at 50% 45%, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.7) 100%),
+      radial-gradient(ellipse 38% 46% at 68% 34%, rgba(255, 196, 140, 0.34) 0%, rgba(214, 140, 84, 0.14) 45%, rgba(0, 0, 0, 0) 75%),
+      radial-gradient(ellipse 30% 55% at 18% 62%, rgba(96, 128, 170, 0.22) 0%, rgba(0, 0, 0, 0) 70%),
+      radial-gradient(ellipse 70% 30% at 55% 100%, rgba(150, 120, 100, 0.18) 0%, rgba(0, 0, 0, 0) 70%),
+      linear-gradient(180deg, #16161B 0%, #0E0E12 55%, #121113 100%);
+    --scrim:              rgba(12, 12, 14, 0.6);
+
+    /* =====================================================
+       TYPE, slide scale (1920x1080 reference)
+       Floors by role (checked by gate H7): body >= 36px,
+       captions and chart labels >= 28px, footer and source
+       line >= 24px. Use at most three sizes per slide. Never
+       shrink text to fit: split the slide or cut words.
+       ===================================================== */
+    --fs-mega:        720px;     /* BigNumberSlide: a 3 to 4 character number spans about 80% of the width */
+    --fs-hero:        320px;     /* One number beside its context (StatSlide) */
+    --fs-statement:   200px;     /* Title line, statement, divider: one idea at display size */
+    --fs-display:     168px;     /* Title, closing */
+    --fs-section:     128px;     /* Divider */
+    --fs-h1:          104px;     /* Statement title, 7 words or fewer, 1 to 2 lines */
+    --fs-h2:          88px;
+    --fs-h3:          76px;
+    --fs-subtitle:    68px;
+    --fs-body-lg:     62px;
+    --fs-body:        56px;      /* Body well above the floor for stage viewing */
+    --fs-caption:     36px;      /* Chart labels */
+    --fs-micro:       28px;      /* Source only; no footer, no page numbers */
+
+    --lh-tight:         1.05;    /* titles */
+    --lh-snug:          1.15;
+    --lh-normal:        1.25;    /* body */
+    --lh-relaxed:       1.45;
+
+    --tracking-tight:   -0.02em;  /* 80px and above */
+    --tracking-normal:  0;
+    --tracking-wide:    0.01em;  /* light-on-dark body */
+    --tracking-caps:    0.08em;  /* kept for token parity; tracked caps are banned on slides */
+
+    --weight-regular:   400;
+    --weight-medium:    500;
+    --weight-semibold:  600;
+    --weight-bold:      700;
+
+    /* =====================================================
+       SPACING (8pt grid)
+       ===================================================== */
+    --space-0:   0;
+    --space-1:   4px;
+    --space-2:   8px;
+    --space-3:   12px;
+    --space-4:   16px;
+    --space-5:   24px;
+    --space-6:   32px;
+    --space-7:   48px;
+    --space-8:   64px;
+    --space-9:   80px;
+    --space-10:  120px;
+    --space-11:  160px;
+
+    /* Slide margins (1920x1080) */
+    --slide-pad-x:   120px;
+    --slide-pad-y:   96px;
+    --slide-w:       1920px;
+    --slide-h:       1080px;
+
+    /* Rule-of-thirds grid (Presentation Zen crossing points).
+       Vertical lines at 640 and 1280, horizontal at 360 and 720.
+       Content anchors on a line or sits dead center; nothing
+       floats between them. */
+    --third-x:       640px;
+    --third-y:       360px;
+    --measure:       1680px;    /* full width inside the side margins */
+
+    /* =====================================================
+       RADIUS
+       ===================================================== */
+    --r-0:       0;
+    --r-sm:      4px;
+    --r-md:      6px;
+    --r-lg:      8px;
+    --r-pill:    999px;
+
+    /* =====================================================
+       SHADOWS (use sparingly, flat is default)
+       ===================================================== */
+    --shadow-0:  none;
+    --shadow-1:  0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-2:  0 10px 24px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+
+    /* =====================================================
+       MOTION
+       ===================================================== */
+    --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+    --ease-in-out: cubic-bezier(0.7, 0, 0.3, 1);
+    --dur-fast:    150ms;
+    --dur-base:    240ms;
+    --dur-slow:    400ms;
+  }
+
+  /* =====================================================
+     DARK SLIDE THEME, apply `.dark` to a slide root.
+     Inverse tokens swap to the light values here.
+     ===================================================== */
+  .dark,
+  [data-theme="dark"] {
+    --bg:                 #0C0C0E;
+    --bg-elev:            #1A1A1D;
+    --bg-subtle:          #141416;
+    --bg-inverse:         #FFFFFF;
+
+    --fg:                 #EDEDF0;      /* 16.73; off-white, not #FFF */
+    --fg-muted:           #C4C4CA;      /* 11.26 */
+    --fg-subtle:          #909097;      /* 6.16 */
+    --fg-inverse:         #1A1A1C;
+    --fg-inverse-muted:   #4A4A4F;
+    --fg-inverse-subtle:  #6A6A70;
+
+    --border:             #2A2A2E;
+    --border-strong:      #3D3D43;
+    --border-inverse:     #E4E4E8;
+    --border-accent:      var(--accent);  /* redeclared so it picks up the dark accent */
+
+    --accent:             #4DA3FF;      /* 7.44 */
+    --accent-fg:          #0C0C0E;
+    --accent-partner:     #FF8A4C;      /* 8.37 */
+
+    --chart-highlight:    var(--accent);  /* redeclared so it picks up the dark accent */
+    --chart-context:      #48484E;      /* 2.15 */
+    --chart-grid:         var(--border);
+    --chart-1:            #4DA3FF;      /* 7.44 */
+    --chart-2:            #909097;      /* 6.16 */
+
+    --weight-regular:     300;          /* lighter body on dark (halation) */
+  }
+
+  /* ==========================================================
+     Synced copy of ../typography.css. Source of truth is the
+     file; refresh this block whenever it changes. Font URLs
+     gain a ../ prefix here because this file sits in slides/.
+     ========================================================== */
+  /* ============================================================
+     Keynote preset, font stacks
+     ============================================================
+     Inter as the single family: weight 300 body on dark (set by
+     the .dark scope in colors.css), 400 body on light, 600
+     titles. The latin variable file (weight axis 100 to 900, no
+     opsz axis) ships unmodified in assets/fonts/inter/ with its
+     OFL.txt and loads from that relative path, so slides make no
+     network request. Big numbers switch on tabular figures with
+     font-variant-numeric. The mono stack is for code samples
+     only and is not vendored.
+     ============================================================ */
+
+  @font-face {
+    font-family: 'Inter';
+    src: url('../assets/fonts/inter/Inter-Variable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: block;
+  }
+
+  :root {
+    --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+    --font-display: var(--font-sans);
+    --font-mono:    'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+  }
+
+  /* ==== Standalone viewer shell ==== */
+  html, body { margin: 0; height: 100vh; background: #000; overflow: hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+  .frame {
+    position: absolute;
+    width: 1920px; height: 1080px;
+    transform-origin: top left;
+  }
+  .frame > section {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    background: var(--bg);
+    color: var(--fg);
+    overflow: hidden;
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+  }
+
+  /* ==== Shared bits (keynote layout grammar) ==== */
+  /* Everything is placed absolutely on the thirds grid
+     (--third-x, --third-y) or dead center; there is no header
+     band, no footer band, and no page number. */
+  h1, p, blockquote, figure, ol { margin: 0; }
+  .display {
+    font-family: var(--font-display);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
+    text-wrap: balance;
+  }
+  /* Source line: bottom left at --fs-micro, only on slides that
+     show a number. It is the only small text the preset allows. */
+  .source {
+    position: absolute; left: var(--slide-pad-x); bottom: 64px;
+    font-size: var(--fs-micro); color: var(--fg-subtle);
+  }
+  /* Numbers align: tabular lining figures in charts and big numbers. */
+  .chart, .num { font-variant-numeric: tabular-nums lining-nums; }
+
+  /* ==== This slide ==== */
+  /* Title in the left third, three columns in the right two
+     thirds, all standing on the lower thirds line plus one row.
+     Values sit on the columns, names under them; no axis, no
+     gridlines, no legend. */
+  .s-bar h1 {
+    position: absolute; left: var(--slide-pad-x); top: var(--third-y);
+    width: 520px;
+    font-size: var(--fs-h2);
+  }
+  .s-bar svg { position: absolute; left: 700px; top: 120px; display: block; overflow: visible; }
+  .s-bar svg text { font-size: var(--fs-caption); fill: var(--fg-muted); }
+  .s-bar svg text.val { font-size: var(--fs-body); font-weight: var(--weight-semibold); fill: var(--fg-muted); }
+  .s-bar svg text.hi { fill: var(--fg); }
+  .s-bar .bar { fill: var(--chart-context); }
+  /* Accent job: the one column the title names. */
+  .s-bar .bar.hi { fill: var(--chart-highlight); }
+</style>
+<script>
+  function fit() {
+    const f = document.querySelector('.frame');
+    const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    f.style.transform = 'scale(' + s + ')';
+    const sw = 1920 * s, sh = 1080 * s;
+    f.style.left = ((window.innerWidth - sw) / 2) + 'px';
+    f.style.top  = ((window.innerHeight - sh) / 2) + 'px';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+</script>
+</head>
+<body>
+<div class="frame">
+<section class="s-bar dark" data-screen-label="04 Bar chart">
+  <h1 class="display">Teams of four shipped twice as fast</h1>
+  <svg class="chart" width="1100" height="840" role="img"
+       aria-label="Median weeks from kickoff to launch: 6 for teams of 4, 12 for teams of 8, 15 for teams of 12"
+       data-chart="bar" data-orientation="vertical" data-unit="weeks"
+       data-labels='["4 people", "8 people", "12 people"]'
+       data-series='[{"name": "Median weeks from kickoff to launch", "values": [6, 12, 15]}]'
+       data-highlight="0"></svg>
+  <p class="source" data-role="source">Median weeks from kickoff to launch. Source: Lumen launch log, 40 launches, 2023 to 2025</p>
+</section>
+</div>
+<script>
+  function chartData(el) {
+    return {
+      labels: JSON.parse(el.dataset.labels || '[]'),
+      series: JSON.parse(el.dataset.series || '[]'),
+      highlight: el.dataset.highlight === undefined ? -1 : Number(el.dataset.highlight),
+      unit: el.dataset.unit || ''
+    };
+  }
+  (function () {
+    const el = document.querySelector('.s-bar .chart');
+    const d = chartData(el), v = d.series[0].values;
+    const base = 700, H = 560, colW = 240, step = 360, max = Math.max(...v);
+    let out = '';
+    v.forEach((val, i) => {
+      const x = i * step, h = val / max * H, hi = i === d.highlight ? ' hi' : '';
+      out += '<rect class="bar' + hi + '" x="' + x + '" y="' + (base - h) + '" width="' + colW + '" height="' + h + '"/>';
+      out += '<text class="val' + hi + '" x="' + x + '" y="' + (base - h - 28) + '">' + val + ' ' + d.unit + '</text>';
+      out += '<text class="' + hi + '" x="' + x + '" y="' + (base + 64) + '">' + d.labels[i] + '</text>';
+    });
+    el.innerHTML = out;
+  })();
+</script>
+</body>
+</html>

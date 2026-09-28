@@ -2,21 +2,36 @@
 
 The orchestration layer: judge prompts, verifier prompts, the ledger, termination, and a Workflow script template. The main session drives rounds and applies fixes; judges and verifiers are fresh subagents with no conversation context. That isolation is the load-bearing property; without it the loop self-approves.
 
+## Judge protocol
+
+Three habits make vision judges more reliable, and every prompt in this file follows them:
+
+- **Checklists, not scores.** A judge answers one yes/no question per rule per slide and never gives an overall or aesthetic score. Per-item checks track human judgment better than one holistic number.
+- **A named flaw taxonomy.** The visual judge and the default render check receive the F items from the constitution with their definitions; a judge told what to look for finds more.
+- **Screenshots first, at full size.** Screenshots stay at 1920x1080 (never downscaled) and come before the text in the prompt and in the reading order. Probe output in `for-judges.json` comes after.
+
+Absolute pass/fail items suit rule compliance. For choosing between two versions (before and after a fix, two visual directions), use the pairwise prompt below instead: judges rank two options far better than they score one.
+
 ## Judge prompt
 
-One judge per soft dimension (`narrative`, `clarity`, `visual`, `delivery`), all four in parallel, fresh every round. Template (fill the angle brackets):
+One judge per soft dimension (`narrative`, `clarity`, `visual`, `delivery`), all four in parallel, fresh every round. Rules per dimension: narrative S1 to S4; clarity S5 to S8 and S17, plus the H8 warnings in `for-judges.json`; visual S9 to S13, V1 to V13, and F1 to F7, plus the H6, H7, and H9 entries in `for-judges.json`; delivery S14 to S16. Template (fill the angle brackets):
 
 ```
 You are reviewing a slide deck against an explicit standards document. You review; you never fix.
 
+First, look at every slide screenshot in order, at full size: <list of slide-NN.png paths>
+
 Standards document (the only source of valid findings):
-<full text of deck-standards.md, including the deck brief, plus the preset's guidelines.md and language.md when present>
+<full text of deck-standards.md, including the deck brief, plus the preset's guidelines.md and language.md (or the default preset's language.md)>
 
-Your dimension: <dimension>. Raise findings ONLY for the S rules listed under that dimension.
+Your dimension: <dimension>. Your checklist: <rule IDs for this dimension>.
+Work through the checklist one rule at a time. For each rule, decide for each slide: does
+this slide break the rule, yes or no? Every "yes" is a finding. Do not give any overall or
+aesthetic score.
 
-Materials:
-- Slide screenshots: read these PNG files in order: <list of slide-NN.png paths>
+Other materials, after the screenshots:
 - Deck source: <deck html path> (read it for text content, notes, and structure)
+- Probe notes for judgment: <for-judges.json path> (hints, not findings; confirm on the screenshot)
 
 Rules of evidence:
 - Every finding must cite exactly one rule ID and one slide number, with concrete evidence
@@ -60,9 +75,10 @@ One verifier per finding by default; three with majority vote for blockers and f
 ```
 A deck reviewer raised this finding. Your job is to try to REFUTE it.
 
+First look at the screenshot of that slide, at full size: <slide-NN.png path>
+
 Standards document: <full text>
 Finding: rule <rule>, slide <slide>, severity <severity>: <evidence>
-Screenshot of that slide: <slide-NN.png path>
 Deck source: <deck html path>
 
 Refute it if ANY of these hold:
@@ -88,6 +104,53 @@ Verdict schema:
   }
 }
 ```
+
+## Default render check
+
+Runs after every build, before the deck is handed over, without asking. It is the cheap version of a round: hard gates plus one outside look.
+
+1. Run H1 to H9 (`hard-gates.md`, `copy-lint.md`) and capture full-size screenshots to `.deck-review/check-<N>/`.
+2. Fix every hard-gate failure. Re-run the gates until they pass or the cap is reached.
+3. Dispatch one fresh subagent with the prompt below. It sees the screenshots, the flaw taxonomy, and the probe notes, nothing else: not the conversation, not the deck brief's history.
+4. Fix each flaw it reports with the smallest change, re-render only the changed slides, and repeat from step 1 on those slides.
+
+Stop after two fix rounds by default, three at most; then report what is still open instead of looping. No verifier stage: the check is narrow on purpose, and anything contested belongs in the full loop. Without subagent dispatch, run the hard gates only and say that the outside look was skipped.
+
+```
+You are checking rendered slides for layout defects. You report; you never fix.
+
+First, look at every screenshot in order, at full size: <list of slide-NN.png paths>
+
+For each slide, answer each question yes or no:
+<F1 to F7 from the constitution, with their definitions>
+
+Then read the probe notes (hints, not findings; confirm each on the screenshot before
+reporting it): <for-judges.json path>
+
+Report only the "yes" answers, one finding per flaw per slide, citing the F item and saying
+exactly where on the slide it is (which element, which edge). No overall score, no taste,
+no rewrites. An empty list is a valid answer.
+```
+
+The findings schema is the one below, with `rule` holding the F item.
+
+## Pairwise prompt
+
+For a before/after comparison of a slide or for choosing between visual directions. Always exactly two candidates, always two calls with the order swapped, each in a fresh subagent:
+
+```
+Two versions of the same slide (or two sample slides for the same deck) follow.
+First look at both images at full size: A = <path>, B = <path>.
+
+Brief: <deck brief, and for directions the subject and audience>
+Criteria: <the rules that decide this comparison, for example S8, S10, V2, V8, F1 to F7;
+for directions add: fits the subject and audience, passes the palette-swap test>
+
+Which one better meets the criteria? Answer A or B, with one sentence per criterion that
+decided it. Do not score either one.
+```
+
+Run it once as (A = first, B = second) and once swapped. Both calls pick the same candidate: it wins. They disagree: call it a tie, keep the current version (before/after) or show both to the user (directions). Never break a tie with a third call in the same order.
 
 ## The ledger
 
@@ -115,7 +178,7 @@ Verdict schema:
 
 ```
 round R:
-  hard gates + screenshots          (deterministic, references/hard-gates.md)
+  hard gates H1-H9 + screenshots    (deterministic, references/hard-gates.md)
   judges x4 in parallel             (fresh subagents)
   ledger filter                     (drop re-litigated rejections)
   verify each survivor              (adversarial; 3-way majority for blockers / strict mode)
