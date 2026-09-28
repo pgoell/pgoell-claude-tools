@@ -42,7 +42,7 @@ Bundles 17 plugins across Atlassian, Google Workspace, Databricks, agent-system 
 | `quizzing-a-topic`                | `learning`                | Get taught and quizzed on any topic or theme you name until you demonstrably understand it                                  |
 | `surveying-blind-spots`           | `learning`                | Pre-work blind-spot pass over an unfamiliar codebase area or field, surfacing unknown unknowns, gotchas, and better prompts |
 | `designing-presentations`         | `presentations`           | Design slide-deck content from audience brief through critiqued storyboard, producing a `deck.md`                           |
-| `creating-presentations`          | `presentations`           | Build multi-slide HTML decks from brand presets, with a presenter view and an opt-in review-to-done loop                    |
+| `creating-presentations`          | `presentations`           | Build multi-slide HTML decks from brand presets, with a presenter view, default render checks, and a review-to-done loop    |
 | `exporting-presentations-to-pptx` | `presentations`           | Convert a finished HTML deck into a native, editable PowerPoint (.pptx) via python-pptx                                     |
 | `extracting-presets`              | `presentations`           | Turn brand material (PPTX templates, PDF guidelines, decks) into reusable presentation presets                              |
 | `creating-diagrams`               | `diagrams`                | Draw validated architecture, workflow, sequence, data-flow, and lifecycle diagrams as themeable interactive HTML            |
@@ -272,8 +272,8 @@ The full presentation lifecycle in one plugin: content design, HTML deck buildin
 
 **Skills:**
 
-- `/presentations:designing-presentations`: Design slide-deck content end to end (audience brief, message architecture, storyboard, per-slide drafts, critique panel). Produces a markdown `deck.md`; also runs in audit mode against an existing `deck.md`.
-- `/presentations:creating-presentations`: Build multi-slide HTML decks styled from a brand preset, presented through a bundled deck-stage engine with a two-window presenter view (`BroadcastChannel` sync, live-editable speaker notes). Includes an opt-in review-to-done convergence loop with deterministic hard gates, fresh judge panels, and adversarial verification.
+- `/presentations:designing-presentations`: Design slide-deck content end to end (audience brief with sourced or assumed inputs, message architecture, competing storylines, per-slide drafts, critique panel with written storyline checks). Produces a markdown `deck.md`; also runs in audit mode against an existing `deck.md`.
+- `/presentations:creating-presentations`: Build multi-slide HTML decks styled from a brand preset, presented through a bundled deck-stage engine with a two-window presenter view (`BroadcastChannel` sync, live-editable speaker notes). Every build runs deterministic hard gates (type floors, copy lint, layout geometry) plus one fresh screenshot review; a per-deck visual direction step runs when no client preset is active. The full review-to-done loop with judge panels and adversarial verification stays opt-in.
 - `/presentations:exporting-presentations-to-pptx`: Convert a finished HTML deck into a native, editable PowerPoint file via a freshly written python-pptx generator, with a containerized LibreOffice render-verify loop and an optional per-slide adversarial verification panel.
 - `/presentations:extracting-presets`: Turn brand material (PPTX templates and slide masters, PDF guidelines, icon libraries, example decks) into reusable presets: layered CSS variables, guidance files, assets, and self-contained example slides.
 

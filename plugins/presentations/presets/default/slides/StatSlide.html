@@ -2,19 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>05 Stats</title>
+<title>05 Stat</title>
 <style>
   /* ==========================================================
      Synced copy of ../colors.css. Source of truth is the file;
      refresh this block whenever it changes.
      ========================================================== */
   /* ============================================================
-     Default preset, design tokens
+     Default preset, design tokens ("quiet" direction)
      ============================================================
      Source of truth for every slide's embedded variable block.
      Raw brand layer first, semantic layer second; slides read
      only the semantic names unless a specific raw value is the
      point (charts, swatches).
+
+     Color rule: one accent with one job. The accent marks the
+     single thing the audience should look at (the highlighted
+     series, the current step, the new state). Everything else
+     is ink or gray. The ember and lava values stay for charts
+     that need a second series color; slides do not use them as
+     a second accent.
      ============================================================ */
 
   :root {
@@ -44,7 +51,7 @@
 
     --fg:                 #0F0B0B;   /* Primary text */
     --fg-muted:           #595452;   /* Secondary text */
-    --fg-subtle:          #8A8682;   /* Tertiary text / captions */
+    --fg-subtle:          #6F6B68;   /* Tertiary text: source lines, footer (about 5:1 on --bg) */
     --fg-inverse:         #FAFAF7;   /* Text on dark bg */
     --fg-inverse-muted:   rgba(250, 250, 247, 0.72);
     --fg-inverse-subtle:  rgba(250, 250, 247, 0.50);
@@ -54,9 +61,9 @@
     --border-inverse:     rgba(255, 255, 255, 0.12);
     --border-accent:      var(--brand-green);   /* Accent hairline */
 
-    --accent:             var(--brand-green);   /* Default accent */
+    --accent:             var(--brand-green);   /* The one accent: graphics that mark the focus */
     --accent-fg:          var(--brand-ink);
-    --accent-partner:     var(--brand-ember);   /* Secondary-accent callouts */
+    --accent-partner:     var(--brand-ember);   /* Second chart series only, never a second accent */
 
     /* Status (rare on slides, but useful) */
     --status-success:     #2F7A1C;
@@ -66,18 +73,23 @@
 
     /* =====================================================
        TYPE, slide scale (1920x1080 reference)
+       Floors by role (starting points, checked by gate H7):
+       body >= 36px, captions and chart labels >= 28px,
+       footer and source line >= 24px. Use at most three
+       sizes per slide. Never shrink text to fit: split the
+       slide or cut words.
        ===================================================== */
-    --fs-hero:        160px;
-    --fs-display:     120px;
-    --fs-section:     96px;
-    --fs-h1:          72px;
-    --fs-h2:          56px;
-    --fs-h3:          40px;
-    --fs-subtitle:    32px;
-    --fs-body-lg:     28px;
-    --fs-body:        24px;
-    --fs-caption:     20px;
-    --fs-micro:       16px;
+    --fs-hero:        280px;   /* The single big number */
+    --fs-display:     128px;   /* Structure slides: title, divider, closing */
+    --fs-section:     96px;    /* Spare large step */
+    --fs-h1:          72px;    /* Action title on content slides */
+    --fs-h2:          56px;    /* Quote text, large subheads */
+    --fs-h3:          48px;    /* Subheads */
+    --fs-subtitle:    44px;    /* Deck subtitle */
+    --fs-body-lg:     44px;    /* Emphasis body (agenda rows) */
+    --fs-body:        40px;    /* Body text, list items (floor 36px) */
+    --fs-caption:     28px;    /* Captions, labels, source line, footer */
+    --fs-micro:       24px;    /* Floor for footer and source line; do not go below */
 
     --lh-tight:       1.05;
     --lh-snug:        1.18;
@@ -171,7 +183,8 @@
      them, so standalone slides render on the system fallbacks
      below. Deck builds that must render identically offline
      vendor the webfont files per the creating-presentations
-     caveats.
+     caveats. The gallery sets all text in the sans stack; the
+     mono stack is for code samples only, never for labels.
      ============================================================ */
 
   :root {
@@ -202,7 +215,6 @@
   }
 
   /* ==== Shared bits ==== */
-  .accent-dot { color: var(--brand-green); }
   .wordmark {
     display: inline-flex; align-items: center; gap: 0.4em;
     font-family: var(--font-display);
@@ -213,58 +225,49 @@
     width: 0.55em; height: 0.55em; border-radius: var(--r-pill);
     background: var(--accent);
   }
+  /* Action title: the dominant heading on every content slide. */
+  h1.action {
+    font-size: var(--fs-h1); font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight); line-height: 1.1;
+    margin: 0; max-width: 1560px;
+    text-wrap: balance;
+  }
+  /* Footer: optional. Source line on the left when the slide
+     shows numbers, the wordmark on the right when the brand
+     needs it. No rule, no slide counter. */
   .footer {
     position: absolute;
-    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 56px;
-    padding-top: 20px;
-    border-top: 1px solid var(--brand-green);
-    display: flex; align-items: center; justify-content: space-between;
-    font-size: 20px;
+    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 64px;
+    display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
+    font-size: var(--fs-caption);
     color: var(--fg-subtle);
   }
-  .footer .wordmark { font-size: 22px; color: var(--fg); opacity: 0.85; }
-  .footer .right { font-family: var(--font-mono); font-size: 18px; letter-spacing: 0.04em; }
-  .eyebrow {
-    font-size: 24px; font-weight: var(--weight-medium);
-    text-transform: uppercase; letter-spacing: 0.12em;
-    color: var(--fg-muted);
-  }
+  /* Evidence block under the action title: centered in the space
+     left between title and footer. */
+  .evidence { margin: auto 0; padding: 64px 0 96px; }
+  .footer .wordmark { margin-left: auto; font-size: var(--fs-caption); color: var(--fg-subtle); }
 
   /* ==== This slide ==== */
-  .s-stats .header { margin-bottom: 80px; max-width: 1400px; }
-  .s-stats h1 {
-    font-size: 72px; font-weight: var(--weight-semibold);
-    letter-spacing: -0.025em; line-height: 1.05;
-    margin: 16px 0 0; text-wrap: balance;
+  .s-stat .evidence {
+    display: grid; grid-template-columns: 720px 1fr;
+    gap: 120px; align-items: center;
   }
-  .s-stats .grid {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 32px;
-  }
-  .s-stats .tile {
-    background: var(--bg-elev);
-    border: 1px solid var(--border);
-    border-radius: var(--r-lg);
-    padding: 48px 40px;
-    display: flex; flex-direction: column; gap: 14px;
-    position: relative;
-  }
-  .s-stats .tile.accent::before {
-    content: ''; position: absolute;
-    top: 32px; left: 32px;
-    width: 14px; height: 14px; border-radius: var(--r-pill);
-    background: var(--brand-green);
-  }
-  .s-stats .tile.accent { padding-top: 72px; }
-  .s-stats .num {
-    font-size: 144px; font-weight: var(--weight-semibold);
-    line-height: 0.95; letter-spacing: -0.035em;
+  .s-stat .num {
+    font-size: var(--fs-hero); font-weight: var(--weight-semibold);
+    line-height: 0.9; letter-spacing: -0.04em;
     color: var(--fg);
   }
-  .s-stats .num .unit { font-size: 80px; color: var(--fg-muted); letter-spacing: -0.02em; }
-  .s-stats .label { font-size: 28px; color: var(--fg-muted); line-height: 1.35; }
-  .s-stats .delta { font-family: var(--font-mono); font-size: 20px; color: var(--brand-green-dark); margin-top: 8px; }
-  .s-stats .delta.ember { color: var(--brand-ember-dark); }
+  .s-stat .label {
+    font-size: var(--fs-caption); line-height: var(--lh-normal);
+    color: var(--fg-muted); margin-top: 32px; max-width: 620px;
+  }
+  .s-stat svg { display: block; overflow: visible; }
+  .s-stat svg text { font-size: var(--fs-caption); fill: var(--fg-muted); }
+  .s-stat svg text.strong { fill: var(--fg); font-weight: var(--weight-semibold); }
+  .s-stat .bar-before { fill: var(--border-strong); }
+  .s-stat .bar-after { fill: var(--fg-muted); }
+  /* Accent job: marks the saving the big number states. */
+  .s-stat .bar-saved { fill: var(--accent); }
 </style>
 <script>
   function fit() {
@@ -281,33 +284,53 @@
 </head>
 <body>
 <div class="frame">
-<section class="s-stats" data-screen-label="05 Stats">
-    <div class="header">
-      <div class="eyebrow">By the numbers</div>
-      <h1>The program, at a glance<span class="accent-dot">.</span></h1>
-    </div>
-    <div class="grid">
-      <div class="tile accent">
-        <div class="num">200<span class="unit">+</span></div>
-        <div class="label">Workloads migrated since 2020</div>
-        <div class="delta">↑ 38% YoY</div>
+<section class="s-stat" data-screen-label="05 Stat">
+    <h1 class="action">Clients save $40M a year in run costs on average</h1>
+    <div class="evidence">
+      <div>
+        <div class="num">$40M</div>
+        <div class="label">Average yearly run-cost saving per client, across 12 reference clients</div>
       </div>
-      <div class="tile">
-        <div class="num">$40<span class="unit">M</span></div>
-        <div class="label">Average annual savings on enterprise migrations</div>
-        <div class="delta">across 12 reference accounts</div>
-      </div>
-      <div class="tile">
-        <div class="num">6<span class="unit">×</span></div>
-        <div class="label">Faster time-to-insight vs. the legacy stack</div>
-        <div class="delta ember">measured at production cutover</div>
-      </div>
+      <svg class="chart" width="840" height="300" role="img"
+           aria-label="Average yearly run cost per client: $112M before migration, $72M after"
+           data-chart="bar" data-orientation="horizontal" data-unit="$M"
+           data-labels='["Before migration","After migration"]'
+           data-series='[{"name":"Average yearly run cost","values":[112,72]}]'
+           data-highlight="1"></svg>
     </div>
     <div class="footer">
+      <span class="source">Source: Acme delivery records, run cost before and after migration, 12 reference accounts, 2021-2025</span>
       <div class="wordmark"><span class="wordmark-dot"></span>ACME</div>
-      <span class="right">05 / 10</span>
     </div>
   </section>
 </div>
+<script>
+  function chartData(el) {
+    return {
+      labels: JSON.parse(el.dataset.labels || '[]'),
+      series: JSON.parse(el.dataset.series || '[]'),
+      highlight: el.dataset.highlight === undefined ? -1 : Number(el.dataset.highlight),
+      unit: el.dataset.unit || ''
+    };
+  }
+  (function () {
+    const el = document.querySelector('.s-stat .chart');
+    const d = chartData(el);
+    const v = d.series[0].values, W = 840, max = Math.max(...v);
+    const px = x => x / max * W;
+    let out = '';
+    v.forEach((val, i) => {
+      const y = i * 150;
+      out += '<text x="0" y="' + (y + 28) + '" class="' + (i === d.highlight ? 'strong' : '') + '">' +
+             d.labels[i] + ': $' + val + 'M a year</text>';
+      out += '<rect class="' + (i === 0 ? 'bar-before' : 'bar-after') + '" x="0" y="' + (y + 48) +
+             '" width="' + px(val) + '" height="64"/>';
+    });
+    const saved = v[0] - v[1];
+    out += '<rect class="bar-saved" x="' + px(v[1]) + '" y="198" width="' + px(saved) + '" height="64"/>';
+    out += '<text class="strong" x="' + (px(v[1]) + 20) + '" y="296">$' + saved + 'M saved</text>';
+    el.innerHTML = out;
+  })();
+</script>
 </body>
 </html>

@@ -36,11 +36,13 @@ Author everything in the HTML deck's own pixel space and convert once:
 
 - Slide: 12192000 x 6858000 EMU (standard 16:9).
 - 1 stage px = 6350 EMU (12192000 / 1920).
-- 1 stage px = 0.5 pt for font sizes (a 56 px CSS headline is 28 pt).
+- 1 stage px = 0.5 pt for font sizes (a 56 px CSS headline is 28 pt; 40 px body is 20 pt, a 28 px caption or chart label 14 pt, a 24 px footer or source line 12 pt).
 
 These constants assume the 1920x1080 canvas that the `creating-presentations` skill authors on. Verify the stage size in the deck CSS before converting; for a different stage width W, use 12192000 / W EMU per px and 960 / W pt per px.
 
 Every value then lifts straight from the CSS (paddings, font sizes, gaps) with no separate design pass.
+
+Keep every font size exactly as the CSS states it. Never shrink text to fit a box, in code or through PowerPoint autofit: when text does not fit at its CSS size, the HTML slide already breaks the type floors or overflows, so flag the slide to the user (the fix is to split or cut it in the deck) instead of exporting smaller type.
 
 ## Prepare assets
 
@@ -54,7 +56,7 @@ python-pptx cannot place SVGs, crop pictures to a circle, or set picture transpa
 
 Write a fresh Python script for this deck; per-slide code is deck-specific, so never template slide content from a previous conversion. What transfers is the helper layer and the gotchas, both in `references/python-pptx-recipes.md`. Read that file before writing any code: each gotcha originally cost a render-fix cycle to find.
 
-Build with a thin helper layer (`tb()` rich text boxes, `rect()` shapes, builders for components the deck repeats, `est_lines()` for stacked layouts). Carry the speaker notes from the HTML JSON island into each slide's notes frame, and set the document title and author core properties.
+Build with a thin helper layer (`tb()` rich text boxes, `rect()` shapes, builders for components the deck repeats, `est_lines()` for stacked layouts). Proof objects (charts, tables, 2x2 matrices, process flows, full-bleed images with an overlay) have their own recipe in the same file: charts become native, editable PowerPoint charts when the data can be read from the markup, and a picture only when it cannot. Carry the speaker notes from the HTML JSON island into each slide's notes frame, and set the document title and author core properties.
 
 Run the generator with the venv interpreter: `/tmp/pptx-venv/bin/python build_deck.py`.
 
@@ -69,6 +71,8 @@ podman run --rm -v <workdir>:/data --entrypoint soffice docker.io/linuxserver/li
 
 Rasterize each PDF page with PyMuPDF (`page.get_pixmap(dpi=96).save("slide-NN.png")`) and read every PNG. Fix and re-render; expect 2 to 4 cycles. The first render finds the big breaks (shadows, wraps, overflow); later cycles find rhythm issues. Treat renders as geometry and color checks, not glyph checks: the verification renderer substitutes fonts, so glyph differences are expected and harmless.
 
+Also check type sizes in the XML, not by eye: `unzip -p <deck>.pptx 'ppt/slides/*.xml' | grep -o 'sz="[0-9]*"' | sort | uniq -c`. Any run under `sz="1200"` (12 pt, the 24 px footer floor) is a bug in the generator or a floor the HTML already broke; trace it before delivering.
+
 ## Adversarial verification (optional)
 
 Recommended for high-stakes client deliverables; skippable for quick conversions. Fan out one reviewer subagent per slide, as parallel Agent calls in one message. Each reviewer gets the HTML path plus the slide's `data-screen-label`, the design-token list, and the slide's render PNG path, and reports findings as severity plus description.
@@ -80,7 +84,7 @@ Two prompt details that matter:
 
 ## Content fidelity
 
-Reproduce the deck verbatim, with two exceptions: fix obvious typos and report each fix to the user, and apply the preset's language rules (its `language.md`, when the preset has one) to any text you must genuinely rewrite. Slide numbering, footer labels, and which slides carry no footer come from the HTML, not from convention.
+Reproduce the deck verbatim, with two exceptions: fix obvious typos and report each fix to the user, and apply the preset's language rules (its `language.md`, or the default preset's `language.md` when it has none) to any text you must genuinely rewrite. Slide numbering, footer labels, and which slides carry no footer come from the HTML, not from convention.
 
 ## Self-healing
 

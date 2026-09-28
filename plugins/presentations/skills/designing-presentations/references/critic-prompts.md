@@ -38,49 +38,70 @@ Examples of malformed findings to avoid in the response:
 "Suggested fix: improve the close."    (no severity, no slide-ref, fix is not concrete)
 ```
 
+A suggested fix does one of three things: adds evidence that is in the user's material, narrows the claim to what the material shows, or cuts the claim. It never softens a claim with a hedge word, and it never adds a fact, figure, or name that is not in the material. If the claim needs evidence the material lacks, the fix says so and names what the user must supply.
+
 If a finding genuinely applies deck-wide and not to any single slide, use `deck-level` as the slide-ref. Do not use it as a dodge for findings the critic was too lazy to localise; deck-level is reserved for issues that cannot be fixed on a single slide (e.g. "deck-level: the SCQA opener spans slides 1-3 but the Complication never lands as a complication").
 
-## Audience Critic
+## Audience Critic (sequential walkthrough)
 
 Paste the block below verbatim. Substitute `[AUDIENCE_BRIEF_PATH]` and `[DECK_PATH]`.
 
+This critic does not rate the deck against a list of dimensions. It plays one member of the audience and reads the deck in order, slide by slide, writing down where understanding breaks. Open-ended persona critique drifts toward generic advice; a walkthrough in order ties every finding to the moment the listener gets lost.
+
 ```
-You are the Audience Critic for a presentation review. Your job is to evaluate how well the deck fits its named audience. You are not evaluating logic (that is the Argument Critic's job) or visuals (that is the Visual and Accessibility Critic's job). Stay in lane.
+You are the Audience Critic for a presentation review. You play one person from the audience named in the brief and read the deck in order, as that person would meet it. You are not evaluating logic in the abstract (that is the Argument Critic's job) or visuals (that is the Visual Critic's job). Stay in lane.
 
-Read these two files in order:
-1. [AUDIENCE_BRIEF_PATH], which captures the audience (role, seniority, prior knowledge, stakes, named objections, success criteria).
-2. [DECK_PATH], which is the deck under review.
+Read [AUDIENCE_BRIEF_PATH] first. Pick the most senior decision-maker it names and take on their role, prior knowledge, stakes, and objections (strongest first).
 
-Then evaluate the deck against the audience brief on these dimensions:
+Then read [DECK_PATH] one slide at a time, in order. Do not read ahead. For each slide, write one line:
 
-1. Framing fit: does the deck's opening (SCQA situation and complication) match the audience's role and stakes? Does it start from what they already know?
-2. Prior-knowledge calibration: does the deck assume knowledge they have, and explain knowledge they lack? Flag both over-explanation (insulting) and under-explanation (lost).
-3. Objection preemption: the audience brief names objections this audience will raise. Does the deck address each named objection on a slide, in speaker notes, or in an appendix? Flag any named objection that the deck ignores.
-4. Language and register: is the vocabulary appropriate for the seniority and domain? Flag jargon the audience will not know; flag baby-talk that will read as condescending; flag tone mismatches (e.g. casual humour to a board, dense bullet points to a sales conference).
-5. Closing fit: does the close ask the audience for the action they can actually take? A Decision slide that asks the audience to "consider" something fails for a steering committee; a Decision slide that asks an engineering team to "approve budget" fails too.
+Slide NN: <what you now believe, in one short sentence> | <the question or doubt you have at this point, or "none">
 
-Return your findings as a single markdown fragment with one heading and a numbered list. Use exactly this shape:
+When a later slide answers an earlier question, note it on that slide ("answers Q from Slide 03"). When you reach the end, list every question still open.
+
+Then turn the walkthrough into findings:
+
+1. An open question that the brief names as the strongest objection: CRITICAL.
+2. Any other open question, a term you do not know at the point it appears, or a slide that tells you what you already know at length: MAJOR or MINOR.
+3. A close that asks you for an action you cannot take in your role: CRITICAL.
+
+Return a single markdown fragment with the walkthrough and then the findings, in exactly this shape:
 
 ### Audience Critic findings
+
+Walkthrough:
+Slide 01: <belief> | <question or none>
+Slide 02: <belief> | <question or none>
+(etc.)
+Open at end: <list, or none>
 
 1. <SEVERITY>: <slide-ref>: <issue>. Suggested fix: <fix>.
 2. <SEVERITY>: <slide-ref>: <issue>. Suggested fix: <fix>.
 (etc.)
 
 Severity tags:
-- CRITICAL: deck cannot land for this audience as-is (e.g. close asks the wrong people for the wrong action).
-- MAJOR: deck functions but a known audience expectation is unmet.
+- CRITICAL: the deck cannot land for this person as-is (the strongest objection is still open at the end, or the close asks for an action they cannot take).
+- MAJOR: the person gets lost or doubts a claim at a point the deck never repairs.
 - MINOR: polish opportunity.
 
-If you find no issues at a severity, omit that severity from your output entirely. If you find no issues at all, return only the heading and the sentence "No findings.". Do not pad. Do not summarise. Do not editorialise.
+A suggested fix adds evidence that is in the material, narrows a claim to what the material shows, or cuts. It never adds a hedge word or a fact that is not in the material. If you find no issues, keep the walkthrough and write "No findings." under it. Do not pad. Do not summarise.
 
 Worked example of a complete response from this critic:
 
 ### Audience Critic findings
 
-1. CRITICAL: Slide 14: Decision slide asks an engineering audience to "approve the budget", but the audience brief names this group as build-and-run engineers with no budget authority. Suggested fix: change the ask to a build-and-run action the audience can actually commit to, e.g. "Platform team to scope the onboarding-pipeline rebuild by 2026-06-30 so the CFO ask in next month's steering meeting is concrete".
-2. MAJOR: Slide 03: framing assumes audience knows the cycle-time metric definition; audience brief flags this group as new to the metric. Suggested fix: add a one-line definition under the headline, "Cycle time = days from offer-accepted to first productive PR".
-3. MINOR: Slide 18: vocabulary uses "OKR" without expansion; audience brief notes the team uses "goals" instead. Suggested fix: replace "OKR" with "goal" on this slide for consistency with audience vocabulary.
+Walkthrough:
+Slide 01: Onboarding decides the retention KPI | why onboarding and not support quality?
+Slide 02: Cycle time is stuck above 10 weeks | what does "cycle time" start and stop on?
+Slide 03: Most of it is handoffs | answers Q from Slide 01
+Slide 04: We tried this twice and it failed | so why would a third try work?
+Slide 05: The PMO can now enforce it | answers Q from Slide 04
+Slide 06: Peers got 38 to 41 percent | none
+Slide 07: Approve today | what does the budget buy?
+Open at end: Slide 02 definition; Slide 07 budget contents.
+
+1. MAJOR: Slide 02: the person does not know what cycle time measures, and no later slide defines it. Suggested fix: add the definition the Ops dashboard uses under the headline.
+2. MAJOR: Slide 07: the ask names a budget without saying what it buys; the appendix has the breakdown but the slide does not point to it. Suggested fix: add one line naming the two largest budget items from the appendix and reference Appendix A.
 ```
 
 ## Argument Critic
@@ -121,8 +142,8 @@ Worked example of a complete response from this critic:
 
 ### Argument Critic findings
 
-1. CRITICAL: Slide 09: claim "onboarding is the binding constraint on Q2 revenue" is asserted but the supporting evidence is one anecdote about one new hire. Suggested fix: replace with cycle-time data across the full Q1 hire cohort (n=42 per audience brief), or downgrade the claim to "may be a constraint" until cohort data is available.
-2. MAJOR: Slide 16: deck does not address the strongest plausible objection that pipeline throughput is constrained by interviewer availability, not onboarding speed. Suggested fix: add a slide or speaker-note addressing this objection with the interviewer-load data.
+1. CRITICAL: Slide 09: claim "onboarding is the binding constraint on Q2 revenue" is asserted but the supporting evidence is one anecdote about one new hire. Suggested fix: cite the cycle-time data for the full Q1 hire cohort (n=42, in the audience brief's source); if that data is not in the material, cut this reason from the pyramid and ask the user for it rather than keep the claim on one anecdote.
+2. MAJOR: Slide 16: deck does not address the strongest plausible objection that pipeline throughput is constrained by interviewer availability, not onboarding speed. Suggested fix: add a slide answering it with the interviewer-load figures from the source; if the source has none, raise the gap with the user.
 3. MINOR: Slide 04: SCQA Question reads "what should we do?", which is too broad. Suggested fix: narrow to "where should we invest the next EUR 250k of platform budget?".
 ```
 
@@ -163,13 +184,20 @@ Worked example of a complete response from this critic:
 
 ### Visual Critic findings
 
-1. CRITICAL: Slide 09: visual brief plots cumulative savings on an axis starting at 80 percent, overstating the effect; the headline claims a doubling the chart does not show. Suggested fix: start the axis at zero, or annotate the truncation and soften the headline claim.
+1. CRITICAL: Slide 09: visual brief plots cumulative savings on an axis starting at 80 percent, overstating the effect; the headline claims a doubling the chart does not show. Suggested fix: start the axis at zero and rewrite the headline to the change the data shows (from 80 to 92 percent, not a doubling).
 2. MAJOR: Slide 11: three competing focal points (title, chart, callout box), no clear visual hierarchy. Suggested fix: remove the callout box (its text duplicates the chart annotation) or split the chart and callout into two slides.
 3. MINOR: Slide 22: speaker_notes ask the speaker to read the bullet list aloud. Suggested fix: reduce body bullets to one line each and let the speaker expand verbally instead of reading.
 ```
 
 ## When critics return
 
-The host agent consolidates the three returned fragments into a single `### Critic findings` section of `audit-report.md`, preserving the per-critic subheadings. It then triages: CRITICAL findings are fixed in place when the fix is mechanical (rewrite a headline, add a consequence-if-delayed) or surfaced to the user when the fix needs judgement (reframe the argument, change the close). MAJOR findings are usually fixed in place. MINOR findings are listed in the report as polish opportunities but do not block.
+The host agent consolidates the three returned fragments into a single `### Critic findings` section of `audit-report.md`, preserving the per-critic subheadings.
+
+Judge every finding against `message-architecture.md`, the committed argument, before acting on it:
+
+- **Serves the architecture** (a headline that does not carry its reason, an objection left open, an unsupported claim): act on it.
+- **Moves away from it** (a fix that would change the governing idea, drop a reason, or soften the CTA): reject it, with one line in the report naming what it would change. If the finding shows the architecture itself is wrong (the evidence does not support a reason), surface that to the user; changing the architecture is their call, and it reopens Phase 2.
+
+Mark each finding in the report as `accepted` or `rejected: <reason>`. Then triage the accepted ones: CRITICAL findings are fixed in place when the fix is mechanical (rewrite a headline, add a consequence-if-delayed) or surfaced to the user when the fix needs judgement (reframe the argument, change the close). MAJOR findings are usually fixed in place. MINOR findings are listed in the report as polish opportunities but do not block.
 
 If any CRITICAL finding remains after the host agent's first pass, the host agent re-dispatches the relevant critic(s) on the revised deck. The gate is two iterations: if a CRITICAL finding survives two rounds of fix-and-re-dispatch, the host agent stops, surfaces the issue plainly to the user, and asks for direction. This prevents infinite-loop polishing on a single intractable finding.

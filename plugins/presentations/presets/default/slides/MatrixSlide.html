@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>04 Content</title>
+<title>17 2x2 matrix</title>
 <style>
   /* ==========================================================
      Synced copy of ../colors.css. Source of truth is the file;
@@ -248,24 +248,14 @@
   .footer .wordmark { margin-left: auto; font-size: var(--fs-caption); color: var(--fg-subtle); }
 
   /* ==== This slide ==== */
-  .s-content ul {
-    list-style: none;
-    display: flex; flex-direction: column; gap: 48px;
-    max-width: 1480px;
-  }
-  .s-content li {
-    position: relative;
-    padding-left: 48px;
-    font-size: var(--fs-body); line-height: 1.3;
-    color: var(--fg);
-    text-wrap: pretty;
-  }
-  .s-content li::before {
-    content: ''; position: absolute;
-    left: 0; top: 0.5em;
-    width: 14px; height: 14px;
-    background: var(--fg-subtle);
-  }
+  .s-mx svg { display: block; overflow: visible; }
+  .s-mx svg text { font-size: var(--fs-caption); fill: var(--fg-muted); }
+  .s-mx svg text.hi { fill: var(--fg); font-weight: var(--weight-semibold); }
+  .s-mx .quad { fill: none; stroke: var(--border-strong); stroke-width: 2; }
+  .s-mx .quad.hi { fill: var(--brand-green-tint); }
+  .s-mx .pt { fill: var(--fg-subtle); }
+  /* Accent job: marks the pilot workloads and their quadrant. */
+  .s-mx .pt.hi { fill: var(--accent); stroke: var(--fg); stroke-width: 3; }
 </style>
 <script>
   function fit() {
@@ -282,18 +272,58 @@
 </head>
 <body>
 <div class="frame">
-<section class="s-content" data-screen-label="04 Content">
-    <h1 class="action">One platform cuts new use&nbsp;cases from 6 months to 5 weeks</h1>
-    <ul class="evidence">
-      <li>BI, machine learning, and AI read the same governed tables, so no team copies data between stacks</li>
-      <li>One catalog sets access rules for every cloud and region, in place of 5&nbsp;governance tools</li>
-      <li>One contract replaces the 6-month purchase that each use case used to need</li>
-    </ul>
+<section class="s-mx" data-screen-label="17 2x2 matrix">
+    <h1 class="action">3 of 11 workloads give high value for low effort, so the pilot starts there</h1>
+    <div class="evidence">
+      <svg class="chart" width="1680" height="580" role="img"
+           aria-label="11 candidate workloads by effort to migrate and business value"
+           data-chart="scatter" data-x-label="Effort to migrate" data-y-label="Business value"
+           data-labels='["Sales reporting","Demand forecast","Store replenishment","Customer 360","Fraud scoring","Finance close","HR analytics","Supplier portal","Marketing mix","Legacy archive","Pricing engine"]'
+           data-series='[{"name":"Effort","values":[1.8,3.0,1.3,7.2,8.4,6.1,3.2,8.8,6.6,1.4,8.0]},{"name":"Value","values":[7.9,6.9,5.9,8.2,6.8,3.4,2.8,2.2,6.2,1.6,8.9]}]'
+           data-highlight="[0,1,2]"></svg>
+    </div>
     <div class="footer">
-      <span class="source">Source: Acme delivery records, 12 reference accounts, 2021-2025</span>
+      <span class="source">Source: Acme workload assessment, global retailer, 11 candidate workloads, 2026</span>
       <div class="wordmark"><span class="wordmark-dot"></span>ACME</div>
     </div>
   </section>
 </div>
+<script>
+  function chartData(el) {
+    return {
+      labels: JSON.parse(el.dataset.labels || '[]'),
+      series: JSON.parse(el.dataset.series || '[]'),
+      highlight: el.dataset.highlight === undefined ? -1 : Number(el.dataset.highlight),
+      unit: el.dataset.unit || ''
+    };
+  }
+  (function () {
+    const el = document.querySelector('.s-mx .chart');
+    const labels = JSON.parse(el.dataset.labels), series = JSON.parse(el.dataset.series);
+    const hi = JSON.parse(el.dataset.highlight);
+    const ex = series[0].values, va = series[1].values;
+    const x0 = 0, x1 = 1680, y0 = 50, y1 = 530, mx = (x0 + x1) / 2, my = (y0 + y1) / 2;
+    const X = e => x0 + e / 10 * (x1 - x0), Y = s => y1 - s / 10 * (y1 - y0);
+    let out = '';
+    out += '<rect class="quad hi" x="' + x0 + '" y="' + y0 + '" width="' + (mx - x0) + '" height="' + (my - y0) + '"/>';
+    out += '<rect class="quad" x="' + mx + '" y="' + y0 + '" width="' + (x1 - mx) + '" height="' + (my - y0) + '"/>';
+    out += '<rect class="quad" x="' + x0 + '" y="' + my + '" width="' + (mx - x0) + '" height="' + (y1 - my) + '"/>';
+    out += '<rect class="quad" x="' + mx + '" y="' + my + '" width="' + (x1 - mx) + '" height="' + (y1 - my) + '"/>';
+    out += '<text class="hi" x="' + (x0 + 24) + '" y="' + (y0 + 44) + '">High value, low effort: pilot</text>';
+    out += '<text x="' + (x1 - 24) + '" y="' + (y0 + 44) + '" text-anchor="end">High value, high effort</text>';
+    out += '<text x="' + (x0 + 24) + '" y="' + (y1 - 24) + '">Low value, low effort</text>';
+    out += '<text x="' + (x1 - 24) + '" y="' + (y1 - 24) + '" text-anchor="end">Low value, high effort</text>';
+    out += '<text x="' + x0 + '" y="' + (y0 - 20) + '">' + el.dataset.yLabel + ', low to high</text>';
+    out += '<text x="' + x1 + '" y="' + (y1 + 44) + '" text-anchor="end">' + el.dataset.xLabel + ', low to high</text>';
+    ex.forEach((e, i) => {
+      if (!hi.includes(i)) out += '<circle class="pt" cx="' + X(e) + '" cy="' + Y(va[i]) + '" r="12"/>';
+    });
+    hi.forEach(i => {
+      out += '<circle class="pt hi" cx="' + X(ex[i]) + '" cy="' + Y(va[i]) + '" r="16"/>';
+      out += '<text class="hi" x="' + (X(ex[i]) + 30) + '" y="' + (Y(va[i]) + 10) + '">' + labels[i] + '</text>';
+    });
+    el.innerHTML = out;
+  })();
+</script>
 </body>
 </html>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>04 Content</title>
+<title>11 Executive summary</title>
 <style>
   /* ==========================================================
      Synced copy of ../colors.css. Source of truth is the file;
@@ -248,19 +248,20 @@
   .footer .wordmark { margin-left: auto; font-size: var(--fs-caption); color: var(--fg-subtle); }
 
   /* ==== This slide ==== */
-  .s-content ul {
-    list-style: none;
-    display: flex; flex-direction: column; gap: 48px;
-    max-width: 1480px;
+  .s-exec ul {
+    list-style: none; padding: 0;
+    display: flex; flex-direction: column; gap: 40px;
+    max-width: 1560px;
   }
-  .s-content li {
+  .s-exec li {
     position: relative;
-    padding-left: 48px;
+    padding: 0 0 40px 48px;
+    border-bottom: 1px solid var(--border);
     font-size: var(--fs-body); line-height: 1.3;
-    color: var(--fg);
     text-wrap: pretty;
   }
-  .s-content li::before {
+  .s-exec li:last-child { border-bottom: 0; padding-bottom: 0; }
+  .s-exec li::before {
     content: ''; position: absolute;
     left: 0; top: 0.5em;
     width: 14px; height: 14px;
@@ -282,12 +283,14 @@
 </head>
 <body>
 <div class="frame">
-<section class="s-content" data-screen-label="04 Content">
-    <h1 class="action">One platform cuts new use&nbsp;cases from 6 months to 5 weeks</h1>
+<section class="s-exec" data-screen-label="11 Executive summary">
+    <h1 class="action">Approve a 12-week pilot on 3 workloads, the first step to a $40M yearly saving</h1>
+    <!-- Each bullet is the action title of a later slide, word for word. -->
     <ul class="evidence">
-      <li>BI, machine learning, and AI read the same governed tables, so no team copies data between stacks</li>
-      <li>One catalog sets access rules for every cloud and region, in place of 5&nbsp;governance tools</li>
-      <li>One contract replaces the 6-month purchase that each use case used to need</li>
+      <li>New use cases launch in 5 weeks since cutover, down from 26 weeks before</li>
+      <li>Retired licenses make up $18M of the $40M average yearly saving per client</li>
+      <li>All 3 client migrations reached production within 16 weeks</li>
+      <li>3 of 11 workloads give high value for low effort, so the pilot starts there</li>
     </ul>
     <div class="footer">
       <span class="source">Source: Acme delivery records, 12 reference accounts, 2021-2025</span>

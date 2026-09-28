@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>04 Content</title>
+<title>12 Chart with insight</title>
 <style>
   /* ==========================================================
      Synced copy of ../colors.css. Source of truth is the file;
@@ -248,23 +248,22 @@
   .footer .wordmark { margin-left: auto; font-size: var(--fs-caption); color: var(--fg-subtle); }
 
   /* ==== This slide ==== */
-  .s-content ul {
-    list-style: none;
-    display: flex; flex-direction: column; gap: 48px;
-    max-width: 1480px;
-  }
-  .s-content li {
-    position: relative;
-    padding-left: 48px;
+  .s-ci .plot { position: relative; width: 1680px; height: 560px; }
+  .s-ci svg { position: absolute; left: 0; top: 0; overflow: visible; }
+  .s-ci svg text { font-size: var(--fs-caption); fill: var(--fg-subtle); }
+  .s-ci .grid { stroke: var(--border); stroke-width: 1; }
+  .s-ci .zero { stroke: var(--fg-subtle); stroke-width: 2; }
+  .s-ci .line { fill: none; stroke: var(--fg-subtle); stroke-width: 4; }
+  .s-ci .pt { fill: var(--fg-subtle); }
+  .s-ci .cut { stroke: var(--fg-subtle); stroke-width: 2; stroke-dasharray: 8 8; }
+  .s-ci .arrow { stroke: var(--fg); stroke-width: 3; fill: none; }
+  .s-ci .arrow-head { fill: var(--fg); }
+  /* Accent job: marks the data point the callout explains. */
+  .s-ci .pt.hi { fill: var(--accent); stroke: var(--fg); stroke-width: 3; }
+  .s-ci .callout {
+    position: absolute; left: 1180px; width: 500px;
     font-size: var(--fs-body); line-height: 1.3;
-    color: var(--fg);
     text-wrap: pretty;
-  }
-  .s-content li::before {
-    content: ''; position: absolute;
-    left: 0; top: 0.5em;
-    width: 14px; height: 14px;
-    background: var(--fg-subtle);
   }
 </style>
 <script>
@@ -282,18 +281,70 @@
 </head>
 <body>
 <div class="frame">
-<section class="s-content" data-screen-label="04 Content">
-    <h1 class="action">One platform cuts new use&nbsp;cases from 6 months to 5 weeks</h1>
-    <ul class="evidence">
-      <li>BI, machine learning, and AI read the same governed tables, so no team copies data between stacks</li>
-      <li>One catalog sets access rules for every cloud and region, in place of 5&nbsp;governance tools</li>
-      <li>One contract replaces the 6-month purchase that each use case used to need</li>
-    </ul>
+<section class="s-ci" data-screen-label="12 Chart with insight">
+    <h1 class="action">New use cases launch in 5 weeks since cutover, down from 26 weeks before</h1>
+    <div class="evidence">
+     <div class="plot">
+      <svg class="chart" width="1160" height="560" role="img"
+           aria-label="Weeks to launch a new use case, by quarter, 2024 to 2025"
+           data-chart="line" data-unit="weeks"
+           data-labels='["Q1 24","Q2 24","Q3 24","Q4 24","Q1 25","Q2 25","Q3 25","Q4 25"]'
+           data-series='[{"name":"Weeks to launch a new use case","values":[26,25,27,24,9,6,5,5]}]'
+           data-highlight="7" data-marker-after="3" data-marker-label="Cutover"></svg>
+      <div class="callout">5 weeks in each of the last 2 quarters, against 24 to 27 weeks before cutover</div>
+     </div>
+    </div>
     <div class="footer">
-      <span class="source">Source: Acme delivery records, 12 reference accounts, 2021-2025</span>
+      <span class="source">Source: Acme delivery records, global retailer, use-case launch log, 2024-2025</span>
       <div class="wordmark"><span class="wordmark-dot"></span>ACME</div>
     </div>
   </section>
 </div>
+<script>
+  function chartData(el) {
+    return {
+      labels: JSON.parse(el.dataset.labels || '[]'),
+      series: JSON.parse(el.dataset.series || '[]'),
+      highlight: el.dataset.highlight === undefined ? -1 : Number(el.dataset.highlight),
+      unit: el.dataset.unit || ''
+    };
+  }
+  (function () {
+    const el = document.querySelector('.s-ci .chart');
+    const d = chartData(el), v = d.series[0].values;
+    const x0 = 90, x1 = 1000, y0 = 60, y1 = 480, top = 30;
+    const X = i => x0 + i * (x1 - x0) / (v.length - 1);
+    const Y = val => y1 - val / top * (y1 - y0);
+    let out = '';
+    [10, 20, 30].forEach(t => {
+      out += '<line class="grid" x1="' + x0 + '" x2="' + x1 + '" y1="' + Y(t) + '" y2="' + Y(t) + '"/>';
+      out += '<text x="' + (x0 - 20) + '" y="' + (Y(t) + 10) + '" text-anchor="end">' + t + '</text>';
+    });
+    out += '<line class="zero" x1="' + x0 + '" x2="' + x1 + '" y1="' + y1 + '" y2="' + y1 + '"/>';
+    out += '<text x="' + (x0 - 20) + '" y="' + (y1 + 10) + '" text-anchor="end">0</text>';
+    out += '<text x="' + x0 + '" y="' + (y0 - 36) + '">Weeks to launch a new use case</text>';
+    d.labels.forEach((l, i) => {
+      out += '<text x="' + X(i) + '" y="' + (y1 + 52) + '" text-anchor="middle">' + l + '</text>';
+    });
+    const m = Number(el.dataset.markerAfter);
+    const mx = (X(m) + X(m + 1)) / 2;
+    out += '<line class="cut" x1="' + mx + '" x2="' + mx + '" y1="' + y0 + '" y2="' + y1 + '"/>';
+    out += '<text x="' + (mx + 16) + '" y="' + (y0 + 24) + '">' + el.dataset.markerLabel + '</text>';
+    out += '<polyline class="line" points="' + v.map((val, i) => X(i) + ',' + Y(val)).join(' ') + '"/>';
+    v.forEach((val, i) => {
+      if (i !== d.highlight) out += '<circle class="pt" cx="' + X(i) + '" cy="' + Y(val) + '" r="8"/>';
+    });
+    const hx = X(d.highlight), hy = Y(v[d.highlight]);
+    out += '<circle class="pt hi" cx="' + hx + '" cy="' + hy + '" r="16"/>';
+    // Callout sits in the right third, centered on the highlighted point.
+    const c = document.querySelector('.s-ci .callout');
+    const ct = Math.max(0, Math.min(560 - c.offsetHeight, hy - c.offsetHeight / 2));
+    c.style.top = ct + 'px';
+    const ax = 1156, ay = ct + c.offsetHeight / 2, tx = hx + 30, ty = hy;
+    out += '<line class="arrow" x1="' + ax + '" y1="' + ay + '" x2="' + (tx + 14) + '" y2="' + ty + '"/>';
+    out += '<polygon class="arrow-head" points="' + tx + ',' + ty + ' ' + (tx + 22) + ',' + (ty - 11) + ' ' + (tx + 22) + ',' + (ty + 11) + '"/>';
+    el.innerHTML = out;
+  })();
+</script>
 </body>
 </html>

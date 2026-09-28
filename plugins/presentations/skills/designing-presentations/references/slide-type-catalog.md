@@ -2,7 +2,9 @@
 
 The eight content-side slide types used by this skill. Each type is a role in the argument, not a visual template. Rendering happens later in the `creating-presentations` skill; see the mapping at the bottom of this file.
 
-A deck does not need every type, and types may repeat. A typical 12-slide deck uses 1 Title, 1 Agenda, 2 to 3 SectionDividers, 4 to 6 Decision or Evidence slides, 0 to 2 Transformations, 1 Closing, and any number of Appendix slides referenced from Q and A.
+A deck does not need every type, and types may repeat. A typical 12-slide deck uses 1 Title, 6 to 8 Decision or Evidence slides, 0 to 2 Transformations, 1 Closing, and any number of Appendix slides referenced from Q and A. Agenda and SectionDivider are opt-in by length (see their entries).
+
+Every content slide (Decision, Evidence, Transformation) carries a proof object: the chart, number, table, process, 2x2, diagram, image, or quote that shows the headline is true. A slide with only bullets under its headline has not found its proof yet.
 
 ---
 
@@ -29,7 +31,7 @@ ASCII layout sketch:
 
 Example sentence headline: "Migrating billing to event-sourced ledgers cuts month-end close from nine days to two."
 
-Speaker-note pattern: introduce yourself in one sentence, name the audience's stake in the topic in one sentence, then advance immediately to Agenda.
+Speaker-note pattern: introduce yourself in one sentence, name the audience's stake in the topic in one sentence, then advance to the next slide.
 
 ---
 
@@ -37,7 +39,7 @@ Speaker-note pattern: introduce yourself in one sentence, name the audience's st
 
 One-line purpose: preview the argument's structure so the audience can track progress through the deck.
 
-When to use it: once, as slide 2, on any deck longer than about 8 slides. Skip on short decks (5 slides or fewer) where structure is self-evident.
+When to use it: once, as slide 2, only on decks of 15 or more body slides with three or more sections (a tunable default). Below that the structure is easy to hold and the slide costs time. In a direct storyline, slide 2 may instead be an exec summary at any length: the items are claims, one per body section, each a short form of that section's headline, and the visual brief pins `ExecSummarySlide`.
 
 ASCII layout sketch:
 
@@ -64,7 +66,7 @@ Speaker-note pattern: read each section name once, name the section that contain
 
 One-line purpose: signal a transition between major sections of the argument so the audience can re-orient.
 
-When to use it: between sections in any deck longer than about 8 slides. One divider per section boundary. Skip in short decks where the structure is held in the audience's head.
+When to use it: only in decks of 20 or more body slides with three or more sections (a tunable default), one divider per section boundary. Under 15 slides, dividers add clutter.
 
 ASCII layout sketch:
 
@@ -240,19 +242,34 @@ Speaker-note pattern: only spoken if jumped to from Q and A. Pattern: name the q
 
 ## Rendering hand-off to the deck-building skill
 
-The content-side type names above describe the role each slide plays in the argument. The deck-building skill works in a different vocabulary: its slide-type catalog names rendering layouts, and the active preset's `slides/` gallery carries the proven examples. The recommended mapping below lets a host agent pass a content-side deck plan to the deck builder without re-deriving the layout from scratch each time.
+The content-side type names above describe the role each slide plays in the argument. The deck-building skill works in a different vocabulary: the active preset's `slides/` gallery names rendering layouts. The recommended mapping below lets a host agent pass a content-side deck plan to the deck builder without re-deriving the layout from scratch each time. For content slides, the proof object named in the visual brief decides the layout more than the slide type does.
 
-| Content-side type (this skill) | Recommended rendering slide type (deck builder's catalog) |
-| ------------------------------ | --------------------------------------------------------- |
-| Title                          | Title                                                     |
-| Agenda                         | Agenda                                                    |
-| SectionDivider                 | Section divider                                           |
-| Decision                       | Content (with decision callout)                           |
-| Evidence                       | Stat, or Content with chart                               |
-| Transformation                 | Comparison                                                |
-| Closing                        | Closing                                                   |
-| Appendix                       | Content                                                   |
+| Content-side type (this skill) | Recommended gallery layouts (deck builder)                                                  |
+| ------------------------------ | ------------------------------------------------------------------------------------------- |
+| Title                          | TitleSlide                                                                                  |
+| Agenda                         | AgendaSlide; ExecSummarySlide when the items are claims                                     |
+| SectionDivider                 | SectionDivider                                                                              |
+| Decision                       | ContentSlide with a decision callout; ChartInsightSlide or StatSlide when the proof is data |
+| Evidence                       | By proof object (table below)                                                               |
+| Transformation                 | ComparisonSlide; ProcessSlide or MatrixSlide when the change is a flow or a 2x2             |
+| Closing                        | ClosingSlide                                                                                |
+| Appendix                       | TableSlide, or ContentSlide                                                                 |
 
-The mapping is a recommendation, not a constraint. The deck builder remains free to pick a different rendering when the slide's visual brief calls for it (a Decision slide whose proof is a photograph rather than a chart may render better as a full-bleed image with a decision callout, for example), and Quote and Timeline layouts have no content-side type of their own; they appear when a slide's visual brief calls for them. The two taxonomies sit at different levels of abstraction: this skill names the slide's role in the argument (content-role), while the deck builder names the layout that paints it (render-template). A one-to-one mapping is convenient but not load-bearing.
+| Proof object in the visual brief                | Recommended gallery layout |
+| ----------------------------------------------- | -------------------------- |
+| Chart with one insight called out               | ChartInsightSlide          |
+| One number that carries the point               | StatSlide                  |
+| Bar or column chart with one highlighted series | BarChartSlide              |
+| A total built up or broken down step by step    | WaterfallSlide             |
+| Rows and columns the audience compares          | TableSlide                 |
+| Steps in order (five at most)                   | ProcessSlide               |
+| Options placed on two axes                      | MatrixSlide                |
+| Before and after, or two options side by side   | ComparisonSlide            |
+| Dates or phases                                 | TimelineSlide              |
+| Photo or screenshot as evidence                 | ImageOverlaySlide          |
+| System, flow, or structure                      | DiagramSlide               |
+| A customer or expert in their own words         | QuoteSlide                 |
 
-When a preset is known (the user names one, or exactly one is installed under `../../presets/` at the plugin root), its `slides/` gallery is the concrete form of the rendering vocabulary: each gallery file is a proven layout the deck builder adapts. List the gallery file names during storyboarding and let a visual brief pin one by name ("adapt chevron-process", "use highlight-numbers"); a pinned gallery layout overrides the table above. Users who work with their preset daily often know exactly which layout they want, and the pin carries that intent through to rendering unchanged.
+The mapping is a recommendation, not a constraint. The deck builder chooses its own layout from the slide's argument role and proof object, and may pick differently when the visual brief calls for it. The two taxonomies sit at different levels of abstraction: this skill names the slide's role in the argument (content-role), while the deck builder names the layout that paints it (render-template). A one-to-one mapping is convenient but not load-bearing.
+
+When a preset is known (the user names one, or exactly one is installed under `../../presets/` at the plugin root), its `slides/` gallery is the concrete form of the rendering vocabulary. List the gallery file names during storyboarding and let a visual brief pin one by name ("adapt chevron-process", "use WaterfallSlide"); a pinned gallery layout overrides the tables above. Users who work with their preset daily often know exactly which layout they want, and the pin carries that intent through to rendering unchanged.

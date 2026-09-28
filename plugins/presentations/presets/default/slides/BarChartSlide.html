@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>04 Content</title>
+<title>13 Bar chart</title>
 <style>
   /* ==========================================================
      Synced copy of ../colors.css. Source of truth is the file;
@@ -248,24 +248,14 @@
   .footer .wordmark { margin-left: auto; font-size: var(--fs-caption); color: var(--fg-subtle); }
 
   /* ==== This slide ==== */
-  .s-content ul {
-    list-style: none;
-    display: flex; flex-direction: column; gap: 48px;
-    max-width: 1480px;
-  }
-  .s-content li {
-    position: relative;
-    padding-left: 48px;
-    font-size: var(--fs-body); line-height: 1.3;
-    color: var(--fg);
-    text-wrap: pretty;
-  }
-  .s-content li::before {
-    content: ''; position: absolute;
-    left: 0; top: 0.5em;
-    width: 14px; height: 14px;
-    background: var(--fg-subtle);
-  }
+  .s-bar svg { display: block; overflow: visible; }
+  .s-bar svg text { font-size: var(--fs-body); fill: var(--fg-muted); }
+  .s-bar svg text.cap { font-size: var(--fs-caption); fill: var(--fg-subtle); }
+  .s-bar svg text.hi { fill: var(--fg); font-weight: var(--weight-semibold); }
+  .s-bar .bar { fill: var(--border-strong); }
+  .s-bar .axis { stroke: var(--fg-subtle); stroke-width: 2; }
+  /* Accent job: marks the client the title names. */
+  .s-bar .bar.hi { fill: var(--accent); }
 </style>
 <script>
   function fit() {
@@ -282,18 +272,45 @@
 </head>
 <body>
 <div class="frame">
-<section class="s-content" data-screen-label="04 Content">
-    <h1 class="action">One platform cuts new use&nbsp;cases from 6 months to 5 weeks</h1>
-    <ul class="evidence">
-      <li>BI, machine learning, and AI read the same governed tables, so no team copies data between stacks</li>
-      <li>One catalog sets access rules for every cloud and region, in place of 5&nbsp;governance tools</li>
-      <li>One contract replaces the 6-month purchase that each use case used to need</li>
-    </ul>
+<section class="s-bar" data-screen-label="13 Bar chart">
+    <h1 class="action">The global retailer cut its nightly batch window 91%, the most of 5 benchmarked clients</h1>
+    <div class="evidence">
+      <svg class="chart" width="1680" height="560" role="img"
+           aria-label="Reduction in nightly batch window after migration, by client"
+           data-chart="bar" data-orientation="horizontal" data-unit="%"
+           data-labels='["Global retailer","Regional bank","Insurer","Manufacturer","Pharma group"]'
+           data-series='[{"name":"Reduction in nightly batch window","values":[91,78,64,55,42]}]'
+           data-highlight="0"></svg>
+    </div>
     <div class="footer">
-      <span class="source">Source: Acme delivery records, 12 reference accounts, 2021-2025</span>
+      <span class="source">Source: Acme migration benchmarks, 5 clients, batch window before and after migration, 2023-2025</span>
       <div class="wordmark"><span class="wordmark-dot"></span>ACME</div>
     </div>
   </section>
 </div>
+<script>
+  function chartData(el) {
+    return {
+      labels: JSON.parse(el.dataset.labels || '[]'),
+      series: JSON.parse(el.dataset.series || '[]'),
+      highlight: el.dataset.highlight === undefined ? -1 : Number(el.dataset.highlight),
+      unit: el.dataset.unit || ''
+    };
+  }
+  (function () {
+    const el = document.querySelector('.s-bar .chart');
+    const d = chartData(el), v = d.series[0].values;
+    const lx = 400, W = 1100, rowH = 100, barH = 60, top = 60;
+    let out = '<text class="cap" x="' + lx + '" y="24">Reduction in nightly batch window after migration</text>';
+    v.forEach((val, i) => {
+      const y = top + i * rowH, hi = i === d.highlight ? ' hi' : '';
+      out += '<text class="' + hi + '" x="0" y="' + (y + barH / 2 + 14) + '">' + d.labels[i] + '</text>';
+      out += '<rect class="bar' + hi + '" x="' + lx + '" y="' + y + '" width="' + (val / 100 * W) + '" height="' + barH + '"/>';
+      out += '<text class="' + hi + '" x="' + (lx + val / 100 * W + 24) + '" y="' + (y + barH / 2 + 14) + '">' + val + d.unit + '</text>';
+    });
+    out += '<line class="axis" x1="' + lx + '" x2="' + lx + '" y1="' + (top - 16) + '" y2="' + (top + v.length * rowH - 24) + '"/>';
+    el.innerHTML = out;
+  })();
+</script>
 </body>
 </html>

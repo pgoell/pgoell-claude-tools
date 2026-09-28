@@ -1,16 +1,35 @@
 # Slide Brief Template
 
-Documents the per-slide YAML schema used in `deck.md`. Each slide in `deck.md` is a YAML front-matter block followed by optional body markdown. The host agent fills this template once per slide, copying the YAML block into `deck.md` between slide delimiters.
+Documents the YAML schema used in `deck.md`: one optional deck header, then one YAML front-matter block per slide followed by optional body markdown. The host agent fills the slide template once per slide, copying the YAML block into `deck.md` between slide delimiters.
+
+## Deck header
+
+`deck.md` opens with one fenced `yaml` block before the first slide. Every key is optional, so a `deck.md` without a header stays valid; the renderer ignores keys it does not use.
+
+```yaml
+deck_mode: <enum>           # presented | keynote | briefing | reading. From intake; sets word budget and notes density (time-budget.md).
+governing_idea: <string>    # the one-sentence governing idea from the audience brief.
+sequencing: <enum>          # direct | indirect. The storyline shape chosen in Phase 3.
+emotional_lever: <enum>     # hope | urgency | relief | adrenaline.
+star_moment: <int>          # slide number of the S.T.A.R. moment, if any.
+preset: <string>            # preset name, when one was known at design time.
+```
+
+## Copy rules
+
+Write every `title`, `headline`, and on-screen phrase in `visual` to the active preset's `language.md` (the preset named in the header or in `.pgoell/presentations/config.md`; when that preset has no `language.md`, use the default preset's at `../../presets/default/language.md` relative to this skill). Keep on-screen words inside the deck mode's budget.
+
+Never add a fact, figure, name, or arithmetic that is not in the user's material. That includes derived numbers: do not compute a percentage, total, or payback period the source does not state. When a slide needs a number the source lacks, say so in the title-only read-through (or ask) and write the claim without it; do not leave a placeholder that could render.
 
 ## Schema
 
-The schema below defines the six top-level keys. Four are required on every slide; two (`title`, `sources`) are optional. Sub-keys under `speaker_notes` are documented after the schema block.
+The schema below defines the six top-level keys per slide. Four are required on every slide; two (`title`, `sources`) are optional. Sub-keys under `speaker_notes` are documented after the schema block.
 
 ```yaml
 slide_type: <enum>          # required. One of: Title, Agenda, SectionDivider, Decision, Evidence, Transformation, Closing, Appendix.
 title: <string>             # optional. Short topic label, two to five words, for layouts that pair a title with a subtitle; the headline then renders as the subtitle (the action title).
 headline: <string>          # required. Full sentence with a verb and a claim, not a topic noun. Should match the storyboard headline verbatim. Renders on the layout's takeaway surface: the title, or the subtitle when a short title sits above it.
-visual: <string>            # required. One-line description of the dominant visual (chart type, image concept, table shape, layout note, or a pinned preset gallery layout by name). The visual designer or render step reads this.
+visual: <string>            # required. One line naming the slide's proof object (chart with insight, single number, highlighted bar, waterfall, table, process, 2x2, diagram, image, quote) and what it shows, or a pinned preset gallery layout by name. Every content slide carries a proof object; see slide-type-catalog.md.
 speaker_notes:              # required. Five sub-keys, see below.
   transition: <string>
   claim: <string>
@@ -24,7 +43,14 @@ sources:                    # optional. List of citations, omit entirely if no e
 
 ### speaker_notes sub-keys
 
-Each sub-key is one to three sentences. The speaker reads or paraphrases them in order during the slide.
+The speaker works through the sub-keys in order during the slide. Notes complement the slide; they never repeat its text. What the slide shows, the notes do not restate; they carry what the speaker adds (the why, the number behind the chart, the link to the next slide).
+
+Density follows `deck_mode`:
+
+- **`presented`, `keynote`, `briefing`: cues.** Each sub-key is a short phrase the speaker can glance at: a few words, the key number, the transition. Not a script.
+- **`reading`: fuller prose.** One to three sentences per sub-key, since there may be no speaker and the notes stand in for one.
+
+Size notes at about 130 spoken words a minute times the minutes planned for the slide (`time-budget.md`). The Decision slide's `ask` is the exception: when the ask is a motion or exact wording the speaker must read, write it out in full.
 
 - **transition:** how the speaker arrives at this slide from the previous one. Names the prior claim and bridges to the current one.
 - **claim:** the headline restated for the ear; the sentence the speaker actually says aloud as the slide opens.
@@ -40,6 +66,8 @@ The schema has two optional top-level keys.
 - **`sources`:** omit entirely if the slide shows no external data, quotes, or benchmarks. A Title, Agenda, SectionDivider, or Closing slide typically has no sources. An Evidence slide almost always does.
 
 ## Worked example: Decision slide
+
+The notes here are fuller than cues because the `ask` is a motion the chair needs word for word; the other sub-keys could be cues as well.
 
 ```yaml
 slide_type: Decision
@@ -76,17 +104,19 @@ ASCII layout sketch:
 
 ## Worked example: Evidence slide
 
+This deck is `presented`, so the notes are cues. The chart already shows the six quarters and the target line; the notes add the source and the consequence.
+
 ```yaml
 slide_type: Evidence
 title: Onboarding cycle time
 headline: Onboarding cycle time has held above 10 weeks since Q3 2025
 visual: Line chart, 6 quarterly data points from Q3 2024 to Q4 2025, current value of 11 weeks highlighted in red, target line of 7.2 weeks drawn in green
 speaker_notes:
-  transition: With the agenda set, let me anchor us in the trajectory the KPI is actually on.
-  claim: Onboarding cycle time has held above 10 weeks for six consecutive quarters and is currently sitting at 11.
-  evidence: This is the internal Ops dashboard, pulled Monday; the target line at 7.2 weeks is the cycle time required to land the retention KPI inside FY26.
-  implication: On this trajectory, the retention KPI tied to executive comp does not land. The gap is structural, not seasonal.
-  ask: Hold this number, 11 weeks, as the anchor for the rest of the deck. Every later slide refers back to it.
+  transition: From the KPI to the trajectory it is on
+  claim: Six quarters above 10 weeks; 11 today
+  evidence: Ops dashboard, pulled Monday; 7.2 weeks is what the KPI needs
+  implication: Structural gap; KPI misses on this path
+  ask: Hold 11 weeks; later slides refer back to it
 sources:
   - Internal Ops dashboard, pulled 2026-05-23
   - FY26 retention KPI memo (Board pack, Q4 2025)

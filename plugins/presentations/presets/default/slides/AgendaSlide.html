@@ -9,12 +9,19 @@
      refresh this block whenever it changes.
      ========================================================== */
   /* ============================================================
-     Default preset, design tokens
+     Default preset, design tokens ("quiet" direction)
      ============================================================
      Source of truth for every slide's embedded variable block.
      Raw brand layer first, semantic layer second; slides read
      only the semantic names unless a specific raw value is the
      point (charts, swatches).
+
+     Color rule: one accent with one job. The accent marks the
+     single thing the audience should look at (the highlighted
+     series, the current step, the new state). Everything else
+     is ink or gray. The ember and lava values stay for charts
+     that need a second series color; slides do not use them as
+     a second accent.
      ============================================================ */
 
   :root {
@@ -44,7 +51,7 @@
 
     --fg:                 #0F0B0B;   /* Primary text */
     --fg-muted:           #595452;   /* Secondary text */
-    --fg-subtle:          #8A8682;   /* Tertiary text / captions */
+    --fg-subtle:          #6F6B68;   /* Tertiary text: source lines, footer (about 5:1 on --bg) */
     --fg-inverse:         #FAFAF7;   /* Text on dark bg */
     --fg-inverse-muted:   rgba(250, 250, 247, 0.72);
     --fg-inverse-subtle:  rgba(250, 250, 247, 0.50);
@@ -54,9 +61,9 @@
     --border-inverse:     rgba(255, 255, 255, 0.12);
     --border-accent:      var(--brand-green);   /* Accent hairline */
 
-    --accent:             var(--brand-green);   /* Default accent */
+    --accent:             var(--brand-green);   /* The one accent: graphics that mark the focus */
     --accent-fg:          var(--brand-ink);
-    --accent-partner:     var(--brand-ember);   /* Secondary-accent callouts */
+    --accent-partner:     var(--brand-ember);   /* Second chart series only, never a second accent */
 
     /* Status (rare on slides, but useful) */
     --status-success:     #2F7A1C;
@@ -66,18 +73,23 @@
 
     /* =====================================================
        TYPE, slide scale (1920x1080 reference)
+       Floors by role (starting points, checked by gate H7):
+       body >= 36px, captions and chart labels >= 28px,
+       footer and source line >= 24px. Use at most three
+       sizes per slide. Never shrink text to fit: split the
+       slide or cut words.
        ===================================================== */
-    --fs-hero:        160px;
-    --fs-display:     120px;
-    --fs-section:     96px;
-    --fs-h1:          72px;
-    --fs-h2:          56px;
-    --fs-h3:          40px;
-    --fs-subtitle:    32px;
-    --fs-body-lg:     28px;
-    --fs-body:        24px;
-    --fs-caption:     20px;
-    --fs-micro:       16px;
+    --fs-hero:        280px;   /* The single big number */
+    --fs-display:     128px;   /* Structure slides: title, divider, closing */
+    --fs-section:     96px;    /* Spare large step */
+    --fs-h1:          72px;    /* Action title on content slides */
+    --fs-h2:          56px;    /* Quote text, large subheads */
+    --fs-h3:          48px;    /* Subheads */
+    --fs-subtitle:    44px;    /* Deck subtitle */
+    --fs-body-lg:     44px;    /* Emphasis body (agenda rows) */
+    --fs-body:        40px;    /* Body text, list items (floor 36px) */
+    --fs-caption:     28px;    /* Captions, labels, source line, footer */
+    --fs-micro:       24px;    /* Floor for footer and source line; do not go below */
 
     --lh-tight:       1.05;
     --lh-snug:        1.18;
@@ -171,7 +183,8 @@
      them, so standalone slides render on the system fallbacks
      below. Deck builds that must render identically offline
      vendor the webfont files per the creating-presentations
-     caveats.
+     caveats. The gallery sets all text in the sans stack; the
+     mono stack is for code samples only, never for labels.
      ============================================================ */
 
   :root {
@@ -202,7 +215,6 @@
   }
 
   /* ==== Shared bits ==== */
-  .accent-dot { color: var(--brand-green); }
   .wordmark {
     display: inline-flex; align-items: center; gap: 0.4em;
     font-family: var(--font-display);
@@ -213,49 +225,47 @@
     width: 0.55em; height: 0.55em; border-radius: var(--r-pill);
     background: var(--accent);
   }
+  /* Action title: the dominant heading on every content slide. */
+  h1.action {
+    font-size: var(--fs-h1); font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight); line-height: 1.1;
+    margin: 0; max-width: 1560px;
+    text-wrap: balance;
+  }
+  /* Footer: optional. Source line on the left when the slide
+     shows numbers, the wordmark on the right when the brand
+     needs it. No rule, no slide counter. */
   .footer {
     position: absolute;
-    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 56px;
-    padding-top: 20px;
-    border-top: 1px solid var(--brand-green);
-    display: flex; align-items: center; justify-content: space-between;
-    font-size: 20px;
+    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 64px;
+    display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
+    font-size: var(--fs-caption);
     color: var(--fg-subtle);
   }
-  .footer .wordmark { font-size: 22px; color: var(--fg); opacity: 0.85; }
-  .footer .right { font-family: var(--font-mono); font-size: 18px; letter-spacing: 0.04em; }
-  .eyebrow {
-    font-size: 24px; font-weight: var(--weight-medium);
-    text-transform: uppercase; letter-spacing: 0.12em;
-    color: var(--fg-muted);
-  }
+  /* Evidence block under the action title: centered in the space
+     left between title and footer. */
+  .evidence { margin: auto 0; padding: 64px 0 96px; }
+  .footer .wordmark { margin-left: auto; font-size: var(--fs-caption); color: var(--fg-subtle); }
 
   /* ==== This slide ==== */
-  .s-agenda .header { margin-bottom: 80px; }
-  .s-agenda .header h1 {
-    font-size: 96px; font-weight: var(--weight-semibold);
-    letter-spacing: -0.03em; line-height: 1; margin: 16px 0 0; max-width: 1400px;
-  }
-  .s-agenda .list {
-    display: flex; flex-direction: column;
-    gap: 28px;
-    max-width: 1600px;
-  }
+  .s-agenda .list { max-width: 1500px; }
   .s-agenda .item {
-    display: grid;
-    grid-template-columns: 110px 1fr auto;
-    align-items: baseline;
-    gap: 40px;
-    padding: 24px 0;
+    position: relative;
+    display: grid; grid-template-columns: 1fr auto;
+    align-items: baseline; gap: 48px;
+    padding: 28px 0 28px 40px;
     border-top: 1px solid var(--border);
   }
   .s-agenda .item:last-child { border-bottom: 1px solid var(--border); }
-  .s-agenda .num { font-family: var(--font-mono); font-size: 28px; color: var(--fg-subtle); }
-  .s-agenda .label { font-size: 44px; font-weight: var(--weight-medium); letter-spacing: -0.01em; }
-  .s-agenda .item.current .label { color: var(--fg); }
-  .s-agenda .item:not(.current) .label { color: var(--fg-subtle); }
-  .s-agenda .item.current .num { color: var(--brand-green); font-weight: var(--weight-medium); }
-  .s-agenda .dur { font-family: var(--font-mono); font-size: 22px; color: var(--fg-subtle); }
+  .s-agenda .label { font-size: var(--fs-body); color: var(--fg-muted); }
+  .s-agenda .dur { font-size: var(--fs-caption); color: var(--fg-subtle); }
+  /* Accent job: marks the part the speaker is on now. */
+  .s-agenda .item.current .label { color: var(--fg); font-weight: var(--weight-semibold); }
+  .s-agenda .item.current::before {
+    content: ''; position: absolute;
+    left: 0; top: 28px; bottom: 28px; width: 6px;
+    background: var(--accent);
+  }
 </style>
 <script>
   function fit() {
@@ -273,35 +283,27 @@
 <body>
 <div class="frame">
 <section class="s-agenda" data-screen-label="03 Agenda">
-    <div class="header">
-      <div class="eyebrow">Today</div>
-      <h1>What we'll cover<span class="accent-dot">.</span></h1>
-    </div>
-    <div class="list">
+    <h1 class="action">We cover 4 topics in 55 minutes and end with the pilot decision</h1>
+    <div class="list evidence">
       <div class="item current">
-        <span class="num">01</span>
-        <span class="label">Why modernize, why now</span>
-        <span class="dur">10 min</span>
+        <span class="label">Why each new use case takes 6 months today</span>
+        <span class="dur" data-role="label">10 min</span>
       </div>
       <div class="item">
-        <span class="num">02</span>
-        <span class="label">Our delivery playbook</span>
-        <span class="dur">15 min</span>
+        <span class="label">How we deliver in 12 weeks</span>
+        <span class="dur" data-role="label">15 min</span>
       </div>
       <div class="item">
-        <span class="num">03</span>
-        <span class="label">Three team stories</span>
-        <span class="dur">20 min</span>
+        <span class="label">What 3 client migrations delivered</span>
+        <span class="dur" data-role="label">20 min</span>
       </div>
       <div class="item">
-        <span class="num">04</span>
-        <span class="label">What's next, and how to engage</span>
-        <span class="dur">10 min</span>
+        <span class="label">The pilot decision and next steps</span>
+        <span class="dur" data-role="label">10 min</span>
       </div>
     </div>
     <div class="footer">
       <div class="wordmark"><span class="wordmark-dot"></span>ACME</div>
-      <span class="right">03 / 10</span>
     </div>
   </section>
 </div>

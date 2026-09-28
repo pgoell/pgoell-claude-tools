@@ -9,12 +9,19 @@
      refresh this block whenever it changes.
      ========================================================== */
   /* ============================================================
-     Default preset, design tokens
+     Default preset, design tokens ("quiet" direction)
      ============================================================
      Source of truth for every slide's embedded variable block.
      Raw brand layer first, semantic layer second; slides read
      only the semantic names unless a specific raw value is the
      point (charts, swatches).
+
+     Color rule: one accent with one job. The accent marks the
+     single thing the audience should look at (the highlighted
+     series, the current step, the new state). Everything else
+     is ink or gray. The ember and lava values stay for charts
+     that need a second series color; slides do not use them as
+     a second accent.
      ============================================================ */
 
   :root {
@@ -44,7 +51,7 @@
 
     --fg:                 #0F0B0B;   /* Primary text */
     --fg-muted:           #595452;   /* Secondary text */
-    --fg-subtle:          #8A8682;   /* Tertiary text / captions */
+    --fg-subtle:          #6F6B68;   /* Tertiary text: source lines, footer (about 5:1 on --bg) */
     --fg-inverse:         #FAFAF7;   /* Text on dark bg */
     --fg-inverse-muted:   rgba(250, 250, 247, 0.72);
     --fg-inverse-subtle:  rgba(250, 250, 247, 0.50);
@@ -54,9 +61,9 @@
     --border-inverse:     rgba(255, 255, 255, 0.12);
     --border-accent:      var(--brand-green);   /* Accent hairline */
 
-    --accent:             var(--brand-green);   /* Default accent */
+    --accent:             var(--brand-green);   /* The one accent: graphics that mark the focus */
     --accent-fg:          var(--brand-ink);
-    --accent-partner:     var(--brand-ember);   /* Secondary-accent callouts */
+    --accent-partner:     var(--brand-ember);   /* Second chart series only, never a second accent */
 
     /* Status (rare on slides, but useful) */
     --status-success:     #2F7A1C;
@@ -66,18 +73,23 @@
 
     /* =====================================================
        TYPE, slide scale (1920x1080 reference)
+       Floors by role (starting points, checked by gate H7):
+       body >= 36px, captions and chart labels >= 28px,
+       footer and source line >= 24px. Use at most three
+       sizes per slide. Never shrink text to fit: split the
+       slide or cut words.
        ===================================================== */
-    --fs-hero:        160px;
-    --fs-display:     120px;
-    --fs-section:     96px;
-    --fs-h1:          72px;
-    --fs-h2:          56px;
-    --fs-h3:          40px;
-    --fs-subtitle:    32px;
-    --fs-body-lg:     28px;
-    --fs-body:        24px;
-    --fs-caption:     20px;
-    --fs-micro:       16px;
+    --fs-hero:        280px;   /* The single big number */
+    --fs-display:     128px;   /* Structure slides: title, divider, closing */
+    --fs-section:     96px;    /* Spare large step */
+    --fs-h1:          72px;    /* Action title on content slides */
+    --fs-h2:          56px;    /* Quote text, large subheads */
+    --fs-h3:          48px;    /* Subheads */
+    --fs-subtitle:    44px;    /* Deck subtitle */
+    --fs-body-lg:     44px;    /* Emphasis body (agenda rows) */
+    --fs-body:        40px;    /* Body text, list items (floor 36px) */
+    --fs-caption:     28px;    /* Captions, labels, source line, footer */
+    --fs-micro:       24px;    /* Floor for footer and source line; do not go below */
 
     --lh-tight:       1.05;
     --lh-snug:        1.18;
@@ -171,7 +183,8 @@
      them, so standalone slides render on the system fallbacks
      below. Deck builds that must render identically offline
      vendor the webfont files per the creating-presentations
-     caveats.
+     caveats. The gallery sets all text in the sans stack; the
+     mono stack is for code samples only, never for labels.
      ============================================================ */
 
   :root {
@@ -202,7 +215,6 @@
   }
 
   /* ==== Shared bits ==== */
-  .accent-dot { color: var(--brand-green); }
   .wordmark {
     display: inline-flex; align-items: center; gap: 0.4em;
     font-family: var(--font-display);
@@ -213,63 +225,41 @@
     width: 0.55em; height: 0.55em; border-radius: var(--r-pill);
     background: var(--accent);
   }
+  /* Action title: the dominant heading on every content slide. */
+  h1.action {
+    font-size: var(--fs-h1); font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight); line-height: 1.1;
+    margin: 0; max-width: 1560px;
+    text-wrap: balance;
+  }
+  /* Footer: optional. Source line on the left when the slide
+     shows numbers, the wordmark on the right when the brand
+     needs it. No rule, no slide counter. */
   .footer {
     position: absolute;
-    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 56px;
-    padding-top: 20px;
-    border-top: 1px solid var(--brand-green);
-    display: flex; align-items: center; justify-content: space-between;
-    font-size: 20px;
+    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 64px;
+    display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
+    font-size: var(--fs-caption);
     color: var(--fg-subtle);
   }
-  .footer .wordmark { font-size: 22px; color: var(--fg); opacity: 0.85; }
-  .footer .right { font-family: var(--font-mono); font-size: 18px; letter-spacing: 0.04em; }
-  .eyebrow {
-    font-size: 24px; font-weight: var(--weight-medium);
-    text-transform: uppercase; letter-spacing: 0.12em;
-    color: var(--fg-muted);
-  }
+  /* Evidence block under the action title: centered in the space
+     left between title and footer. */
+  .evidence { margin: auto 0; padding: 64px 0 96px; }
+  .footer .wordmark { margin-left: auto; font-size: var(--fs-caption); color: var(--fg-subtle); }
 
   /* ==== This slide ==== */
-  .s-cap .header { margin-bottom: 80px; }
-  .s-cap h1 {
-    font-size: 80px; font-weight: var(--weight-semibold);
-    letter-spacing: -0.025em; line-height: 1.05;
-    margin: 16px 0 0; max-width: 1400px;
+  .s-cap .row {
+    display: grid; grid-template-columns: 440px 1fr;
+    gap: 64px; align-items: baseline;
+    padding: 32px 0;
+    border-top: 1px solid var(--border);
   }
-  .s-cap .grid {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 48px;
-  }
-  .s-cap .col {
-    display: flex; flex-direction: column; gap: 24px;
-    padding-top: 24px;
-    border-top: 2px solid var(--fg);
-  }
-  .s-cap .col .icon {
-    width: 56px; height: 56px;
-    color: var(--fg);
-  }
-  .s-cap .col .icon svg { width: 56px; height: 56px; }
-  .s-cap .col h3 {
-    font-size: 40px; font-weight: var(--weight-semibold); letter-spacing: -0.015em;
-    line-height: 1.1; margin: 0;
-  }
-  .s-cap .col p {
-    font-size: 24px; line-height: 1.45; color: var(--fg-muted); margin: 0;
+  .s-cap .row:last-child { border-bottom: 1px solid var(--border); }
+  .s-cap .name { font-size: var(--fs-body); line-height: 1.3; font-weight: var(--weight-semibold); }
+  .s-cap .proof {
+    font-size: var(--fs-body); line-height: 1.3;
+    color: var(--fg-muted); max-width: 1100px;
     text-wrap: pretty;
-  }
-  .s-cap .col ul {
-    list-style: none; padding: 0; margin: 8px 0 0;
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .s-cap .col li {
-    font-size: 22px; color: var(--fg-muted);
-    padding-left: 20px; position: relative;
-  }
-  .s-cap .col li::before {
-    content: '·'; position: absolute; left: 6px; top: -6px;
-    font-size: 28px; color: var(--brand-green); font-weight: var(--weight-bold);
   }
 </style>
 <script>
@@ -288,45 +278,24 @@
 <body>
 <div class="frame">
 <section class="s-cap" data-screen-label="08 Capabilities">
-    <div class="header">
-      <div class="eyebrow">Joint capabilities</div>
-      <h1>What we deliver together<span class="accent-dot">.</span></h1>
-    </div>
-    <div class="grid">
-      <div class="col">
-        <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg></div>
-        <h3>Data foundation</h3>
-        <p>Stand up a governed data platform with our reference architecture and migration accelerators.</p>
-        <ul>
-          <li>Migration assessment</li>
-          <li>Landing-zone patterns</li>
-          <li>Governance &amp; lineage</li>
-        </ul>
+    <h1 class="action">One Acme contract covers platform build, applied AI, and 14 ready industry packs</h1>
+    <div class="rows evidence">
+      <div class="row">
+        <div class="name">Data foundation</div>
+        <div class="proof">Reference architecture and migration tooling, used on 200 workloads since 2020</div>
       </div>
-      <div class="col">
-        <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3"/><path d="M15 1v3"/><path d="M9 20v3"/><path d="M15 20v3"/><path d="M1 9h3"/><path d="M1 15h3"/><path d="M20 9h3"/><path d="M20 15h3"/></svg></div>
-        <h3>Applied AI</h3>
-        <p>Production-grade GenAI: retrieval over enterprise data, fine-tuning, evaluation, and serving, with guardrails.</p>
-        <ul>
-          <li>Domain RAG patterns</li>
-          <li>Model evaluation harness</li>
-          <li>Cost &amp; latency tuning</li>
-        </ul>
+      <div class="row">
+        <div class="name">Applied AI</div>
+        <div class="proof">Retrieval, evaluation, and model serving on the same governed data</div>
       </div>
-      <div class="col">
-        <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></div>
-        <h3>Industry solutions</h3>
-        <p>Pre-built accelerators for retail demand sensing, banking risk, life-sciences trials, and supply chain.</p>
-        <ul>
-          <li>14 industry packs</li>
-          <li>Reference data models</li>
-          <li>Vertical KPIs out of the box</li>
-        </ul>
+      <div class="row">
+        <div class="name">Industry solutions</div>
+        <div class="proof">14 packs of data models and KPIs for retail, banking, and life sciences</div>
       </div>
     </div>
     <div class="footer">
+      <span class="source">Source: Acme Platform Practice catalog, 2026</span>
       <div class="wordmark"><span class="wordmark-dot"></span>ACME</div>
-      <span class="right">08 / 10</span>
     </div>
   </section>
 </div>

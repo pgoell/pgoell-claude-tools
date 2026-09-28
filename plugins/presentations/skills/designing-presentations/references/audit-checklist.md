@@ -1,6 +1,8 @@
 # Phase 5 Heuristic Audit Checklist
 
-This audit runs inline in the main session before the critic personas dispatch in Phase 5. The checks here are deterministic, machine-friendly, and fast: each check states what to look for, how to look for it (grep pattern, YAML parse rule), and which slide types are exempt. Any violation found by this audit is recorded in `audit-report.md` under a `### Heuristic findings` section, with one numbered item per violation. The host agent then fixes each violation in place or surfaces it to the user when the fix needs judgement. Only after the heuristic audit settles does the host agent dispatch the three critic personas (see `critic-prompts.md`).
+This audit runs inline in the main session before the critic personas dispatch in Phase 5. Checks A to E are form checks: each states what to look for, how to look for it (grep pattern, YAML parse rule), and which slide types are exempt. Checks F to K are written-output checks: each one writes its working into `audit-report.md` (a retelling, a table, a sequence) before it judges. The written output is the point; a check that only answers "pass" is self-grading, and same-model self-grading is weak.
+
+Every violation is recorded in `audit-report.md` under `### Heuristic findings`, one numbered item per violation. The host agent then fixes each violation in place or surfaces it to the user when the fix needs judgement. Only after the heuristic audit settles does the host agent dispatch the three critic personas (see `critic-prompts.md`).
 
 ## Check A: Headline is a sentence, not a topic noun
 
@@ -29,6 +31,8 @@ Examples of fail and pass for the same slide topic:
 - Pass: `headline: "Our onboarding pipeline is the binding constraint on Q2 revenue"` (subject, verb, predicate, takeaway).
 
 Exempt slide types: `SectionDivider` (its headline is a section label by design), `Appendix` (its headline is a topic pointer for reference).
+
+In a `keynote` deck the headline may be a short claim ("Close takes nine days"); it still needs a subject and a verb. Check A tests form only: a headline can pass it and still be generic. Check G tests specificity.
 
 ## Check B: Evidence slides have a non-empty sources field
 
@@ -104,9 +108,71 @@ How to check:
 3. Look up the recommended band for that genre/duration pair in `time-budget.md`.
 4. Compare. If the count is outside the band, flag a violation.
 
-Exempt slide types from the count: `Appendix` slides are counted and reported separately, since they do not consume live talk time.
+Exempt slide types from the count: `Appendix` slides are counted and reported separately, since they do not consume live talk time. A `reading` deck has no talk time, so Check E does not apply to it.
 
 User override: if the user explicitly requested an out-of-band slide count (recorded earlier in the session, ideally referenced in `audience-brief.md` or surfaced by the host agent), the audit-report records the override under a `### User overrides` section instead of flagging it as a violation. The override note must name the requested count and the recommended band so a later reviewer sees both.
+
+## Check F: Title-only read-through (written)
+
+What: read only the headlines, in order, and write the three sentences a listener would use to retell the deck: situation, complication, resolution. Compare them with the governing idea and the message architecture.
+
+Write under `### Storyline read-through` in `audit-report.md`:
+
+1. The three sentences.
+2. **Match:** does sentence 3 state the governing idea's claim? Yes, or the difference in one line.
+3. **Gaps:** any pyramid reason, or the strongest objection, that no headline carries.
+4. **Repeats:** any two headlines that make the same claim.
+
+Flag a violation for a mismatch, each gap, and each repeat.
+
+## Check G: Specificity test (written)
+
+What: a sentence headline can still be empty ("The company is growing revenue and shrinking costs" fits any annual review). Test the governing idea and every headline for two things: does it name something specific from the user's material (a number, an actor, or a comparison), and would it fit an unrelated deck on the same topic?
+
+Write under `### Specificity` a table, one row per headline plus one for the governing idea:
+
+```
+| Slide | Specific element from the material | Would also fit |
+| ----- | ---------------------------------- | -------------- |
+| GI    | 35 percent, H2 (audience brief)    | none           |
+| 02    | 11 weeks, since Q3 2025 (Ops dashboard) | none      |
+| 05    | none                               | any process-improvement deck |
+```
+
+Flag a row when column 2 is "none" or column 3 names a deck. Flag as CRITICAL any number, name, or comparison in a headline that cannot be traced to the user's material; that is fabrication, not a specificity pass.
+
+Exempt: `SectionDivider`, `Appendix`.
+
+## Check H: Exec summary maps to body titles (written)
+
+Applies when the deck has an exec summary (an Agenda slide whose items are claims, or a visual that pins `ExecSummarySlide`).
+
+Write under `### Exec summary mapping` one line per exec-summary item: the item, then the body slide whose headline makes the same claim. Then list any body section that no item covers.
+
+Flag an item with no matching slide, a body section with no item, and any pair where the item and the headline make different claims.
+
+## Check I: Recommendation position (written)
+
+What: a recommendation buried late loses the room. Write under `### Recommendation position`: the sequencing from the audience brief, the slide where the governing idea's claim first appears, and the slide carrying the CTA.
+
+- **Direct:** the claim must appear on slide 1 or 2.
+- **Indirect:** the claim must appear no earlier than the slide that meets the strongest objection, and before the Closing.
+
+Flag a violation otherwise. In both shapes, a claim that first appears on the Closing is buried.
+
+## Check J: Document order (written)
+
+Applies only when a source document was the input. Models build decks in source order almost every time; human authors reorder often (one study measured 1.2 percent non-linear against 38.6 percent for human decks).
+
+Write under `### Document order` the source section each body slide draws from, in slide order (for example `02: s1, 03: s4, 04: s2, 05: s3`). Then state whether the sequence runs front to back.
+
+Flag MAJOR when it runs front to back, unless the storyboard's choice record says why source order is the argument order (for example, chronology is the content).
+
+## Check K: Copy lint (by reference)
+
+Run the copy lint (`presentations:creating-presentations`, `references/copy-lint.md`) over the text each slide will show on screen: `title`, `headline`, and any on-screen words named in `visual`. Pass `deck_mode` from the deck header so the lint applies the right word budget. The lint's lists live in that file only; do not restate them here or in `deck.md`.
+
+Record the lint's hard-fail items as violations and its warnings as a separate `### Copy lint warnings` list. If the lint file is not installed, note "copy lint skipped: file not found" and continue.
 
 ## Violation report format
 
@@ -118,10 +184,11 @@ Each heuristic violation is recorded as a numbered item in the `### Heuristic fi
 1. Check A violation, Slide 04: headline reads as topic noun ("Cycle time"). Suggested fix: rewrite as sentence-takeaway, e.g. "Onboarding cycle time has doubled since Q3 2024".
 2. Check C violation, Slide 09: speaker_notes.ask missing timing element. Suggested fix: add a temporal anchor, e.g. "by end of Q3" or "at the next steering meeting".
 3. Check E violation, deck-level: 35 slides exceeds the 18-22 band recommended for a 20-minute conference talk. Suggested fix: cut to the 18-22 band, or move detail slides to Appendix.
+4. Check G violation, Slide 05: headline "Our process is ready to scale" names nothing from the material and fits any process deck. Suggested fix: name the actor and comparison the material gives, e.g. "One PMO-owned intake replaces the four BU intakes".
 
 ### User overrides
 
 1. Slide count: user requested 35 slides for a 20-minute talk (recommended band: 18-22). Override accepted at user direction.
 ```
 
-If a check finds no violations, omit its line entirely; do not write "Check A: no violations". The absence of an item is the signal that the check passed.
+If a form check (A to E) finds no violations, omit its line entirely; do not write "Check A: no violations". The absence of an item is the signal that the check passed. The written sections from Checks F to K stay in the report even when they find nothing, because the written output is what a reviewer checks.

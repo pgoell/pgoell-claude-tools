@@ -1,6 +1,6 @@
 # Time Budget
 
-Slides-per-minute heuristics by genre, plus recommended slide-count bands for common talk lengths. This file is consulted in Phase 1 (intake captures the genre and duration so an initial slide-count target can be set) and in Phase 5 (Check E asserts the actual slide count in `deck.md` is within the band for the chosen genre and duration).
+Slides-per-minute heuristics by genre, recommended slide-count bands for common talk lengths, word budgets by deck mode, and speaker-notes sizing. This file is consulted in Phase 1 (intake captures genre, duration, and deck mode), in Phase 4 (word budgets and notes sizing), and in Phase 5 (Check E asserts the slide count is within the band; the copy lint checks the word budget).
 
 ## Slides per minute by genre
 
@@ -23,6 +23,23 @@ Slides-per-minute heuristics by genre, plus recommended slide-count bands for co
 | Technical talk     | 2 to 3 | 4 to 6  | 6 to 9   | 8 to 12  | 12 to 18 | 18 to 25 | 24 to 32 |
 
 Pitch durations beyond 20 minutes are uncommon; if requested, treat as a hybrid pitch and briefing and use the executive-briefing band for the longer end.
+
+## Word budgets by deck mode
+
+Deck mode is captured at intake and written to the `deck_mode` key in the `deck.md` header (see `slide-brief-template.md`). It sets how much text a slide carries and how full the speaker notes are. The copy lint (`presentations:creating-presentations`, `references/copy-lint.md`) checks the budget.
+
+| Deck mode   | Use                                              | Words per slide (on screen, excluding source line) | Headline form                        | Speaker notes         |
+| ----------- | ------------------------------------------------ | -------------------------------------------------- | ------------------------------------ | --------------------- |
+| `presented` | Spoken to a room or call; the speaker carries it | about 20                                           | Full-sentence action title           | Cues                  |
+| `keynote`   | Large stage, story-led                           | fewer than 20; often only the headline             | Short claim title, still with a verb | Cues                  |
+| `briefing`  | Walked through at a table, then left behind      | up to 50                                           | Full-sentence action title           | Cues                  |
+| `reading`   | Sent ahead or forwarded; read without a speaker  | 75 to 200                                          | Full-sentence action title           | Optional fuller prose |
+
+A slide over budget splits into two slides or moves detail to the notes or the Appendix; the text never shrinks to fit. A `reading` deck has no talk time, so the slide-count bands below do not apply to it; size it by the pyramid (one slide per reason or piece of evidence).
+
+## Speaker-notes sizing
+
+Speech runs at about 130 words a minute. Multiply the minutes planned for a slide (from the slides-per-minute table above) by 130 to get the most a speaker can say on it. Cue notes should prompt no more speech than that; prose notes in a `reading` deck should not exceed it either. A slide whose notes need more is doing two slides' work: split it.
 
 ## How Phase 5 uses the bands
 

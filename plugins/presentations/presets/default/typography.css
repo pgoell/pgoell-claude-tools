@@ -6,7 +6,8 @@
    them, so standalone slides render on the system fallbacks
    below. Deck builds that must render identically offline
    vendor the webfont files per the creating-presentations
-   caveats.
+   caveats. The gallery sets all text in the sans stack; the
+   mono stack is for code samples only, never for labels.
    ============================================================ */
 
 :root {
