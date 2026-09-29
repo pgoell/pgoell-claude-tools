@@ -1,0 +1,20 @@
+file	role	move	form	mode	sequence	summary
+ActivityAnatomySlide.html	body	explain	diagram	presented	single	Activity method in the center with five slots around it
+AgendaSlide.html	agenda	frame	text-list	presented	single	Agenda of timed blocks with a panel for questions on sticky notes
+BarChartSlide.html	body	benchmark,engage	bar-chart	presented	single	Horizontal bars with the first highlighted
+BreakSlide.html	divider	plan	big-number	participatory	single	Break with the return time large and what comes next
+ClosingSlide.html	closing	engage,plan	canvas	participatory	single	Commitment card to fill in, plus the next session
+ContentSlide.html	body	explain	text-list	presented	single	Question title over three points and a question for the room
+DiscussionSlide.html	body	engage	statement	participatory	single	Discussion question with a time box and starter prompts
+ExerciseSlide.html	body	engage	text-list	participatory	single	Exercise with numbered steps, time box, group size, and output
+GroundRulesSlide.html	body	frame	text-list	participatory	single	Five ground rules beside an off-topic list
+HowWeWorkSlide.html	body	explain	text-list	participatory	single	Legend of the deck's signs: time box, sticky note, vote dots, writing space
+KnowledgeCheckSlide.html	body	engage	text-list	participatory	build	Four answer choices to vote on, then the right one revealed
+LearningObjectivesSlide.html	agenda	frame	text-list	presented	single	Questions the session answers beside what you can do by the end
+ProcessStepsSlide.html	body	explain	flow	presented	single	Five numbered steps with minutes, today's step highlighted
+RecapSlide.html	summary	recommend,plan	text-list	presented	single	Three takeaways with evidence and one action for this week
+ScenarioSlide.html	body	engage	text-list	participatory	single	Case for groups beside a three-step protocol and report-back time
+SectionDivider.html	divider	frame	text-list	presented	single	Section divider with time and format, and a tracker of done, now, next
+StatSlide.html	body	compare	number-set	presented	single	Two figures compared, talk first against write first
+TitleSlide.html	cover	frame	statement	presented	single	Cover with session title, format, what you leave with, and date
+WorkedExampleSlide.html	body	explain	canvas,text-list	presented	build	Fixed board on the left, working added step by step on the right

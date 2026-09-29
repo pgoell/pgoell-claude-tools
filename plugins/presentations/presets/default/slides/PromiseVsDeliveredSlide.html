@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>24 Promise vs delivered (build)</title>
+<style>
+  /* ==========================================================
+     Synced copy of ../colors.css. Source of truth is the file;
+     refresh this block whenever it changes.
+     ========================================================== */
+  /* ============================================================
+     Default preset, design tokens ("quiet" direction)
+     ============================================================
+     Source of truth for every slide's embedded variable block.
+     Raw brand layer first, semantic layer second; slides read
+     only the semantic names unless a specific raw value is the
+     point (charts, swatches).
+
+     Color rule: one accent with one job. The accent marks the
+     single thing the audience should look at (the highlighted
+     series, the current step, the new state). Everything else
+     is ink or gray. The bright green is for graphics only
+     (bars, rules, dots); accent-colored text uses --accent-ink.
+     Charts read the --chart-* group: gray plus one, with
+     --chart-highlight as the story series.
+
+     Contrast: every text tier holds 4.5:1 or better on --bg,
+     --bg-elev, and --bg-subtle in both scopes; --accent-ink
+     holds 4.5:1 on all three.
+     ============================================================ */
+
+  :root {
+    /* =====================================================
+       COLOR, Brand (raw layer)
+       ===================================================== */
+    --brand-green:        #86BC24;   /* Bright accent green; graphics only (2.2:1 on --bg), never text */
+    --brand-green-dark:   #5C8A18;   /* Pressed / hover variant; 3.9:1 on --bg, not text-safe */
+    --brand-green-ink:    #567817;   /* Text-safe step: 4.9:1 on --bg, 4.6:1 on --bg-subtle */
+    --brand-green-tint:   #E5F2C9;   /* Background wash */
+    --brand-ink:          #0F0B0B;   /* Headlines, warmer than pure black */
+
+    --brand-ember:        #FF3621;   /* Warm red-orange; raw only, never charted next to the green (red-green pair) */
+    --brand-ember-dark:   #D62914;   /* Pressed */
+    --brand-ember-tint:   #FFE3DE;
+    --brand-deep:         #1B3139;   /* Deep blue-green for dark slides */
+    --brand-oat:          #EEEDE9;   /* Warm off-white */
+    --brand-lava:         #FF8B6B;   /* Secondary warm */
+    --brand-navy:         #00263A;   /* Secondary deep */
+
+    /* =====================================================
+       COLOR, Semantic (light theme, default)
+       ===================================================== */
+    --bg:                 #FAFAF7;   /* Slide background, warmer than #fff */
+    --bg-elev:            #FFFFFF;   /* Card / tile surface */
+    --bg-subtle:          #F2F2EC;   /* Subtle wash for sections */
+    --bg-inverse:         #1B3139;   /* Dark slide background */
+
+    --fg:                 #0F0B0B;   /* Primary text */
+    --fg-muted:           #595452;   /* Secondary text */
+    --fg-subtle:          #6F6B68;   /* Tertiary text: source lines, footer (about 5:1 on --bg) */
+    --fg-inverse:         #FAFAF7;   /* Text on dark bg */
+    --fg-inverse-muted:   rgba(250, 250, 247, 0.72);
+    --fg-inverse-subtle:  rgba(250, 250, 247, 0.62);   /* 6.0:1 on --bg-inverse */
+
+    --border:             #E8E8E3;
+    --border-strong:      #D2D2CB;
+    --border-inverse:     rgba(255, 255, 255, 0.12);
+    --border-accent:      var(--brand-green);   /* Accent hairline */
+
+    --accent:             var(--brand-green);   /* The one accent: graphics that mark the focus */
+    --accent-ink:         var(--brand-green-ink);   /* Accent-colored text: a word or number the accent marks */
+    --accent-fg:          var(--brand-ink);
+    --accent-partner:     #1F5FA8;   /* Second chart series only (= --chart-2), never a second accent */
+
+    /* Status (rare on slides, but useful) */
+    --status-success:     #2F7A1C;
+    --status-warning:     #C77700;
+    --status-danger:      #B0271A;
+    --status-info:        #00638A;
+
+    /* =====================================================
+       COLOR, Charts
+       Gray plus one: --chart-highlight marks the story series,
+       every other series is --chart-context. The numbered
+       categorical colors only when the categories are the
+       point, at most 4 here. Direct
+       labels instead of legends. The set passes a Machado 2009
+       protan, deutan, and tritan simulation at CIEDE2000 >= 14.
+       ===================================================== */
+    --chart-highlight:    var(--brand-green-ink);   /* 4.9:1; story series in highlight mode (the bright accent is under 3:1) */
+    --chart-context:      #ABA8A2;   /* 2.3:1; the series that are not the story */
+    --chart-grid:         var(--border);
+    --chart-1:            var(--brand-green-ink);   /* 4.9:1 */
+    --chart-2:            #1F5FA8;   /* 6.2:1 */
+    --chart-3:            #592637;   /* 11.4:1 */
+    --chart-4:            #C2707E;   /* 3.4:1 */
+
+    /* =====================================================
+       TYPE, slide scale (1920x1080 reference)
+       Floors by role (starting points, checked by gate H7):
+       body >= 36px, captions and chart labels >= 28px,
+       footer and source line >= 24px. Use at most three
+       sizes per slide. Never shrink text to fit: split the
+       slide or cut words.
+       ===================================================== */
+    --fs-hero:        280px;   /* The single big number */
+    --fs-display:     128px;   /* Structure slides: title, divider, closing */
+    --fs-section:     96px;    /* Spare large step */
+    --fs-h1:          72px;    /* Action title on content slides */
+    --fs-h2:          56px;    /* Quote text, large subheads */
+    --fs-h3:          48px;    /* Subheads */
+    --fs-subtitle:    44px;    /* Deck subtitle */
+    --fs-body-lg:     44px;    /* Emphasis body (agenda rows) */
+    --fs-body:        40px;    /* Body text, list items (floor 36px) */
+    --fs-caption:     28px;    /* Captions, labels, source line, footer */
+    --fs-micro:       24px;    /* Floor for footer and source line; do not go below */
+
+    --lh-tight:       1.05;
+    --lh-snug:        1.18;
+    --lh-normal:      1.35;
+    --lh-relaxed:     1.55;
+
+    --tracking-tight:   -0.02em;
+    --tracking-normal:  0;
+    --tracking-wide:    0.04em;
+    --tracking-caps:    0.08em;
+
+    --weight-regular:   400;
+    --weight-medium:    500;
+    --weight-semibold:  600;
+    --weight-bold:      700;
+
+    /* =====================================================
+       SPACING (8pt grid)
+       ===================================================== */
+    --space-0:   0;
+    --space-1:   4px;
+    --space-2:   8px;
+    --space-3:   12px;
+    --space-4:   16px;
+    --space-5:   24px;
+    --space-6:   32px;
+    --space-7:   48px;
+    --space-8:   64px;
+    --space-9:   80px;
+    --space-10:  120px;
+    --space-11:  160px;
+
+    /* Slide margins (1920x1080) */
+    --slide-pad-x:   120px;
+    --slide-pad-y:   96px;
+    --slide-w:       1920px;
+    --slide-h:       1080px;
+
+    /* =====================================================
+       RADIUS
+       ===================================================== */
+    --r-0:       0;
+    --r-sm:      4px;
+    --r-md:      6px;
+    --r-lg:      8px;
+    --r-pill:    999px;
+
+    /* =====================================================
+       SHADOWS (use sparingly, flat is default)
+       ===================================================== */
+    --shadow-0:  none;
+    --shadow-1:  0 1px 2px rgba(15, 11, 11, 0.04), 0 1px 3px rgba(15, 11, 11, 0.06);
+    --shadow-2:  0 10px 24px rgba(15, 11, 11, 0.08), 0 2px 6px rgba(15, 11, 11, 0.04);
+
+    /* =====================================================
+       MOTION
+       ===================================================== */
+    --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+    --ease-in-out: cubic-bezier(0.7, 0, 0.3, 1);
+    --dur-fast:    150ms;
+    --dur-base:    240ms;
+    --dur-slow:    400ms;
+  }
+
+  /* =====================================================
+     DARK SLIDE THEME, apply `.dark` to a slide root
+     ===================================================== */
+  .dark,
+  [data-theme="dark"] {
+    --bg:            var(--brand-deep);
+    --bg-elev:       rgba(255, 255, 255, 0.04);
+    --bg-subtle:     rgba(255, 255, 255, 0.02);
+    --fg:            var(--fg-inverse);
+    --fg-muted:      var(--fg-inverse-muted);
+    --fg-subtle:     var(--fg-inverse-subtle);
+    --border:        var(--border-inverse);
+    --border-strong: rgba(255, 255, 255, 0.24);
+    --accent-ink:    var(--brand-green);   /* 6.0:1 on --brand-deep */
+    --accent-partner: #7FA8F5;
+
+    --chart-highlight: var(--brand-green);   /* 6.0:1 */
+    --chart-context: #5E747B;   /* 2.8:1 */
+    --chart-grid:    var(--border-inverse);
+    --chart-1:       var(--brand-green);   /* 6.0:1 */
+    --chart-2:       #7FA8F5;   /* 5.7:1 */
+    --chart-3:       #BA5E7D;   /* 3.2:1 */
+    --chart-4:       #E0BEB8;   /* 7.9:1 */
+  }
+
+  /* ==========================================================
+     Synced copy of ../typography.css. Source of truth is the
+     file; refresh this block whenever it changes. Font URLs
+     gain a ../ prefix here because this file sits in slides/.
+     ========================================================== */
+  /* ============================================================
+     Default preset, font stacks
+     ============================================================
+     Figtree (OFL-1.1, no Reserved Font Name) ships unmodified in
+     assets/fonts/figtree/ with its OFL.txt and loads from that
+     relative path, so slides make no network request. Tables and
+     chart labels set font-variant-numeric: tabular-nums
+     lining-nums so figures align in columns. JetBrains Mono is
+     not vendored: the mono stack is for code samples only, never
+     for labels, and falls back to the system mono face.
+     ============================================================ */
+
+  @font-face {
+    font-family: 'Figtree';
+    src: url('../assets/fonts/figtree/Figtree-Variable.woff2') format('woff2');
+    font-weight: 300 900;
+    font-style: normal;
+    font-display: block;
+  }
+
+  :root {
+    --font-sans:    'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+    --font-mono:    'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    --font-display: var(--font-sans);
+  }
+
+  /* ==== Standalone viewer shell ==== */
+  html, body { margin: 0; height: 100vh; background: #000; overflow: hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+  .frame {
+    position: absolute;
+    width: 1920px; height: 1080px;
+    transform-origin: top left;
+  }
+  .frame > section {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    padding: var(--slide-pad-y) var(--slide-pad-x);
+    background: var(--bg);
+    color: var(--fg);
+    overflow: hidden;
+    font-family: var(--font-sans);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ==== Shared bits ==== */
+  .wordmark {
+    display: inline-flex; align-items: center; gap: 0.4em;
+    font-family: var(--font-display);
+    font-weight: var(--weight-semibold);
+    letter-spacing: 0.06em;
+  }
+  .wordmark .wordmark-dot {
+    width: 0.55em; height: 0.55em; border-radius: var(--r-pill);
+    background: var(--accent);
+  }
+  /* Action title: the dominant heading on every content slide. */
+  h1.action {
+    font-size: var(--fs-h1); font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight); line-height: 1.1;
+    margin: 0; max-width: 1560px;
+    text-wrap: balance;
+  }
+  /* Footer: optional. Source line on the left when the slide
+     shows numbers, the wordmark on the right when the brand
+     needs it. No rule, no slide counter. */
+  .footer {
+    position: absolute;
+    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 64px;
+    display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
+    font-size: var(--fs-caption);
+    color: var(--fg-subtle);
+  }
+  /* Evidence block under the action title: centered in the space
+     left between title and footer. */
+  .evidence { margin: auto 0; padding: 64px 0 96px; }
+  .footer .wordmark { margin-left: auto; font-size: var(--fs-caption); color: var(--fg-subtle); }
+
+  /* ==== This slide ==== */
+  /* A build in two steps on the same axes. Step 1 shows the plan the
+     client signed, alone; step 2 adds what happened on top of it, so
+     the promise stays on screen when the result arrives. Chart on 8
+     columns (1120px), one sentence on the last 4 (528px). */
+  .s-promise .evidence {
+    display: grid; grid-template-columns: 1120px 1fr;
+    column-gap: 32px; align-items: start;
+  }
+  .s-promise svg { display: block; overflow: visible; }
+  .s-promise svg text { font-size: var(--fs-caption); fill: var(--fg-subtle); font-variant-numeric: tabular-nums lining-nums; }
+  .s-promise .grid { stroke: var(--chart-grid); stroke-width: 1; }
+  .s-promise .zero { stroke: var(--fg-subtle); stroke-width: 2; }
+  .s-promise .plan { fill: none; stroke: var(--chart-context); stroke-width: 5; stroke-linejoin: round; }
+  .s-promise .plan-end { fill: var(--chart-context); }
+  .s-promise svg text.plan-label { fill: var(--fg-muted); }
+  /* Accent job: marks the delivered line, the result the title names. */
+  .s-promise .actual { fill: none; stroke: var(--chart-highlight); stroke-width: 6; stroke-linejoin: round; }
+  .s-promise .actual-end { fill: var(--chart-highlight); }
+  .s-promise svg text.actual-label { fill: var(--chart-highlight); font-weight: var(--weight-semibold); }
+  .s-promise .note {
+    font-size: var(--fs-body); line-height: 1.3;
+    margin: 72px 0 0; text-wrap: pretty;
+  }
+  /* Pair viewer: the two build steps stack in one frame. */
+  .frame.pair { height: 2160px; }
+</style>
+<script>
+  function fit() {
+    const f = document.querySelector('.frame');
+    const s = Math.min(window.innerWidth / 1920, window.innerHeight / 2160);
+    f.style.transform = 'scale(' + s + ')';
+    const sw = 1920 * s, sh = 2160 * s;
+    f.style.left = ((window.innerWidth - sw) / 2) + 'px';
+    f.style.top  = ((window.innerHeight - sh) / 2) + 'px';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+</script>
+</head>
+<body>
+<div class="frame pair">
+<section class="s-promise" data-screen-label="24 Promise vs delivered, step 1" data-build-step="1" data-build-steps="2">
+    <h1 class="action">We promised the regional bank 22 workloads in production within 16&nbsp;weeks</h1>
+    <div class="evidence">
+      <svg class="chart" width="1120" height="560" role="img"
+           aria-label="Signed plan: workloads in production by week, reaching 22 at week 16"
+           data-chart="line" data-unit="workloads"
+           data-labels='["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"]'
+           data-series='[{"name":"Signed plan","values":[0,0,0,1,1,2,3,5,6,8,10,12,14,16,18,20,22]}]'
+           data-highlight="-1"></svg>
+      <p class="note">The plan signed in March 2023 put all 22 in production by week&nbsp;16.</p>
+    </div>
+    <div class="footer">
+      <span class="source">Source: Acme delivery records, regional bank migration plan and weekly cutover log, 2023</span>
+      <div class="wordmark"><span class="wordmark-dot"></span>ACME</div>
+    </div>
+  </section>
+<section class="s-promise" data-screen-label="24 Promise vs delivered, step 2" data-build-step="2" data-build-steps="2">
+    <h1 class="action">The regional bank&rsquo;s 22 workloads reached production in 11 weeks, 5 ahead of plan</h1>
+    <div class="evidence">
+      <svg class="chart" width="1120" height="560" role="img"
+           aria-label="Workloads in production by week: signed plan reaching 22 at week 16, delivered reaching 22 at week 11"
+           data-chart="line" data-unit="workloads"
+           data-labels='["0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"]'
+           data-series='[{"name":"Signed plan","values":[0,0,0,1,1,2,3,5,6,8,10,12,14,16,18,20,22]},{"name":"Delivered","values":[0,0,1,2,4,7,10,13,16,19,21,22,null,null,null,null,null]}]'
+           data-highlight="1"></svg>
+      <p class="note">Delivery ran ahead of the signed plan in every week from week&nbsp;2 on.</p>
+    </div>
+    <div class="footer">
+      <span class="source">Source: Acme delivery records, regional bank migration plan and weekly cutover log, 2023</span>
+      <div class="wordmark"><span class="wordmark-dot"></span>ACME</div>
+    </div>
+  </section>
+</div>
+<script>
+  function chartData(el) {
+    return {
+      labels: JSON.parse(el.dataset.labels || '[]'),
+      series: JSON.parse(el.dataset.series || '[]'),
+      highlight: el.dataset.highlight === undefined ? -1 : Number(el.dataset.highlight),
+      unit: el.dataset.unit || ''
+    };
+  }
+  document.querySelectorAll('.s-promise .chart').forEach(function (el) {
+    const d = chartData(el), n = d.labels.length;
+    const x0 = 80, x1 = 900, y0 = 60, y1 = 480, top = 25;
+    const X = i => x0 + i * (x1 - x0) / (n - 1);
+    const Y = v => y1 - v / top * (y1 - y0);
+    let out = '';
+    [10, 20].forEach(t => {
+      out += '<line class="grid" x1="' + x0 + '" x2="' + x1 + '" y1="' + Y(t) + '" y2="' + Y(t) + '"/>';
+      out += '<text x="' + (x0 - 20) + '" y="' + (Y(t) + 10) + '" text-anchor="end">' + t + '</text>';
+    });
+    out += '<line class="zero" x1="' + x0 + '" x2="' + x1 + '" y1="' + y1 + '" y2="' + y1 + '"/>';
+    out += '<text x="' + (x0 - 20) + '" y="' + (y1 + 10) + '" text-anchor="end">0</text>';
+    out += '<text x="' + x0 + '" y="' + (y0 - 36) + '">Workloads in production</text>';
+    [0, 4, 8, 12, 16].forEach(i => {
+      out += '<text x="' + X(i) + '" y="' + (y1 + 52) + '" text-anchor="middle">' + (i === 0 ? 'Week 0' : d.labels[i]) + '</text>';
+    });
+    d.series.forEach((s, k) => {
+      const pts = s.values.map((v, i) => v === null ? null : [X(i), Y(v)]).filter(Boolean);
+      const last = pts[pts.length - 1], hi = k === d.highlight;
+      out += '<polyline class="' + (hi ? 'actual' : 'plan') + '" points="' + pts.map(p => p.join(',')).join(' ') + '"/>';
+      out += '<circle class="' + (hi ? 'actual-end' : 'plan-end') + '" cx="' + last[0] + '" cy="' + last[1] + '" r="' + (hi ? 12 : 9) + '"/>';
+      out += hi
+        ? '<text class="actual-label" x="' + last[0] + '" y="' + (last[1] - 32) + '" text-anchor="middle">' + s.name + '</text>'
+        : '<text class="plan-label" x="' + (last[0] + 24) + '" y="' + (last[1] + 10) + '">' + s.name + '</text>';
+    });
+    el.innerHTML = out;
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+file	role	move	form	mode	sequence	summary
+AnnotatedLineChartSlide.html	body	trend	line-chart	read	single	Two series over time with end labels, an event marker, and notes
+BarChartSlide.html	body	trend	bar-chart	read	single	Column chart over years with one annotation
+ChartSidebarSlide.html	body	decompose	bar-chart,text-list	read	single	Finding in large text beside the column chart that proves it
+ClosingSlide.html	closing	recommend	statement	read	single	Closing with the decision, its consequence, and a colophon of data and contact
+ColumnsSlide.html	body	diagnose	text-list	read	single	Lede over three text columns on method, timing, and limits
+ContentSlide.html	body	trend	text-list,line-chart	read	single	Points as paragraphs with a small slope chart in the margin
+DivergingBarsSlide.html	body	compare,trend	bar-chart	read	single	Bars above and below a zero line, two measures moving opposite ways
+HighlightedGroupBarsSlide.html	body	trend,compare	bar-chart	read	single	Groups of yearly bars with the latest bar in each group highlighted
+KeyFindingsSlide.html	summary	prove	text-list	read	single	Key findings grouped by part, two one-line findings each
+PredictionScorecardSlide.html	body	evaluate	table	read	single	Table grading past forecasts right or missed against what happened
+PullQuoteSlide.html	body	prove	quote	read	single	One large quote with speaker and context
+QuotePairSlide.html	body	prove	quote	read	single	Two quotes side by side under a headline saying what both confirm
+RankedBarsSlide.html	body	benchmark	bar-chart	read	single	Twelve ranked bars with the subject highlighted
+RescaleRevealSlide.html	body	compare	bar-chart	presented	pair	Grouped columns, then the same chart rescaled after a large group is added
+SectionDivider.html	divider	frame	statement	read	single	Section opener with part name, headline, and standfirst
+SmallMultiplesSlide.html	body	benchmark,trend	line-chart	read	single	Six small line charts on one scale against a gray average
+StatSlide.html	body	compare	big-number,bar-chart	read	single	Big figure with its sentence and a dot strip of before and after
+TableSlide.html	body	benchmark	table	read	single	Table of corridors with change figures, one row tinted
+TitleSlide.html	cover	frame	statement	read	single	Report cover with masthead, headline, standfirst, and byline

@@ -18,6 +18,7 @@ presets/<name>/
     fonts/<family>/  optional. Vendored font files (woff2), unmodified, each family with its license as OFL.txt (or the family's own license file). Provenance and license go in the manifest.
   icons/          optional. Brand icon library as one SVG per icon, organized in subdirectories, with an index.tsv (one row per icon: path, name, variant, category, section, aliases, keywords, colors) and a README.md documenting search and usage. Monochrome icons use currentColor so CSS color recolors them; consumers grep the index, then inline the SVG. Icons come only from this library, never drawn freehand; a preset without one gets no icons.
   slides/         optional. Example slides as self-contained HTML on a 1920x1080 canvas.
+    index.tsv     required when slides/ exists. One row of tags per slide file, from the closed vocabulary in TAGS.md, so consumers can search every gallery by role, move, and form.
 ```
 
 ## Layout grammar
@@ -60,6 +61,7 @@ When the preset's `--accent` is too light for text, it declares `--accent-ink`, 
 - Official assets only. Wordmarks and logos come from a brand portal or files the user provides, never redrawn from memory.
 - Fonts are vendored, never fetched: unmodified woff2 files plus their license under `assets/fonts/<family>/`, loaded by relative path. Never subset or otherwise modify a family that carries a Reserved Font Name (IBM Plex, Source Sans 3); the OFL counts subsetting as modification.
 - Every text tier (`--fg`, `--fg-muted`, `--fg-subtle`) holds 4.5:1 or better on `--bg`, `--bg-elev`, and `--bg-subtle` in every scope, and so does the accent used for text (`--accent`, or `--accent-ink` when declared).
+- Every slide file has exactly one row in `slides/index.tsv`, tagged from the vocabulary in `TAGS.md` next to this file; add, change, or remove the row in the same change as the slide.
 - Keep presets small and grow the collection slowly, slide by slide. A preset is a curated gallery, not an archive of every deck.
 - Adding or changing a bundled preset is a plugin change: bump the plugin version across the marketplace repo's lockstep sites (minor for a new preset, patch for extending one). Local `.pgoell` presets need no repo change.
 

@@ -59,18 +59,26 @@ One cell or column may be lifted onto `--bg-elev` to mark the current or new thi
 
 ## Layouts
 
-| Role                                 | Layout                   |
-| ------------------------------------ | ------------------------ |
-| Opening: product name and one line   | TitleSlide               |
-| Where the deck is                    | SectionDivider           |
-| Claim backed by two to four features | ContentSlide (spec rows) |
-| Trend across releases                | BarChartSlide            |
-| One number is the message            | StatSlide                |
-| The product itself proves the claim  | ScreenshotSlide          |
-| Three or four metrics, one leads     | MetricsRowSlide          |
-| Old flow against new flow            | BeforeAfterSlide         |
-| What ships when                      | RoadmapSlide             |
-| What shipped, dated                  | ChangelogSlide           |
-| The ask: a command or URL to act on  | ClosingSlide             |
+| Role                                     | Layout                                                                              |
+| ---------------------------------------- | ----------------------------------------------------------------------------------- |
+| Opening: product name and one line       | TitleSlide                                                                          |
+| Where the deck is                        | SectionDivider                                                                      |
+| Claim backed by two to four features     | ContentSlide (spec rows)                                                            |
+| Trend across releases                    | BarChartSlide                                                                       |
+| One number is the message                | StatSlide                                                                           |
+| The product itself proves the claim      | ScreenshotSlide                                                                     |
+| Three or four metrics, one leads         | MetricsRowSlide                                                                     |
+| Old flow against new flow                | BeforeAfterSlide                                                                    |
+| What ships when                          | RoadmapSlide                                                                        |
+| What shipped, dated                      | ChangelogSlide                                                                      |
+| The ask: a command or URL to act on      | ClosingSlide                                                                        |
+| A release recap: many features, one hero | BentoFeatureSlide (ruled cells around an elevated hero panel)                       |
+| A metric at two zoom levels              | SixTwelveSlide (six weeks beside twelve months, box scores beneath)                 |
+| A count and the subsets inside it        | UnitTallySlide (hero number, then one dot per item)                                 |
+| Inputs that drive the one metric         | NorthStarTreeSlide (four input cells bracketed into an elevated metric panel)       |
+| Better on two measures at once           | EfficiencyCurveSlide (two curves on unnumbered axes, only the new release in color) |
+| Named tests against rivals               | BenchmarkTableSlide (own column lifted, its values in the accent)                   |
+| A trend crossing a threshold             | ThresholdTrendSlide (one accent line, a dashed bar, a ring at the crossing)         |
+| What to expect next                      | GuidanceSlide (two ruled cells of ranges, the named range in the accent)            |
 
-For any other catalog role (agenda, table, process, diagram, quote, image), take the structure from the default preset and set it on the ruled page: title in the title band, evidence in ruled cells or one panel, source in the footer band.
+For any other catalog role (agenda, process, diagram, quote, image), take the structure from the default preset and set it on the ruled page: title in the title band, evidence in ruled cells or one panel, source in the footer band.

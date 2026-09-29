@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>14 Unit tally</title>
+<style>
+  /* ==========================================================
+     Synced copy of ../colors.css. Source of truth is the file;
+     refresh this block whenever it changes.
+     ========================================================== */
+  /* ============================================================
+     Product preset, design tokens ("signal orange" direction)
+     ============================================================
+     Source of truth for every slide's embedded variable block.
+     Semantic layer only: this preset serves a context, not a
+     brand, so it carries no raw brand layer. Slides read these
+     names and nothing else.
+
+     Tech launches, product reviews, engineering all-hands:
+     near-achromatic grays with one rationed signal-orange
+     accent, and a near-black dark scope.
+
+     Color rule: one accent with one job. The accent marks the
+     single thing the audience should look at. Everything else
+     is ink or gray. Every text tier holds 4.5:1 or better on
+     --bg, --bg-elev, and --bg-subtle in both scopes, and
+     --accent holds 4.5:1 on --bg, so it can mark a word or a
+     number. Borders are decorative only.
+     ============================================================ */
+
+  :root {
+    /* =====================================================
+       COLOR, Semantic (light theme)
+       ===================================================== */
+    --bg:                 #FAFAFA;
+    --bg-elev:            #FFFFFF;
+    --bg-subtle:          #F2F2F2;
+    --bg-inverse:         #0A0A0A;
+
+    --fg:                 #171717;      /* 17.18 */
+    --fg-muted:           #4D4D4D;      /* 8.10 */
+    --fg-subtle:          #666666;      /* 5.50 */
+    --fg-inverse:         #EDEDED;
+    --fg-inverse-muted:   #A1A1A1;
+    --fg-inverse-subtle:  #8A8A8A;
+
+    --border:             #E6E6E6;      /* decorative only */
+    --border-strong:      #CFCFCF;
+    --border-inverse:     #262626;
+    --border-accent:      var(--accent);
+
+    --accent:             #C2410C;      /* 4.96; signal orange */
+    --accent-fg:          #FFFFFF;
+    --accent-partner:     #0369A1;      /* second chart series only */
+
+    /* Status (rare on slides, but useful) */
+    --status-success:     #2F7A1C;
+    --status-warning:     #C77700;
+    --status-danger:      #B0271A;
+    --status-info:        #00638A;
+
+    /* =====================================================
+       COLOR, Charts
+       Gray plus one: --chart-highlight marks the story series,
+       every other series is --chart-context. The numbered
+       categorical colors are for charts where the categories
+       are the point, at most 6 series.
+       Default is highlight mode: --accent for the story series,
+       --chart-context for the rest. The --chart-1 to --chart-6
+       Carbon order is for charts where the categories are the
+       point, used in strict order.
+       ===================================================== */
+    --chart-highlight:    var(--accent);  /* story series in highlight mode */
+    --chart-context:      #A3A3A3;      /* 2.42 */
+    --chart-grid:         var(--border);
+    --chart-1:            #6929C4;      /* 7.41; Carbon categorical order */
+    --chart-2:            #1192E8;      /* 3.19 */
+    --chart-3:            #0C5C57;      /* 7.50; Carbon #005D5D, adjusted for CVD */
+    --chart-4:            #9F1853;      /* 7.37 */
+    --chart-5:            #FA4D56;      /* 3.21 */
+    --chart-6:            #028229;      /* 4.76; Carbon #198038, adjusted for CVD */
+
+    /* =====================================================
+       TYPE, slide scale (1920x1080 reference)
+       Floors by role (checked by gate H7): body >= 36px,
+       captions and chart labels >= 28px, footer and source
+       line >= 24px. Use at most three sizes per slide. Never
+       shrink text to fit: split the slide or cut words.
+       ===================================================== */
+    --fs-hero:        240px;     /* The single big number */
+    --fs-display:     128px;     /* Structure slides */
+    --fs-section:     96px;      /* Spare large step */
+    --fs-h1:          72px;      /* Action title */
+    --fs-h2:          60px;
+    --fs-h3:          52px;
+    --fs-subtitle:    48px;      /* Deck subtitle, chart subtitle */
+    --fs-body-lg:     44px;
+    --fs-body:        40px;      /* Body text (floor 36px) */
+    --fs-caption:     28px;      /* Captions, chart labels */
+    --fs-micro:       24px;      /* Source line; do not go below */
+
+    --lh-tight:         1.1;     /* titles */
+    --lh-snug:          1.2;
+    --lh-normal:        1.35;    /* body */
+    --lh-relaxed:       1.5;
+
+    --tracking-tight:   -0.02em;  /* 60px to 96px */
+    --tracking-display: -0.035em; /* 128px display lines */
+    --tracking-hero:    -0.05em;  /* 240px product names and metrics */
+    --tracking-normal:  0;
+    --tracking-wide:    0.04em;
+    --tracking-caps:    0.08em;  /* kept for token parity; tracked caps are banned on slides */
+
+    --weight-regular:   400;
+    --weight-medium:    500;
+    --weight-semibold:  600;
+    --weight-bold:      700;
+
+    /* =====================================================
+       SPACING (8pt grid)
+       ===================================================== */
+    --space-0:   0;
+    --space-1:   4px;
+    --space-2:   8px;
+    --space-3:   12px;
+    --space-4:   16px;
+    --space-5:   24px;
+    --space-6:   32px;
+    --space-7:   48px;
+    --space-8:   64px;
+    --space-9:   80px;
+    --space-10:  120px;
+    --space-11:  160px;
+
+    /* Layout grid (1920x1080): the ruled page. Two vertical rails
+       at the 96px side margins bound 12 columns of 144px. Column n
+       starts at 96 + (n-1) * 144px; a span of k columns is 144k px.
+       Hairlines sit on column lines; text insets --cell-pad from the
+       line it sits against, so neighboring columns of text keep a
+       64px gutter. Two horizontal rules cut the page into a title
+       band (0 to 288px), an evidence band, and a footer band (992
+       to 1080px). */
+    --grid-col:      144px;
+    --cell-pad:      32px;
+    --band-title:    288px;     /* rule under the title band */
+    --band-foot:     992px;     /* rule over the footer band */
+
+    /* Slide margins (1920x1080) */
+    --slide-pad-x:   96px;
+    --slide-pad-y:   80px;
+    --slide-w:       1920px;
+    --slide-h:       1080px;
+
+    /* =====================================================
+       RADIUS
+       ===================================================== */
+    --r-0:       0;
+    --r-sm:      4px;
+    --r-md:      6px;
+    --r-lg:      8px;
+    --r-pill:    999px;
+
+    /* =====================================================
+       SHADOWS (use sparingly, flat is default)
+       ===================================================== */
+    --shadow-0:  none;
+    --shadow-1:  0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-2:  0 10px 24px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+
+    /* =====================================================
+       MOTION
+       ===================================================== */
+    --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+    --ease-in-out: cubic-bezier(0.7, 0, 0.3, 1);
+    --dur-fast:    150ms;
+    --dur-base:    240ms;
+    --dur-slow:    400ms;
+  }
+
+  /* =====================================================
+     DARK SLIDE THEME, apply `.dark` to a slide root.
+     Inverse tokens swap to the light values here.
+     ===================================================== */
+  .dark,
+  [data-theme="dark"] {
+    --bg:                 #0A0A0A;
+    --bg-elev:            #161616;
+    --bg-subtle:          #111111;
+    --bg-inverse:         #FAFAFA;
+
+    --fg:                 #EDEDED;      /* 16.91 */
+    --fg-muted:           #A1A1A1;      /* 7.66 */
+    --fg-subtle:          #8A8A8A;      /* 5.73 */
+    --fg-inverse:         #171717;
+    --fg-inverse-muted:   #4D4D4D;
+    --fg-inverse-subtle:  #666666;
+
+    --border:             #262626;
+    --border-strong:      #3A3A3A;
+    --border-inverse:     #E6E6E6;
+    --border-accent:      var(--accent);  /* redeclared so it picks up the dark accent */
+
+    --accent:             #FF7A45;      /* 7.66 */
+    --accent-fg:          #0A0A0A;
+    --accent-partner:     #38BDF8;      /* 9.24 */
+
+    --chart-highlight:    var(--accent);  /* redeclared so it picks up the dark accent */
+    --chart-context:      #525252;      /* 2.53 */
+    --chart-grid:         var(--border);
+    --chart-1:            #8A3FFC;      /* 3.96 */
+    --chart-2:            #33B1FF;      /* 8.37 */
+    --chart-3:            #007D79;      /* 3.97 */
+    --chart-4:            #FF7EB6;      /* 8.40 */
+    --chart-5:            #FA4D56;      /* 5.90 */
+    --chart-6:            #6FDC8C;      /* 11.59 */
+  }
+
+  /* ==========================================================
+     Synced copy of ../typography.css. Source of truth is the
+     file; refresh this block whenever it changes. Font URLs
+     gain a ../ prefix here because this file sits in slides/.
+     ========================================================== */
+  /* ============================================================
+     Product preset, font stacks
+     ============================================================
+     Geist for titles and body, one family in several weights.
+     Geist Mono for commands, code, version numbers, and other
+     literal identifiers the audience would type or search for;
+     never for labels or metadata. Both variable files (weight
+     axis 100 to 900) from Vercel's geist npm build ship
+     unmodified in assets/fonts/ with their OFL.txt and load from
+     that relative path, so slides make no network request.
+     Tables, metrics, and chart labels switch on tabular figures
+     with font-variant-numeric.
+     ============================================================ */
+
+  @font-face {
+    font-family: 'Geist';
+    src: url('../assets/fonts/geist/Geist-Variable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: block;
+  }
+
+  @font-face {
+    font-family: 'Geist Mono';
+    src: url('../assets/fonts/geist-mono/GeistMono-Variable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: block;
+  }
+
+  :root {
+    --font-sans:    'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+    --font-display: var(--font-sans);
+    --font-mono:    'Geist Mono', 'SF Mono', Menlo, Consolas, monospace;   /* commands and identifiers only */
+  }
+
+  /* ==== Standalone viewer shell ==== */
+  html, body { margin: 0; height: 100vh; background: #000; overflow: hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+  .frame {
+    position: absolute;
+    width: 1920px; height: 1080px;
+    transform-origin: top left;
+  }
+  .frame > section {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    background: var(--bg);
+    color: var(--fg);
+    overflow: hidden;
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+  }
+
+  /* ==== The ruled page ====
+     Rails at the 96px margins and the two band rules are drawn as
+     hairlines in --border-strong, full bleed, in a layer above the
+     content so filled cells never hide them. Crosshairs (.x) mark where a band rule meets
+     a rail. Everything below positions on the 144px columns. */
+  .ruled::before {
+    content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background:
+      linear-gradient(var(--border-strong), var(--border-strong)) 96px 0 / 1px 100% no-repeat,
+      linear-gradient(var(--border-strong), var(--border-strong)) 1823px 0 / 1px 100% no-repeat,
+      linear-gradient(var(--border-strong), var(--border-strong)) 0 var(--band-title) / 100% 1px no-repeat,
+      linear-gradient(var(--border-strong), var(--border-strong)) 0 var(--band-foot) / 100% 1px no-repeat;
+  }
+  .x {
+    position: absolute; z-index: 2; width: 33px; height: 33px; margin: -16px 0 0 -16px;
+    background:
+      linear-gradient(var(--fg-subtle), var(--fg-subtle)) 16px 0 / 1px 100% no-repeat,
+      linear-gradient(var(--fg-subtle), var(--fg-subtle)) 0 16px / 100% 1px no-repeat;
+  }
+
+  /* Action title: top left of the title band, same place and size on
+     every content slide, text inset one cell pad from the left rail. */
+  h1.action {
+    position: absolute; left: calc(96px + var(--cell-pad)); top: 80px;
+    width: 1520px; margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-h1); font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
+    text-wrap: balance;
+  }
+  /* Evidence band: between the two band rules, rail to rail. */
+  .ev {
+    position: absolute; left: 96px; top: var(--band-title);
+    width: 1728px; height: calc(var(--band-foot) - var(--band-title));
+  }
+  /* Footer band: source line only, and only when the slide shows numbers. */
+  .source {
+    position: absolute; left: calc(96px + var(--cell-pad)); top: var(--band-foot);
+    height: calc(1080px - var(--band-foot)); display: flex; align-items: center;
+    font-size: var(--fs-micro); color: var(--fg-subtle);
+  }
+  /* Elevated panel: the surface for product objects (UI frames,
+     terminals, charts). Flat cells carry text; panels carry things. */
+  .panel {
+    background: var(--bg-elev);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-lg);
+  }
+  .mono { font-family: var(--font-mono); }
+  /* Numbers align: tabular lining figures everywhere a number sits. */
+  .chart, .num, table { font-variant-numeric: tabular-nums lining-nums; }
+
+
+  /* ==== This slide ==== */
+  /* A count the audience can check. The headline count sits on the
+     top of the evidence band; below it, two ruled cells of six columns,
+     each a nested subset shown twice: as a number and as one dot per
+     repository. The subset the title names has its dots in the accent;
+     the deeper subset stays in --fg-subtle. The threshold in each
+     sentence is set in --fg against --fg-muted, not underlined. */
+  .s-tally .top {
+    position: absolute; left: 0; top: 0; width: 1728px; height: 320px;
+    display: flex; align-items: baseline; gap: 40px; padding: 40px var(--cell-pad) 0;
+  }
+  .s-tally .top .n {
+    margin: 0; font-size: var(--fs-hero); font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-hero); line-height: 1;
+  }
+  .s-tally .top .t { margin: 0; font-size: var(--fs-body); line-height: var(--lh-snug); color: var(--fg-muted); max-width: 1100px; }
+  .s-tally .cells {
+    position: absolute; left: 0; top: 320px; width: 1728px; height: 384px;
+    display: grid; grid-template-columns: 864px 864px; border-top: 1px solid var(--border);
+  }
+  .s-tally .cell { position: relative; padding: 36px var(--cell-pad) 0; }
+  .s-tally .cell + .cell { border-left: 1px solid var(--border); }
+  .s-tally .cell .n {
+    margin: 0; font-size: var(--fs-display); font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-display); line-height: 1;
+  }
+  .s-tally .cell .t { margin: 24px 0 0; font-size: var(--fs-body); line-height: var(--lh-snug); color: var(--fg-muted); }
+  .s-tally .t b { font-weight: inherit; color: var(--fg); }
+  .s-tally .cell svg { position: absolute; left: var(--cell-pad); bottom: 36px; }
+  .s-tally .u { fill: var(--fg-subtle); }
+  .s-tally .u.hi { fill: var(--chart-highlight); }
+</style>
+<script>
+  function fit() {
+    const f = document.querySelector('.frame');
+    const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    f.style.transform = 'scale(' + s + ')';
+    const sw = 1920 * s, sh = 1080 * s;
+    f.style.left = ((window.innerWidth - sw) / 2) + 'px';
+    f.style.top  = ((window.innerHeight - sh) / 2) + 'px';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+</script>
+</head>
+<body>
+<div class="frame">
+<section class="s-tally ruled" data-screen-label="14 Unit tally">
+    <i class="x" aria-hidden="true" style="left:96px;top:288px"></i>
+    <i class="x" aria-hidden="true" style="left:1823px;top:288px"></i>
+    <i class="x" aria-hidden="true" style="left:96px;top:992px"></i>
+    <i class="x" aria-hidden="true" style="left:1823px;top:992px"></i>
+    <h1 class="action">84 of the 120 beta repositories cut their median CI time by half or more</h1>
+    <div class="ev num">
+      <div class="top">
+        <p class="n" data-role="hero">120</p>
+        <p class="t">repositories moved to Relay 3 in the six-week beta</p>
+      </div>
+      <div class="cells">
+        <div class="cell">
+          <p class="n">84</p>
+          <p class="t">of them cut median CI time by <b>at least half</b></p>
+          <svg class="chart" width="800" height="88" role="img" aria-label="84 dots, one per repository"
+               data-chart="unit" data-count="84" data-cols="28" data-size="18" data-gap="10" data-highlight="true"></svg>
+        </div>
+        <div class="cell">
+          <p class="n">23</p>
+          <p class="t">of those cut it by <b>three quarters or more</b></p>
+          <svg class="chart" width="800" height="88" role="img" aria-label="23 dots, one per repository"
+               data-chart="unit" data-count="23" data-cols="28" data-size="18" data-gap="10" data-highlight="false"></svg>
+        </div>
+      </div>
+    </div>
+    <div class="source" data-role="source">Source: Relay beta telemetry, 120 repositories, April 2026; median CI run per repository against its Relay 2.4 baseline</div>
+  </section>
+<script>
+  // One dot per repository, laid out in rows from the bottom-left.
+  document.querySelectorAll('.s-tally svg.chart').forEach(el => {
+    const d = el.dataset, n = +d.count, cols = +d.cols, s = +d.size, g = +d.gap, H = +el.getAttribute('height');
+    const rows = Math.ceil(n / cols); let out = '';
+    for (let i = 0; i < n; i++) {
+      const r = Math.floor(i / cols), c = i % cols;
+      out += '<circle class="u' + (d.highlight === 'true' ? ' hi' : '') + '" cx="' + (c * (s + g) + s / 2) + '" cy="' + (H - (rows - r) * (s + g) + g + s / 2) + '" r="' + s / 2 + '"/>';
+    }
+    el.innerHTML = out;
+  });
+</script>
+</div>
+</body>
+</html>

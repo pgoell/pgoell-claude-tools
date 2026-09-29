@@ -28,6 +28,14 @@ Data stories, research readouts, and reports presented as decks. A newsroom char
   - PullQuoteSlide: serif quote in columns two to six, hanging quote mark, speaker and context under a short rule.
   - ColumnsSlide: serif lede over three text columns with column rules.
   - TableSlide: editorial table, ink rule on top, right-aligned tabular figures, one tinted row, a hairline before the totals.
+  - ChartSidebarSlide: after a16z's State of Crypto 2024 chart-and-sidebar slides (5, 14); the reading set large in the serif down columns one and two with a note pinned to its foot, a column rule, and an hourly column chart across columns three to six under a units line only.
+  - HighlightedGroupBarsSlide: after Benedict Evans' "AI eats the world" (Spring 2026) slide 13; four corridors as groups of eight January bars on one shared axis, history in gray, 2025 in the accent in every group, dashed markers for the protection date.
+  - RankedBarsSlide: after Evans' "The New Gatekeepers" (2023) slide 58 and the Reuters Institute Digital News Report market rankings; 12 cities sorted by winter-to-summer share, Brenford in the accent, values at bar ends, one note in column six.
+  - RescaleRevealSlide: a two-slide pair (one file, two sections) after Evans 2023 slides 14 and 15; grouped columns for four ways of travel, then the same chart with cars added and the axis rescaled so the first four collapse to stubs.
+  - QuotePairSlide: after Evans 2026 slide 7; two serif quotes in adjacent three-column spans with a column rule between, speakers under short rules, a headline stating what both confirm.
+  - KeyFindingsSlide: after the State of AI Report 2025 executive summary (slide 9) and a16z's takeaways; three part names hanging in column one, two one-line findings each across columns two to six, parted by hairlines.
+  - PredictionScorecardSlide: after the State of AI Report 2025 scorecard (slide 11); forecast in columns one to three, verdict in column four, outcome in columns five and six, hairline rows.
+  - DivergingBarsSlide: after Evans 2023 slide 54; quarterly change on a year earlier around a heavy zero line, bike trips gained in gray above, car trips lost in the accent below, series named at the right end, one bracketed note.
 - Each slide embeds a synced copy of the variable files and makes no network request. The example numbers form one consistent fictional dataset (six protected corridors summing to 4k, 5k, 9k, 12k winter trips a day; four painted corridors at about 3k).
 - `assets/fonts/`: the vendored font files with their licenses.
 
@@ -43,6 +51,10 @@ Tinted paper, a serif headline, and one claret accent in a newsroom chart gramma
 - The type scale sits in `colors.css`, as the preset contract asks. The dark scope redeclares `--border-accent` and `--chart-highlight`.
 - Layout grammar (2026-09-28 rebuild): a six-column newspaper grid instead of the default's 12-column soft guide, because text columns and margin figures need whole-column widths. Sources sit in the footer on every slide rather than under each figure, so they stay in one place across the deck (language rule 9). Title, divider, pull quote, and closing use the slate scope per V9; their structure (masthead, hanging part name, hanging quote mark, colophon) also sets them apart.
 - The accent marks the story in each figure only: the highlighted column, line, dot, figure, or table cell. The StatSlide figure is set in the accent because it is that slide's story value.
+- Library additions (2026-09-28, from the reference slide decks report): ChartSidebarSlide keeps a short sentence headline at the top instead of the a16z sidebar-as-headline, because a six-line headline breaks the two-line title rule (copy lint T1); the sidebar carries the reading at `--fs-body-lg` in the serif, and the reference's highlighter words are dropped. QuotePairSlide sets both quotes in `--fg` (the reference sets them in red) and stays in the light scope with a source line, because it is evidence under a claim, not a structure slide. PredictionScorecardSlide replaces the reference's three-color verdict cells with words and puts only "Missed" in the accent. HighlightedGroupBarsSlide and RescaleRevealSlide color a whole series (the 2025 bars) in the accent; that series is the one highlighted unit. RankedBarsSlide shows 12 bars, not 25, so names stay at `--fs-caption`. HighlightedGroupBarsSlide shows 8 years per group, not about 16, for the same reason.
+- RescaleRevealSlide ships both slides as two `<section>` elements in one file, stacked in a 1920x2160 frame for standalone viewing; the second slide's cars group sits in a fifth slot left empty on the first, so nothing moves between them. The gallery shows no build steps, so none of the new slides uses `data-build-step`.
+- SlopeChartSlide (storytelling with data) was skipped: ContentSlide already carries a 2022 to 2025 slope chart as margin figure, and TableSlide and SmallMultiplesSlide show the same per-corridor pairs, so a full-slide slopegraph would repeat the dataset in a near-identical form. DivergingBarsSlide, the first alternate, was built instead.
+- New figures extend the one fictional dataset and stay consistent with it: hourly January 2025 trips sum to 12.0k; 2018 to 2021 January counts precede the existing 2022 to 2025 per-corridor values; the ranked share (66% in 2025, 47% in 2022) comes from the quarterly protected and painted series; car trips (96k to 90k) match the quarterly changes on DivergingBarsSlide and the scorecard's 6% fall.
 
 ## Fonts
 
@@ -55,6 +67,7 @@ Each family directory carries its `OFL.txt`, copied from the same source. Files 
 
 ## Gaps
 
-- Still adapted from the default preset when needed: agenda, executive summary, statement, chart with insight, comparison, timeline, full-bleed image, and the appendix divider the report lists as a gap.
+- Still adapted from the default preset when needed: agenda, statement, chart with insight, comparison, timeline, full-bleed image, and the appendix divider the report lists as a gap. KeyFindingsSlide now covers the executive summary.
+- Shortlist alternates not yet built: StackedAreaHighlight, EditorialTimeline, MethodInset, DocumentExcerpt, BeforeAfterRows, Definitions, LabelledScatter, Choropleth, Dumbbell, ChartIndex, StepDownList, AlignedEras, PatternRepeat, HeadlineCollage.
 - StatSlide uses four text sizes (hero figure, headline, sentence, strip labels), one over the three-size guide, as the default StatSlide does.
 - No wordmark or `icons/` library: the preset serves a context, not a brand.

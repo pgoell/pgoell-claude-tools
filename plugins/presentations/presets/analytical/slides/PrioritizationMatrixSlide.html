@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>21 Prioritization matrix</title>
+<style>
+  /* ==========================================================
+     Synced copy of ../colors.css. Source of truth is the file;
+     refresh this block whenever it changes.
+     ========================================================== */
+  /* ============================================================
+     Analytical preset, design tokens ("claim plus number" direction)
+     ============================================================
+     Source of truth for every slide's embedded variable block.
+     Semantic layer only: this preset serves a context, not a
+     brand, so it carries no raw brand layer. Slides read these
+     names and nothing else.
+
+     Consulting decks read by or presented to decision makers:
+     white paper, navy ink, one blue accent, a navy dark scope
+     for structure slides.
+
+     Color rule: one accent with one job. The accent marks the
+     single thing the audience should look at. Everything else
+     is ink or gray. Every text tier holds 4.5:1 or better on
+     --bg, --bg-elev, and --bg-subtle in both scopes, and
+     --accent holds 4.5:1 on --bg, so it can mark a word or a
+     number. Borders are decorative only.
+     ============================================================ */
+
+  :root {
+    /* =====================================================
+       COLOR, Semantic (light theme)
+       ===================================================== */
+    --bg:                 #FFFFFF;
+    --bg-elev:            #FFFFFF;
+    --bg-subtle:          #F2F4F7;
+    --bg-inverse:         #0B1F33;
+
+    --fg:                 #0B1F33;      /* 16.69 on bg */
+    --fg-muted:           #44505E;      /* 8.22 */
+    --fg-subtle:          #5B6673;      /* 5.84; source line, page number */
+    --fg-inverse:         #F3F6F9;      /* 15.39 on bg-inverse */
+    --fg-inverse-muted:   #BAC5D1;
+    --fg-inverse-subtle:  #93A1B0;
+
+    --border:             #E1E5EA;      /* decorative only */
+    --border-strong:      #C3CAD3;
+    --border-inverse:     #27405A;
+    --border-accent:      var(--accent);
+
+    --accent:             #1D4ED8;      /* 6.70; the one accent */
+    --accent-fg:          #FFFFFF;
+    --accent-partner:     #0F766E;      /* second chart series only */
+
+    /* Status (rare on slides, but useful) */
+    --status-success:     #2F7A1C;
+    --status-warning:     #C77700;
+    --status-danger:      #B0271A;
+    --status-info:        #00638A;
+
+    /* =====================================================
+       COLOR, Charts
+       Gray plus one: --chart-highlight marks the story series,
+       every other series is --chart-context. The numbered
+       categorical colors are for charts where the categories
+       are the point, at most 6 series.
+       Categorical set passes a Machado 2009 protan, deutan,
+       and tritan simulation at CIEDE2000 >= 13 in both scopes.
+       No set survives grayscale, so label series directly.
+       ===================================================== */
+    --chart-highlight:    var(--accent);  /* story series in highlight mode */
+    --chart-context:      #9AA5B1;      /* 2.50; the series that are not the story */
+    --chart-grid:         var(--border);
+    --chart-1:            #1D4ED8;      /* 6.70 */
+    --chart-2:            #0F766E;      /* 5.47 */
+    --chart-3:            #B45309;      /* 5.02 */
+    --chart-4:            #866CFE;      /* 3.76 */
+    --chart-5:            #87293D;      /* 8.70 */
+    --chart-6:            #374A65;      /* 9.01 */
+    --chart-seq-1:        #eff3ff;      /* ColorBrewer Blues 5 */
+    --chart-seq-2:        #bdd7e7;
+    --chart-seq-3:        #6baed6;
+    --chart-seq-4:        #3182bd;
+    --chart-seq-5:        #08519c;
+    --chart-div-1:        #ca0020;      /* ColorBrewer RdBu 5 */
+    --chart-div-2:        #f4a582;
+    --chart-div-3:        #f7f7f7;
+    --chart-div-4:        #92c5de;
+    --chart-div-5:        #0571b0;
+
+    /* =====================================================
+       TYPE, slide scale (1920x1080 reference)
+       Floors by role (checked by gate H7): body >= 36px,
+       captions and chart labels >= 28px, footer and source
+       line >= 24px. Use at most three sizes per slide. Never
+       shrink text to fit: split the slide or cut words.
+       ===================================================== */
+    --fs-hero:        200px;     /* The single big number */
+    --fs-display:     96px;      /* Structure slides: title, divider, closing */
+    --fs-section:     72px;      /* Spare large step */
+    --fs-h1:          60px;      /* Action title, same size on every content slide, max 2 lines */
+    --fs-h2:          52px;      /* Spare large subhead */
+    --fs-h3:          48px;      /* Column heads */
+    --fs-subtitle:    44px;      /* Deck subtitle; exhibit subtitle (units and dates) */
+    --fs-body-lg:     40px;      /* Executive summary lead phrases */
+    --fs-body:        36px;      /* Body text, list items (floor 36px) */
+    --fs-caption:     28px;      /* Chart labels, sticker */
+    --fs-micro:       24px;      /* Source line, page number; do not go below */
+
+    --lh-tight:         1.12;    /* titles */
+    --lh-snug:          1.2;
+    --lh-normal:        1.3;     /* body */
+    --lh-relaxed:       1.5;
+
+    --tracking-tight:   -0.01em;  /* titles */
+    --tracking-normal:  0;
+    --tracking-wide:    0.04em;
+    --tracking-caps:    0.08em;  /* kept for token parity; tracked caps are banned on slides */
+
+    --weight-regular:   400;
+    --weight-medium:    500;
+    --weight-semibold:  600;
+    --weight-bold:      700;
+
+    /* =====================================================
+       SPACING (8pt grid)
+       ===================================================== */
+    --space-0:   0;
+    --space-1:   4px;
+    --space-2:   8px;
+    --space-3:   12px;
+    --space-4:   16px;
+    --space-5:   24px;
+    --space-6:   32px;
+    --space-7:   48px;
+    --space-8:   64px;
+    --space-9:   80px;
+    --space-10:  120px;
+    --space-11:  160px;
+
+    /* Slide margins (1920x1080) */
+    --slide-pad-x:   96px;
+    --slide-pad-y:   72px;
+    --slide-w:       1920px;
+    --slide-h:       1080px;
+
+    /* Layout grid (see guidelines.md, Layout grammar).
+       12 columns of 122px with 24px gutters fill the 1728px
+       between the 96px side margins. Chrome sits at fixed
+       heights so nothing moves when you flip slides. */
+    --grid-cols:     12;
+    --grid-col:      122px;
+    --grid-gutter:   24px;
+    --tracker-top:   48px;      /* tracker and sticker row */
+    --title-top:     120px;     /* action title, first line */
+    --body-top:      300px;     /* evidence starts here on every content slide */
+    --body-bottom:   124px;     /* evidence ends this far above the canvas bottom */
+
+    /* =====================================================
+       RADIUS
+       ===================================================== */
+    --r-0:       0;
+    --r-sm:      4px;
+    --r-md:      6px;
+    --r-lg:      8px;
+    --r-pill:    999px;
+
+    /* =====================================================
+       SHADOWS (use sparingly, flat is default)
+       ===================================================== */
+    --shadow-0:  none;
+    --shadow-1:  0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-2:  0 10px 24px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+
+    /* =====================================================
+       MOTION
+       ===================================================== */
+    --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+    --ease-in-out: cubic-bezier(0.7, 0, 0.3, 1);
+    --dur-fast:    150ms;
+    --dur-base:    240ms;
+    --dur-slow:    400ms;
+  }
+
+  /* =====================================================
+     DARK SLIDE THEME, apply `.dark` to a slide root.
+     Inverse tokens swap to the light values here.
+     ===================================================== */
+  .dark,
+  [data-theme="dark"] {
+    --bg:                 #0B1F33;
+    --bg-elev:            #13293F;
+    --bg-subtle:          #10253A;
+    --bg-inverse:         #FFFFFF;
+
+    --fg:                 #F3F6F9;      /* 15.39 */
+    --fg-muted:           #BAC5D1;      /* 9.53 */
+    --fg-subtle:          #93A1B0;      /* 6.33 */
+    --fg-inverse:         #0B1F33;
+    --fg-inverse-muted:   #44505E;
+    --fg-inverse-subtle:  #5B6673;
+
+    --border:             #27405A;
+    --border-strong:      #3A5673;
+    --border-inverse:     #E1E5EA;
+    --border-accent:      var(--accent);  /* redeclared so it picks up the dark accent */
+
+    --accent:             #7EA6FF;      /* 6.98 */
+    --accent-fg:          #0B1F33;
+    --accent-partner:     #279985;      /* 4.75; CVD-safe against the accent */
+
+    --chart-highlight:    var(--accent);  /* redeclared so it picks up the dark accent */
+    --chart-context:      #56687C;      /* 2.91 */
+    --chart-grid:         var(--border);
+    --chart-1:            #7EA6FF;      /* 6.98 */
+    --chart-2:            #279985;      /* 4.75 */
+    --chart-3:            #F5A524;      /* 8.18 */
+    --chart-4:            #897CB4;      /* 4.46 */
+    --chart-5:            #C5A2B1;      /* 7.29 */
+    --chart-6:            #BBD5ED;      /* 11.01 */
+  }
+
+  /* ==========================================================
+     Synced copy of ../typography.css. Source of truth is the
+     file; refresh this block whenever it changes. Font URLs
+     gain a ../ prefix here because this file sits in slides/.
+     ========================================================== */
+  /* ============================================================
+     Analytical preset, font stacks
+     ============================================================
+     IBM Plex Serif (titles, 600) over IBM Plex Sans (body,
+     labels, numbers). Both ship unmodified in assets/fonts/ with
+     their OFL.txt and load from that relative path, so slides
+     make no network request. Plex carries the Reserved Font Name
+     "Plex": never subset or otherwise modify these files. Plex
+     Sans figures are tabular by default. The mono stack is for
+     code samples only, never for labels, and is not vendored.
+     ============================================================ */
+
+  @font-face {
+    font-family: 'IBM Plex Serif';
+    src: url('../assets/fonts/ibm-plex-serif/IBMPlexSerif-SemiBold.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+    font-display: block;
+  }
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    src: url('../assets/fonts/ibm-plex-sans/IBMPlexSans-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: block;
+  }
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    src: url('../assets/fonts/ibm-plex-sans/IBMPlexSans-SemiBold.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+    font-display: block;
+  }
+
+  :root {
+    --font-display: 'IBM Plex Serif', Georgia, serif;
+    --font-sans:    'IBM Plex Sans', Arial, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono:    'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+  }
+
+  /* ==== Standalone viewer shell ==== */
+  html, body { margin: 0; height: 100vh; background: #000; overflow: hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+  .frame {
+    position: absolute;
+    width: 1920px; height: 1080px;
+    transform-origin: top left;
+  }
+  .frame > section {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    background: var(--bg);
+    color: var(--fg);
+    overflow: hidden;
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+  }
+
+  /* ==== Shared chrome (Layout grammar in ../guidelines.md) ==== */
+  /* Every piece of chrome sits at a fixed position, so nothing moves
+     when you flip through the deck. */
+  /* Tracker: the deck's sections, current one marked by the accent.
+     Each section spans 2 grid columns. */
+  .tracker {
+    position: absolute; top: var(--tracker-top); left: var(--slide-pad-x);
+    display: flex; gap: var(--grid-gutter);
+    font-size: var(--fs-micro); line-height: 1.2; color: var(--fg-subtle);
+  }
+  .tracker span {
+    width: calc(2 * var(--grid-col) + var(--grid-gutter));
+    padding-top: 12px; border-top: 4px solid var(--border-strong);
+  }
+  /* Accent job, shared: the current section. */
+  .tracker span.on {
+    border-top-color: var(--accent); color: var(--fg);
+    font-weight: var(--weight-semibold);
+  }
+  /* Sticker: status of the numbers, top right, only when true. */
+  .sticker {
+    position: absolute; top: var(--tracker-top); right: var(--slide-pad-x);
+    font-size: var(--fs-caption); line-height: 1.2; color: var(--fg-muted);
+    border: 2px solid var(--fg-subtle); padding: 6px 20px;
+  }
+  /* Action title: same place, same size on every content slide. */
+  h1.action {
+    position: absolute; top: var(--title-top); left: var(--slide-pad-x);
+    width: calc(11 * var(--grid-col) + 10 * var(--grid-gutter));
+    font-family: var(--font-display);
+    font-size: var(--fs-h1); font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
+    margin: 0; text-wrap: balance;
+  }
+  /* Evidence area: fixed box under the title band. */
+  .body {
+    position: absolute; top: var(--body-top); bottom: var(--body-bottom);
+    left: var(--slide-pad-x); right: var(--slide-pad-x);
+  }
+  /* Exhibit subtitle: the measure, its units, and its dates. */
+  .exhibit {
+    font-size: var(--fs-body); line-height: 1.2; color: var(--fg-muted);
+    margin: 0;
+  }
+  /* Footer: source bottom left, page number bottom right. */
+  .footer {
+    position: absolute;
+    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: 48px;
+    display: flex; align-items: baseline; justify-content: space-between; gap: 64px;
+    font-size: var(--fs-micro); line-height: 1.2;
+    color: var(--fg-subtle);
+  }
+  .chart, .num, table { font-variant-numeric: tabular-nums lining-nums; }
+  svg { display: block; overflow: visible; }
+
+  /* ==== This slide ==== */
+  /* Thin impact wedge with row labels in columns 1 and 2, five panels
+     in 3 to 12 (three over two), effort wedge under the panels. Wedges
+     replace arrows: the wide end is the good end. The numbers give
+     the start order, so the matrix reads as a plan. */
+  .s-prio .wedge { position: absolute; left: 0; top: 0; }
+  .s-prio .wedge polygon { fill: var(--border-strong); }
+  .s-prio .rowlab, .s-prio .collab, .s-prio .panel { position: absolute; }
+  .s-prio .rowlab {
+    left: 72px; width: 196px;
+    font-size: var(--fs-caption); line-height: 1.3; color: var(--fg-muted);
+  }
+  .s-prio .rowlab b, .s-prio .collab b { display: block; color: var(--fg); font-weight: var(--weight-semibold); }
+  .s-prio .collab { top: 584px; font-size: var(--fs-caption); line-height: 1.3; color: var(--fg-muted); }
+  .s-prio .panel {
+    height: 208px; padding: 20px 24px; background: var(--bg-subtle);
+  }
+  .s-prio .panel .k {
+    display: flex; align-items: center; gap: 16px;
+    font-size: var(--fs-caption); color: var(--fg-muted);
+  }
+  .s-prio .n {
+    flex: none; width: 48px; height: 48px; border-radius: var(--r-pill);
+    display: flex; align-items: center; justify-content: center;
+    background: var(--fg); color: var(--fg-inverse); font-weight: var(--weight-semibold);
+  }
+  .s-prio .panel ul { margin: 16px 0 0; padding: 0; list-style: none; }
+  .s-prio .panel li {
+    display: flex; justify-content: space-between; gap: 24px;
+    font-size: var(--fs-body); line-height: var(--lh-snug);
+  }
+  .s-prio .panel li .v { font-weight: var(--weight-semibold); }
+  /* Accent job: the panel that starts first. */
+  .s-prio .panel.hi { box-shadow: inset 8px 0 0 var(--accent); }
+  .s-prio .panel.hi .n { background: var(--accent); color: var(--accent-fg); }
+  .s-prio .panel.hi .k { color: var(--fg); font-weight: var(--weight-semibold); }
+</style>
+<script>
+  function fit() {
+    const f = document.querySelector('.frame');
+    const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    f.style.transform = 'scale(' + s + ')';
+    const sw = 1920 * s, sh = 1080 * s;
+    f.style.left = ((window.innerWidth - sw) / 2) + 'px';
+    f.style.top  = ((window.innerHeight - sh) / 2) + 'px';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+</script>
+</head>
+<body>
+<div class="frame">
+<section class="s-prio" data-screen-label="21 Prioritization matrix">
+    <nav class="tracker" data-role="footer" aria-label="Deck sections"><span>Where cost sits</span><span>What closing saves</span><span class="on">Options</span><span>Plan</span></nav>
+    <div class="sticker" data-role="label">For discussion</div>
+    <h1 class="action">Renegotiating carrier rates goes first: €3M a year for the least effort</h1>
+    <div class="body">
+      <p class="exhibit">Cost levers by yearly saving and effort; numbers give the start order</p>
+      <!-- Wedges: impact down column 1 (wide at the top), effort under the
+           panels (wide at the right, the low-effort end). -->
+      <svg class="wedge" width="1728" height="656" viewBox="0 0 1728 656" aria-hidden="true">
+        <polygon points="0,72 48,72 24,512"/>
+        <polygon points="292,554 1728,532 1728,576"/>
+      </svg>
+      <div class="rowlab" style="top: 72px" data-role="caption"><b>Higher impact</b>€4M or more</div>
+      <div class="rowlab" style="top: 304px" data-role="caption"><b>Lower impact</b>Under €4M</div>
+
+      <div class="panel" style="top: 72px; left: 292px; width: 560px">
+        <div class="k" data-role="caption"><span class="n">4</span>Strategic priorities</div>
+        <ul><li><span>Close 3 depots</span><span class="v">€18M</span></li><li><span>Automate sorting</span><span class="v">€6M</span></li></ul>
+      </div>
+      <div class="panel" style="top: 72px; left: 876px; width: 414px">
+        <div class="k" data-role="caption"><span class="n">3</span>Medium-term</div>
+        <ul><li><span>Consolidate routes</span><span class="v">€5M</span></li></ul>
+      </div>
+      <div class="panel" style="top: 72px; left: 1314px; width: 414px">
+        <div class="k" data-role="caption"><span class="n">2</span>Quick wins</div>
+        <ul><li><span>Match shifts to volume</span><span class="v">€4M</span></li></ul>
+      </div>
+      <div class="panel" style="top: 304px; left: 292px; width: 560px">
+        <div class="k" data-role="caption"><span class="n">5</span>Long-term</div>
+        <ul><li><span>Sublet unused floor space</span><span class="v">€2M</span></li></ul>
+      </div>
+      <div class="panel hi" style="top: 304px; left: 876px; width: 852px">
+        <div class="k" data-role="caption"><span class="n">1</span>Immediate actions</div>
+        <ul><li><span>Renegotiate carrier rates, from April 2026</span><span class="v">€3M</span></li></ul>
+      </div>
+
+      <div class="collab" style="left: 292px" data-role="caption"><b>Higher effort</b>Sites, systems, or staff change</div>
+      <div class="collab" style="right: 0; text-align: right" data-role="caption"><b>Lower effort</b>Contracts and rosters only</div>
+    </div>
+    <div class="footer">
+      <span class="source" data-role="source">Source: team estimates from the Kestrel depot cost ledger, 2025</span>
+      <span class="page" data-role="footer">21</span>
+    </div>
+  </section>
+</div>
+</body>
+</html>
