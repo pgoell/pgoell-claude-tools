@@ -20,7 +20,7 @@ presets/<name>/
   slides/         optional. Example slides as self-contained HTML on a 1920x1080 canvas.
     index.tsv     required when slides/ exists. One row of tags per slide file, from the closed vocabulary in TAGS.md, so consumers can search every gallery by role, move, and form.
   previews/       optional. One PNG per example slide (rendered at 1920x1080, stored at 1280x720), for browsing the gallery on GitHub. Regenerate whenever a slide changes.
-  SHOWCASE.md     optional. Inlines every preview, grouped by the role column of slides/index.tsv, with each row's summary as caption.
+  README.md       optional. Showcase page that GitHub renders when browsing the preset directory. Inlines every preview, grouped by the role column of slides/index.tsv, with each row's summary as caption.
 ```
 
 ## Layout grammar
@@ -78,7 +78,7 @@ Consumers resolve the active preset in this order:
 
 ## Bundled presets
 
-Each bundled preset has a `SHOWCASE.md` with a rendered preview of every example slide: [default](default/SHOWCASE.md), [analytical](analytical/SHOWCASE.md), [keynote](keynote/SHOWCASE.md), [product](product/SHOWCASE.md), [editorial](editorial/SHOWCASE.md), [technical](technical/SHOWCASE.md), [workshop](workshop/SHOWCASE.md).
+Each bundled preset has a `README.md` with a rendered preview of every example slide: [default](default/), [analytical](analytical/), [keynote](keynote/), [product](product/), [editorial](editorial/), [technical](technical/), [workshop](workshop/).
 
 | Preset       | Voice                                                                                        | Suits                                                                                         |
 | ------------ | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
