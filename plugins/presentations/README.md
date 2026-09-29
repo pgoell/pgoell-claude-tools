@@ -17,7 +17,7 @@ The typical flow: `designing-presentations` writes `deck.md`, `creating-presenta
 
 Styling flows through presets, packs of CSS variables, guidance files, assets, and example slides. The full contract lives in [presets/README.md](presets/README.md). Two homes:
 
-- **Bundled**: `presets/` in this plugin. Ships with the plugin; seven presets, each with vendored open fonts, a `language.md` style contract, the shared chart token group, and its own layout grammar (grid tokens in `colors.css`, a `## Layout grammar` section in `guidelines.md`, and a gallery of nineteen or more slides built to it, each tagged by role, move, and form in `slides/index.tsv` under the vocabulary in [presets/TAGS.md](presets/TAGS.md), and a `SHOWCASE.md` with rendered previews to browse on GitHub):
+- **Bundled**: `presets/` in this plugin. Ships with the plugin; seven presets, each with vendored open fonts, a `language.md` style contract, the shared chart token group, and its own layout grammar (grid tokens in `colors.css`, a `## Layout grammar` section in `guidelines.md`, and a gallery of nineteen or more slides built to it, each tagged by role, move, and form in `slides/index.tsv` under the vocabulary in [presets/TAGS.md](presets/TAGS.md), and a `README.md` with rendered previews to browse on GitHub):
   - `default`: the quiet direction (off-white, one green accent, Figtree) with the full proof-object gallery. The fallback when nothing else fits.
   - `analytical`: claim plus number for decks read by or presented to decision makers (white, navy, blue accent, IBM Plex Serif and Sans).
   - `keynote`: one idea per slide for stage talks, dark by default (Inter).
