@@ -1,0 +1,20 @@
+file	role	move	form	mode	sequence	summary
+BarChartSlide.html	body	benchmark	bar-chart	presented	single	Three columns with the first highlighted
+BaseAndComparedSlide.html	body	benchmark	number-set	presented	build	One big base number, then two compared numbers built beside it
+BigNumberSlide.html	body	prove	big-number	presented	single	One huge figure with one line and a source
+ClosingSlide.html	closing	recommend	statement	presented	single	Closing line with a link to the slides
+ContentSlide.html	body	explain	text-list	presented	build	Three lines built one at a time, earlier lines dimmed
+HighlightRegionSlide.html	body	explain	image	presented	build	One image with an outline moved to a new region each step
+ImageSlide.html	body	frame	image	presented	single	Full-bleed photo with a short caption
+LineExitsFrameSlide.html	body	trend	line-chart	presented	build	Line chart whose last segment turns accent and runs off the top
+PositioningDotsSlide.html	body	compare	two-axis	presented	build	Axes marked by four words, rivals placed first, the answer last
+QuestionSlide.html	body	engage	statement	presented	single	One question to the audience alone on the slide
+QuoteSlide.html	body	prove	quote	presented	single	One short quote with the speaker
+ReplaceBuildSlide.html	body	explain	statement	presented	build	Three parts shown one at a time in one place, then the whole named
+SectionDivider.html	divider	frame	statement	presented	single	Section divider with part number and part title
+SilhouetteCompareSlide.html	body	compare	bar-chart	presented	build	Two side profiles overlaid on one baseline, old then new
+StatSlide.html	body	compare	number-set	presented	single	Two numbers on the thirds lines, before dimmed and after in accent
+StatementSlide.html	body	recommend	statement	presented	single	One sentence alone on the slide
+ThirdCategorySlide.html	body	compare,explain	image,statement	presented	build	Two known things at the sides, the new category built in the middle
+TitleSlide.html	cover	frame	statement	presented	single	Cover with talk title, speaker, and event
+UnitGridSlide.html	body	frame	unit-chart	presented	build	Grid of 480 empty squares, then 120 of them filled

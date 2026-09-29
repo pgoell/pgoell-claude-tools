@@ -1,0 +1,20 @@
+file	role	move	form	mode	sequence	summary
+BarChartSlide.html	body	trend	bar-chart	presented	single	Columns over releases in a panel with a drop bracket
+BeforeAfterSlide.html	body	compare,decompose	part-chart	presented	single	Old and new pipelines step by step on one duration scale
+BenchmarkTableSlide.html	body	benchmark	table	read	single	Table of named tests against rivals, own column lifted and highlighted
+BentoFeatureSlide.html	summary	prove	number-set,image	presented	single	Launch recap as ruled cells around a hero panel, sized by importance
+ChangelogSlide.html	body	prove	timeline	read	single	Dated release rows with version numbers
+ClosingSlide.html	closing	recommend	code,text-list	presented	single	The ask with a terminal command panel and next steps
+ContentSlide.html	body	explain	table	presented	single	Three spec rows: feature, what it does, and its number
+EfficiencyCurveSlide.html	body	compare	line-chart	presented	single	Two curves on unnumbered axes, only the new release in color
+GuidanceSlide.html	body	plan	number-set	read	single	Quarter and full-year expectations as two columns of ranges
+MetricsRowSlide.html	body	compare	number-set	presented	single	One lead metric and three supporting metrics, each with its old value
+NorthStarTreeSlide.html	body	explain,decompose	diagram	presented	single	Four input metrics joined by a bracket to the one north star metric
+RoadmapSlide.html	body	plan	timeline	presented	single	Roadmap in now, next, and later columns
+ScreenshotSlide.html	body	explain	image	presented	single	UI screenshot bleeding off the edge with callouts
+SectionDivider.html	divider	frame	text-list	presented	single	Section title with the deck's parts as a ruled tracker
+SixTwelveSlide.html	body	trend,benchmark	line-chart,number-set	read	single	Six weeks and twelve months of one metric against last year and target
+StatSlide.html	body	prove	big-number,part-chart	presented	single	One big number over a stacked strip showing where it comes from
+ThresholdTrendSlide.html	body	benchmark,trend	line-chart	presented	single	Survey score line crossing a dashed target bar, values labelled
+TitleSlide.html	cover	frame	statement	presented	single	Cover with product name and tagline
+UnitTallySlide.html	body	prove	unit-chart,big-number	presented	single	Headline count, then two subsets as numbers and one dot per unit

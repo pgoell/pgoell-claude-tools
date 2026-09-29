@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>State machine</title>
+<style>
+  /* ==========================================================
+     Synced copy of ../colors.css. Source of truth is the file;
+     refresh this block whenever it changes.
+     ========================================================== */
+  /* ============================================================
+     Technical preset, design tokens ("trace highlight" direction)
+     ============================================================
+     Source of truth for every slide's embedded variable block.
+     Semantic layer only: this preset serves a context, not a
+     brand. Slides read these names and nothing else.
+
+     Engineering deep dives, architecture reviews, design docs
+     presented live, incident reviews: cool graphite and paper
+     neutrals, one amber accent that marks the path, the line, or
+     the series the title names, like a trace highlighted in an
+     observability tool. Dark first: the .dark scope is the
+     default for content slides, the light :root scope is for
+     bright rooms and printed reviews.
+
+     Color rule: one accent with one job. It marks the highlighted
+     path in a diagram, the highlighted lines in code, the story
+     series in a chart, the recommended option in a table. Node
+     types have their own colors and always a shape too, so color
+     is never the only cue. Every text tier holds 4.5:1 or better
+     on --bg, --bg-elev, and --bg-subtle in both scopes; the light
+     accent is for graphics (3.29:1 or better) and --accent-ink
+     carries accent-colored text. Every diagram stroke holds 3:1
+     on those surfaces. Contrast and color-blindness results are
+     in manifest.md.
+     ============================================================ */
+
+  :root {
+    /* =====================================================
+       COLOR, Semantic (light scope)
+       Ratios: on --bg, --bg-elev, --bg-subtle.
+       ===================================================== */
+    --bg:                 #F3F4F6;
+    --bg-elev:            #FFFFFF;
+    --bg-subtle:          #E9EBEF;
+    --bg-inverse:         #15171B;
+    --bg-deep:            #0F1114;      /* structure slides */
+
+    --fg:                 #14171C;      /* 16.32 17.96 15.05 */
+    --fg-muted:           #434A55;      /* 8.12 8.94 7.49 */
+    --fg-subtle:          #5B6370;      /* 5.51 6.06 5.08 */
+    --fg-inverse:         #E8EAED;
+    --fg-inverse-muted:   #B1B7C0;
+    --fg-inverse-subtle:  #8F97A3;
+
+    --border:             #D9DCE1;      /* decorative only */
+    --border-strong:      #B9BEC6;
+    --border-inverse:     #2B2F36;
+    --border-accent:      var(--accent);
+
+    --accent:             #B07400;      /* 3.57 3.93 3.29; graphics only in this scope */
+    --accent-ink:         #7F5200;      /* 6.14 6.75 5.66; accent-colored text */
+    --accent-fg:          #FFFFFF;
+    --accent-tint:        #FBF0D6;      /* row or line highlight behind --fg text */
+
+    /* Status (incident reviews, pipeline gates) */
+    --status-success:     #177A4D;      /* 4.86 */
+    --status-warning:     #B07400;
+    --status-danger:      #B42318;      /* 5.97 */
+    --status-info:        #2F6FD6;
+
+    /* =====================================================
+       COLOR, Diagrams
+       Node types carry a color AND a shape (see guidelines.md):
+       service = rounded rectangle, datastore = cylinder,
+       queue = rectangle with message ticks, external = dashed
+       square-cornered rectangle, boundary = dashed container
+       with a text label. Strokes 3:1 or better on every surface;
+       fills are opaque tints that keep --fg at 15:1.
+       ===================================================== */
+    --node-service:        #2F6FD6;     /* 4.37 4.81 4.03 */
+    --node-service-fill:   #E6EEFA;
+    --node-datastore:      #177A4D;     /* 4.86 5.35 4.48 */
+    --node-datastore-fill: #E3EFEA;
+    --node-queue:          #A83F12;     /* 5.64 6.20 5.20 */
+    --node-queue-fill:     #F5E8E3;
+    --node-external:       #6E7684;     /* 4.16 4.58 3.84; always dashed */
+    --node-external-fill:  #EEEFF0;
+    --node-boundary:       #7A8290;     /* 3.52 3.87 3.24; dashed, no fill */
+    --edge:                #6E7684;     /* 4.16 4.58 3.84 */
+    --edge-highlight:      var(--accent);
+
+    /* =====================================================
+       COLOR, Code
+       Every syntax color holds 4.5:1 on --code-bg and on
+       --code-highlight-line.
+       ===================================================== */
+    --code-bg:             #FFFFFF;
+    --code-fg:             #14171C;     /* 17.96 15.86 */
+    --code-keyword:        #8A3FB5;     /* 6.07 5.36 */
+    --code-string:         #1B7A4F;     /* 5.33 4.70 */
+    --code-comment:        #5B6370;     /* 6.06 5.35 */
+    --code-number:         #9A4A00;     /* 6.26 5.53 */
+    --code-fn:             #2459B8;     /* 6.57 5.80 */
+    --code-highlight-line: #FBF0D6;
+    --code-gutter:         #5B6370;     /* line numbers */
+
+    /* =====================================================
+       COLOR, Charts
+       Highlight mode by default: --chart-highlight for the story
+       series, --chart-context for the rest. --chart-threshold is
+       the SLO or budget line, always dashed and labelled.
+       --chart-1 to --chart-3 follow the node colors, for charts
+       where the categories are the point.
+       ===================================================== */
+    --chart-highlight:    var(--accent);  /* 3.57 */
+    --chart-context:      #A9AFB8;      /* 2.01 */
+    --chart-grid:         var(--border);
+    --chart-threshold:    #B42318;      /* 5.97; SLO line */
+    --chart-1:            #2F6FD6;      /* 4.37 */
+    --chart-2:            #177A4D;      /* 4.86 */
+    --chart-3:            #A83F12;      /* 5.64 */
+
+    /* =====================================================
+       TYPE, slide scale (1920x1080 reference)
+       Floors by role (checked by gate H7): body >= 36px,
+       captions, diagram labels, table cells, and code >= 28px,
+       footer and source line >= 24px. Dense slides get density
+       from structure, never from smaller type.
+       ===================================================== */
+    --fs-hero:        200px;     /* one number, rarely */
+    --fs-display:     104px;     /* title slide */
+    --fs-section:     88px;      /* section divider */
+    --fs-h1:          60px;      /* action title */
+    --fs-h2:          48px;
+    --fs-h3:          40px;
+    --fs-subtitle:    40px;
+    --fs-body-lg:     40px;
+    --fs-body:        36px;      /* body text, at the floor on purpose */
+    --fs-table:       32px;      /* dense tables */
+    --fs-label:       28px;      /* diagram labels, code */
+    --fs-caption:     28px;
+    --fs-micro:       24px;      /* source line; do not go below */
+
+    --lh-tight:         1.1;
+    --lh-snug:          1.2;
+    --lh-normal:        1.35;
+    --lh-code:          1.4;
+
+    --tracking-tight:   -0.015em;
+    --tracking-normal:  0;
+    --tracking-wide:    0.02em;
+    --tracking-caps:    0.08em;  /* kept for token parity; tracked caps are banned on slides */
+
+    --weight-regular:   400;
+    --weight-medium:    500;
+    --weight-semibold:  600;
+    --weight-bold:      700;
+
+    /* =====================================================
+       GRID, 12 columns on 1920x1080
+       x of column n (0-based) = 96 + n * 146
+       width of n columns      = n * 146 - 24
+       ===================================================== */
+    --slide-pad-x:     96px;
+    --slide-pad-y:     64px;
+    --slide-w:         1920px;
+    --slide-h:         1080px;
+    --grid-cols:       12;
+    --grid-col:        122px;
+    --grid-gutter:     24px;
+    --evidence-top:    232px;    /* evidence starts here on every content slide */
+    --footer-bottom:   40px;
+
+    /* SPACING (8pt grid) */
+    --space-0:   0;
+    --space-1:   4px;
+    --space-2:   8px;
+    --space-3:   12px;
+    --space-4:   16px;
+    --space-5:   24px;
+    --space-6:   32px;
+    --space-7:   48px;
+    --space-8:   64px;
+    --space-9:   80px;
+    --space-10:  120px;
+
+    /* STROKES */
+    --stroke-node:      3px;
+    --stroke-edge:      3px;
+    --stroke-highlight: 6px;
+    --stroke-boundary:  2px;
+    --dash-boundary:    12 8;
+    --dash-external:    10 6;
+
+    /* RADIUS */
+    --r-0:       0;
+    --r-sm:      4px;
+    --r-md:      8px;
+    --r-node:    12px;
+
+    /* SHADOWS: none. Flat surfaces only. */
+    --shadow-0:  none;
+
+    /* MOTION */
+    --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+    --dur-fast:    150ms;
+    --dur-base:    240ms;
+  }
+
+  /* =====================================================
+     DARK SCOPE, the default for content slides.
+     Apply `.dark` to a slide root. Structure slides also use
+     it, on --bg-deep.
+     ===================================================== */
+  .dark,
+  [data-theme="dark"] {
+    --bg:                 #15171B;
+    --bg-elev:            #1D2025;
+    --bg-subtle:          #191B20;
+    --bg-inverse:         #F3F4F6;
+    --bg-deep:            #0F1114;
+
+    --fg:                 #E8EAED;      /* 14.89 13.55 14.29 */
+    --fg-muted:           #B1B7C0;      /* 8.89 8.09 8.54 */
+    --fg-subtle:          #8F97A3;      /* 6.09 5.54 5.84 */
+    --fg-inverse:         #14171C;
+    --fg-inverse-muted:   #434A55;
+    --fg-inverse-subtle:  #5B6370;
+
+    --border:             #2B2F36;
+    --border-strong:      #3A3F47;
+    --border-inverse:     #D9DCE1;
+    --border-accent:      var(--accent);  /* redeclared so it picks up the dark accent */
+
+    --accent:             #F5C542;      /* 11.06 10.07 10.62 */
+    --accent-ink:         #F5C542;
+    --accent-fg:          #15171B;
+    --accent-tint:        #2A2718;
+
+    --status-success:     #5ED39A;
+    --status-warning:     #F5C542;
+    --status-danger:      #FF7B72;      /* 7.12 */
+    --status-info:        #4F8DF5;
+
+    --node-service:        #4F8DF5;     /* 5.52 5.03 5.30 */
+    --node-service-fill:   #253146;
+    --node-datastore:      #5ED39A;     /* 9.62 8.76 9.24 */
+    --node-datastore-fill: #273D38;
+    --node-queue:          #E8743B;     /* 5.98 5.44 5.74 */
+    --node-queue-fill:     #3D2D29;
+    --node-external:       #8F97A3;     /* 6.09 5.54 5.84 */
+    --node-external-fill:  #2F3339;
+    --node-boundary:       #6B7380;     /* 3.75 3.41 3.60 */
+    --edge:                #7D8591;     /* 4.82 4.38 4.62 */
+    --edge-highlight:      var(--accent);  /* redeclared so it picks up the dark accent */
+
+    --code-bg:             #101215;
+    --code-fg:             #E8EAED;     /* 15.56 12.43 */
+    --code-keyword:        #D2A8FF;     /* 9.64 7.69 */
+    --code-string:         #7EE2A8;     /* 11.91 9.51 */
+    --code-comment:        #8F97A3;     /* 6.36 5.08 */
+    --code-number:         #FFB86B;     /* 11.01 8.79 */
+    --code-fn:             #79B8FF;     /* 9.03 7.21 */
+    --code-highlight-line: #2A2718;
+    --code-gutter:         #8F97A3;
+
+    --chart-highlight:    var(--accent);  /* redeclared so it picks up the dark accent */
+    --chart-context:      #4A515C;      /* 2.24 */
+    --chart-grid:         var(--border);
+    --chart-threshold:    #FF7B72;      /* 7.12 */
+    --chart-1:            #4F8DF5;
+    --chart-2:            #5ED39A;
+    --chart-3:            #E8743B;
+  }
+
+  /* ==========================================================
+     Synced copy of ../typography.css. Source of truth is the
+     file; refresh this block whenever it changes. Font URLs
+     gain a ../ prefix here because this file sits in slides/.
+     ========================================================== */
+  /* ============================================================
+     Technical preset, font stacks
+     ============================================================
+     One superfamily: Red Hat Display for titles (60px and up),
+     Red Hat Text for body, labels, tables, and captions, and
+     Red Hat Mono for code and identifiers (service names, topics,
+     tables, flags, endpoints) at 28px or more. The three variable
+     files ship unmodified in assets/fonts/ with their OFL.txt and
+     load from that relative path, so slides make no network
+     request. Red Hat Text has tabular figures (tnum) and a slashed
+     zero; tables and chart labels switch tnum on. Treat the family
+     as carrying the Reserved Font Name "Red Hat" (see manifest.md):
+     never subset or otherwise modify the files.
+     ============================================================ */
+
+  @font-face {
+    font-family: 'Red Hat Display';
+    src: url('../assets/fonts/red-hat-display/RedHatDisplay-VF.woff2') format('woff2');
+    font-weight: 300 900;
+    font-style: normal;
+    font-display: block;
+  }
+
+  @font-face {
+    font-family: 'Red Hat Text';
+    src: url('../assets/fonts/red-hat-text/RedHatText-VF.woff2') format('woff2');
+    font-weight: 300 700;
+    font-style: normal;
+    font-display: block;
+  }
+
+  @font-face {
+    font-family: 'Red Hat Mono';
+    src: url('../assets/fonts/red-hat-mono/RedHatMono-VF.woff2') format('woff2');
+    font-weight: 300 700;
+    font-style: normal;
+    font-display: block;
+  }
+
+  :root {
+    --font-display: 'Red Hat Display', 'Red Hat Text', -apple-system, 'Segoe UI', Helvetica, sans-serif;
+    --font-sans:    'Red Hat Text', -apple-system, 'Segoe UI', Helvetica, sans-serif;
+    --font-mono:    'Red Hat Mono', 'SF Mono', Menlo, Consolas, monospace;   /* code and identifiers only */
+  }
+
+  /* ==== Standalone viewer shell ==== */
+  html, body { margin: 0; height: 100vh; background: #000; overflow: hidden; }
+  *, *::before, *::after { box-sizing: border-box; }
+  .frame {
+    position: absolute;
+    width: 1920px; height: 1080px;
+    transform-origin: top left;
+  }
+  .frame > section {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    padding: var(--slide-pad-y) var(--slide-pad-x);
+    background: var(--bg);
+    color: var(--fg);
+    overflow: hidden;
+    font-family: var(--font-sans);
+    font-weight: var(--weight-regular);
+    font-size: var(--fs-body);
+    line-height: var(--lh-normal);
+  }
+
+  /* ==== Shared grammar ==== */
+  /* Action title: top left, 11 of 12 columns, at most two lines.
+     Evidence always starts at --evidence-top, whatever the title
+     length, so evidence never jumps between slides. */
+  h1.action {
+    font-family: var(--font-display);
+    font-size: var(--fs-h1); font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight); line-height: var(--lh-tight);
+    margin: 0; max-width: 1582px;
+    text-wrap: balance;
+  }
+  .evidence {
+    position: absolute;
+    left: var(--slide-pad-x); right: var(--slide-pad-x);
+    top: var(--evidence-top); bottom: 112px;
+  }
+  /* Footer: source line bottom left, only on slides with numbers. */
+  .footer {
+    position: absolute;
+    left: var(--slide-pad-x); right: var(--slide-pad-x); bottom: var(--footer-bottom);
+    font-size: var(--fs-micro); line-height: 1.3;
+    color: var(--fg-subtle);
+  }
+  /* Identifiers (services, topics, tables, flags) in mono, never
+     below 28px and never inside the action title. */
+  .id, code { font-family: var(--font-mono); font-size: inherit; }
+  .num, table, .chart { font-variant-numeric: tabular-nums lining-nums; }
+
+  /* ==== Diagram vocabulary (inline SVG) ==== */
+  .dg { display: block; overflow: visible; }
+  .dg text { font-family: var(--font-sans); font-size: var(--fs-label); fill: var(--fg); }
+  .dg text.mono { font-family: var(--font-mono); }
+  .dg text.muted { fill: var(--fg-muted); }
+  .dg text.subtle { fill: var(--fg-subtle); }
+  .dg text.ink { fill: var(--accent-ink); font-weight: var(--weight-semibold); }
+  .dg .n-svc { fill: var(--node-service-fill); stroke: var(--node-service); stroke-width: var(--stroke-node); }
+  .dg .n-ds  { fill: var(--node-datastore-fill); stroke: var(--node-datastore); stroke-width: var(--stroke-node); }
+  .dg .n-q   { fill: var(--node-queue-fill); stroke: var(--node-queue); stroke-width: var(--stroke-node); }
+  .dg .n-q-tick { stroke: var(--node-queue); stroke-width: var(--stroke-node); }
+  .dg .n-ext { fill: var(--node-external-fill); stroke: var(--node-external); stroke-width: var(--stroke-node); stroke-dasharray: var(--dash-external); }
+  .dg .bnd   { fill: none; stroke: var(--node-boundary); stroke-width: var(--stroke-boundary); stroke-dasharray: var(--dash-boundary); }
+  .dg .edge  { fill: none; stroke: var(--edge); stroke-width: var(--stroke-edge); stroke-linejoin: round; }
+  .dg .edge.hl { stroke: var(--edge-highlight); stroke-width: var(--stroke-highlight); }
+  .dg .edge.ret { stroke-dasharray: 10 8; }
+  .dg .m-edge { fill: var(--edge); }
+  .dg .m-hl { fill: var(--edge-highlight); }
+  .dg .rule { stroke: var(--border-strong); stroke-width: 2; }
+
+  /* ==== This slide ==== */
+  .s-state .st { fill: var(--bg-elev); stroke: var(--fg-subtle); stroke-width: var(--stroke-node); }
+  .s-state .st-in { fill: none; stroke: var(--fg-subtle); stroke-width: 2; }
+  .s-state .st.hi { fill: var(--accent); stroke: var(--accent); }
+  .s-state text.on-hi { fill: var(--accent-fg); font-weight: var(--weight-semibold); }
+  .s-state .start { fill: var(--fg-muted); }
+  .s-state .lead { stroke: var(--border-strong); stroke-width: 2; stroke-dasharray: 6 8; fill: none; }
+  .s-state text.halo { paint-order: stroke; stroke: var(--bg); stroke-width: 12px; stroke-linejoin: round; }
+  .s-state tspan.mono { font-family: var(--font-mono); }
+</style>
+<script>
+  function fit() {
+    const f = document.querySelector('.frame');
+    const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    f.style.transform = 'scale(' + s + ')';
+    const sw = 1920 * s, sh = 1080 * s;
+    f.style.left = ((window.innerWidth - sw) / 2) + 'px';
+    f.style.top  = ((window.innerHeight - sh) / 2) + 'px';
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+  /* Preview either scope: open the file with #light or #dark. */
+  window.addEventListener('DOMContentLoaded', function () {
+    const s = document.querySelector('.frame > section');
+    if (location.hash === '#light') s.classList.remove('dark');
+    if (location.hash === '#dark') s.classList.add('dark');
+  });
+</script>
+</head>
+<body>
+<div class="frame">
+<section class="dark" data-screen-label="State machine">
+  <h1 class="action">A failed send parks the row in retry_wait, so no order event is dropped</h1>
+  <div class="evidence s-state">
+    <svg class="dg" width="1728" height="736" viewBox="0 0 1728 736" role="img"
+     aria-label="Outbox row states: pending, in_flight, sent, retry_wait, dead_letter, with the transitions between them; retry_wait is highlighted">
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path class="m-edge" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<path class="edge" d="M180,34 L180,102" marker-end="url(#arr)"/>
+<path class="edge" d="M300,150 L516,150" marker-end="url(#arr)"/>
+<path class="edge" d="M760,150 L976,150" marker-end="url(#arr)"/>
+<path class="edge" d="M640,194 L640,352" marker-end="url(#arr)"/>
+<path class="edge" d="M520,400 L180,400 L180,198" marker-end="url(#arr)"/>
+<path class="edge" d="M640,444 L640,592" marker-end="url(#arr)"/>
+<path class="edge" d="M520,640 L120,640 L120,198" marker-end="url(#arr)"/>
+<text class="muted halo" x="410" y="124" text-anchor="middle" dominant-baseline="central">relay claims</text>
+<text class="muted halo" x="870" y="124" text-anchor="middle" dominant-baseline="central">broker acks</text>
+<text class="muted halo" x="664" y="275" text-anchor="start" dominant-baseline="central">send fails</text>
+<text class="muted halo" x="350" y="376" text-anchor="middle" dominant-baseline="central">backoff ends</text>
+<text class="muted halo" x="664" y="520" text-anchor="start" dominant-baseline="central">8th failure</text>
+<text class="muted halo" x="320" y="616" text-anchor="middle" dominant-baseline="central">operator replays</text>
+<circle class="start" cx="180" cy="22" r="12"/>
+<text class="muted" x="212" y="22" dominant-baseline="central">written with the order</text>
+<g data-node="state"><rect class="st" x="60" y="106" width="240" height="88" rx="20"/>
+<text class="mono" x="180" y="150" text-anchor="middle" dominant-baseline="central">pending</text></g>
+<g data-node="state"><rect class="st" x="520" y="106" width="240" height="88" rx="20"/>
+<text class="mono" x="640" y="150" text-anchor="middle" dominant-baseline="central">in_flight</text></g>
+<g data-node="state"><rect class="st" x="980" y="106" width="240" height="88" rx="20"/>
+<rect class="st-in" x="988" y="114" width="224" height="72" rx="14"/>
+<text class="mono" x="1100" y="150" text-anchor="middle" dominant-baseline="central">sent</text></g>
+<g data-node="state"><rect class="st hi" x="520" y="356" width="240" height="88" rx="20"/>
+<text class="mono on-hi" x="640" y="400" text-anchor="middle" dominant-baseline="central">retry_wait</text></g>
+<g data-node="state"><rect class="st" x="520" y="596" width="240" height="88" rx="20"/>
+<text class="mono" x="640" y="640" text-anchor="middle" dominant-baseline="central">dead_letter</text></g>
+<path class="lead" d="M1298,150 L1232,150" marker-end="url(#arr)"/>
+<text x="1314" y="150" dominant-baseline="central"><tspan class="mono">orders.v1</tspan> consumer lag</text>
+<path class="lead" d="M1298,400 L772,400" marker-end="url(#arr)"/>
+<text x="1314" y="400" dominant-baseline="central"><tspan class="mono">outbox_retry_rows</tspan></text>
+<text x="1314" y="438" dominant-baseline="central">gauge, alert over 100</text>
+<path class="lead" d="M1298,640 L772,640" marker-end="url(#arr)"/>
+<text x="1314" y="640" dominant-baseline="central">any row pages sre</text>
+    </svg>
+  </div>
+  <div class="footer">Source: services/checkout/outbox.py and relay config (max_attempts=8, backoff 1&nbsp;s to 5&nbsp;min), 2026-09-22</div>
+</section>
+</div>
+
+</body>
+</html>

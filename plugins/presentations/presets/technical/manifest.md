@@ -9,7 +9,8 @@ Engineers presenting to engineers: architecture reviews, design docs presented l
 - Layout grammar: assertion-evidence research and engineering-slide guidance from the presentation design systems report of 2026-09-28 (`reports/presentation-design-systems-2026-09-28/report.md` and `research/layouts-reference-decks.md`: Alley and Neeley 2005, Alley et al. 2006, Garner and Alley 2013, the Alley checklist, Mayer and Fiorella, BrightCarbon's 12-column grid).
 - Diagram notation: the C4 model's rules for labelled boundaries and a key for every shape and color, and the engineering design-doc forms it borrows for structure slides (RFC header, ADR in Nygard's context, decision, consequences shape).
 - Wording rules: the report's "Wording rules for `language.md`", adapted to engineering copy (identifiers, units, percentiles).
-- Colors, fonts, and every example slide were built for this preset on 2026-09-28; no source deck was copied.
+- Colors, fonts, and the first eleven example slides were built for this preset on 2026-09-28; no source deck was copied.
+- Reference decks for the eight slides added on 2026-09-29 (composition and technique only; no text, data, or marks copied), from the reference slide decks research of 2026-09-28 (`reports/reference-slide-decks-2026-09-28/research/technical-engineering.md`): Sue Lueder, "What Brought Us Down?" (SREcon15); Brendan Gregg, "Blazing Performance with Flame Graphs" (LISA 2013) and "Linux Performance Tools" (Velocity 2015); Gil Tene, "How NOT to Measure Latency" (2013); Kavya Joshi, "A Practical Look at Performance Theory" (Strange Loop 2018) and "Let's talk locks!" (QCon NY 2017); Jeff Dean, LADIS 2009 keynote; Julia Evans, "Making Hard Things Easy" (Strange Loop 2023).
 
 ## Coverage
 
@@ -17,7 +18,15 @@ Engineers presenting to engineers: architecture reviews, design docs presented l
 - `typography.css`: Red Hat Display, Text, and Mono, vendored.
 - `guidelines.md`: voice, the layout grammar, the diagram notation, color and type rules.
 - `language.md`: ten rules for technical copy and a before and after table.
-- `slides/`: TitleSlide, SectionDivider, ArchitectureSlide, SequenceSlide, DataFlowSlide, PipelineSlide, CodeSlide, TradeoffTableSlide, DecisionSlide, LatencyChartSlide, ClosingSlide. All are new for this preset; none is adapted from `default`. Each embeds a synced copy of the variable files, makes no network request, and opens in the light scope with `#light` in the URL (`#dark` forces dark).
+- `slides/`: TitleSlide, SectionDivider, ArchitectureSlide, SequenceSlide, DataFlowSlide, PipelineSlide, CodeSlide, TradeoffTableSlide, DecisionSlide, LatencyChartSlide, ClosingSlide. All are new for this preset; none is adapted from `default`. Each embeds a synced copy of the variable files, makes no network request, and opens in the light scope with `#light` in the URL (`#dark` forces dark). Added on 2026-09-29, continuing the same checkout story (the INC-2291 ledger incident that led to RFC-142):
+  - `IncidentTimelineSlide`: 8 milestones on one axis, the detect-and-escalate phase bracketed in amber under the open-incident bracket; after Sue Lueder's incident timeline slide (SREcon15, slide 12).
+  - `FlameGraphSlide`: wall-clock flame graph rendered from `data-frames`, one hot tower in amber, three callouts with leaders in the empty band above; after Brendan Gregg's annotated flame graph (LISA 2013, slide 20).
+  - `AnnotatedTerminalSlide`: psql and kubectl output on the 9-column panel, two highlighted bands, three margin labels with leaders; after Gregg's annotated DTrace output (LISA 2013, slide 13) and iostat slide (Velocity 2015, slide 34).
+  - `BeforeAfterBenchmarkSlide`: the same load test as reported and corrected, stacked on one scale with a shared p99 reference line and a 6.9x verdict; after Gil Tene's coordinated-omission correction slide (2013, slide 42).
+  - `CapacityCurveSlide`: a 4-step reasoning chain beside the p99-by-load curve, three load markers, the amber arrow landing on 2,100 orders/s; after Tene's capacity curve (slide 24) and Kavya Joshi's maximum-throughput slide (Strange Loop 2018, slide 21).
+  - `ReferenceNumbersSlide`: 11 checkout-path spans in one unit (µs), right aligned so digit length shows magnitude; after Jeff Dean's numbers slide (LADIS 2009, slide 24).
+  - `StateMachineSlide`: the outbox row's 5 states and 6 transitions, `retry_wait` filled amber, side labels naming what watches each end state; after Gregg's thread state diagram (LISA 2013, slide 139).
+  - `TalkMapSlide`: two sections, the agenda as four section names with what each part does, then the same map as progress (done parts subtle, current part amber); after Kavya Joshi's talk map ("Let's talk locks!", slide 8) and Julia Evans's topic tracker. Open `#2` for the second section.
 - `assets/fonts/`: three vendored font files with their license.
 
 ## What this direction avoids
@@ -34,6 +43,7 @@ Cool graphite and paper neutrals with one amber trace-highlight accent and the R
 - `--lh-code` is 1.4 so 16 lines of 28px code, the file path, and padding fit the 736px evidence area.
 - Structure slides use `--bg-deep` in the dark scope so they stay distinct from dark content slides by background as well as composition.
 - The latency chart renders from its `data-*` attributes (labels, series, threshold, annotation), like the default preset's charts, so the PPTX exporter can rebuild it.
+- 2026-09-29 additions. The flame graph, benchmark pair, and capacity curve render from `data-*` attributes like the latency chart. Incident milestones sit evenly spaced, as in the reference; the phase durations are therefore drawn as brackets, not filled bars, so a bar's length never suggests a duration the axis does not measure. The reference's tiny grey milestone sub-labels became two 28px lines (time, then what happened) plus a day row. Flame-graph boxes carry no text (function names would fall under 28px); only the callout targets are named. Reference-numbers values use Red Hat Text with tabular figures rather than mono, because monospace is kept for code, terminal output, and identifiers; each value carries its unit. The talk map has four parts, not the reference's three, because the agenda must match the section divider's four sections (S3), and it carries no numbers. Multi-section files show one section at a time; `#2` opens the second and `#2-light` previews its light scope. Margin-label leaders on the terminal slide are drawn as each label's own `::before` and `::after`, so label and arrow stay one element and no overlay box collides with the panel (H9). Like the section divider, the talk map is dark only.
 
 ## Contrast (WCAG 2.x)
 
@@ -85,10 +95,10 @@ Each cell is the smallest pairwise difference and the pair that produced it. The
 
 ## Verification
 
-- Every slide rendered at 1920x1080 in both scopes (structure slides dark only) and checked by eye.
+- Every slide rendered at 1920x1080 in both scopes (structure slides dark only) and checked by eye. The 2026-09-29 slides were checked the same way, each section of `TalkMapSlide` separately; the H1, H2, H6, H7, H8, and H9 probes pass, with only the briefing word-count warning left on the denser slides.
 - The creating-presentations hard-gate probes (H1, H2, H6, H7, H9) and the copy probe (H8) ran against every slide in both scopes with no failures. Remaining warnings: word counts over the 50-word briefing budget on the code, table, decision, and sequence slides, which the grammar accepts for this preset.
 
 ## Gaps
 
-- Not yet built for this voice: incident timeline, state machine, entity-relationship diagram, capacity or cost bar chart, dashboard of four to six metrics, and a before and after architecture pair. For other roles, restyle the `default` gallery layout with these variables.
+- Not yet built for this voice: entity-relationship diagram, cost bar chart, dashboard of four to six metrics, a before and after architecture pair, and the research shortlist's alternates (interleaving timeline, back-of-envelope estimate, state timeline, remediation by phase, same-scale small multiples, tool map, command workflow). For other roles, restyle the `default` gallery layout with these variables.
 - No `icons/` library by design: the diagram shape vocabulary replaces icons.

@@ -20,3 +20,5 @@ driveable = "driveable"
 ba = "ba"
 # PPTX chart-series XML element (`c:ser`); the tokenizer splits on the colon.
 ser = "ser"
+# Company name (Canva pitch deck) cited as a slide reference.
+Canva = "Canva"

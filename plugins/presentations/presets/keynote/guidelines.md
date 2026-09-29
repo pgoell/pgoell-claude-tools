@@ -68,7 +68,7 @@ Sources: Apple keynotes (one idea per slide, single-number slides such as "6 mil
 
 ## Layouts
 
-Gallery slides: TitleSlide (one huge line, byline), SectionDivider, ContentSlide (the build), StatementSlide, QuestionSlide, BigNumberSlide, StatSlide (before and after), BarChartSlide (three columns), QuoteSlide, ImageSlide, ClosingSlide (one sentence). Comparison is not built; use StatSlide for a two-value comparison and two slides for anything larger. Skip agendas, executive summaries, tables, process diagrams, and dense charts.
+Gallery slides: TitleSlide (one huge line, byline), SectionDivider, ContentSlide (the build), StatementSlide, QuestionSlide, BigNumberSlide, StatSlide (before and after), BarChartSlide (three columns), QuoteSlide, ImageSlide, ClosingSlide (one sentence), BaseAndComparedSlide (a scale figure, then a compared pair on the thirds lines), ThirdCategorySlide (two known things in the outer thirds, the answer built in the middle), LineExitsFrameSlide (a line with no axis whose last segment turns to the accent and runs out of the frame), HighlightRegionSlide (one image, one accent outline per step), ReplaceBuildSlide (one part at a time at center, then the row, then the name), SilhouetteCompareSlide (two side profiles overlaid at one scale), PositioningDotsSlide (two word-ended axes, the answer last in the empty corner), UnitGridSlide (480 hollow squares, then the 120 that matter filled). For a comparison use StatSlide for two values, BaseAndComparedSlide for a pair against a scale, SilhouetteCompareSlide for two shapes, and two slides for anything larger. Skip agendas, executive summaries, tables, process diagrams, and dense charts.
 
 ## Image slot
 

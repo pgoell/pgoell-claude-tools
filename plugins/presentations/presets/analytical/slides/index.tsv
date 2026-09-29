@@ -1,0 +1,20 @@
+file	role	move	form	mode	sequence	summary
+BarChartSlide.html	body	benchmark	bar-chart	read	single	Sorted bar chart of cost per depot against the median, one depot highlighted
+ChartTakeawaySlide.html	body	benchmark,trend	line-chart	read	single	Line chart of capacity by weekday against a 60% line, with a takeaway
+ChartTripletSlide.html	body	prove	bar-chart	read	pair	Three small bar charts with claim sub-headlines, then a two-panel variant
+ClosingSlide.html	closing	recommend,plan	table	read	single	Decision for the board with a next steps table of owners and dates
+ContentSlide.html	body	frame	table	read	single	Three rows of claim and figure on cost, volume, and service
+ExecSummarySlide.html	summary	recommend	text-list	read	single	Executive summary as situation, complication, question, and answer with page references
+FundingBridgeSlide.html	body	decompose	part-chart	read	single	Waterfall of one-off costs ending in a total split by who pays
+GapToTargetSlide.html	body	benchmark,trend	line-chart	read	single	Cost line chart with actual and forecast, a target line, and the gap shaded
+IssueTreeSlide.html	body	decompose,evaluate	diagram	read	single	Issue tree splitting a cost goal into levers with yearly savings
+PrioritizationMatrixSlide.html	body	evaluate,plan	two-axis	read	single	Impact and effort matrix of levers in panels with start-order numbers
+ProcessSlide.html	body	plan	flow,timeline	read	single	Workplan of four dated phases over workstream lanes
+RecommendationsSlide.html	body	recommend	table	read	single	Six numbered recommendations grouped into bands by area
+ScenarioFanSlide.html	body	trend,evaluate	line-chart	read	single	History line splitting into dashed scenario paths, with lettered levers beside it
+ScorecardSlide.html	body	evaluate	table	read	single	Options scored against criteria in a table, the recommended option marked
+SectionDivider.html	divider	frame	text-list	read	single	Section divider listing all parts with the current one enlarged
+SensitivityGridSlide.html	body	evaluate	table,bar-chart	read	single	Three by three grid of the result under two assumptions, base case tinted
+StatSlide.html	body	decompose	big-number,part-chart	read	single	One big saving figure with a three-bar bridge showing how it adds up
+TargetsRowSlide.html	body	benchmark	number-set,bar-chart	read	single	Four KPI columns, each a target figure over small bars for past years
+TitleSlide.html	cover	frame,recommend	statement	read	single	Cover whose title states the answer, with client, date, and authors

@@ -1,0 +1,28 @@
+file	role	move	form	mode	sequence	summary
+AgendaSlide.html	agenda	frame	text-list	presented	single	Agenda of four topics with minutes for each
+BarChartSlide.html	body	benchmark	bar-chart	presented	single	Horizontal bar chart ranking clients, one bar highlighted
+CapabilitiesSlide.html	body	prove	text-list	presented	single	Three capability rows, each a claim with its evidence
+ChartInsightSlide.html	body	trend	line-chart	presented	single	Line chart with a marked change and an insight callout on the right
+ClosingSlide.html	closing	recommend	statement	presented	single	Closing with the decision and its date, plus contact details
+ComparisonSlide.html	body	compare	text-list	presented	single	Two text columns comparing today with after the change
+ContentSlide.html	body	explain	text-list	presented	single	Action title over three supporting points with a source line
+DiagramSlide.html	body	explain	diagram	presented	single	Boxes and arrows from sources through one platform to consumers
+ExecSummarySlide.html	summary	recommend	text-list	read	single	Executive summary whose points are the titles of later slides
+ImageOverlaySlide.html	body	prove	image,map	presented	single	Full-bleed image of a store map with the title on a dark overlay
+InvestmentOutcomeSlide.html	body	recommend,decompose	flow	presented	single	Fee as one big number, then arrows to the figures it buys
+MarketSizingSlide.html	body	frame,decompose	part-chart	presented	single	Market size as three shrinking circles down to the part we take
+MatrixSlide.html	body	evaluate	two-axis	read	single	Scatter of items by effort and value in a 2x2 with quadrant counts
+OptionsComparisonSlide.html	body	evaluate,recommend	text-list	presented	build	Three option cards along a cost scale, the recommended one revealed last
+PositioningMapSlide.html	body	compare,frame	two-axis	presented	single	Competitors as dots on two plain-word axes, the empty gap ringed
+PricingTiersSlide.html	body	evaluate	table	read	single	Pricing table of three tiers, the recommended tier tinted
+ProblemSlide.html	body	frame	text-list	presented	single	Problem as three short statements, each led by a bold phrase
+ProcessSlide.html	body	explain	flow	presented	single	Five process steps in a row, one line each
+PromiseVsDeliveredSlide.html	body	prove,benchmark	line-chart	presented	build	Promised line first, then the delivered line added on the same axes
+QuoteSlide.html	body	prove	quote	presented	single	Client quote with name and context on a dark ground
+SectionDivider.html	divider	frame	statement	presented	single	Section divider with part number and part title
+StatSlide.html	body	prove	big-number,bar-chart	presented	single	One big number with a before and after bar
+TableSlide.html	body	prove	table	read	single	Table of past client results, one column highlighted
+TeamSlide.html	body	prove	text-list	presented	single	Team as four name cards with one result each, plus the wider team
+TimelineSlide.html	body	plan	timeline	presented	single	Timeline of four project phases by week
+TitleSlide.html	cover	frame	statement	presented	single	Cover with the proposal's claim as the title
+WaterfallSlide.html	body	decompose	part-chart	read	single	Waterfall of savings by source ending in the net total

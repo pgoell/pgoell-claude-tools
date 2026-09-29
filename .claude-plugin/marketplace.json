@@ -80,7 +80,7 @@
       "name": "presentations",
       "source": "./plugins/presentations",
       "description": "Presentation lifecycle skills: content design, HTML deck building with brand presets and a perfecting loop, native PPTX export, and preset extraction.",
-      "version": "0.2.0"
+      "version": "0.3.0"
     },
     {
       "name": "diagrams",

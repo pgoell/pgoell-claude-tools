@@ -1,0 +1,20 @@
+file	role	move	form	mode	sequence	summary
+AnnotatedTerminalSlide.html	body	diagnose	code	presented	single	Terminal output with highlighted rows and margin notes
+ArchitectureSlide.html	body	explain	diagram	presented	single	Component map in zones with the request path highlighted
+BeforeAfterBenchmarkSlide.html	body	diagnose,compare	line-chart,big-number	presented	single	Reported and corrected latency charts stacked on one scale, with the multiplier
+CapacityCurveSlide.html	body	explain,benchmark	line-chart	presented	single	Reasoning steps beside a latency by load curve with an SLO line
+ClosingSlide.html	closing	recommend,plan	table	read	single	The decision with an actions table of owners and dates
+CodeSlide.html	body	explain	code	presented	single	Code listing with line numbers and one margin callout
+DataFlowSlide.html	body	explain	flow	presented	single	Data flow from sources through storage to consumers, one path highlighted
+DecisionSlide.html	body	recommend	text-list	read	single	Decision record with context, options, decision, and consequences
+FlameGraphSlide.html	body	diagnose	part-chart	presented	single	Flame graph with one hot tower highlighted and callouts above
+IncidentTimelineSlide.html	body	diagnose	timeline	read	single	Incident milestones on one axis with phase brackets and durations
+LatencyChartSlide.html	body	diagnose,trend	line-chart	presented	single	Latency percentiles over weeks with an SLO line and a release marker
+PipelineSlide.html	body	explain	flow	presented	single	Build and deploy pipeline stages with durations and failure paths
+ReferenceNumbersSlide.html	body	explain	table	presented	single	Table of operation costs in one unit, right aligned
+SectionDivider.html	divider	frame	text-list	presented	single	Section divider listing the parts with the current one marked and its question
+SequenceSlide.html	body	explain	diagram	presented	single	Sequence diagram of numbered messages between services
+StateMachineSlide.html	body	explain,diagnose	diagram	presented	single	State machine with one state highlighted and side labels
+TalkMapSlide.html	agenda	frame	text-list	presented	pair	Agenda of four parts, then the same map with the current part marked
+TitleSlide.html	cover	frame,recommend	text-list	presented	single	Cover for a proposal with title, status, owner, reviewers, and decision date
+TradeoffTableSlide.html	body	evaluate	table	read	single	Options against criteria in a table, the recommended column marked
