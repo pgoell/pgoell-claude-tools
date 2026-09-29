@@ -19,6 +19,8 @@ presets/<name>/
   icons/          optional. Brand icon library as one SVG per icon, organized in subdirectories, with an index.tsv (one row per icon: path, name, variant, category, section, aliases, keywords, colors) and a README.md documenting search and usage. Monochrome icons use currentColor so CSS color recolors them; consumers grep the index, then inline the SVG. Icons come only from this library, never drawn freehand; a preset without one gets no icons.
   slides/         optional. Example slides as self-contained HTML on a 1920x1080 canvas.
     index.tsv     required when slides/ exists. One row of tags per slide file, from the closed vocabulary in TAGS.md, so consumers can search every gallery by role, move, and form.
+  previews/       optional. One PNG per example slide (rendered at 1920x1080, stored at 1280x720), for browsing the gallery on GitHub. Regenerate whenever a slide changes.
+  SHOWCASE.md     optional. Inlines every preview, grouped by the role column of slides/index.tsv, with each row's summary as caption.
 ```
 
 ## Layout grammar
@@ -75,6 +77,8 @@ Consumers resolve the active preset in this order:
 4. With no local preset, pick the bundled preset that fits the deck's use from the table below, state the choice and the reason, and offer the alternatives in one line. When the use is unclear and the user is present, ask. When nothing points elsewhere, use `default`.
 
 ## Bundled presets
+
+Each bundled preset has a `SHOWCASE.md` with a rendered preview of every example slide: [default](default/SHOWCASE.md), [analytical](analytical/SHOWCASE.md), [keynote](keynote/SHOWCASE.md), [product](product/SHOWCASE.md), [editorial](editorial/SHOWCASE.md), [technical](technical/SHOWCASE.md), [workshop](workshop/SHOWCASE.md).
 
 | Preset       | Voice                                                                                        | Suits                                                                                         |
 | ------------ | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
