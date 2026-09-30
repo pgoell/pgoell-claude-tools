@@ -1,9 +1,11 @@
 ---
 name: pyramid
-description: Structure memos, recommendations, briefings, and decision documents with the Pyramid Principle.
+description: Deprecated, superseded by writing:ghostwrite (pyramid audits for work documents) and writing:coach (structure drill). Formerly used to structure memos, recommendations, briefings, and decision documents with the Pyramid Principle.
 ---
 
 # Pyramid Skill
+
+> **Deprecated.** Superseded by `writing:ghostwrite` (runs the pyramid audits on work-document outlines) and `writing:coach` (Socratic structure drill). This copy is archived and no longer maintained.
 
 Multi-phase pyramid-principle skill with a parallel audit panel. Modeled on Barbara Minto's method.
 
@@ -331,7 +333,7 @@ Used in `--phase` flag and task list:
 ## Behavioral Guidelines
 
 - Trigger on memo, recommendation, briefing, decision document, or analytical report intent, and on explicit requests for pyramid or Minto structure.
-- Do NOT trigger on narrative, personal essay, exploratory or discovery, or pedagogical writing. Route those to the writing skill.
+- Do NOT trigger on narrative, personal essay, exploratory or discovery, or pedagogical writing. Route those to the `deprecated:writing` skill.
 - Always announce the active reference in the first response: _"Using pyramid reference: {path}"_.
 - Always create the task list before dispatching the first phase agent so the user sees what is coming.
 - Never skip the domain-limits gate silently. Surface it even when the user asked for pyramid explicitly; the writer stays in control but must acknowledge the mismatch.

@@ -1,8 +1,13 @@
 {
   "name": "deprecated",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Archive of superseded skills kept installable for old workflows; every skill points at its replacement",
-  "author": { "name": "Pascal Göllner" },
+  "author": {
+    "name": "Pascal Göllner"
+  },
   "license": "MIT",
-  "keywords": ["deprecated", "archive"]
+  "keywords": [
+    "deprecated",
+    "archive"
+  ]
 }

@@ -7,7 +7,7 @@ exclude_path = [
   "plugins/research/skills/research/report-template.md",
   "plugins/workbench/skills/brainstorming/references/brainstorm-summary-template.html",
   "plugins/workbench/skills/writing-plans/references/plan-template.html",
-  "plugins/writing/skills/tech-doc/style-presets/google/links.md",
-  "plugins/writing/skills/tech-doc/style-presets/house/links.md",
-  "plugins/writing/skills/tech-doc/style-presets/microsoft/links.md",
+  "plugins/deprecated/skills/tech-doc/style-presets/google/links.md",
+  "plugins/deprecated/skills/tech-doc/style-presets/house/links.md",
+  "plugins/deprecated/skills/tech-doc/style-presets/microsoft/links.md",
 ]

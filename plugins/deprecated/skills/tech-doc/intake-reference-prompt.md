@@ -35,7 +35,7 @@ Dispatched agent prompt:
     **Quadrant:** reference
     **Date:** {YYYY-MM-DD}
 
-    **Schema file:** plugins/writing/skills/tech-doc/reference-schemas/<type>.md
+    **Schema file:** plugins/deprecated/skills/tech-doc/reference-schemas/<type>.md
 
     ## Reference type
     <function | cli-command | config | rest-endpoint | error-codes>
@@ -54,7 +54,7 @@ Dispatched agent prompt:
 
     - Ask one question at a time. Wait for the writer's response before moving on.
     - If the writer's answer is too vague, ask one clarifying follow-up. Don't loop more than once per question.
-    - Populate the `**Schema file:**` line with the repo-relative path to the matching schema file (e.g., `plugins/writing/skills/tech-doc/reference-schemas/function.md`). The draft phase reads this line to load the correct schema.
+    - Populate the `**Schema file:**` line with the repo-relative path to the matching schema file (e.g., `plugins/deprecated/skills/tech-doc/reference-schemas/function.md`). The draft phase reads this line to load the correct schema.
 
     ## Reviewer Feedback
 

@@ -17,8 +17,8 @@ Use this skill when the user wants to plan or refine the _content_ of a slide de
 
 Disambiguate against three nearby skills:
 
-- **Not `writing:writing` with `--format talk`.** That produces a prose speech (a written piece a presenter reads or delivers). The presentations skill produces a deck (sentence-takeaway headlines, visual briefs, structured speaker notes per slide).
-- **Not `writing:pyramid`.** That produces a memo: governing idea plus grouped reasons rendered as written prose. The presentations skill uses the same answer-first logic but outputs a slide-by-slide storyboard, not a memo.
+- **Not `deprecated:writing` with `--format talk`.** That produces a prose speech (a written piece a presenter reads or delivers). The presentations skill produces a deck (sentence-takeaway headlines, visual briefs, structured speaker notes per slide).
+- **Not `deprecated:pyramid`.** That produces a memo: governing idea plus grouped reasons rendered as written prose. The presentations skill uses the same answer-first logic but outputs a slide-by-slide storyboard, not a memo.
 - **Not `deprecated:crafting-presentations`.** That renders a deck as multi-file HTML with a slide-stage runtime and a presenter sidecar. The presentations skill stops at `deck.md`; the user can invoke `deprecated:crafting-presentations` next and pass `deck.md` as the source brief.
 
 Two entry modes:

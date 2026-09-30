@@ -1,9 +1,11 @@
 ---
 name: writing
-description: Draft, review, and finish long form prose, essays, talks, newsletters, memos, and briefings.
+description: Deprecated, superseded by writing:ghostwrite (drafting) and writing:coach (learning to write). Formerly used to draft, review, and finish long form prose, essays, talks, newsletters, memos, and briefings.
 ---
 
 # Writing Skill
+
+> **Deprecated.** Superseded by `writing:ghostwrite` (draft a piece from your own facts) and `writing:coach` (learn to write it yourself). This copy is archived and no longer maintained.
 
 Multi-phase writing pipeline with a panel of specialised critics. Modeled on Katie Parrott's process and the existing research plugin's orchestrator pattern.
 
@@ -226,7 +228,7 @@ Dispatch each phase agent via the host subagent tool when supported. The orchest
 
 **Analytical formats** (memo, briefing, announcement):
 
-Skip writing's interview entirely. Run the pyramid skill's Phase 1 (intake) in **dispatched mode** as documented in `plugins/writing/skills/pyramid/SKILL.md`, with these adjustments:
+Skip writing's interview entirely. Run the pyramid skill's Phase 1 (intake) in **dispatched mode** as documented in `plugins/deprecated/skills/pyramid/SKILL.md`, with these adjustments:
 
 1. **Mode (step 1 of pyramid intake):** ask via AskUserQuestion as normal. Note: Mode B (Restructure) is rare in this dispatched path because writing skill is forward-building; the writer typically picks Greenfield or Socratic.
 2. **Genre (step 2 of pyramid intake):** pre-fill from the writing skill's resolved format. `memo` → genre `Memo`. `briefing` → genre `Briefing`. `announcement` → genre `Announcement`. Do NOT ask the user; surface the pre-fill in a one-line confirmation: "Genre: {genre} (from format)."
@@ -239,7 +241,7 @@ The orchestrator reads pyramid SKILL.md sections at dispatch time. No code or pr
 
 **Technical formats** (tutorial, how-to, reference, explanation):
 
-Skip writing's interview entirely. Run the tech-doc skill's Phase 1 (intake) in dispatched mode as documented in `plugins/writing/skills/tech-doc/SKILL.md`, with these adjustments:
+Skip writing's interview entirely. Run the tech-doc skill's Phase 1 (intake) in dispatched mode as documented in `plugins/deprecated/skills/tech-doc/SKILL.md`, with these adjustments:
 
 1. **Quadrant (always-asked step in tech-doc intake):** pre-fill from the writing skill's resolved format. `tutorial` → quadrant `tutorial`, `how-to` → quadrant `how-to`, `reference` → quadrant `reference`, `explanation` → quadrant `explanation`. Surface the pre-fill in a one-line confirmation: "Quadrant: {quadrant} (from format)." Tech-doc's standalone path always asks the quadrant question; in dispatched mode, accept the format-derived value and skip the question.
 2. **Style preset:** dispatch with `--style-preset` set per writing's resolved style guide if it matches a preset (`google`, `microsoft`, or `house`). Otherwise default to `house`.
@@ -261,7 +263,7 @@ The orchestrator reads tech-doc SKILL.md sections at dispatch time. No code or p
 
 **Analytical formats** (memo, briefing, announcement):
 
-Run pyramid skill's Phases 2 through 5 (construct, audit, opener, render) inline as documented in `plugins/writing/skills/pyramid/SKILL.md`. The pyramid pipeline is reused unchanged; the orchestrator follows pyramid SKILL.md's instructions for each phase.
+Run pyramid skill's Phases 2 through 5 (construct, audit, opener, render) inline as documented in `plugins/deprecated/skills/pyramid/SKILL.md`. The pyramid pipeline is reused unchanged; the orchestrator follows pyramid SKILL.md's instructions for each phase.
 
 1. **Pyramid Phase 2 (Construct):** dispatch the construct agent per `pyramid/SKILL.md`. Mode-branched (greenfield, restructure, socratic) based on the mode collected in Phase 1. Verify `construction.md` exists.
 2. **Pyramid Phase 3 (Audit panel):** fan out four audit agents in parallel per `pyramid/SKILL.md`. Consolidate into `audit-summary.md`. Apply pyramid's CRITICAL re-dispatch logic (up to 2 iterations) verbatim.
@@ -274,7 +276,7 @@ After Phase 2 completes, the working directory contains `intake.md`, `constructi
 
 **Technical formats** (tutorial, how-to, reference, explanation):
 
-Run tech-doc skill's Phases 2-6 (outline, throughline, draft, panel, finishing) inline as documented in `plugins/writing/skills/tech-doc/SKILL.md`. The tech-doc pipeline is reused unchanged; the orchestrator follows tech-doc SKILL.md for each phase.
+Run tech-doc skill's Phases 2-6 (outline, throughline, draft, panel, finishing) inline as documented in `plugins/deprecated/skills/tech-doc/SKILL.md`. The tech-doc pipeline is reused unchanged; the orchestrator follows tech-doc SKILL.md for each phase.
 
 1. **Tech-doc Phase 2 (Outline):** dispatch the outline phase per `tech-doc/SKILL.md`. Verify `outline.md` (tutorial/how-to/explanation) or `schema.md` (reference) exists.
 2. **Tech-doc Phase 3 (Throughline gate):** orchestrator-only. Apply tech-doc's gate per quadrant.

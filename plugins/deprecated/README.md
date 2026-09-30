@@ -14,5 +14,8 @@ Archive of superseded skills. They remain installable so old workflows keep reso
 | `copilot`                     | `workbench` | `workbench:pilot` (Gates: design)                                                        |
 | `dispatching-parallel-agents` | `workbench` | `workbench:subagent-driven-development` (Parallel dispatch section)                      |
 | `terse-mode`                  | `workbench` | retired without replacement                                                              |
+| `writing`                     | `writing`   | `writing:ghostwrite` (drafting) and `writing:coach` (learning to write)                  |
+| `pyramid`                     | `writing`   | `writing:ghostwrite` (pyramid audits) and `writing:coach` (structure drill)              |
+| `tech-doc`                    | `writing`   | `writing:ghostwrite` (tech docs from the repository)                                     |
 
 Installing this plugin alongside `presentations` duplicates the triggering surface for deck work; only install it if you need the old skill names.

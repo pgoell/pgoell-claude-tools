@@ -24,7 +24,7 @@ Dispatched agent prompt:
        supporting findings, evidence, audit notes)
     2. Read `{OUTPUT_PATH}/intake.md` (audience, reader question, mode, genre)
     3. Read `{OUTPUT_PATH}/throughline.md` if it exists (the ten-word compression
-       of the piece; the single thing the reader must take away — should match the apex)
+       of the piece; the single thing the reader must take away, should match the apex)
     4. Read `{OUTPUT_PATH}/audit-summary.md` (MINOR flags worth respecting in prose)
     5. Read the active style guide (voice rules, anti-patterns, signature moves)
 
