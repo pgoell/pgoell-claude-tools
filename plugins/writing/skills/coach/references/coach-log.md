@@ -1,6 +1,6 @@
 # Coaching log
 
-Location: `.pgoell/writing/coach-log.md` at the project root (fallback `~/.pgoell/writing/coach-log.md` when that exists and the project has none). Read it at the start of every session; update it at the end of every round.
+Location: `.pgoell/writing/coach-log.md` at the project root. Read it at the start of every session; update it at the end of every round.
 
 ## Format
 

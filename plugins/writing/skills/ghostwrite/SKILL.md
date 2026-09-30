@@ -31,10 +31,10 @@ All dialogue with the owner runs in the main thread. Subagents cannot ask the us
 
 ## Files this skill keeps
 
-Keep owner files in `.pgoell/writing/` at the root of the current project (the git root, or the working directory when there is no repository), matching the `.pgoell/` convention the presentations plugin uses. If the project has none but `~/.pgoell/writing/` exists, read from and write to that instead.
+The owner's voice is the same in every project, so voice files live in one global place, `~/.pgoell/writing/` (the `.pgoell/` convention the presentations plugin uses, in the home directory):
 
-- `.pgoell/writing/voice-note.md`: the owner's confirmed voice note plus the edit log. Format in `references/voice-note.md`.
-- `.pgoell/writing/samples/`: two to five pieces the owner wrote themselves, if they have them.
+- `~/.pgoell/writing/voice-note.md`: the owner's confirmed voice note plus the edit log. Format in `references/voice-note.md`.
+- `~/.pgoell/writing/samples/`: two to five pieces the owner wrote themselves, if they have them.
 
 Write the draft to a file the owner names. Default: `<slug>.md` in the working directory. Short pieces (an email, a PR description) can stay in the chat unless the owner asks for a file.
 
@@ -70,7 +70,7 @@ Ask the owner for the one sentence the reader should remember. The owner writes 
 
 Skip this step for PR text and reference docs. For every other genre, load `references/voice-note.md`.
 
-- Read `.pgoell/writing/voice-note.md` if it exists. If not, offer to start one: ask for two to five pieces the owner wrote themselves, read them, and propose at most five recurring habits and anti-patterns. Only entries the owner confirms go into the note.
+- Read `~/.pgoell/writing/voice-note.md` if it exists. If not, offer to start one: ask for two to five pieces the owner wrote themselves, read them, and propose at most five recurring habits and anti-patterns. Only entries the owner confirms go into the note.
 - Treat samples as evidence for the note's rules, not as a corpus to imitate. Do not borrow another writer's samples as the owner's voice.
 - The default register is plain: short words, active verbs, concrete nouns, no signature moves, no persona, no invented anecdotes, no rhetorical flourishes the owner did not use.
 

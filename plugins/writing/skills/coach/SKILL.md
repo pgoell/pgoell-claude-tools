@@ -36,9 +36,9 @@ Every coaching turn runs in the main thread; subagents cannot talk to the owner.
 
 ## Files this skill keeps
 
-Keep the coaching log at `.pgoell/writing/coach-log.md` at the root of the current project (the git root, or the working directory without a repository). If the project has none but `~/.pgoell/writing/coach-log.md` exists, use that. Format in `references/coach-log.md`. It holds the intake, the current drill, and the fault log.
+Keep the coaching log at `.pgoell/writing/coach-log.md` at the root of the current project (the git root, or the working directory without a repository). Format in `references/coach-log.md`. It holds the intake, the current drill, and the fault log.
 
-Read `.pgoell/writing/voice-note.md` if it exists (the ghostwrite skill keeps it). Its confirmed habits tell you what not to "correct".
+Read the global voice note `~/.pgoell/writing/voice-note.md` if it exists (the ghostwrite skill keeps it). Its confirmed habits tell you what not to "correct".
 
 ## Session structure
 

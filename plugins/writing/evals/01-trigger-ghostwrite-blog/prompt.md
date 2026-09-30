@@ -1,4 +1,5 @@
 ---
+tags: [core]
 max_turns: 20
 timeout_seconds: 600
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit, Bash, Agent]

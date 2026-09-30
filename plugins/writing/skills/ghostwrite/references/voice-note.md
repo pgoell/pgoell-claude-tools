@@ -2,7 +2,7 @@
 
 The voice note is a short list of the owner's confirmed writing habits and anti-patterns. It grows from real edits the owner makes, not from a profile the model writes.
 
-Location: `.pgoell/writing/voice-note.md` at the project root (fallback `~/.pgoell/writing/voice-note.md` when that exists and the project has none). The coach skill reads the same file.
+Location: `~/.pgoell/writing/voice-note.md`, one global file, because the owner's voice does not change between projects. The coach skill reads the same file.
 
 ## Why it stays short
 
@@ -10,7 +10,7 @@ Two to five owner samples give about as much style signal as twenty-five, and lo
 
 ## Starting a note
 
-1. Ask for two to five pieces the owner wrote themselves (not ones a model drafted, not another writer's). Save them under `.pgoell/writing/samples/` if the owner agrees.
+1. Ask for two to five pieces the owner wrote themselves (not ones a model drafted, not another writer's). Save them under `~/.pgoell/writing/samples/` if the owner agrees.
 2. Read them and propose at most five entries: habits to keep and habits to avoid, each with a short quote from the samples as evidence.
 3. Ask the owner to confirm, change, or drop each entry. Write only confirmed entries.
 4. If the owner has no samples, start with an empty note and the plain-register defaults below. The edit log will fill it.
