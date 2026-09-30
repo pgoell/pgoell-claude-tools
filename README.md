@@ -13,9 +13,8 @@ Bundles 17 plugins across Atlassian, Google Workspace, Databricks, agent-system 
 | `gmail`                           | `google-workspace`        | Triage inbox, search and read messages, send mail, manage drafts, labels, and filters via the `gws` CLI                     |
 | `calendar`                        | `google-workspace`        | View agenda, manage events, check availability, manage calendars via the `gws` CLI                                          |
 | `research`                        | `research`                | Research complex topics and produce sourced reports                                                                         |
-| `writing`                         | `writing`                 | Draft, review, and finish long form prose                                                                                   |
-| `pyramid`                         | `writing`                 | Structure analytical documents with the Pyramid Principle                                                                   |
-| `tech-doc`                        | `writing`                 | Draft, review, and finish technical documentation                                                                           |
+| `ghostwrite`                      | `writing`                 | Draft blog posts, memos, emails, READMEs, and PR text from your own facts, then hand back for your final edit               |
+| `coach`                           | `writing`                 | Teach you to write through your own drafts, one issue at a time; never writes the piece                                     |
 | `claude-codex-bridge`             | `runtime-bridge`          | Align Claude Code and Codex project files                                                                                   |
 | `improving-instructions`          | `agent-system-management` | Audit and improve agent instruction files                                                                                   |
 | `capturing-session-learnings`     | `agent-system-management` | Capture session learnings into the right instruction file                                                                   |
@@ -53,7 +52,7 @@ Bundles 17 plugins across Atlassian, Google Workspace, Databricks, agent-system 
 | `ponytail-gain`                   | `ponytail`                | Scoreboard of ponytail's measured benchmark impact                                                                          |
 | `ponytail-help`                   | `ponytail`                | Quick-reference card for ponytail modes, skills, and commands                                                               |
 
-The `deprecated` plugin additionally archives eight superseded skills: `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations` point at their replacement in the `presentations` plugin; `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode` point at their replacement in the `workbench` plugin (`terse-mode` retires without replacement).
+The `deprecated` plugin additionally archives eleven superseded skills: `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations` point at their replacement in the `presentations` plugin; `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode` point at their replacement in the `workbench` plugin (`terse-mode` retires without replacement); `writing`, `pyramid`, `tech-doc` point at `ghostwrite` and `coach` in the `writing` plugin.
 
 The `prose-styles` plugin ships no skills. It provides four Claude Code output styles instead, which govern how the agent writes prose for a whole session rather than for one task. See its section below.
 
@@ -161,15 +160,16 @@ Research complex topics and produce sourced reports.
 
 ### writing
 
-Writing skills for prose, analytical structure, and technical documentation.
+Two skills with opposite rules about who writes the sentences.
 
 **Skills:**
 
-- `/writing:writing`: Draft, review, and finish long form prose.
-- `/writing:pyramid`: Structure memos, recommendations, briefings, and decision documents with the Pyramid Principle.
-- `/writing:tech-doc`: Draft, review, and finish tutorials, how-to guides, references, and explanations.
+- `/writing:ghostwrite`: Draft a piece for you. It interviews you or takes dictation, uses only facts from you, documents you supply, or the repository (running the commands a README or how-to tells the reader to run), drafts section by section with check-ins, marks every assumption inline, runs one round of review that reports and never rewrites on its own, and hands back for your final edit. Covers blog posts, essays, talk scripts, memos, briefings, emails, decision docs, READMEs, how-to guides, design docs, and PR descriptions.
+- `/writing:coach`: Teach you to write. You write first; it picks one issue per round (point, then structure, then paragraphs, then sentences), explains the principle, shows a worked example on one of your own sentences, has you revise, and asks you to explain the change back. It never writes the piece, and it follows a five-drill sequence (point first, structure, clear sentences, cohesion, cutting).
 
-Slide-deck content design moved to `/presentations:designing-presentations`; for a written prose talk, use `/writing:writing` with the talk format.
+Both skills keep their files in `.pgoell/writing/` at the project root: `voice-note.md` (your confirmed voice habits and a log of the edits you make to drafts) and `coach-log.md` (intake, current drill, and recurring faults). The earlier `writing`, `pyramid`, and `tech-doc` skills moved to the `deprecated` plugin in 3.0.0; their pyramid audits, Socratic structure mode, Diataxis quadrants, reference schemas, interview rules, and three argument critics live on as reference files inside the two new skills.
+
+For slide decks, use `/presentations:designing-presentations`; a written talk script is a job for `/writing:ghostwrite`.
 
 ### runtime-bridge
 
@@ -327,7 +327,7 @@ This is the only plugin in the marketplace that is **not vendored here**. Its en
 
 ### deprecated
 
-Archive of superseded skills, kept installable so old workflows keep resolving. Each skill is frozen, carries a deprecation banner, and names its replacement: `crafting-presentations`, `perfecting-presentations`, and `exporting-decks-to-pptx` (formerly `workbench`) plus `presentations` (formerly `writing`) point at the `presentations` plugin; `autopilot`, `copilot`, and `dispatching-parallel-agents` (formerly `workbench`) point at their replacements in the `workbench` plugin (`pilot` and `subagent-driven-development`), and `terse-mode` (formerly `workbench`) retires without replacement. Do not install alongside `presentations` or `workbench` unless you need the old skill names.
+Archive of superseded skills, kept installable so old workflows keep resolving. Each skill is frozen, carries a deprecation banner, and names its replacement: `crafting-presentations`, `perfecting-presentations`, and `exporting-decks-to-pptx` (formerly `workbench`) plus `presentations` (formerly `writing`) point at the `presentations` plugin; `autopilot`, `copilot`, and `dispatching-parallel-agents` (formerly `workbench`) point at their replacements in the `workbench` plugin (`pilot` and `subagent-driven-development`), `terse-mode` (formerly `workbench`) retires without replacement, and `writing`, `pyramid`, and `tech-doc` (formerly `writing`) point at `ghostwrite` and `coach` in the `writing` plugin. Do not install alongside `presentations`, `workbench`, or `writing` unless you need the old skill names.
 
 ---
 

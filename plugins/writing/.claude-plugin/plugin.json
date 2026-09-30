@@ -1,24 +1,23 @@
 {
   "name": "writing",
-  "version": "2.0.0",
-  "description": "Draft, structure, review, and finish prose and technical docs.",
+  "version": "3.0.0",
+  "description": "Ghostwrite pieces from the owner's own facts, or get coached to write them yourself.",
   "author": {
     "name": "Pascal Göllner"
   },
   "license": "MIT",
   "keywords": [
     "writing",
+    "ghostwriting",
+    "coaching",
     "blog",
     "essay",
-    "drafting",
-    "editing",
-    "voice",
-    "pyramid",
-    "minto",
-    "mece",
-    "scqa",
     "memo",
     "briefing",
-    "announcement"
+    "email",
+    "readme",
+    "technical-documentation",
+    "pyramid",
+    "voice"
   ]
 }
