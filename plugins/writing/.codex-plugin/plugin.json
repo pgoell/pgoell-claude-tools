@@ -1,32 +1,30 @@
 {
   "name": "writing",
-  "version": "2.0.0",
-  "description": "Draft, structure, review, and finish prose and technical docs.",
+  "version": "3.0.0",
+  "description": "Ghostwrite pieces from the owner's own facts, or get coached to write them yourself.",
   "author": {
     "name": "Pascal Göllner"
   },
   "license": "MIT",
   "keywords": [
     "writing",
+    "ghostwriting",
+    "coaching",
     "blog",
     "essay",
-    "drafting",
-    "editing",
-    "voice",
-    "pyramid",
-    "minto",
-    "mece",
-    "scqa",
     "memo",
     "briefing",
-    "announcement",
-    "technical-documentation"
+    "email",
+    "readme",
+    "technical-documentation",
+    "pyramid",
+    "voice"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Writing",
-    "shortDescription": "Draft, structure, review, and finish prose",
-    "longDescription": "Draft long form prose, structure analytical documents, and produce technical documentation with review and finishing passes.",
+    "shortDescription": "Ghostwrite from your facts, or get coached",
+    "longDescription": "Two skills with opposite authorship rules. ghostwrite interviews you or takes dictation, uses only facts from you, your documents, or the repository, and hands back a plain draft for your final edit. coach never writes your piece: it works on your own draft one issue at a time, shows a worked example on one of your sentences, and has you revise.",
     "developerName": "Pascal Göllner",
     "category": "Productivity",
     "capabilities": [
@@ -34,9 +32,9 @@
       "Write"
     ],
     "defaultPrompt": [
-      "Draft this piece through the writing pipeline",
-      "Turn this into a pyramid memo",
-      "Write a technical how to guide"
+      "Ghostwrite a blog post from my notes",
+      "Write the README for this repository",
+      "Coach me on this memo draft"
     ],
     "brandColor": "#7C3AED",
     "screenshots": []

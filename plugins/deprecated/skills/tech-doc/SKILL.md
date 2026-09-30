@@ -1,9 +1,11 @@
 ---
 name: tech-doc
-description: Draft, review, and finish tutorials, how to guides, references, and explanations.
+description: Deprecated, superseded by writing:ghostwrite (tech docs sourced from the repository). Formerly used to draft, review, and finish tutorials, how to guides, references, and explanations.
 ---
 
 # Tech-doc Skill
+
+> **Deprecated.** Superseded by `writing:ghostwrite`, which drafts tech docs from the repository and the commands it runs. This copy is archived and no longer maintained.
 
 Diátaxis-aware technical writing pipeline. Standalone, AND dispatched from the writing skill when the format is tutorial, how-to, reference, or explanation.
 

@@ -25,8 +25,8 @@
     {
       "name": "writing",
       "source": "./plugins/writing",
-      "description": "Draft, structure, review, and finish prose and technical docs.",
-      "version": "2.0.0"
+      "description": "Ghostwrite pieces from the owner's own facts, or get coached to write them yourself.",
+      "version": "3.0.0"
     },
     {
       "name": "runtime-bridge",
@@ -106,7 +106,7 @@
       "name": "deprecated",
       "source": "./plugins/deprecated",
       "description": "Archive of superseded skills kept installable for old workflows; every skill points at its replacement.",
-      "version": "0.2.0"
+      "version": "0.3.0"
     }
   ]
 }
