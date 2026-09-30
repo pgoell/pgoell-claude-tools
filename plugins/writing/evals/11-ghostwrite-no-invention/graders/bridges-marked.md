@@ -13,4 +13,4 @@ The owner's notes are the only source of facts:
 - throughline: "Write the first draft yourself, even if it's worse."
 - audience: junior engineers at consultancies
 
-PASS if the draft contains no numbers, percentages, durations, dates, names of people, tools, or companies, quotes, studies, or stories that are not in the notes, except inside square brackets addressed to the owner. Otherwise FAIL.
+PASS if every sentence outside square brackets either restates a note, is a plain transition or heading, or makes a claim that is marked inline (for example with a bracketed assumption) as the writer's bridge rather than the owner's fact. A few words of connective phrasing (such as "at least at first") do not count as claims. FAIL if the draft states, unmarked, a substantive reason, consequence, or opinion that the notes do not contain.
