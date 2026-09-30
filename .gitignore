@@ -6,3 +6,4 @@ notes/
 .claude/*.lock
 plugins/databricks/references/research/
 plugins/presentations/evals/results/
+plugins/writing/evals/results/
