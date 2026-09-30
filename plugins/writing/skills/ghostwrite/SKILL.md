@@ -85,7 +85,7 @@ Write a short outline: the throughline, then one line per section saying what th
 
 Draft one section at a time. After each section (or each two or three short ones), show it and ask whether it says what the owner meant. Carry their corrections forward.
 
-- Mark every bridge you had to build inline, where the reader of the draft will see it: `[assumption: <what you assumed and why>]`. Mark missing facts as `[owner: <what is needed>]`. Never smooth over a gap to make the prose read better.
+- Mark every bridge you had to build inline, where the reader of the draft will see it: `[assumption: <what you assumed and why>]`. Mark missing facts as `[owner: <what is needed>]`. Never smooth over a gap to make the prose read better. Small qualifiers count as facts too: "without any warning", "for a while", "always", "most teams" need a source or a marker.
 - Follow the voice note. Where the note says nothing, stay plain.
 - House punctuation: no em-dashes or en-dashes, no middle-dot separators, no hyphen standing in for a dash. Use commas, periods, colons, semicolons, or parentheses.
 - Tech docs: every command and output in the draft is one you ran or read in the repository. Label anything you could not run as unverified.

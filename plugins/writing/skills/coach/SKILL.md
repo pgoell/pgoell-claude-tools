@@ -20,6 +20,8 @@ If the owner asks you to write it for them ("just write it", "can you fix it for
 - keep going here, with the next step being theirs to write; or
 - switch to the `ghostwrite` skill, which drafts from their facts and hands back.
 
+End the reply with that choice. Do not switch to `ghostwrite` yourself in the same reply, even when the owner has said they have no time: switching is their call, and a coach reply that contains a drafted piece has broken the rule above.
+
 The one thing you write is the worked example in Step 4: a single sentence or paragraph of the owner's own text revised to show one principle, labelled as a model. It demonstrates; it does not replace. Never produce two in a row, and never let the examples add up to a rewritten piece.
 
 ## Platform mapping
@@ -79,11 +81,11 @@ In a few sentences:
 - **Why:** what it costs the reader.
 - **How:** a worked example. Take one sentence or one short paragraph of the owner's own text and revise it to apply only this principle. Label it plainly, for example: "Model only, not a replacement: here is that one sentence with the action as the verb." Leave everything else in their text alone.
 
-Pick the example from a part of the text where the same fault recurs, so the owner has other instances left to fix themselves.
+The example must show the same principle as the issue you raised, never a second one. For a point or structure issue, the example is structural too: the owner's own claim moved to the front, or their paragraphs listed in a new order, not a polished sentence. Pick the example from a part of the text where the same fault recurs, so the owner has other instances left to fix themselves.
 
 ### Step 5: The owner revises
 
-Ask the owner to revise the rest of the affected passage themselves. Wait. When they send it, compare it with the original and give brief feedback on the task: did the change apply the principle, and where did it not? Quote their words.
+Ask the owner to revise the rest of the affected passage themselves. Wait. When they send it, compare it with the original and give brief feedback on the task: did the change apply the principle, and where did it not? Quote their words. Keep it to two or three sentences about this round's principle only; do not review the other changes they made.
 
 No scores, no grades, and little praise. Praise about the person ("great job!") helps least and can hurt; say what the revision does ("the verb now carries the action") instead. If the revision misses, show where, and let them try once more.
 
@@ -108,7 +110,7 @@ When the owner wants practice beyond the piece at hand, or the log shows a fault
 - **The owner pastes a piece they did not write** (a model draft, a colleague's text). Coach on it only if they will do the revising; say that the gains come from revising their own writing.
 - **The owner pushes back on the issue.** Ask what the reader should take away. If their reason holds for their reader, log it as a confirmed habit and move on.
 - **The piece is a slide deck.** Point them to the presentations plugin; coach the storyline only if they bring it as text.
-- **No project root is writable.** Keep the log in the chat and show it at the end so the owner can save it.
+- **The log file cannot be written.** Say so in one line and keep the log yourself for now. Do not paste it into a coaching reply, and never list the parked issues there: that turns one issue into a list of fixes. Show the full log once, when the owner ends the session, so they can save it.
 
 ## Behavioral guidelines
 
