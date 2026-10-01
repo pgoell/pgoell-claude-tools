@@ -1,0 +1,20 @@
+{
+  "name": "critique",
+  "version": "0.1.0",
+  "description": "Critique ideas, plans, and decisions through independent thinking frames, one fresh subagent each, to counter agreeable answers.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "license": "MIT",
+  "keywords": [
+    "critique",
+    "pre-mortem",
+    "steelman",
+    "red-team",
+    "decision-making",
+    "sycophancy",
+    "subagents",
+    "claude-code",
+    "codex"
+  ]
+}

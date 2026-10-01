@@ -77,6 +77,12 @@
       "version": "0.2.1"
     },
     {
+      "name": "critique",
+      "source": "./plugins/critique",
+      "description": "Critique ideas, plans, and decisions through independent thinking frames, one fresh subagent each, with verdicts shown word for word and one decision.",
+      "version": "0.1.0"
+    },
+    {
       "name": "presentations",
       "source": "./plugins/presentations",
       "description": "Presentation lifecycle skills: content design, HTML deck building with brand presets and a perfecting loop, native PPTX export, and preset extraction.",
