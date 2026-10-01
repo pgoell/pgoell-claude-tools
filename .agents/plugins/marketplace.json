@@ -197,6 +197,22 @@
       }
     },
     {
+      "name": "critique",
+      "source": {
+        "source": "local",
+        "path": "./plugins/critique"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity",
+      "interface": {
+        "displayName": "Critique",
+        "shortDescription": "Critique an idea through independent thinking frames"
+      }
+    },
+    {
       "name": "presentations",
       "source": {
         "source": "local",

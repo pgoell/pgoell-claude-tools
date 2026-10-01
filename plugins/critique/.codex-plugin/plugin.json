@@ -1,0 +1,37 @@
+{
+  "name": "critique",
+  "version": "0.1.0",
+  "description": "Critique ideas, plans, and decisions through independent thinking frames, one fresh subagent each, to counter agreeable answers.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "license": "MIT",
+  "keywords": [
+    "critique",
+    "pre-mortem",
+    "steelman",
+    "red-team",
+    "decision-making",
+    "sycophancy",
+    "subagents",
+    "claude-code",
+    "codex"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Critique",
+    "shortDescription": "Critique an idea through independent thinking frames",
+    "longDescription": "Rewrites an idea, plan, decision, or situation as a neutral brief and sends it to one fresh subagent per thinking frame (pre-mortem, steelman for and against, outside view, second-order effects, incentives, alternatives, assumption audit, plus conditional frames). Shows every frame's verdict word for word and ends with one decision, kill conditions, and the cheapest next test. A quick mode runs three frames.",
+    "developerName": "Pascal Göllner",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive"
+    ],
+    "defaultPrompt": [
+      "Critique this plan before I commit to it",
+      "Quick critique: should we move the team to async standups?",
+      "Pre-mortem this decision and poke holes in it"
+    ],
+    "screenshots": []
+  }
+}

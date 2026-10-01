@@ -2,7 +2,7 @@
 
 Plugin marketplace for Claude Code and Codex.
 
-Bundles 17 plugins across Atlassian, Google Workspace, Databricks, agent-system management, design workflows, research, writing, presentations, diagrams, terminal control, learning, prose output styles, code minimalism, and more.
+Bundles 18 plugins across Atlassian, Google Workspace, Databricks, agent-system management, design workflows, research, writing, presentations, diagrams, terminal control, learning, idea critique, prose output styles, code minimalism, and more.
 
 ## Skills at a glance
 
@@ -40,6 +40,7 @@ Bundles 17 plugins across Atlassian, Google Workspace, Databricks, agent-system 
 | `quizzing-the-session`            | `learning`                | Get taught and quizzed on the current session's work until you demonstrably understand the problem, solution, and impact    |
 | `quizzing-a-topic`                | `learning`                | Get taught and quizzed on any topic or theme you name until you demonstrably understand it                                  |
 | `surveying-blind-spots`           | `learning`                | Pre-work blind-spot pass over an unfamiliar codebase area or field, surfacing unknown unknowns, gotchas, and better prompts |
+| `critiquing-ideas`                | `critique`                | Critique an idea, plan, or decision through independent thinking frames, one fresh subagent each, ending in one decision    |
 | `designing-presentations`         | `presentations`           | Design slide-deck content from audience brief through critiqued storyboard, producing a `deck.md`                           |
 | `creating-presentations`          | `presentations`           | Build multi-slide HTML decks from brand presets, with a presenter view, default render checks, and a review-to-done loop    |
 | `exporting-presentations-to-pptx` | `presentations`           | Convert a finished HTML deck into a native, editable PowerPoint (.pptx) via python-pptx                                     |
@@ -76,6 +77,7 @@ Skills are invoked from the host agent (Claude Code or Codex) using the fully qu
 /plugin install playground@pgoell-claude-tools
 /plugin install databricks@pgoell-claude-tools
 /plugin install learning@pgoell-claude-tools
+/plugin install critique@pgoell-claude-tools
 /plugin install presentations@pgoell-claude-tools
 /plugin install diagrams@pgoell-claude-tools
 /plugin install prose-styles@pgoell-claude-tools
@@ -94,7 +96,7 @@ codex
 /plugins
 ```
 
-In the `/plugins` picker, install any combination of `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `frontend-design`, `playground`, `databricks`, `learning`, `presentations`, `diagrams`, and `ponytail` (plus `deprecated` if an old workflow needs the archived skill names). `prose-styles` is absent from the Codex picker on purpose, because Codex has no output-style mechanism.
+In the `/plugins` picker, install any combination of `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `frontend-design`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, and `ponytail` (plus `deprecated` if an old workflow needs the archived skill names). `prose-styles` is absent from the Codex picker on purpose, because Codex has no output-style mechanism.
 
 To pick up updates: `codex plugin marketplace upgrade pgoell-claude-tools` and re-install the affected plugins.
 
@@ -265,6 +267,14 @@ Skills that teach the human: Socratic teach-and-quiz loops plus a pre-work blind
 - `/learning:quizzing-the-session`: Build a problem/solution/impact checklist from the current session and recent git activity, then teach and quiz you item by item to mastery. Also fits right before a PR or merge, to confirm you can represent the work in review.
 - `/learning:quizzing-a-topic`: The same teaching engine pointed at any topic or theme you name, grounded in repo files when the topic is local code.
 - `/learning:surveying-blind-spots`: A pre-work blind-spot pass over a codebase area or field you do not know. Surfaces unknown unknowns, gotchas, and dead ends, then hands you rewritten prompts. A briefing, not a quiz.
+
+### critique
+
+Critique ideas, plans, decisions, claims, and situations from several independent angles, to counter the agreeable answer a single session tends to give.
+
+**Skills:**
+
+- `/critique:critiquing-ideas`: Rewrites the input as a neutral brief, sends it to one fresh subagent per thinking frame (pre-mortem, steelman for and against, outside view, second-order effects, incentives, alternatives, assumption audit, plus conditional frames such as Chesterton's fence and a Fermi estimate), shows every frame's verdict word for word, and ends with one decision, kill conditions, and the cheapest next test. Say "quick" for a three-frame pass.
 
 ### presentations
 
