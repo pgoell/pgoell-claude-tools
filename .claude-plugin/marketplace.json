@@ -74,7 +74,7 @@
       "name": "learning",
       "source": "./plugins/learning",
       "description": "Socratic teach-and-quiz skills plus a pre-work blind-spot survey, so you deeply understand a session, a topic, or an unfamiliar area.",
-      "version": "0.2.1"
+      "version": "0.3.0"
     },
     {
       "name": "critique",
