@@ -40,6 +40,7 @@ Bundles 18 plugins across Atlassian, Google Workspace, Databricks, agent-system 
 | `quizzing-the-session`            | `learning`                | Get taught and quizzed on the current session's work until you demonstrably understand the problem, solution, and impact    |
 | `quizzing-a-topic`                | `learning`                | Get taught and quizzed on any topic or theme you name until you demonstrably understand it                                  |
 | `surveying-blind-spots`           | `learning`                | Pre-work blind-spot pass over an unfamiliar codebase area or field, surfacing unknown unknowns, gotchas, and better prompts |
+| `rebuilding-a-concept`            | `learning`                | Learn a concept by rebuilding it from the problem that forced it, then breaking it with counterexamples                     |
 | `critiquing-ideas`                | `critique`                | Critique an idea, plan, or decision through independent thinking frames, one fresh subagent each, ending in one decision    |
 | `designing-presentations`         | `presentations`           | Design slide-deck content from audience brief through critiqued storyboard, producing a `deck.md`                           |
 | `creating-presentations`          | `presentations`           | Build multi-slide HTML decks from brand presets, with a presenter view, default render checks, and a review-to-done loop    |
@@ -260,13 +261,14 @@ Two Databricks skills. `databricks-core` is a verbatim port from [databricks/dat
 
 ### learning
 
-Skills that teach the human: Socratic teach-and-quiz loops plus a pre-work blind-spot survey. An original adaptation of Thariq Shihipar's "Learn Quiz" gist and his AI Engineer talk techniques (see `plugins/learning/README.md` for attribution).
+Skills that teach the human: Socratic teach-and-quiz loops, a pre-work blind-spot survey, and a rebuild-then-break loop. The quiz and survey skills adapt Thariq Shihipar's "Learn Quiz" gist and his AI Engineer talk techniques (see `plugins/learning/README.md` for attribution).
 
 **Skills:**
 
 - `/learning:quizzing-the-session`: Build a problem/solution/impact checklist from the current session and recent git activity, then teach and quiz you item by item to mastery. Also fits right before a PR or merge, to confirm you can represent the work in review.
 - `/learning:quizzing-a-topic`: The same teaching engine pointed at any topic or theme you name, grounded in repo files when the topic is local code.
 - `/learning:surveying-blind-spots`: A pre-work blind-spot pass over a codebase area or field you do not know. Surfaces unknown unknowns, gotchas, and dead ends, then hands you rewritten prompts. A briefing, not a quiz.
+- `/learning:rebuilding-a-concept`: Learn a concept the way it was made. Start from the problem that forced it, sketch your own fix, break it with counterexamples, repair it, and only then compare with the textbook version. Joins Toeplitz's genetic method with Lakatos's proofs and refutations; works for maths and for designs such as data models or architecture patterns.
 
 ### critique
 
