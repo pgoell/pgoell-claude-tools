@@ -109,6 +109,14 @@
       "description": "Lazy senior dev mode. Forces the simplest, shortest solution that actually works: YAGNI, stdlib first, no unrequested abstractions. Tracked upstream, not vendored."
     },
     {
+      "name": "taste-skill",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/Leonxlnx/taste-skill.git"
+      },
+      "description": "Anti-slop frontend design skills: taste-driven landing pages, redesign audits, minimalist, soft, and brutalist styles, image-to-code, brand kits. Tracked upstream, not vendored. Claude Code only."
+    },
+    {
       "name": "deprecated",
       "source": "./plugins/deprecated",
       "description": "Archive of superseded skills kept installable for old workflows; every skill points at its replacement.",
