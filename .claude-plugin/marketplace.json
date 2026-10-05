@@ -112,6 +112,15 @@
       "strict": false
     },
     {
+      "name": "vercel",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/vercel-labs/agent-skills.git"
+      },
+      "description": "Vercel's agent skills: React and Next.js performance, composition patterns, React Native, view transitions, web design and writing guideline reviews, Vercel deploys. Tracked upstream, not vendored. Claude Code only.",
+      "strict": false
+    },
+    {
       "name": "taste-skill",
       "source": {
         "source": "url",
