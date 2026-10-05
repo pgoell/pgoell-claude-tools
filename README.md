@@ -2,59 +2,67 @@
 
 Plugin marketplace for Claude Code and Codex.
 
-Bundles 18 plugins across Atlassian, Google Workspace, Databricks, agent-system management, design workflows, research, writing, presentations, diagrams, terminal control, learning, idea critique, prose output styles, code minimalism, and more.
+Bundles 19 plugins across Atlassian, Google Workspace, Databricks, agent-system management, design workflows, research, writing, presentations, diagrams, terminal control, learning, idea critique, prose output styles, code minimalism, frontend design taste, and more.
 
 ## Skills at a glance
 
-| Skill                             | Plugin                    | What it does                                                                                                                |
-| --------------------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `jira`                            | `atlassian`               | Search Jira issues, create and update tickets, transition workflows, comment, manage sprints, run bulk operations           |
-| `confluence`                      | `atlassian`               | Search Confluence pages, read documentation, create and update pages, browse spaces                                         |
-| `gmail`                           | `google-workspace`        | Triage inbox, search and read messages, send mail, manage drafts, labels, and filters via the `gws` CLI                     |
-| `calendar`                        | `google-workspace`        | View agenda, manage events, check availability, manage calendars via the `gws` CLI                                          |
-| `research`                        | `research`                | Research complex topics and produce sourced reports                                                                         |
-| `ghostwrite`                      | `writing`                 | Draft blog posts, memos, emails, READMEs, and PR text from your own facts, then hand back for your final edit               |
-| `coach`                           | `writing`                 | Teach you to write through your own drafts, one issue at a time; never writes the piece                                     |
-| `claude-codex-bridge`             | `runtime-bridge`          | Align Claude Code and Codex project files                                                                                   |
-| `improving-instructions`          | `agent-system-management` | Audit and improve agent instruction files                                                                                   |
-| `capturing-session-learnings`     | `agent-system-management` | Capture session learnings into the right instruction file                                                                   |
-| `creating-skills`                 | `agent-system-management` | Create, eval, benchmark, bulletproof, and tune skills across the full lifecycle                                             |
-| `brainstorming`                   | `workbench`               | Sequential Q&A to clarify design intent                                                                                     |
-| `writing-spec`                    | `workbench`               | Synthesize a design discussion into a spec doc                                                                              |
-| `writing-plans`                   | `workbench`               | Turn approved specs into concrete implementation plans                                                                      |
-| `visualizing-options`             | `workbench`               | Browser-based visual companion for layout choices                                                                           |
-| `using-workbench`                 | `workbench`               | Load Workbench skill rules and routing                                                                                      |
-| `pilot`                           | `workbench`               | Ship a feature end to end with configurable human gates; replaces autopilot and copilot                                     |
-| `verification-before-completion`  | `workbench`               | Require fresh verification evidence before completion claims                                                                |
-| `test-driven-development`         | `workbench`               | Enforce test-first RED-GREEN-REFACTOR implementation discipline                                                             |
-| `subagent-driven-development`     | `workbench`               | Execute implementation plans with fresh agents and review gates, including parallel dispatch                                |
-| `systematic-debugging`            | `workbench`               | Root-cause investigation before proposing bug fixes                                                                         |
-| `crafting-html`                   | `workbench`               | Reference gallery of 21 HTML artifact patterns                                                                              |
-| `crafting-design-systems`         | `workbench`               | Design systems (CSS variables, components, images) that theme HTML producers                                                |
-| `tmux`                            | `terminal`                | Control interactive terminal programs through isolated tmux sessions                                                        |
-| `frontend-design`                 | `frontend-design`         | Distinctive, production-grade frontend interfaces that avoid generic AI aesthetics                                          |
-| `emil-design-eng`                 | `frontend-design`         | Emil Kowalski's design engineering philosophy: animation timing, component polish, UI craft                                 |
-| `playground`                      | `playground`              | Interactive single-file HTML playgrounds with controls, live preview, and copy-out prompt                                   |
-| `databricks-core`                 | `databricks`              | Databricks CLI, authentication, profile management, and data exploration                                                    |
-| `databricks-docs`                 | `databricks`              | Live `docs.databricks.com` lookups for product-surface questions                                                            |
-| `quizzing-the-session`            | `learning`                | Get taught and quizzed on the current session's work until you demonstrably understand the problem, solution, and impact    |
-| `quizzing-a-topic`                | `learning`                | Get taught and quizzed on any topic or theme you name until you demonstrably understand it                                  |
-| `surveying-blind-spots`           | `learning`                | Pre-work blind-spot pass over an unfamiliar codebase area or field, surfacing unknown unknowns, gotchas, and better prompts |
-| `rebuilding-a-concept`            | `learning`                | Learn a concept by rebuilding it from the problem that forced it, then breaking it with counterexamples                     |
-| `critiquing-ideas`                | `critique`                | Critique an idea, plan, or decision through independent thinking frames, one fresh subagent each, ending in one decision    |
-| `designing-presentations`         | `presentations`           | Design slide-deck content from audience brief through critiqued storyboard, producing a `deck.md`                           |
-| `creating-presentations`          | `presentations`           | Build multi-slide HTML decks from brand presets, with a presenter view, default render checks, and a review-to-done loop    |
-| `exporting-presentations-to-pptx` | `presentations`           | Convert a finished HTML deck into a native, editable PowerPoint (.pptx) via python-pptx                                     |
-| `extracting-presets`              | `presentations`           | Turn brand material (PPTX templates, PDF guidelines, decks) into reusable presentation presets                              |
-| `creating-diagrams`               | `diagrams`                | Draw validated architecture, workflow, sequence, data-flow, and lifecycle diagrams as themeable interactive HTML            |
-| `ponytail`                        | `ponytail`                | Force the laziest solution that works: YAGNI, stdlib first, one line over fifty                                             |
-| `ponytail-review`                 | `ponytail`                | Review a diff for over-engineering only: what to delete and what replaces it                                                |
-| `ponytail-audit`                  | `ponytail`                | Whole-repo over-engineering audit, ranked by what to delete, simplify, or replace                                           |
-| `ponytail-debt`                   | `ponytail`                | Harvest `ponytail:` shortcut comments into a tracked debt ledger                                                            |
-| `ponytail-gain`                   | `ponytail`                | Scoreboard of ponytail's measured benchmark impact                                                                          |
-| `ponytail-help`                   | `ponytail`                | Quick-reference card for ponytail modes, skills, and commands                                                               |
+| Skill                                                                                    | Plugin                    | What it does                                                                                                                |
+| ---------------------------------------------------------------------------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `jira`                                                                                   | `atlassian`               | Search Jira issues, create and update tickets, transition workflows, comment, manage sprints, run bulk operations           |
+| `confluence`                                                                             | `atlassian`               | Search Confluence pages, read documentation, create and update pages, browse spaces                                         |
+| `gmail`                                                                                  | `google-workspace`        | Triage inbox, search and read messages, send mail, manage drafts, labels, and filters via the `gws` CLI                     |
+| `calendar`                                                                               | `google-workspace`        | View agenda, manage events, check availability, manage calendars via the `gws` CLI                                          |
+| `research`                                                                               | `research`                | Research complex topics and produce sourced reports                                                                         |
+| `ghostwrite`                                                                             | `writing`                 | Draft blog posts, memos, emails, READMEs, and PR text from your own facts, then hand back for your final edit               |
+| `coach`                                                                                  | `writing`                 | Teach you to write through your own drafts, one issue at a time; never writes the piece                                     |
+| `claude-codex-bridge`                                                                    | `runtime-bridge`          | Align Claude Code and Codex project files                                                                                   |
+| `improving-instructions`                                                                 | `agent-system-management` | Audit and improve agent instruction files                                                                                   |
+| `capturing-session-learnings`                                                            | `agent-system-management` | Capture session learnings into the right instruction file                                                                   |
+| `creating-skills`                                                                        | `agent-system-management` | Create, eval, benchmark, bulletproof, and tune skills across the full lifecycle                                             |
+| `brainstorming`                                                                          | `workbench`               | Sequential Q&A to clarify design intent                                                                                     |
+| `writing-spec`                                                                           | `workbench`               | Synthesize a design discussion into a spec doc                                                                              |
+| `writing-plans`                                                                          | `workbench`               | Turn approved specs into concrete implementation plans                                                                      |
+| `visualizing-options`                                                                    | `workbench`               | Browser-based visual companion for layout choices                                                                           |
+| `using-workbench`                                                                        | `workbench`               | Load Workbench skill rules and routing                                                                                      |
+| `pilot`                                                                                  | `workbench`               | Ship a feature end to end with configurable human gates; replaces autopilot and copilot                                     |
+| `verification-before-completion`                                                         | `workbench`               | Require fresh verification evidence before completion claims                                                                |
+| `test-driven-development`                                                                | `workbench`               | Enforce test-first RED-GREEN-REFACTOR implementation discipline                                                             |
+| `subagent-driven-development`                                                            | `workbench`               | Execute implementation plans with fresh agents and review gates, including parallel dispatch                                |
+| `systematic-debugging`                                                                   | `workbench`               | Root-cause investigation before proposing bug fixes                                                                         |
+| `crafting-html`                                                                          | `workbench`               | Reference gallery of 21 HTML artifact patterns                                                                              |
+| `crafting-design-systems`                                                                | `workbench`               | Design systems (CSS variables, components, images) that theme HTML producers                                                |
+| `tmux`                                                                                   | `terminal`                | Control interactive terminal programs through isolated tmux sessions                                                        |
+| `playground`                                                                             | `playground`              | Interactive single-file HTML playgrounds with controls, live preview, and copy-out prompt                                   |
+| `databricks-core`                                                                        | `databricks`              | Databricks CLI, authentication, profile management, and data exploration                                                    |
+| `databricks-docs`                                                                        | `databricks`              | Live `docs.databricks.com` lookups for product-surface questions                                                            |
+| `quizzing-the-session`                                                                   | `learning`                | Get taught and quizzed on the current session's work until you demonstrably understand the problem, solution, and impact    |
+| `quizzing-a-topic`                                                                       | `learning`                | Get taught and quizzed on any topic or theme you name until you demonstrably understand it                                  |
+| `surveying-blind-spots`                                                                  | `learning`                | Pre-work blind-spot pass over an unfamiliar codebase area or field, surfacing unknown unknowns, gotchas, and better prompts |
+| `rebuilding-a-concept`                                                                   | `learning`                | Learn a concept by rebuilding it from the problem that forced it, then breaking it with counterexamples                     |
+| `critiquing-ideas`                                                                       | `critique`                | Critique an idea, plan, or decision through independent thinking frames, one fresh subagent each, ending in one decision    |
+| `designing-presentations`                                                                | `presentations`           | Design slide-deck content from audience brief through critiqued storyboard, producing a `deck.md`                           |
+| `creating-presentations`                                                                 | `presentations`           | Build multi-slide HTML decks from brand presets, with a presenter view, default render checks, and a review-to-done loop    |
+| `exporting-presentations-to-pptx`                                                        | `presentations`           | Convert a finished HTML deck into a native, editable PowerPoint (.pptx) via python-pptx                                     |
+| `extracting-presets`                                                                     | `presentations`           | Turn brand material (PPTX templates, PDF guidelines, decks) into reusable presentation presets                              |
+| `creating-diagrams`                                                                      | `diagrams`                | Draw validated architecture, workflow, sequence, data-flow, and lifecycle diagrams as themeable interactive HTML            |
+| `ponytail`                                                                               | `ponytail`                | Force the laziest solution that works: YAGNI, stdlib first, one line over fifty                                             |
+| `ponytail-review`                                                                        | `ponytail`                | Review a diff for over-engineering only: what to delete and what replaces it                                                |
+| `ponytail-audit`                                                                         | `ponytail`                | Whole-repo over-engineering audit, ranked by what to delete, simplify, or replace                                           |
+| `ponytail-debt`                                                                          | `ponytail`                | Harvest `ponytail:` shortcut comments into a tracked debt ledger                                                            |
+| `ponytail-gain`                                                                          | `ponytail`                | Scoreboard of ponytail's measured benchmark impact                                                                          |
+| `ponytail-help`                                                                          | `ponytail`                | Quick-reference card for ponytail modes, skills, and commands                                                               |
+| `emil-design-eng`                                                                        | `emil`                    | Emil Kowalski's design engineering philosophy: UI polish, component design, animation decisions                             |
+| `animate`, `animate-expo`, `apple-design`, `animation-vocabulary`                        | `emil`                    | Build animations from scratch (web or React Native), Apple-style fluid motion, name the effect you mean                     |
+| `review-animations`, `improve-animations`, `find-animation-opportunities`                | `emil`                    | Review motion code, audit a codebase's animations into a plan, find where motion belongs                                    |
+| `prototype`, `break-ui`, `mobile-native`, `pick-ui-library`, `ask-sonner`, `write-swift` | `emil`                    | Live multi-version prototypes, worst-case data tests, native feel on phones, library picks, Sonner, Swift                   |
+| `design-taste-frontend`                                                                  | `taste-skill`             | Anti-slop frontend design: infer a design direction from the brief and ship pages that do not look templated                |
+| `redesign-existing-projects`                                                             | `taste-skill`             | Audit an existing site or app for generic AI patterns and upgrade it without breaking behavior                              |
+| `full-output-enforcement`                                                                | `taste-skill`             | Ban placeholders and truncation; force complete code output                                                                 |
+| `minimalist-ui`, `high-end-visual-design`, `industrial-brutalist-ui`                     | `taste-skill`             | Style variants: editorial minimalist, soft premium agency, Swiss brutalist                                                  |
+| `image-to-code`, `imagegen-frontend-web`, `imagegen-frontend-mobile`, `brandkit`         | `taste-skill`             | Generate design reference images first (web, mobile, brand kit), then build from them                                       |
+| `stitch-design-taste`, `gpt-taste`, `design-taste-frontend-v1`                           | `taste-skill`             | Google Stitch `DESIGN.md` export, GPT/Codex-tuned variant, frozen v1                                                        |
 
-The `deprecated` plugin additionally archives eleven superseded skills: `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations` point at their replacement in the `presentations` plugin; `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode` point at their replacement in the `workbench` plugin (`terse-mode` retires without replacement); `writing`, `pyramid`, `tech-doc` point at `ghostwrite` and `coach` in the `writing` plugin.
+The `deprecated` plugin additionally archives twelve superseded skills: `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations` point at their replacement in the `presentations` plugin; `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode` point at their replacement in the `workbench` plugin (`terse-mode` retires without replacement); `writing`, `pyramid`, `tech-doc` point at `ghostwrite` and `coach` in the `writing` plugin; `frontend-design` (from the retired plugin of that name) points at `taste-skill:design-taste-frontend`.
 
 The `prose-styles` plugin ships no skills. It provides four Claude Code output styles instead, which govern how the agent writes prose for a whole session rather than for one task. See its section below.
 
@@ -74,7 +82,6 @@ Skills are invoked from the host agent (Claude Code or Codex) using the fully qu
 /plugin install agent-system-management@pgoell-claude-tools
 /plugin install workbench@pgoell-claude-tools
 /plugin install terminal@pgoell-claude-tools
-/plugin install frontend-design@pgoell-claude-tools
 /plugin install playground@pgoell-claude-tools
 /plugin install databricks@pgoell-claude-tools
 /plugin install learning@pgoell-claude-tools
@@ -83,6 +90,8 @@ Skills are invoked from the host agent (Claude Code or Codex) using the fully qu
 /plugin install diagrams@pgoell-claude-tools
 /plugin install prose-styles@pgoell-claude-tools
 /plugin install ponytail@pgoell-claude-tools
+/plugin install emil@pgoell-claude-tools
+/plugin install taste-skill@pgoell-claude-tools
 ```
 
 The `deprecated` plugin (`/plugin install deprecated@pgoell-claude-tools`) is an archive of superseded skills; only install it if an old workflow still calls the old skill names.
@@ -97,7 +106,7 @@ codex
 /plugins
 ```
 
-In the `/plugins` picker, install any combination of `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `frontend-design`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, and `ponytail` (plus `deprecated` if an old workflow needs the archived skill names). `prose-styles` is absent from the Codex picker on purpose, because Codex has no output-style mechanism.
+In the `/plugins` picker, install any combination of `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, and `ponytail` (plus `deprecated` if an old workflow needs the archived skill names). `prose-styles` is absent from the Codex picker on purpose, because Codex has no output-style mechanism. `emil` and `taste-skill` are absent too: their upstreams ship no Codex manifest.
 
 To pick up updates: `codex plugin marketplace upgrade pgoell-claude-tools` and re-install the affected plugins.
 
@@ -229,15 +238,6 @@ Terminal skills for interactive command-line programs.
 
 Install `tmux` on Linux, macOS, or WSL. Native Windows terminals are not supported.
 
-### frontend-design
-
-Distinctive, production-grade frontend interfaces with deep UI craft and animation discipline. Ports two complementary skills: Anthropic's `frontend-design` (Apache 2.0) for creative direction, and Emil Kowalski's [`emil-design-eng`](https://github.com/emilkowalski/skill) for design engineering and animation discipline (the upstream repo declares no license; included under the upstream author's public publishing intent). See `plugins/frontend-design/NOTICE` for full attribution.
-
-**Skills:**
-
-- `/frontend-design:frontend-design`: Build web components, pages, and applications with a clear aesthetic point of view (typography, color, motion, composition).
-- `/frontend-design:emil-design-eng`: Review UI craft, choose easing curves and durations, build interaction-rich components, and audit motion.
-
 ### playground
 
 Interactive single-file HTML playgrounds: control panel, live preview, and copy-out prompt. Ports Anthropic's `playground` plugin (Apache 2.0; see `plugins/playground/NOTICE` for attribution).
@@ -324,7 +324,7 @@ Every style governs prose only. Code, identifiers, API names, CLI flags, config 
 
 Lazy senior dev mode: a reflex ladder that questions whether code needs to exist at all, reaches for the standard library and native platform features before dependencies, and prefers one line over fifty. Three intensity levels (`lite`, `full`, `ultra`).
 
-This is the only plugin in the marketplace that is **not vendored here**. Its entry points at [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) (MIT) and tracks upstream `main`, so refreshing the marketplace picks up upstream changes directly. Versions and release cadence are the upstream author's, not this repo's.
+Like `emil` and `taste-skill`, this plugin is **not vendored here**. Its entry points at [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) (MIT) and tracks upstream `main`, so refreshing the marketplace picks up upstream changes directly. Versions and release cadence are the upstream author's, not this repo's.
 
 **Skills:**
 
@@ -337,9 +337,50 @@ This is the only plugin in the marketplace that is **not vendored here**. Its en
 
 **Setup:** none beyond install, but note that ponytail ships hooks that run on `SessionStart`, `SubagentStart`, and `UserPromptSubmit`. They require `node` on `PATH`, write a mode flag to `$CLAUDE_CONFIG_DIR/.ponytail-active`, and inject the ruleset into every session automatically. Ponytail is therefore always-on once installed, not invoke-on-demand. Set the mode to `off` if you want it dormant.
 
+### emil
+
+Emil Kowalski's design engineering skills: UI polish, animation craft, motion reviews, prototyping, and opinionated library picks. See [emilkowal.ski/skill](https://emilkowal.ski/skill).
+
+**Not vendored here**, like `ponytail`. The entry points at [emilkowalski/skill](https://github.com/emilkowalski/skill) (MIT) and tracks upstream `main` unpinned. The upstream ships no plugin manifest, so the marketplace entry sets `strict: false` and supplies the manifest itself. Claude Code only. Replaces the `emil-design-eng` copy that the retired `frontend-design` plugin vendored.
+
+**Skills:**
+
+- `/emil:emil-design-eng`: Emil's design engineering philosophy: UI polish, component design, animation decisions, invisible details.
+- `/emil:animate`, `/emil:animate-expo`: Build an animation from scratch, on the web or in React Native and Expo.
+- `/emil:review-animations`: Review motion code against a high craft bar.
+- `/emil:improve-animations`: Audit a codebase's animation code into a prioritized plan.
+- `/emil:find-animation-opportunities`: Find places that should animate, and reject the ones that should not. Read-only.
+- `/emil:animation-vocabulary`: Turn a vague description of a motion effect into its exact term.
+- `/emil:apple-design`: Apple's interface and fluid-motion approach, translated for the web.
+- `/emil:prototype`: Build several versions of a UI piece behind a live picker.
+- `/emil:break-ui`: Feed UI worst-case data (long names, empty states, huge counts).
+- `/emil:mobile-native`: CSS and meta-tag fixes that make a web app feel native on a phone.
+- `/emil:pick-ui-library`: Pick a library for a frontend task from a curated list.
+- `/emil:ask-sonner`: Guide to the Sonner toast library.
+- `/emil:write-swift`: Modern Swift: value types, Swift 6 concurrency.
+
+### taste-skill
+
+Frontend design skills against generic "AI slop" UI: taste-driven landing pages and portfolios, redesign audits, three style variants, and image-first workflows that generate a design reference before writing code.
+
+**Not vendored here**, like `ponytail` and `emil`. The entry points at [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) (MIT) and tracks upstream `main` unpinned. Added for trial. Claude Code only: the upstream ships a `.claude-plugin/plugin.json` but no Codex manifest.
+
+**Skills:**
+
+- `/taste-skill:design-taste-frontend`: The main skill (v2). Reads the brief, infers a design direction, builds the page.
+- `/taste-skill:design-taste-frontend-v1`: The original v1, frozen for projects that depend on its exact behavior.
+- `/taste-skill:gpt-taste`: Variant tuned for GPT and Codex models.
+- `/taste-skill:redesign-existing-projects`: Audit an existing project and upgrade its design without breaking behavior.
+- `/taste-skill:full-output-enforcement`: Force complete output; bans placeholders and truncation.
+- `/taste-skill:minimalist-ui`, `/taste-skill:high-end-visual-design`, `/taste-skill:industrial-brutalist-ui`: Style variants (editorial minimalist, soft premium, Swiss brutalist).
+- `/taste-skill:image-to-code`, `/taste-skill:imagegen-frontend-web`, `/taste-skill:imagegen-frontend-mobile`, `/taste-skill:brandkit`: Generate design or brand reference images, then build from them. Need an image-generation tool in the host.
+- `/taste-skill:stitch-design-taste`: Write a Google Stitch compatible `DESIGN.md`.
+
+Overlaps with `emil`; install both only to compare. Replaces the retired `frontend-design` plugin, whose skill is archived in `deprecated`.
+
 ### deprecated
 
-Archive of superseded skills, kept installable so old workflows keep resolving. Each skill is frozen, carries a deprecation banner, and names its replacement: `crafting-presentations`, `perfecting-presentations`, and `exporting-decks-to-pptx` (formerly `workbench`) plus `presentations` (formerly `writing`) point at the `presentations` plugin; `autopilot`, `copilot`, and `dispatching-parallel-agents` (formerly `workbench`) point at their replacements in the `workbench` plugin (`pilot` and `subagent-driven-development`), `terse-mode` (formerly `workbench`) retires without replacement, and `writing`, `pyramid`, and `tech-doc` (formerly `writing`) point at `ghostwrite` and `coach` in the `writing` plugin. Do not install alongside `presentations`, `workbench`, or `writing` unless you need the old skill names.
+Archive of superseded skills, kept installable so old workflows keep resolving. Each skill is frozen, carries a deprecation banner, and names its replacement: `crafting-presentations`, `perfecting-presentations`, and `exporting-decks-to-pptx` (formerly `workbench`) plus `presentations` (formerly `writing`) point at the `presentations` plugin; `autopilot`, `copilot`, and `dispatching-parallel-agents` (formerly `workbench`) point at their replacements in the `workbench` plugin (`pilot` and `subagent-driven-development`), `terse-mode` (formerly `workbench`) retires without replacement, and `writing`, `pyramid`, and `tech-doc` (formerly `writing`) point at `ghostwrite` and `coach` in the `writing` plugin; and `frontend-design` (from the retired `frontend-design` plugin, an Anthropic Apache 2.0 port; see `plugins/deprecated/NOTICE`) points at `taste-skill:design-taste-frontend`. Do not install alongside `presentations`, `workbench`, or `writing` unless you need the old skill names.
 
 ---
 

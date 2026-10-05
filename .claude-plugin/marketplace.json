@@ -53,12 +53,6 @@
       "version": "0.1.0"
     },
     {
-      "name": "frontend-design",
-      "source": "./plugins/frontend-design",
-      "description": "Create distinctive, production-grade frontend interfaces with deep UI craft and animation discipline.",
-      "version": "0.2.2"
-    },
-    {
       "name": "playground",
       "source": "./plugins/playground",
       "description": "Generate interactive single-file HTML playgrounds with controls, live preview, and copy-out prompt for two-way feedback with the model.",
@@ -109,10 +103,27 @@
       "description": "Lazy senior dev mode. Forces the simplest, shortest solution that actually works: YAGNI, stdlib first, no unrequested abstractions. Tracked upstream, not vendored."
     },
     {
+      "name": "emil",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/emilkowalski/skill.git"
+      },
+      "description": "Emil Kowalski's design engineering skills: UI polish, animation craft, motion reviews and audits, prototyping, UI library picks. Tracked upstream, not vendored. Claude Code only.",
+      "strict": false
+    },
+    {
+      "name": "taste-skill",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/Leonxlnx/taste-skill.git"
+      },
+      "description": "Anti-slop frontend design skills: taste-driven landing pages, redesign audits, minimalist, soft, and brutalist styles, image-to-code, brand kits. Tracked upstream, not vendored. Claude Code only."
+    },
+    {
       "name": "deprecated",
       "source": "./plugins/deprecated",
       "description": "Archive of superseded skills kept installable for old workflows; every skill points at its replacement.",
-      "version": "0.3.0"
+      "version": "0.4.0"
     }
   ]
 }
