@@ -38,7 +38,7 @@ Every coaching turn runs in the main thread; subagents cannot talk to the owner.
 
 Keep the coaching log at `.pgoell/writing/coach-log.md` at the root of the current project (the git root, or the working directory without a repository). Format in `references/coach-log.md`. It holds the intake, the current drill, and the fault log.
 
-Read the global voice note `~/.pgoell/writing/voice-note.md` if it exists (the ghostwrite skill keeps it). Its confirmed habits tell you what not to "correct".
+Read the global voice note `~/.pgoell/writing/voice-note.md` if it exists (the ghostwrite skill keeps it). Its confirmed habits tell you what not to "correct", and its Standards tell you what the owner has already decided their pieces must do. Read `.pgoell/writing/readers.md` too if it exists: when the piece's reader has an entry, use it instead of asking who the reader is.
 
 ## Session structure
 
