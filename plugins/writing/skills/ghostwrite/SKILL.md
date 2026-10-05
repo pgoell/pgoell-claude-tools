@@ -35,6 +35,7 @@ The owner's voice is the same in every project, so voice files live in one globa
 
 - `~/.pgoell/writing/voice-note.md`: the owner's confirmed voice note plus the edit log. Format in `references/voice-note.md`.
 - `~/.pgoell/writing/samples/`: two to five pieces the owner wrote themselves, if they have them.
+- `.pgoell/writing/readers.md` at the project root: the readers the owner writes for again and again in this project. Format in `references/readers.md`.
 
 Write the draft to a file the owner names. Default: `<slug>.md` in the working directory. Short pieces (an email, a PR description) can stay in the chat unless the owner asks for a file.
 
@@ -54,7 +55,7 @@ A talk script is a spoken essay: treat it like one, and send slides to the prese
 
 ## Step 2: Gather the substance
 
-Load `references/interview.md` for the question bank and the rules.
+Load `references/interview.md` for the question bank and the rules. If `.pgoell/writing/readers.md` has an entry for this piece's reader, show it and ask whether it still holds instead of asking the reader questions again.
 
 - **Owner-sourced genres.** Interview one question at a time, in the main thread, and wait for each answer. Offer dictation as the alternative: the owner talks through the piece in one go and you capture it. Do not suggest content, do not upgrade a tentative remark into a firm claim, and do not invent the connecting tissue between two things the owner said.
 - **Supplied documents.** Read them in full. Quote numbers exactly as they appear and note where each came from.
@@ -92,7 +93,7 @@ Draft one section at a time. After each section (or each two or three short ones
 
 ## Step 7: One review, reported and not applied
 
-Load `references/review.md`. Run one light tell check on the draft yourself and list what it finds. Then offer, and run only if the owner wants them:
+Load `references/review.md`. Run the tell check (`references/tells.md`) on the draft yourself, checking it against your sources, and list what it finds. If a voice note exists, run the voice check too. Then offer, and run only if the owner wants them:
 
 - the argument critics (Asshole reader, Steel-man, Clarity), for pieces that argue a point;
 - a fresh-reader test, for any piece whose reader lacks the owner's context.
@@ -105,7 +106,7 @@ Run each optional reviewer in its own subagent where the host supports it. Give 
 
 - Hand back the draft with a short list of the open `[assumption: ...]` and `[owner: ...]` markers.
 - For first-person pieces (blog, essay, talk, anything with "I"), tell the owner plainly that the draft is a starting point and that the final pass should be theirs. The measure of success is whether their rewrite took less time, not whether the draft already sounds like them.
-- When the owner edits the draft, or tells you what they changed, compare their version with yours and log the recurring edits in the voice note's edit log (format in `references/voice-note.md`). Propose a new voice-note rule only when the same edit shows up in two or more pieces, and add it only when the owner confirms.
+- When the owner edits the draft, or tells you what they changed, compare their version with yours and log the recurring edits in the voice note's edit log (format in `references/voice-note.md`). Propose a new rule only when the same edit shows up in two or more pieces, or the owner states it outright, and add it only when the owner confirms. Sort each lesson by what it changes: wording goes to the voice note's Keep or Avoid, what a piece must do goes to its Standards, facts about a reader go to the readers file (table in `references/voice-note.md`).
 - Optional drift check: count contractions and first-person pronouns per 100 words in the draft and in the owner's samples, and report the gap.
 
 ## Self-healing
