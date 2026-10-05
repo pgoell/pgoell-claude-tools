@@ -18,7 +18,7 @@ Bundles 20 plugins across Atlassian, Google Workspace, Databricks, agent-system 
 | `claude-codex-bridge`                                                                           | `runtime-bridge`          | Align Claude Code and Codex project files                                                                                   |
 | `improving-instructions`                                                                        | `agent-system-management` | Audit and improve agent instruction files                                                                                   |
 | `capturing-session-learnings`                                                                   | `agent-system-management` | Capture session learnings into the right instruction file                                                                   |
-| `creating-skills`                                                                               | `agent-system-management` | Create, eval, benchmark, bulletproof, and tune skills across the full lifecycle                                             |
+| `creating-skills`                                                                               | `agent-system-management` | Create, eval, benchmark, bulletproof, tune, and cut skills across the full lifecycle                                        |
 | `brainstorming`                                                                                 | `workbench`               | Sequential Q&A to clarify design intent                                                                                     |
 | `writing-spec`                                                                                  | `workbench`               | Synthesize a design discussion into a spec doc                                                                              |
 | `writing-plans`                                                                                 | `workbench`               | Turn approved specs into concrete implementation plans                                                                      |
@@ -203,7 +203,7 @@ Manage the host agent's instruction layer and skill layer: audit `AGENTS.md` / `
 
 - `/agent-system-management:improving-instructions`: Audit and improve `AGENTS.md` and `CLAUDE.md` files.
 - `/agent-system-management:capturing-session-learnings`: Capture session learnings into the right instruction file.
-- `/agent-system-management:creating-skills`: Create a new skill, iterate on an existing one with eval loops and benchmarks, bulletproof discipline skills, optimize triggering, or extract a skill from a conversation.
+- `/agent-system-management:creating-skills`: Create a new skill, iterate on an existing one with eval loops and benchmarks, bulletproof discipline skills, optimize triggering, cut a skill to its core, or extract a skill from a conversation.
 
 ### workbench
 

@@ -31,6 +31,9 @@ commit b092d56), which is itself derived from:
   - Jesse Vincent's writing-skills skill
     (https://github.com/obra/superpowers, commit d884ae04, MIT):
       - references/bulletproofing.md (adapted)
+  - swyx's skill-cutter skill
+    (https://github.com/swyxio/skills, commit 038ef344, MIT):
+      - references/cutting-skills.md (adapted)
   - references/platform-mechanics.md and references/marketplace-integration.md
     are original work.
 

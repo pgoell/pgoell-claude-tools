@@ -1,6 +1,6 @@
 ---
 name: creating-skills
-description: Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, edit, or optimize an existing skill, run evals to test a skill, benchmark skill performance with variance analysis, or optimize a skill's description for better triggering accuracy.
+description: Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, edit, or optimize an existing skill, run evals to test a skill, benchmark skill performance with variance analysis, or optimize a skill's description for better triggering accuracy. Also use when the user asks to cut, trim, shorten, or de-slop a skill, or to make it trigger less eagerly.
 ---
 
 # Skill Creator
@@ -392,6 +392,12 @@ Keep going until:
 
 ---
 
+## Cutting a skill
+
+When the user asks to cut, trim, shorten, simplify, or de-slop a skill, or to make it trigger less eagerly, read `references/cutting-skills.md`. It sorts each rule by how binding it is and each passage by what it contains, so every deletion has a stated reason, and it covers narrowing the description. A review request is an audit: report the cuts, edit nothing. A cut is a skill edit, so prove it with the iteration loop above, with the pre-cut snapshot as baseline: pass rate must hold while tokens fall. Length alone is not a reason to cut.
+
+---
+
 ## Advanced: Blind comparison
 
 For situations where you want a more rigorous comparison between two versions of a skill (e.g., the user asks "is the new version actually better?"), there's a blind comparison system. Read `agents/comparator.md` and `agents/analyzer.md` for the details. The basic idea is: give two outputs to an independent agent without telling it which is which, and let it judge quality. Then analyze why the winner won.
@@ -550,6 +556,7 @@ The references/ directory has additional documentation:
 - `references/platform-mechanics.md`: how Claude Code, claude.ai, and the API discover, load, render, and constrain skills (locations and precedence, invocation states, the full frontmatter reference, arguments and substitutions, dynamic context injection, content lifecycle and compaction, listing budgets, portability and upload limits). Read it when picking frontmatter beyond name and description, deciding where a skill lives, bundling scripts, diagnosing triggering, or preparing a claude.ai upload.
 - `references/writing-great-skills.md`: skill design vocabulary adapted from Matt Pocock's writing-great-skills (invocation and context load, information hierarchy, leading words, completion criteria, pruning, failure modes). Read it when drafting a new skill or diagnosing a misbehaving one.
 - `references/bulletproofing.md`: test-first hardening for discipline-enforcing skills, adapted from Jesse Vincent's writing-skills (baseline-before-writing, pressure scenarios, rationalization tables, the form-to-failure matrix, wording micro-tests, persuasion register). Read it when a skill enforces a rule agents might skip under pressure, or when an agent keeps rationalizing its way around one.
+- `references/cutting-skills.md`: trimming a skill to its behavioral core, adapted from swyx's skill-cutter (audit and cut modes, rule-force and content tables, gate check, trigger narrowing, report shape). Read it when the user asks to cut, shorten, or de-slop a skill, or to make it trigger less.
 - `references/marketplace-integration.md`: shipping a skill inside a plugin marketplace repo (convention discovery, manifest and marketplace registration, version bump discipline, structure and trigger-regression test scaffolds). Read it when the skill under construction lives in a repo that distributes plugins.
 
 ---
