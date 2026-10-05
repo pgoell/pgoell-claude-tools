@@ -1,27 +1,25 @@
 {
   "name": "frontend-design",
-  "version": "0.2.2",
-  "description": "Create distinctive, production-grade frontend interfaces with deep UI craft and animation discipline.",
+  "version": "0.3.0",
+  "description": "Create distinctive, production-grade frontend interfaces with a bold aesthetic point of view.",
   "author": {
     "name": "Pascal Göllner"
   },
   "license": "MIT",
   "keywords": [
     "aesthetics",
-    "animation",
     "css",
     "design",
     "frontend",
     "html",
-    "motion",
     "react",
     "ui"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Frontend Design",
-    "shortDescription": "Create distinctive frontends with deep UI craft and animation discipline",
-    "longDescription": "Generates production-grade frontend code (HTML/CSS/JS, React, Vue) with bold, distinctive aesthetic choices and deep design-engineering discipline (animation timing, easing, component polish, performance). Avoids generic AI design defaults.",
+    "shortDescription": "Create distinctive frontends with a bold aesthetic point of view",
+    "longDescription": "Generates production-grade frontend code (HTML/CSS/JS, React, Vue) with bold, distinctive aesthetic choices. Avoids generic AI design defaults.",
     "developerName": "Pascal Göllner",
     "category": "Developer Tools",
     "capabilities": [
@@ -32,9 +30,7 @@
       "Create a dashboard for a music streaming app",
       "Build a landing page for an AI security startup",
       "Design a settings panel with dark mode",
-      "Build a portfolio site with a brutalist aesthetic",
-      "Review my dropdown for animation polish",
-      "Help me build a button that feels right"
+      "Build a portfolio site with a brutalist aesthetic"
     ],
     "screenshots": []
   }

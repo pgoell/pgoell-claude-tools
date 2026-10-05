@@ -55,8 +55,8 @@
     {
       "name": "frontend-design",
       "source": "./plugins/frontend-design",
-      "description": "Create distinctive, production-grade frontend interfaces with deep UI craft and animation discipline.",
-      "version": "0.2.2"
+      "description": "Create distinctive, production-grade frontend interfaces with a bold aesthetic point of view.",
+      "version": "0.3.0"
     },
     {
       "name": "playground",
@@ -107,6 +107,15 @@
         "url": "https://github.com/DietrichGebert/ponytail.git"
       },
       "description": "Lazy senior dev mode. Forces the simplest, shortest solution that actually works: YAGNI, stdlib first, no unrequested abstractions. Tracked upstream, not vendored."
+    },
+    {
+      "name": "emil",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/emilkowalski/skill.git"
+      },
+      "description": "Emil Kowalski's design engineering skills: UI polish, animation craft, motion reviews and audits, prototyping, UI library picks. Tracked upstream, not vendored. Claude Code only.",
+      "strict": false
     },
     {
       "name": "taste-skill",
