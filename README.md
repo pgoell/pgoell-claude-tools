@@ -55,14 +55,14 @@ Bundles 19 plugins across Atlassian, Google Workspace, Databricks, agent-system 
 | `animate`, `animate-expo`, `apple-design`, `animation-vocabulary`                        | `emil`                    | Build animations from scratch (web or React Native), Apple-style fluid motion, name the effect you mean                     |
 | `review-animations`, `improve-animations`, `find-animation-opportunities`                | `emil`                    | Review motion code, audit a codebase's animations into a plan, find where motion belongs                                    |
 | `prototype`, `break-ui`, `mobile-native`, `pick-ui-library`, `ask-sonner`, `write-swift` | `emil`                    | Live multi-version prototypes, worst-case data tests, native feel on phones, library picks, Sonner, Swift                   |
-| `design-taste-frontend`                                                                  | `taste-skill`             | Anti-slop frontend design: infer a design direction from the brief and ship pages that do not look templated                |
-| `redesign-existing-projects`                                                             | `taste-skill`             | Audit an existing site or app for generic AI patterns and upgrade it without breaking behavior                              |
-| `full-output-enforcement`                                                                | `taste-skill`             | Ban placeholders and truncation; force complete code output                                                                 |
-| `minimalist-ui`, `high-end-visual-design`, `industrial-brutalist-ui`                     | `taste-skill`             | Style variants: editorial minimalist, soft premium agency, Swiss brutalist                                                  |
-| `image-to-code`, `imagegen-frontend-web`, `imagegen-frontend-mobile`, `brandkit`         | `taste-skill`             | Generate design reference images first (web, mobile, brand kit), then build from them                                       |
-| `stitch-design-taste`, `gpt-taste`, `design-taste-frontend-v1`                           | `taste-skill`             | Google Stitch `DESIGN.md` export, GPT/Codex-tuned variant, frozen v1                                                        |
+| `taste-skill`                                                                            | `taste-skill`             | Anti-slop frontend design: infer a design direction from the brief and ship pages that do not look templated                |
+| `redesign-skill`                                                                         | `taste-skill`             | Audit an existing site or app for generic AI patterns and upgrade it without breaking behavior                              |
+| `output-skill`                                                                           | `taste-skill`             | Ban placeholders and truncation; force complete code output                                                                 |
+| `minimalist-skill`, `soft-skill`, `brutalist-skill`                                      | `taste-skill`             | Style variants: editorial minimalist, soft premium agency, Swiss brutalist                                                  |
+| `image-to-code-skill`, `imagegen-frontend-web`, `imagegen-frontend-mobile`, `brandkit`   | `taste-skill`             | Generate design reference images first (web, mobile, brand kit), then build from them                                       |
+| `stitch-skill`, `gpt-tasteskill`, `taste-skill-v1`                                       | `taste-skill`             | Google Stitch `DESIGN.md` export, GPT/Codex-tuned variant, frozen v1                                                        |
 
-The `deprecated` plugin additionally archives twelve superseded skills: `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations` point at their replacement in the `presentations` plugin; `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode` point at their replacement in the `workbench` plugin (`terse-mode` retires without replacement); `writing`, `pyramid`, `tech-doc` point at `ghostwrite` and `coach` in the `writing` plugin; `frontend-design` (from the retired plugin of that name) points at `taste-skill:design-taste-frontend`.
+The `deprecated` plugin additionally archives twelve superseded skills: `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations` point at their replacement in the `presentations` plugin; `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode` point at their replacement in the `workbench` plugin (`terse-mode` retires without replacement); `writing`, `pyramid`, `tech-doc` point at `ghostwrite` and `coach` in the `writing` plugin; `frontend-design` (from the retired plugin of that name) points at `taste-skill:taste-skill`.
 
 The `prose-styles` plugin ships no skills. It provides four Claude Code output styles instead, which govern how the agent writes prose for a whole session rather than for one task. See its section below.
 
@@ -347,15 +347,15 @@ Emil Kowalski's design engineering skills: UI polish, animation craft, motion re
 
 - `/emil:emil-design-eng`: Emil's design engineering philosophy: UI polish, component design, animation decisions, invisible details.
 - `/emil:animate`, `/emil:animate-expo`: Build an animation from scratch, on the web or in React Native and Expo.
-- `/emil:review-animations`: Review motion code against a high craft bar.
+- `/emil:review-animations`: Review motion code against a high craft bar. Slash command only.
 - `/emil:improve-animations`: Audit a codebase's animation code into a prioritized plan.
 - `/emil:find-animation-opportunities`: Find places that should animate, and reject the ones that should not. Read-only.
 - `/emil:animation-vocabulary`: Turn a vague description of a motion effect into its exact term.
 - `/emil:apple-design`: Apple's interface and fluid-motion approach, translated for the web.
-- `/emil:prototype`: Build several versions of a UI piece behind a live picker.
+- `/emil:prototype`: Build several versions of a UI piece behind a live picker. Slash command only.
 - `/emil:break-ui`: Feed UI worst-case data (long names, empty states, huge counts).
 - `/emil:mobile-native`: CSS and meta-tag fixes that make a web app feel native on a phone.
-- `/emil:pick-ui-library`: Pick a library for a frontend task from a curated list.
+- `/emil:pick-ui-library`: Pick a library for a frontend task from a curated list. Slash command only.
 - `/emil:ask-sonner`: Guide to the Sonner toast library.
 - `/emil:write-swift`: Modern Swift: value types, Swift 6 concurrency.
 
@@ -367,20 +367,20 @@ Frontend design skills against generic "AI slop" UI: taste-driven landing pages 
 
 **Skills:**
 
-- `/taste-skill:design-taste-frontend`: The main skill (v2). Reads the brief, infers a design direction, builds the page.
-- `/taste-skill:design-taste-frontend-v1`: The original v1, frozen for projects that depend on its exact behavior.
-- `/taste-skill:gpt-taste`: Variant tuned for GPT and Codex models.
-- `/taste-skill:redesign-existing-projects`: Audit an existing project and upgrade its design without breaking behavior.
-- `/taste-skill:full-output-enforcement`: Force complete output; bans placeholders and truncation.
-- `/taste-skill:minimalist-ui`, `/taste-skill:high-end-visual-design`, `/taste-skill:industrial-brutalist-ui`: Style variants (editorial minimalist, soft premium, Swiss brutalist).
-- `/taste-skill:image-to-code`, `/taste-skill:imagegen-frontend-web`, `/taste-skill:imagegen-frontend-mobile`, `/taste-skill:brandkit`: Generate design or brand reference images, then build from them. Need an image-generation tool in the host.
-- `/taste-skill:stitch-design-taste`: Write a Google Stitch compatible `DESIGN.md`.
+- `/taste-skill:taste-skill`: The main skill (v2). Reads the brief, infers a design direction, builds the page.
+- `/taste-skill:taste-skill-v1`: The original v1, frozen for projects that depend on its exact behavior.
+- `/taste-skill:gpt-tasteskill`: Variant tuned for GPT and Codex models.
+- `/taste-skill:redesign-skill`: Audit an existing project and upgrade its design without breaking behavior.
+- `/taste-skill:output-skill`: Force complete output; bans placeholders and truncation.
+- `/taste-skill:minimalist-skill`, `/taste-skill:soft-skill`, `/taste-skill:brutalist-skill`: Style variants (editorial minimalist, soft premium, Swiss brutalist).
+- `/taste-skill:image-to-code-skill`, `/taste-skill:imagegen-frontend-web`, `/taste-skill:imagegen-frontend-mobile`, `/taste-skill:brandkit`: Generate design or brand reference images, then build from them. Need an image-generation tool in the host.
+- `/taste-skill:stitch-skill`: Write a Google Stitch compatible `DESIGN.md`.
 
 Overlaps with `emil`; install both only to compare. Replaces the retired `frontend-design` plugin, whose skill is archived in `deprecated`.
 
 ### deprecated
 
-Archive of superseded skills, kept installable so old workflows keep resolving. Each skill is frozen, carries a deprecation banner, and names its replacement: `crafting-presentations`, `perfecting-presentations`, and `exporting-decks-to-pptx` (formerly `workbench`) plus `presentations` (formerly `writing`) point at the `presentations` plugin; `autopilot`, `copilot`, and `dispatching-parallel-agents` (formerly `workbench`) point at their replacements in the `workbench` plugin (`pilot` and `subagent-driven-development`), `terse-mode` (formerly `workbench`) retires without replacement, and `writing`, `pyramid`, and `tech-doc` (formerly `writing`) point at `ghostwrite` and `coach` in the `writing` plugin; and `frontend-design` (from the retired `frontend-design` plugin, an Anthropic Apache 2.0 port; see `plugins/deprecated/NOTICE`) points at `taste-skill:design-taste-frontend`. Do not install alongside `presentations`, `workbench`, or `writing` unless you need the old skill names.
+Archive of superseded skills, kept installable so old workflows keep resolving. Each skill is frozen, carries a deprecation banner, and names its replacement: `crafting-presentations`, `perfecting-presentations`, and `exporting-decks-to-pptx` (formerly `workbench`) plus `presentations` (formerly `writing`) point at the `presentations` plugin; `autopilot`, `copilot`, and `dispatching-parallel-agents` (formerly `workbench`) point at their replacements in the `workbench` plugin (`pilot` and `subagent-driven-development`), `terse-mode` (formerly `workbench`) retires without replacement, and `writing`, `pyramid`, and `tech-doc` (formerly `writing`) point at `ghostwrite` and `coach` in the `writing` plugin; and `frontend-design` (from the retired `frontend-design` plugin, an Anthropic Apache 2.0 port; see `plugins/deprecated/NOTICE`) points at `taste-skill:taste-skill`. Do not install alongside `presentations`, `workbench`, or `writing` unless you need the old skill names.
 
 ---
 
