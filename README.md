@@ -2,7 +2,7 @@
 
 Plugin marketplace for Claude Code and Codex.
 
-Bundles 20 plugins across Atlassian, Google Workspace, Databricks, agent-system management, design workflows, research, writing, presentations, diagrams, terminal control, learning, idea critique, prose output styles, code minimalism, frontend design taste, and more.
+Bundles 19 plugins across Atlassian, Google Workspace, Databricks, agent-system management, design workflows, research, writing, presentations, diagrams, terminal control, learning, idea critique, prose output styles, code minimalism, frontend design taste, and more.
 
 ## Skills at a glance
 
@@ -32,7 +32,6 @@ Bundles 20 plugins across Atlassian, Google Workspace, Databricks, agent-system 
 | `crafting-html`                                                                          | `workbench`               | Reference gallery of 21 HTML artifact patterns                                                                              |
 | `crafting-design-systems`                                                                | `workbench`               | Design systems (CSS variables, components, images) that theme HTML producers                                                |
 | `tmux`                                                                                   | `terminal`                | Control interactive terminal programs through isolated tmux sessions                                                        |
-| `frontend-design`                                                                        | `frontend-design`         | Distinctive, production-grade frontend interfaces that avoid generic AI aesthetics                                          |
 | `playground`                                                                             | `playground`              | Interactive single-file HTML playgrounds with controls, live preview, and copy-out prompt                                   |
 | `databricks-core`                                                                        | `databricks`              | Databricks CLI, authentication, profile management, and data exploration                                                    |
 | `databricks-docs`                                                                        | `databricks`              | Live `docs.databricks.com` lookups for product-surface questions                                                            |
@@ -63,7 +62,7 @@ Bundles 20 plugins across Atlassian, Google Workspace, Databricks, agent-system 
 | `image-to-code`, `imagegen-frontend-web`, `imagegen-frontend-mobile`, `brandkit`         | `taste-skill`             | Generate design reference images first (web, mobile, brand kit), then build from them                                       |
 | `stitch-design-taste`, `gpt-taste`, `design-taste-frontend-v1`                           | `taste-skill`             | Google Stitch `DESIGN.md` export, GPT/Codex-tuned variant, frozen v1                                                        |
 
-The `deprecated` plugin additionally archives eleven superseded skills: `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations` point at their replacement in the `presentations` plugin; `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode` point at their replacement in the `workbench` plugin (`terse-mode` retires without replacement); `writing`, `pyramid`, `tech-doc` point at `ghostwrite` and `coach` in the `writing` plugin.
+The `deprecated` plugin additionally archives twelve superseded skills: `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations` point at their replacement in the `presentations` plugin; `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode` point at their replacement in the `workbench` plugin (`terse-mode` retires without replacement); `writing`, `pyramid`, `tech-doc` point at `ghostwrite` and `coach` in the `writing` plugin; `frontend-design` (from the retired plugin of that name) points at `taste-skill:design-taste-frontend`.
 
 The `prose-styles` plugin ships no skills. It provides four Claude Code output styles instead, which govern how the agent writes prose for a whole session rather than for one task. See its section below.
 
@@ -83,7 +82,6 @@ Skills are invoked from the host agent (Claude Code or Codex) using the fully qu
 /plugin install agent-system-management@pgoell-claude-tools
 /plugin install workbench@pgoell-claude-tools
 /plugin install terminal@pgoell-claude-tools
-/plugin install frontend-design@pgoell-claude-tools
 /plugin install playground@pgoell-claude-tools
 /plugin install databricks@pgoell-claude-tools
 /plugin install learning@pgoell-claude-tools
@@ -108,7 +106,7 @@ codex
 /plugins
 ```
 
-In the `/plugins` picker, install any combination of `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `frontend-design`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, and `ponytail` (plus `deprecated` if an old workflow needs the archived skill names). `prose-styles` is absent from the Codex picker on purpose, because Codex has no output-style mechanism. `emil` and `taste-skill` are absent too: their upstreams ship no Codex manifest.
+In the `/plugins` picker, install any combination of `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, and `ponytail` (plus `deprecated` if an old workflow needs the archived skill names). `prose-styles` is absent from the Codex picker on purpose, because Codex has no output-style mechanism. `emil` and `taste-skill` are absent too: their upstreams ship no Codex manifest.
 
 To pick up updates: `codex plugin marketplace upgrade pgoell-claude-tools` and re-install the affected plugins.
 
@@ -240,14 +238,6 @@ Terminal skills for interactive command-line programs.
 
 Install `tmux` on Linux, macOS, or WSL. Native Windows terminals are not supported.
 
-### frontend-design
-
-Distinctive, production-grade frontend interfaces. Ports Anthropic's `frontend-design` (Apache 2.0) for creative direction. See `plugins/frontend-design/NOTICE` for attribution. For animation and UI craft, install `emil`, which replaced the `emil-design-eng` copy vendored here before 0.3.0.
-
-**Skills:**
-
-- `/frontend-design:frontend-design`: Build web components, pages, and applications with a clear aesthetic point of view (typography, color, motion, composition).
-
 ### playground
 
 Interactive single-file HTML playgrounds: control panel, live preview, and copy-out prompt. Ports Anthropic's `playground` plugin (Apache 2.0; see `plugins/playground/NOTICE` for attribution).
@@ -351,7 +341,7 @@ Like `emil` and `taste-skill`, this plugin is **not vendored here**. Its entry p
 
 Emil Kowalski's design engineering skills: UI polish, animation craft, motion reviews, prototyping, and opinionated library picks. See [emilkowal.ski/skill](https://emilkowal.ski/skill).
 
-**Not vendored here**, like `ponytail`. The entry points at [emilkowalski/skill](https://github.com/emilkowalski/skill) (MIT) and tracks upstream `main` unpinned. The upstream ships no plugin manifest, so the marketplace entry sets `strict: false` and supplies the manifest itself. Claude Code only. Replaces the `emil-design-eng` copy that `frontend-design` vendored before 0.3.0.
+**Not vendored here**, like `ponytail`. The entry points at [emilkowalski/skill](https://github.com/emilkowalski/skill) (MIT) and tracks upstream `main` unpinned. The upstream ships no plugin manifest, so the marketplace entry sets `strict: false` and supplies the manifest itself. Claude Code only. Replaces the `emil-design-eng` copy that the retired `frontend-design` plugin vendored.
 
 **Skills:**
 
@@ -386,11 +376,11 @@ Frontend design skills against generic "AI slop" UI: taste-driven landing pages 
 - `/taste-skill:image-to-code`, `/taste-skill:imagegen-frontend-web`, `/taste-skill:imagegen-frontend-mobile`, `/taste-skill:brandkit`: Generate design or brand reference images, then build from them. Need an image-generation tool in the host.
 - `/taste-skill:stitch-design-taste`: Write a Google Stitch compatible `DESIGN.md`.
 
-Overlaps with `frontend-design` and `emil`; install more than one only to compare.
+Overlaps with `emil`; install both only to compare. Replaces the retired `frontend-design` plugin, whose skill is archived in `deprecated`.
 
 ### deprecated
 
-Archive of superseded skills, kept installable so old workflows keep resolving. Each skill is frozen, carries a deprecation banner, and names its replacement: `crafting-presentations`, `perfecting-presentations`, and `exporting-decks-to-pptx` (formerly `workbench`) plus `presentations` (formerly `writing`) point at the `presentations` plugin; `autopilot`, `copilot`, and `dispatching-parallel-agents` (formerly `workbench`) point at their replacements in the `workbench` plugin (`pilot` and `subagent-driven-development`), `terse-mode` (formerly `workbench`) retires without replacement, and `writing`, `pyramid`, and `tech-doc` (formerly `writing`) point at `ghostwrite` and `coach` in the `writing` plugin. Do not install alongside `presentations`, `workbench`, or `writing` unless you need the old skill names.
+Archive of superseded skills, kept installable so old workflows keep resolving. Each skill is frozen, carries a deprecation banner, and names its replacement: `crafting-presentations`, `perfecting-presentations`, and `exporting-decks-to-pptx` (formerly `workbench`) plus `presentations` (formerly `writing`) point at the `presentations` plugin; `autopilot`, `copilot`, and `dispatching-parallel-agents` (formerly `workbench`) point at their replacements in the `workbench` plugin (`pilot` and `subagent-driven-development`), `terse-mode` (formerly `workbench`) retires without replacement, and `writing`, `pyramid`, and `tech-doc` (formerly `writing`) point at `ghostwrite` and `coach` in the `writing` plugin; and `frontend-design` (from the retired `frontend-design` plugin, an Anthropic Apache 2.0 port; see `plugins/deprecated/NOTICE`) points at `taste-skill:design-taste-frontend`. Do not install alongside `presentations`, `workbench`, or `writing` unless you need the old skill names.
 
 ---
 

@@ -133,22 +133,6 @@
       }
     },
     {
-      "name": "frontend-design",
-      "source": {
-        "source": "local",
-        "path": "./plugins/frontend-design"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Developer Tools",
-      "interface": {
-        "displayName": "Frontend Design",
-        "shortDescription": "Create distinctive frontends with a bold aesthetic point of view"
-      }
-    },
-    {
       "name": "playground",
       "source": {
         "source": "local",
