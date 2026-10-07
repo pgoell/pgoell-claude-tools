@@ -191,7 +191,7 @@ article:target .hl{background:linear-gradient(transparent 62%,color-mix(in srgb,
 {%- set secnames = {} -%}
 {%- for s in edition.sections %}{% set _ = secnames.update({s.id: s.name}) %}{% endfor -%}
 
-{%- macro when(s) -%}{{ s.published_display }}{% if s.lang == 'de' %} Uhr{% endif %}{%- endmacro -%}
+{%- macro when(s) -%}{{ s.published_display }}{% if s.lang == 'de' and ':' in s.published_display %} Uhr{% endif %}{%- endmacro -%}
 
 {%- macro paras(text) -%}
 {%- for p in text.split('\n\n') if p.strip() %}<p>{{ p.strip() }}</p>{% endfor -%}

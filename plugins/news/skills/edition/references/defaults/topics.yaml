@@ -4,7 +4,7 @@
 language_policy: source # each story stays in its source language
 
 edition:
-  max_stories: 36 # across all sections, lead excluded
+  max_stories: 26 # across all sections, lead excluded; about a 15-minute read
   briefs: 8 # one-liners in the "in brief" block
   lead_from: [any] # section ids the lead may come from, or [any]
 

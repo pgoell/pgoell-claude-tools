@@ -33,8 +33,8 @@ story:
   lang: "de" | "en" | ...
   url: str # the original article
   source: str # outlet name
-  published: str # ISO 8601 datetime
-  published_display: str # set by render.py: `published` in Europe/Berlin, "7.10., 15:46"
+  published: str # ISO 8601 datetime, or "YYYY-MM-DD" when the source gives only a day
+  published_display: str # set by render.py: `published` in Europe/Berlin, "7.10., 15:46", or "7.10." for a day only
   image: { src: str, alt: str, credit: str } | null # og:image, hotlinked, https only
   importance: 1 | 2 | 3 # 3 = big, 1 = small
   tags: [str]

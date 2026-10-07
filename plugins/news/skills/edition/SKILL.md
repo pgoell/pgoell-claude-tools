@@ -55,8 +55,10 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
    - Honour `exclude`, `avoid` and `interests`.
    - Pick the **lead**: the day's most important story from a section in
      `edition.lead_from`. Take it out of its section and set its `section`.
-   - Leftover good candidates and depth-1 sections become **briefs**, up to
-     `edition.briefs`.
+   - Then cut to `edition.max_stories` across all sections, dropping the
+     lowest importance first and keeping at least two stories per section.
+   - Leftover good candidates, cut stories and depth-1 sections become
+     **briefs**, up to `edition.briefs`.
 6. **Write.** Each story in its source language: German stays German, English
    stays English. Set `importance` honestly (3 for the two or three stories of
    the day, most stories 2, small items 1) and size the summary by it:

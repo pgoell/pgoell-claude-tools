@@ -31,6 +31,14 @@ FALLBACK = "plain"
 BERLIN = ZoneInfo("Europe/Berlin")
 
 
+def published(value: str) -> str:
+    # A source that gives only a day (release notes, leaderboards) arrives as a bare
+    # date or as midnight UTC; a clock time would be invented, so show the day alone.
+    if len(value) == 10 or value.endswith(("T00:00:00Z", "T00:00:00+00:00")):
+        return f"{int(value[8:10])}.{int(value[5:7])}."
+    return berlin(datetime.fromisoformat(value))
+
+
 def berlin(moment: datetime) -> str:
     # A time without an offset is taken as UTC, which is what the sources mostly mean.
     if moment.tzinfo is None:
@@ -70,7 +78,7 @@ def main() -> None:
     edition.setdefault("recent_feedback", recent_feedback(folder / "memory" / "changelog.md"))
     edition["generated_display"] = berlin(datetime.now(BERLIN))
     for story in stories(edition):
-        story["published_display"] = berlin(datetime.fromisoformat(story["published"]))
+        story["published_display"] = published(story["published"])
 
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(DESIGNS / design), autoescape=True)
     html = env.get_template("template.html.j2").render(edition=edition)

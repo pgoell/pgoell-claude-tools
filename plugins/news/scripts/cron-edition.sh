@@ -3,6 +3,8 @@
 #   0 6 * * * /path/to/plugins/news/scripts/cron-edition.sh /path/to/vault
 # Cron runs at the host's local time; on a host not set to Europe/Berlin, put
 # CRON_TZ=Europe/Berlin above the line (cronie) or use a systemd timer.
+# NEWS_PLUGIN_DIR=/path/to/plugins/news loads the plugin from that working
+# tree instead of the installed one, to test a change the way cron runs it.
 set -uo pipefail
 
 VAULT="${1:?usage: cron-edition.sh VAULT_PATH}"
@@ -19,8 +21,11 @@ LOG="$LOG_DIR/$DAY.log"
 cd "$VAULT" || exit 1
 echo "== $(date -Is) edition $DAY for $VAULT" >>"$LOG"
 
+PLUGIN=()
+[ -n "${NEWS_PLUGIN_DIR:-}" ] && PLUGIN=(--plugin-dir "$NEWS_PLUGIN_DIR")
+
 # -p prompts nobody, so every tool the edition needs is allowed up front.
-claude -p "/news:edition --vault \"$VAULT\" --date $DAY" \
+claude -p "/news:edition --vault \"$VAULT\" --date $DAY" "${PLUGIN[@]}" \
   --allowedTools "Read" "Write" "Edit" "Glob" "Grep" "WebSearch" "WebFetch" "Agent" \
   "Bash(uv run:*)" "Bash(curl:*)" "Bash(python3:*)" "Bash(date:*)" "Bash(ls:*)" "Bash(mkdir:*)" \
   >>"$LOG" 2>&1

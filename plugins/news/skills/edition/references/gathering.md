@@ -31,7 +31,8 @@ A story is a candidate when it was published within the section's
 sections use 1 to 2 days; AI Evals uses 14 and Deloitte and Allianz use 7,
 because those beats rarely have daily news. A page without a date (leaderboards,
 release notes, benchmark reviews) needs a date from its text ("as of",
-"Submitted on"); mark such a date as approximate in `key_facts`.
+"Submitted on"); give `published` as the bare day (`2026-10-07`), never an
+invented midnight, and mark it as approximate in `key_facts`.
 
 ## Images
 

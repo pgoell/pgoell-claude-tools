@@ -7,7 +7,7 @@
 <p class="meta">
   <span class="src">{{ st.source }}</span>
   <span class="lang">{{ st.lang|upper }}</span>
-  <time datetime="{{ st.published }}">{{ st.published_display }} Uhr</time>
+  <time datetime="{{ st.published }}">{{ st.published_display }}{% if ':' in st.published_display %} Uhr{% endif %}</time>
   <a class="orig" href="{{ st.url }}" rel="noopener">{{ 'Zum Artikel' if st.lang == 'de' else 'Read original' }}&nbsp;&rarr;</a>
   <a class="sid" href="#{{ st.id }}" title="Story-ID für Feedback">#{{ st.id }}</a>
 </p>

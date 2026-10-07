@@ -93,7 +93,8 @@ the wrapper at 06:00 Europe/Berlin with the vault path:
 
 The wrapper runs `claude -p "/news:edition --vault <vault> --date <today>"`
 with the tools an edition needs allowed, logs to
-`~/.local/state/news/<date>.log` (`NEWS_LOG_DIR` changes that), and exits
+`~/.local/state/news/<date>.log` (`NEWS_LOG_DIR` changes that; `NEWS_PLUGIN_DIR`
+loads the plugin from a working tree to test a change), and exits
 non-zero when claude fails or no edition was written. Cron uses the host's
 time zone; on a host not set to Europe/Berlin, add `CRON_TZ=Europe/Berlin`
 above the line.
