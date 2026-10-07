@@ -1,0 +1,64 @@
+{#- The fallback design: render.py uses it when the configured design is not installed. Plain on purpose. -#}
+{%- macro story(s) -%}
+<article id="{{ s.id }}">
+  <h3><a href="{{ s.url }}">{{ s.headline }}</a></h3>
+  {% if s.dek %}<p class="dek">{{ s.dek }}</p>{% endif %}
+  {% if s.image %}<figure><img src="{{ s.image.src }}" alt="{{ s.image.alt }}" loading="lazy"><figcaption>{{ s.image.credit }}</figcaption></figure>{% endif %}
+  {% if s.update_note %}<p class="new"><b>{{ "Neu" if s.lang == "de" else "New" }}:</b> {{ s.update_note }}</p>{% endif %}
+  {% for p in s.summary.split("\n\n") %}<p>{{ p }}</p>{% endfor %}
+  {% if s.followups %}<p class="meta">{% for f in s.followups %}<a href="{{ f.href }}">{{ f.date }}: {{ f.headline }}</a>{% if not loop.last %}; {% endif %}{% endfor %}</p>{% endif %}
+  <p class="meta">{{ s.source }}, {{ s.lang }}, {{ s.published[:16].replace("T", " ") }} <span class="id">#{{ s.id }}</span></p>
+</article>
+{%- endmacro -%}
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ edition.title }}, {{ edition.date }}</title>
+<style>
+:root { --paper: #fff; --ink: #1a1a1a; --muted: #666; --rule: #ddd; --accent: #8a1c1c; --font-head: Georgia, serif; --font-body: system-ui, sans-serif; }
+@media (prefers-color-scheme: dark) { :root { --paper: #161616; --ink: #e8e8e8; --muted: #9a9a9a; --rule: #333; --accent: #e07a5f; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.55 var(--font-body); }
+main { max-width: 42rem; margin: 0 auto; padding: 24px 16px; }
+h1, h2, h3 { font-family: var(--font-head); line-height: 1.2; }
+h2 { border-top: 2px solid var(--ink); padding-top: 8px; margin-top: 40px; }
+a { color: inherit; }
+img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+figure { margin: 0; }
+figcaption, .meta, .dek, header p { color: var(--muted); font-size: 14px; }
+.new { border-left: 3px solid var(--accent); padding-left: 8px; }
+.id { opacity: .7; }
+article { border-bottom: 1px solid var(--rule); padding-bottom: 8px; overflow-wrap: anywhere; }
+</style>
+{% if edition.design_overrides %}<style>:root{ {% for k,v in edition.design_overrides.items() %}--{{k}}:{{v}};{% endfor %} }</style>{% endif %}
+</head>
+<body>
+<main>
+<header>
+  <h1>{{ edition.title }}</h1>
+  <p>{{ edition.tagline }}</p>
+  <p>{{ edition.date_display }}, Nr. {{ edition.number }}{% if edition.weather %}. {{ edition.weather.place }}: {{ edition.weather.summary }}, {{ edition.weather.low_c }} bis {{ edition.weather.high_c }} °C{% endif %}</p>
+</header>
+{{ story(edition.lead) }}
+{% for sec in edition.sections %}
+<section id="{{ sec.id }}">
+  <h2>{{ sec.name }}</h2>
+  {% if sec.kicker %}<p class="meta">{{ sec.kicker }}</p>{% endif %}
+  {% for s in sec.stories %}{{ story(s) }}{% endfor %}
+</section>
+{% endfor %}
+{% if edition.briefs %}
+<section><h2>In Kürze</h2><ul>
+  {% for b in edition.briefs %}<li><a href="{{ b.url }}">{{ b.headline }}</a> <span class="meta">{{ b.source }}</span></li>{% endfor %}
+</ul></section>
+{% endif %}
+<footer class="meta">
+  <p>{{ edition.feedback_hint }}</p>
+  {% if edition.recent_feedback %}<p>Zuletzt umgesetzt:</p><ul>{% for f in edition.recent_feedback %}<li>{{ f }}</li>{% endfor %}</ul>{% endif %}
+  {% if edition.previous %}<p><a href="{{ edition.previous }}">Vorherige Ausgabe</a></p>{% endif %}
+</footer>
+</main>
+</body>
+</html>

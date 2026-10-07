@@ -1,0 +1,193 @@
+# What the newspaper covers. Seeded from the news plugin; edit freely.
+# Feedback in feedback.md, /news:feedback and /news:tune all rewrite this file.
+
+language_policy: source # each story stays in its source language
+
+edition:
+  max_stories: 36 # across all sections, lead excluded
+  briefs: 8 # one-liners in the "in brief" block
+  lead_from: [any] # section ids the lead may come from, or [any]
+
+weather:
+  place: Gelnhausen # null drops the weather box
+
+# Default window for "new since the last edition", in days. A section may override it.
+freshness_days: 2
+
+sections:
+  - id: gelnhausen
+    name: Gelnhausen & Main-Kinzig
+    kicker: Aus der Barbarossastadt und dem Kreis
+    depth: 3 # 1 = briefs only, 2 = short summaries, 3 = full stories with context
+    max_stories: 5
+    freshness_days: 2
+    queries:
+      - Gelnhausen Nachrichten
+      - Main-Kinzig-Kreis Nachrichten
+      - Linsengericht
+      - Gründau
+      - Biebergemünd
+      - Hasselroth
+      - Wächtersbach
+      - Bad Orb
+      - Hanau Nachrichten
+    sources:
+      - name: MKK-Echo
+        url: https://www.mkk-echo.de
+        notes: best local source, free full text, og:image and published time present
+      - name: Gelnhäuser Neue Zeitung
+        url: https://www.gnz.de/lokales/main-kinzig-kreis/
+        notes: paywalled body, use og:title and og:description only; og:image always present
+      - name: Vorsprung Online
+        url: https://www.vorsprung-online.de
+        notes: untested
+      - name: Osthessen News MKK
+        url: https://osthessen-news.de/mkk
+        notes: untested
+    exclude:
+      - routine police blotter items (small thefts, minor accidents)
+
+  - id: rhein-main
+    name: Frankfurt & Rhein-Main
+    kicker: null
+    depth: 3
+    max_stories: 5
+    freshness_days: 2
+    queries:
+      - Frankfurt Nachrichten
+      - Rhein-Main Nachrichten
+      - Hessen Nachrichten
+    sources:
+      - name: hessenschau
+        url: https://www.hessenschau.de/orte/frankfurt-102.html
+        notes: full free text; page mixes in old items, filter by published date; skip video links
+    exclude: []
+
+  - id: deutschland
+    name: Deutschland
+    kicker: null
+    depth: 3
+    max_stories: 4
+    freshness_days: 1
+    queries: []
+    sources:
+      - name: tagesschau
+        url: https://www.tagesschau.de/inland
+        notes: scrape the section page, do not web-search "tagesschau <date>" (returns TV listings)
+    exclude: []
+
+  - id: welt
+    name: Welt
+    kicker: null
+    depth: 3
+    max_stories: 4
+    freshness_days: 1
+    queries: []
+    sources:
+      - name: tagesschau
+        url: https://www.tagesschau.de/ausland
+      - name: BBC News
+        url: https://www.bbc.com/news/world
+        notes: English; /news/articles/ links
+    exclude: []
+
+  - id: ki-tech
+    name: KI & Tech
+    kicker: Anthropic, OpenAI, SpaceX/xAI, Databricks
+    depth: 3
+    max_stories: 5
+    freshness_days: 2
+    queries:
+      - Anthropic news
+      - OpenAI news
+      - SpaceX xAI news
+      - Databricks news
+    sources:
+      - name: Anthropic
+        url: https://www.anthropic.com/news
+      - name: TechCrunch
+        url: https://techcrunch.com
+      - name: Databricks release notes
+        url: https://docs.databricks.com/aws/en/release-notes/product/
+        notes: no og:image and no per-item date; good for a monthly roundup story
+      - name: Unite.AI
+        url: https://www.unite.ai
+        notes: fallback for OpenAI launches (openai.com blocks scripted fetches)
+      - name: Not a Tesla App
+        url: https://www.notateslaapp.com
+        notes: SpaceX and xAI
+    exclude: []
+
+  - id: evals
+    name: AI Evals
+    kicker: Benchmarks, methods, leaderboards
+    depth: 3
+    max_stories: 4
+    freshness_days: 14 # few eval items are daily news
+    queries:
+      - AI evaluation benchmark new
+      - LLM benchmark results
+      - arXiv LLM evaluation
+    sources:
+      - name: Epoch AI
+        url: https://epoch.ai/benchmarks
+        notes: generic og:image (treat as none); no publish date in meta
+      - name: arXiv
+        url: https://export.arxiv.org
+        notes: image null; date from "Submitted on"
+      - name: Vals AI
+        url: https://www.vals.ai/benchmarks
+      - name: METR
+        url: https://metr.org/research/
+        notes: sparse posts
+    exclude: []
+
+  - id: deloitte
+    name: Deloitte
+    kicker: Global und Deutschland
+    depth: 2
+    max_stories: 5
+    freshness_days: 7
+    queries:
+      - Deloitte news
+      - Deloitte Deutschland
+      - Deloitte Studie
+    sources: [] # press rooms render by JS and presseportal blocks; rely on search and secondary coverage
+    exclude:
+      - study landing pages without a date
+
+  - id: allianz
+    name: Allianz & Allianz Direct
+    kicker: null
+    depth: 2
+    max_stories: 4
+    freshness_days: 7
+    queries:
+      - Allianz news
+      - Allianz Direct news
+      - Allianz Versicherung Nachrichten
+    sources:
+      - name: Insurance Journal
+        url: https://www.insurancejournal.com
+      - name: ad-hoc-news
+        url: https://www.ad-hoc-news.de
+    exclude:
+      - auto-generated stock chart articles
+
+# Domains that refuse scripted fetches or the search tool. Do not spend turns on them.
+blocked_sources:
+  - op-online.de
+  - main-kinzig-kreis.de
+  - reuters.com
+  - apnews.com
+  - openai.com
+  - bloomberg.com
+  - cnbc.com
+  - presseportal.de
+  - allianz.com
+
+# Standing interests the selection weighs, free text.
+interests: []
+
+# Things not to show, free text.
+avoid: []

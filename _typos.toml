@@ -22,3 +22,5 @@ ba = "ba"
 ser = "ser"
 # Company name (Canva pitch deck) cited as a slide reference.
 Canva = "Canva"
+# German month name in the news plugin's date examples ("7. Oktober 2026").
+Oktober = "Oktober"

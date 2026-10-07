@@ -229,6 +229,22 @@
       }
     },
     {
+      "name": "news",
+      "source": {
+        "source": "local",
+        "path": "./plugins/news"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity",
+      "interface": {
+        "displayName": "News",
+        "shortDescription": "A personal daily newspaper in your kasten vault"
+      }
+    },
+    {
       "name": "ponytail",
       "source": {
         "source": "url",

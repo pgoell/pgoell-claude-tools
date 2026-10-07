@@ -1,0 +1,14 @@
+# How the newspaper looks. Seeded from the news plugin; edit freely.
+
+# One of the designs shipped in the plugin's skills/edition/designs/ folder.
+design: briefing
+
+title: Der Gelnhäuser Morgen
+tagline: Aus der Barbarossastadt in die Welt. Täglich, für einen Leser.
+
+# CSS custom properties set on :root after the design's own CSS, without the
+# leading "--". Every design reads paper, ink, accent, muted, rule, font-head
+# and font-body. For example:
+#   accent: "#8a1c1c"
+#   font-body: "'Source Serif 4', Georgia, serif"
+overrides: {}

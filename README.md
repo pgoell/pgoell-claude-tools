@@ -2,7 +2,7 @@
 
 Plugin marketplace for Claude Code and Codex.
 
-Bundles 20 plugins across Atlassian, Google Workspace, Databricks, agent-system management, design workflows, research, writing, presentations, diagrams, terminal control, learning, idea critique, prose output styles, code minimalism, frontend design taste, and more.
+Bundles 21 plugins across Atlassian, Google Workspace, Databricks, agent-system management, design workflows, research, writing, presentations, diagrams, a daily newspaper, terminal control, learning, idea critique, prose output styles, code minimalism, frontend design taste, and more.
 
 ## Skills at a glance
 
@@ -45,6 +45,9 @@ Bundles 20 plugins across Atlassian, Google Workspace, Databricks, agent-system 
 | `exporting-presentations-to-pptx`                                                               | `presentations`           | Convert a finished HTML deck into a native, editable PowerPoint (.pptx) via python-pptx                                     |
 | `extracting-presets`                                                                            | `presentations`           | Turn brand material (PPTX templates, PDF guidelines, decks) into reusable presentation presets                              |
 | `creating-diagrams`                                                                             | `diagrams`                | Draw validated architecture, workflow, sequence, data-flow, and lifecycle diagrams as themeable interactive HTML            |
+| `edition`                                                                                       | `news`                    | Build a daily newspaper as one HTML page in a kasten vault, deduped against earlier editions, linked from the daily note    |
+| `feedback`                                                                                      | `news`                    | Apply one piece of newspaper feedback to the config now and show the diff                                                   |
+| `tune`                                                                                          | `news`                    | Reconfigure the newspaper by interview and compare designs on today's edition                                               |
 | `ponytail`                                                                                      | `ponytail`                | Force the laziest solution that works: YAGNI, stdlib first, one line over fifty                                             |
 | `ponytail-review`                                                                               | `ponytail`                | Review a diff for over-engineering only: what to delete and what replaces it                                                |
 | `ponytail-audit`                                                                                | `ponytail`                | Whole-repo over-engineering audit, ranked by what to delete, simplify, or replace                                           |
@@ -91,6 +94,7 @@ Skills are invoked from the host agent (Claude Code or Codex) using the fully qu
 /plugin install critique@pgoell-claude-tools
 /plugin install presentations@pgoell-claude-tools
 /plugin install diagrams@pgoell-claude-tools
+/plugin install news@pgoell-claude-tools
 /plugin install prose-styles@pgoell-claude-tools
 /plugin install ponytail@pgoell-claude-tools
 /plugin install emil@pgoell-claude-tools
@@ -110,7 +114,7 @@ codex
 /plugins
 ```
 
-In the `/plugins` picker, install any combination of `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, and `ponytail` (plus `deprecated` if an old workflow needs the archived skill names). `prose-styles` is absent from the Codex picker on purpose, because Codex has no output-style mechanism. `emil`, `taste-skill`, and `vercel` are absent too: their upstreams ship no Codex manifest.
+In the `/plugins` picker, install any combination of `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, `news`, and `ponytail` (plus `deprecated` if an old workflow needs the archived skill names). `prose-styles` is absent from the Codex picker on purpose, because Codex has no output-style mechanism. `emil`, `taste-skill`, and `vercel` are absent too: their upstreams ship no Codex manifest.
 
 To pick up updates: `codex plugin marketplace upgrade pgoell-claude-tools` and re-install the affected plugins.
 
@@ -306,6 +310,24 @@ Diagrams as one self-contained HTML file, rendered by a bundled engine that vali
 Colors come only from themes (contract in `plugins/diagrams/themes/README.md`). The plugin bundles a `classic` theme; the skill can derive a brand theme from a `presentations` preset or straight from a PPTX template and saves it under `.pgoell/diagrams/` in the project you are working in.
 
 **Setup:** Node 18 or later runs the engine (no install step); without it, the skill falls back to hand-drawn SVG. A Chromium-based browser (Chrome, Chromium, or Edge) enables the browser check and visual review.
+
+### news
+
+A personal daily newspaper: one self-contained HTML page per day in a kasten vault, linked from that day's daily note. Each story stays in its source language; a story an earlier edition ran comes back only as a follow-up that says what is new and links the earlier coverage. Config, feedback note, and memory live in the vault under `<periodic>/05 Newspaper/`, so the paper is yours to edit from kasten. See `plugins/news/README.md`.
+
+**Skills:**
+
+- `/news:edition`: Applies open feedback, gathers news per section (one subagent each where available), drops repeats, writes, renders with the configured design, records what ran, and links the page from the daily note. Takes `--vault`, `--date`, and `--periodic`.
+- `/news:feedback`: Turns free-text feedback ("less like #2026-10-07-allianz-03", "GNZ is paywalled") into config changes now and shows the diff.
+- `/news:tune`: An interview over sections, depth, sources, interests, and design that rewrites the config, and re-renders today's edition in other designs to compare.
+
+**Setup:** needs `uv`, and the host's web search and fetch tools. For a paper every morning at 06:00 Europe/Berlin, add this line to the host's crontab (`crontab -e`), with your own clone and vault paths:
+
+```
+0 6 * * * /home/pascal/Code/pgoell-claude-tools/plugins/news/scripts/cron-edition.sh /home/pascal/kasten-data/vault
+```
+
+The wrapper runs `claude -p "/news:edition ..."` with the needed tools allowed, logs to `~/.local/state/news/`, and exits non-zero when no edition was written. Cron uses the host's time zone; elsewhere, put `CRON_TZ=Europe/Berlin` above the line.
 
 ### prose-styles
 
