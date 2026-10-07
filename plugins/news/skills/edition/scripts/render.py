@@ -10,12 +10,17 @@ Reads <newspaper>/<date>.json and config/design.yaml, and writes
 so a morning run still produces a paper. Before rendering it sets
 `edition.design_overrides` from design.yaml `overrides:` and, when the JSON
 carries no `recent_feedback`, the three newest lines of memory/changelog.md.
+It also adds `published_display` to every story and `generated_display` to the
+edition, both in Europe/Berlin time ("7.10., 15:46"), because Jinja has no
+time zones and the reader's clock is Berlin's.
 """
 
 import json
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import jinja2
 import yaml
@@ -23,6 +28,19 @@ from common import DESIGNS, base_parser, newspaper_dir, today
 
 CHANGE = re.compile(r"^- (\d{4}-\d{2}-\d{2}): (.+)$")
 FALLBACK = "plain"
+BERLIN = ZoneInfo("Europe/Berlin")
+
+
+def berlin(moment: datetime) -> str:
+    # A time without an offset is taken as UTC, which is what the sources mostly mean.
+    if moment.tzinfo is None:
+        moment = moment.replace(tzinfo=ZoneInfo("UTC"))
+    local = moment.astimezone(BERLIN)
+    return f"{local.day}.{local.month}., {local:%H:%M}"
+
+
+def stories(edition: dict) -> list[dict]:
+    return [edition["lead"], *(s for sec in edition.get("sections", []) for s in sec.get("stories", []))]
 
 
 def recent_feedback(changelog: Path, count: int = 3) -> list[str]:
@@ -50,6 +68,9 @@ def main() -> None:
     edition = json.loads((folder / f"{day}.json").read_text())
     edition["design_overrides"] = config.get("overrides") or {}
     edition.setdefault("recent_feedback", recent_feedback(folder / "memory" / "changelog.md"))
+    edition["generated_display"] = berlin(datetime.now(BERLIN))
+    for story in stories(edition):
+        story["published_display"] = berlin(datetime.fromisoformat(story["published"]))
 
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(DESIGNS / design), autoescape=True)
     html = env.get_template("template.html.j2").render(edition=edition)

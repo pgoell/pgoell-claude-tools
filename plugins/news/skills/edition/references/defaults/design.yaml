@@ -1,7 +1,8 @@
 # How the newspaper looks. Seeded from the news plugin; edit freely.
 
-# One of the designs shipped in the plugin's skills/edition/designs/ folder.
-design: briefing
+# One of the designs shipped in the plugin's skills/edition/designs/ folder:
+# heimatblatt, briefing, broadsheet, magazine, swiss, or plain.
+design: heimatblatt
 
 title: Der Gelnhäuser Morgen
 tagline: Aus der Barbarossastadt in die Welt. Täglich, für einen Leser.

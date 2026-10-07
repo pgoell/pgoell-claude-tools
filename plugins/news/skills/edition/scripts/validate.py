@@ -5,7 +5,7 @@
 """Check an edition JSON file against the contract in references/edition-contract.md.
 
 Exits 1 and lists every error when the edition breaks the contract; prints
-warnings (summary length) without failing. With --memory, also fails on a
+warnings (summary length for the story's importance) without failing. With --memory, also fails on a
 follow-up that links a story memory does not hold, and on a story whose URL an
 earlier edition already ran without marking it as a follow-up.
 """
@@ -21,6 +21,9 @@ DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 STORY_ID = re.compile(r"^\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*-\d{2}$")
 EDITION_HREF = re.compile(r"^\d{4}-\d{2}-\d{2}\.html$")
 FOLLOWUP_HREF = re.compile(r"^(\d{4}-\d{2}-\d{2})\.html#(.+)$")
+
+SUMMARY_WORDS = {3: (90, 150), 2: (50, 90), 1: (25, 45)}
+"""Summary length by importance; outside it is a warning, because a short story is no error."""
 
 errors: list[str] = []
 warnings: list[str] = []
@@ -79,8 +82,9 @@ def story(s: object, where: str, day: str) -> None:
         check(isinstance(value, list) and all(is_str(v) for v in value), where, f"{key} must be a list of strings")
 
     words = len(str(s.get("summary", "")).split())
-    if not 60 <= words <= 180:
-        warnings.append(f"{where}: summary has {words} words (contract: 60-180)")
+    low, high = SUMMARY_WORDS.get(s.get("importance"), (25, 150))
+    if not low <= words <= high:
+        warnings.append(f"{where}: summary has {words} words (importance {s.get('importance')}: {low}-{high})")
 
 
 def edition(e: object) -> list[dict]:
@@ -119,6 +123,7 @@ def edition(e: object) -> list[dict]:
                 continue
             check(is_str(sec.get("id")) and is_str(sec.get("name")), where, "id and name must be strings")
             check(sec.get("kicker") is None or is_str(sec.get("kicker")), where, "kicker must be a string or null")
+            check(isinstance(sec.get("local", False), bool), where, "local must be true or false")
             section_ids.add(sec.get("id"))
             if check(isinstance(sec.get("stories"), list), where, "stories must be a list"):
                 for j, s in enumerate(sec["stories"]):

@@ -7,3 +7,4 @@ notes/
 plugins/databricks/references/research/
 plugins/presentations/evals/results/
 plugins/writing/evals/results/
+__pycache__/

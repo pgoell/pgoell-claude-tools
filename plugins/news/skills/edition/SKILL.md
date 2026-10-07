@@ -41,8 +41,8 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
    `## Applied`, add a changelog line, or leave a question. Re-read the config
    afterwards; this edition already follows the new config.
 4. **Gather.** Read `references/gathering.md`. Start one gatherer per section
-   with the section brief from that file, all at once, and fetch the weather.
-   Each gatherer returns candidates as JSON.
+   with the section brief from that file, all at once. Each gatherer returns
+   candidates as JSON. The weather comes later from `weather.py`.
 5. **Select and dedupe.** Per section, keep up to `max_stories`:
    - Drop a candidate that an earlier edition already ran (same URL, or the
      same event by entities and key facts in `recent.py` output) unless it
@@ -58,23 +58,33 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
    - Leftover good candidates and depth-1 sections become **briefs**, up to
      `edition.briefs`.
 6. **Write.** Each story in its source language: German stays German, English
-   stays English. Summaries per the section's depth (3: 60 to 180 words with
-   context; 2: 40 to 80 words; 1: brief only). Facts from the fetched article
-   only; no opinion, no filler. Give every story `entities` and two to four
+   stays English. Set `importance` honestly (3 for the two or three stories of
+   the day, most stories 2, small items 1) and size the summary by it:
+   3 is 90 to 150 words with context, 2 is 50 to 90, 1 is 25 to 45. A section's
+   depth caps that: depth 2 writes no importance 3, depth 1 gives briefs only.
+   The page is read over breakfast, so a long day means fewer stories, not
+   longer ones. Facts from the fetched article only; no opinion, no filler. Give every story `entities` and two to four
    `key_facts`, which memory uses to spot repeats tomorrow. Story ids are
    `<date>-<slug>-NN`, where slug is the section id or a short subject slug
    (`anthropic`, `bnd`), lowercase ASCII, NN counting from 01 per slug.
 7. **Assemble** `NP/<date>.json` per `references/edition-contract.md`: `title`
    and `tagline` from design.yaml, `date_display` in German ("Mittwoch, 7.
    Oktober 2026"), `number` and `previous` from step 1, sections in config
-   order (skip a section with no stories; keep 4 to 10), `feedback_hint` as
-   `Feedback: <periodic>/05 Newspaper/feedback.md`.
+   order (skip a section with no stories; keep 4 to 10) with `local: true` on
+   a section whose topics.yaml entry has it, `weather: null` unless you have
+   something better than a forecast, and `feedback_hint` as
+   `Feedback: <periodic>/05 Newspaper/feedback.md`. Then
+   `uv run "${CLAUDE_SKILL_DIR}/scripts/weather.py" ARGS` fills a null
+   `weather` from Open-Meteo for topics.yaml's `weather` place (one request,
+   no key); a warning means the box stays empty, which is fine.
 8. **Validate.** `uv run "${CLAUDE_SKILL_DIR}/scripts/validate.py" "NP/<date>.json" --memory "NP/memory/stories.jsonl"`.
    Fix every error and run it again until it reports 0 errors. A repeated URL
-   means drop the story or make it a real follow-up.
+   means drop the story or make it a real follow-up. Length warnings do not
+   block, but trim any summary more than a third over its range.
 9. **Render.** `uv run "${CLAUDE_SKILL_DIR}/scripts/render.py" ARGS`. It writes
    `NP/<date>.html` with design.yaml's design and overrides, and fills the
-   footer's recent changes from the changelog. A warning that the design is
+   footer's recent changes from the changelog, and the Berlin-time
+   `published_display` of each story. A warning that the design is
    not installed means it fell back to `plain`; mention it in the report.
 10. **Remember.** `uv run "${CLAUDE_SKILL_DIR}/scripts/remember.py" ARGS`.
     A rerun for the same date replaces that date's memory, never duplicates it.

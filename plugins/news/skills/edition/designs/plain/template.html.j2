@@ -7,7 +7,7 @@
   {% if s.update_note %}<p class="new"><b>{{ "Neu" if s.lang == "de" else "New" }}:</b> {{ s.update_note }}</p>{% endif %}
   {% for p in s.summary.split("\n\n") %}<p>{{ p }}</p>{% endfor %}
   {% if s.followups %}<p class="meta">{% for f in s.followups %}<a href="{{ f.href }}">{{ f.date }}: {{ f.headline }}</a>{% if not loop.last %}; {% endif %}{% endfor %}</p>{% endif %}
-  <p class="meta">{{ s.source }}, {{ s.lang }}, {{ s.published[:16].replace("T", " ") }} <span class="id">#{{ s.id }}</span></p>
+  <p class="meta">{{ s.source }}, {{ s.lang }}, {{ s.published_display }} <span class="id">#{{ s.id }}</span></p>
 </article>
 {%- endmacro -%}
 <!doctype html>

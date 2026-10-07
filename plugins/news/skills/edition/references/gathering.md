@@ -62,7 +62,7 @@ article's og meta, published time and body text. Use WebSearch with the month
 and year to find more. Stay inside the window.
 
 Return up to <max_stories + 3> candidates as a JSON array, best first, each:
-{"headline", "dek", "summary" (60-180 words, in the article's language,
+{"headline", "dek", "summary" (90-150 words, in the article's language,
 plain text, \n\n between paragraphs, facts only, no opinion), "lang", "url",
 "source", "published" (ISO 8601), "image" ({"src","alt","credit"} or null),
 "importance" (1-3), "tags", "entities", "key_facts" (2-4 short facts),
@@ -72,12 +72,12 @@ Write the summary from the article text you fetched, never from memory. If
 the window holds nothing worth reading, return [] and say why in one line.
 ```
 
-At depth 2 ask for 40 to 80 word summaries; at depth 1 ask only for headline,
+At depth 2 ask for 50 to 90 word summaries; at depth 1 ask only for headline,
 url, source and published, which become briefs.
 
 ## Weather
 
-No weather API. Take the day's outlook for `weather.place` from a regional
-source (hessenschau's "Hessen am Abend" carries one) or a search for
-"Wetter <place> heute". Give whole degrees; set `weather` to null when nothing
-credible turns up rather than guessing.
+Not a gatherer's job. `scripts/weather.py` asks Open-Meteo for the day's
+forecast at topics.yaml's `weather` point once the edition JSON exists, and
+only when its `weather` is null. Set `weather` yourself only when a regional
+source gives something better, in whole degrees.

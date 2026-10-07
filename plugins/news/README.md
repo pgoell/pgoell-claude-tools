@@ -46,10 +46,40 @@ three newest changes in its footer.
 
 ## Designs
 
-Designs live in `skills/edition/designs/<name>/template.html.j2`; the contract
-they render is `skills/edition/references/edition-contract.md`. `plain` is the
-fallback used when the configured design is not installed. See
-`skills/edition/designs/README.md` for the list and what a design must do.
+Five designs ship with the plugin, plus `plain`, the fallback used when the
+configured design is not installed. Pick one with `design:` in
+`config/design.yaml`, or run `/news:tune`, which can render today's edition in
+each design side by side. Colours and fonts change through `overrides:` in the
+same file.
+
+| Design                  | Look                                                                    |
+| ----------------------- | ----------------------------------------------------------------------- |
+| `heimatblatt` (default) | Warm local paper from the Kinzig valley; the home section framed green. |
+| `briefing`              | One calm reading column with a sticky index; follow-ups gathered first. |
+| `broadsheet`            | German print front page: Fraktur masthead, columns, hairline rules.     |
+| `magazine`              | Weekend supplement: full-bleed lead, big numerals, scale by importance. |
+| `swiss`                 | Strict 12-column grid in Inter with one signal red.                     |
+
+<p>
+<img src="skills/edition/designs/heimatblatt/shot-mobile-light.png" alt="heimatblatt at phone width" width="180">
+<img src="skills/edition/designs/briefing/shot-mobile-light.png" alt="briefing at phone width" width="180">
+<img src="skills/edition/designs/broadsheet/shot-mobile-light.png" alt="broadsheet at phone width" width="180">
+<img src="skills/edition/designs/magazine/shot-mobile-light.png" alt="magazine at phone width" width="180">
+<img src="skills/edition/designs/swiss/shot-mobile-light.png" alt="swiss at phone width" width="180">
+</p>
+
+Each design lives in `skills/edition/designs/<name>/` as `template.html.j2`
+with a `NOTES.md`; the contract they render is
+`skills/edition/references/edition-contract.md`, and
+`skills/edition/designs/README.md` says what a design must do.
+
+## Network
+
+Gathering reads the web through `WebSearch`, `WebFetch` and `curl`, which is
+the job you ask for. The scripts make one request of their own:
+`weather.py` asks Open-Meteo (free, no key) for the day's forecast at
+topics.yaml's `weather` point, and only while an edition is being built and
+its weather is still empty. Set `weather: null` in topics.yaml to turn it off.
 
 ## Setup
 

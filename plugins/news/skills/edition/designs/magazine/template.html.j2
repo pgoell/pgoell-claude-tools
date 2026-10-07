@@ -1,0 +1,439 @@
+{#- Magazin: a weekend-supplement layout. Image-led, calm, one accent. -#}
+{%- set ed = edition -%}
+{%- macro de(s) -%}{{ 'de' if s.lang == 'de' else 'en' }}{%- endmacro -%}
+{%- macro when(s) -%}{{ s.published_display }}{%- endmacro -%}
+{%- macro meta(s, cls='') -%}
+<p class="meta {{ cls }}">
+  <span class="src">{{ s.source }}</span>
+  <span class="lang">{{ s.lang|upper }}</span>
+  <time datetime="{{ s.published }}">{{ when(s) }}</time>
+  <a class="orig" href="{{ s.url }}" rel="noopener">{{ 'Zum Original' if s.lang == 'de' else 'Read original' }} <span aria-hidden="true">&#8599;</span></a>
+  <span class="sid">#{{ s.id }}</span>
+</p>
+{%- endmacro -%}
+{%- macro summary(s) -%}
+<div class="summary">{% for para in s.summary.split('\n\n') if para.strip() %}<p>{{ para.strip() }}</p>{% endfor %}</div>
+{%- endmacro -%}
+{%- macro followup(s) -%}
+{%- if s.update_note or s.followups -%}
+<aside class="fu">
+  {%- if s.update_note %}<p class="fu-note"><strong>{{ 'Neu:' if s.lang == 'de' else 'New:' }}</strong> {{ s.update_note }}</p>{% endif -%}
+  {%- if s.followups %}
+  <p class="fu-label">{{ 'Bisher berichtet' if s.lang == 'de' else 'Earlier coverage' }}</p>
+  <ul class="fu-list">{% for f in s.followups %}<li><a href="{{ f.href }}"><span class="fu-date">{{ f.date[8:10] }}.{{ f.date[5:7] }}.</span> {{ f.headline }}</a></li>{% endfor %}</ul>
+  {%- endif %}
+</aside>
+{%- endif -%}
+{%- endmacro -%}
+{%- macro figure(s, cls='') -%}
+<figure class="fig {{ cls }}">
+  <img src="{{ s.image.src }}" alt="{{ s.image.alt }}" loading="lazy" decoding="async">
+  {%- if s.image.credit %}<figcaption>{{ s.image.credit }}</figcaption>{% endif %}
+</figure>
+{%- endmacro -%}
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ ed.title }}, Nr. {{ ed.number }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #f7f4ee;
+  --paper-2: #efe9df;
+  --ink: #1b1a18;
+  --ink-2: #3d3a35;
+  --muted: #7b756b;
+  --rule: #d9d2c5;
+  --accent: #b5401f;
+  --on-accent: #fff;
+  --font-head: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-body: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+  --font-meta: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+  --gutter: clamp(16px, 4vw, 56px);
+  --max: 1280px;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #151412;
+    --paper-2: #1f1d1a;
+    --ink: #ede8df;
+    --ink-2: #cbc5ba;
+    --muted: #958e82;
+    --rule: #34312c;
+    --accent: #ec7a52;
+    --on-accent: #151412;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--font-body); font-size: 18px; line-height: 1.6;
+  font-optical-sizing: auto; text-rendering: optimizeLegibility;
+  overflow-wrap: break-word;
+}
+a { color: inherit; text-decoration-color: var(--rule); text-underline-offset: .18em; text-decoration-thickness: 1px; }
+a:hover { color: var(--accent); text-decoration-color: currentColor; }
+img { display: block; max-width: 100%; }
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+.meta-font, .meta, .kicker, .masthead-bar, figcaption, .toc, .fu-label, .brief-sec, .colophon { font-family: var(--font-meta); }
+
+/* Masthead */
+.masthead-bar {
+  display: flex; flex-wrap: wrap; gap: .4rem 1.5rem; justify-content: space-between; align-items: baseline;
+  font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+  padding: 18px 0 14px; border-bottom: 1px solid var(--rule);
+}
+.masthead-bar .wx { text-transform: none; letter-spacing: .01em; }
+.masthead-bar .wx b { color: var(--ink); font-weight: 600; }
+.masthead { text-align: center; padding: clamp(28px, 6vw, 72px) 0 clamp(24px, 4vw, 48px); }
+.masthead h1 {
+  font-family: var(--font-head); font-weight: 400; font-style: italic;
+  font-variation-settings: "opsz" 144; letter-spacing: -.02em; line-height: .95;
+  font-size: clamp(44px, 9vw, 128px); margin: 0;
+}
+.masthead .tagline { font-family: var(--font-head); font-size: clamp(16px, 1.6vw, 20px); color: var(--ink-2); margin: 18px auto 0; max-width: 40ch; text-wrap: balance; }
+.masthead .num { display: inline-block; margin-top: 22px; font-family: var(--font-meta); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+
+/* Lead */
+.lead { margin: 0 0 clamp(48px, 8vw, 112px); }
+.lead .fig { margin: 0; }
+.lead .fig img { width: 100%; aspect-ratio: 16 / 9; max-height: 82vh; object-fit: cover; background: var(--paper-2); }
+.lead .fig figcaption { max-width: var(--max); margin: 0 auto; padding: 8px var(--gutter) 0; text-align: right; }
+.lead-text { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 64px; padding-top: clamp(28px, 4vw, 56px); }
+.lead .kicker { color: var(--accent); }
+.lead h2 {
+  font-family: var(--font-head); font-weight: 380; font-variation-settings: "opsz" 120;
+  font-size: clamp(36px, 6.4vw, 92px); line-height: 1; letter-spacing: -.025em; margin: 14px 0 0; max-width: 18ch;
+  text-wrap: balance;
+}
+.lead .dek { font-family: var(--font-head); font-style: italic; font-weight: 300; font-size: clamp(20px, 2.2vw, 28px); line-height: 1.3; color: var(--ink-2); margin: 20px 0 0; max-width: 36ch; }
+.lead-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px 64px; margin-top: clamp(28px, 4vw, 48px); }
+.lead .summary { font-size: 19px; max-width: 62ch; }
+.lead .summary p:first-child::first-letter {
+  font-family: var(--font-head); font-weight: 400; float: left; font-size: 4.4em; line-height: .82;
+  padding: .06em .08em 0 0; color: var(--accent);
+}
+@media (min-width: 960px) {
+  .lead-body { grid-template-columns: minmax(0, 62ch) minmax(0, 1fr); }
+}
+
+/* Contents */
+.toc { border-top: 1px solid var(--ink); border-bottom: 1px solid var(--rule); padding: 18px 0 20px; margin-bottom: clamp(56px, 9vw, 128px); }
+.toc h2 { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; font-weight: 500; color: var(--muted); margin: 0 0 12px; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px 32px; }
+.toc a { display: flex; gap: 12px; align-items: baseline; text-decoration: none; font-size: 15px; padding: 4px 0; }
+.toc .n { font-family: var(--font-head); color: var(--accent); font-size: 17px; font-variant-numeric: lining-nums; min-width: 1.6em; }
+
+/* Section opener */
+.section { margin-bottom: clamp(72px, 11vw, 160px); scroll-margin-top: 16px; }
+.opener { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: end; gap: 0 clamp(16px, 3vw, 40px); border-bottom: 1px solid var(--ink); padding-bottom: 18px; margin-bottom: clamp(28px, 4vw, 56px); }
+.opener .n {
+  font-family: var(--font-head); font-weight: 300; font-variation-settings: "opsz" 144;
+  font-size: clamp(72px, 13vw, 184px); line-height: .78; color: var(--accent); letter-spacing: -.04em; font-variant-numeric: lining-nums;
+}
+.opener h2 { font-family: var(--font-head); font-weight: 400; font-size: clamp(28px, 4vw, 52px); line-height: 1.02; letter-spacing: -.015em; margin: 0; text-wrap: balance; }
+.opener .kicker { margin: 8px 0 0; color: var(--muted); }
+.kicker { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; font-weight: 500; margin: 0; }
+
+/* Story basics */
+.story { scroll-margin-top: 16px; min-width: 0; }
+.story h3 { font-family: var(--font-head); font-weight: 400; letter-spacing: -.01em; margin: 0; text-wrap: balance; }
+.story h3 a, .lead h2 a { text-decoration: none; }
+.story .dek { font-family: var(--font-head); font-style: italic; font-weight: 300; color: var(--ink-2); margin: 10px 0 0; line-height: 1.35; }
+.summary p { margin: 0 0 .85em; }
+.summary p:last-child { margin-bottom: 0; }
+.summary { margin-top: 16px; hyphens: auto; }
+.fig { margin: 0; }
+.fig img { width: 100%; object-fit: cover; background: var(--paper-2); }
+figcaption { font-size: 11px; letter-spacing: .04em; color: var(--muted); padding-top: 6px; }
+
+.meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; font-size: 12.5px; color: var(--muted); margin: 18px 0 0; line-height: 1.4; }
+.meta .src { color: var(--ink); font-weight: 600; }
+.meta .lang { font-size: 10.5px; letter-spacing: .08em; border: 1px solid var(--rule); padding: 0 5px; border-radius: 2px; }
+.meta .orig { color: var(--accent); text-decoration: none; font-weight: 500; }
+.meta .orig:hover { text-decoration: underline; }
+.meta .sid { font-size: 11px; opacity: .75; font-variant-numeric: tabular-nums; flex-basis: 100%; }
+
+/* Follow-ups */
+.fu { border-left: 2px solid var(--accent); padding: 2px 0 2px 16px; margin: 22px 0 0; font-family: var(--font-meta); font-size: 14.5px; line-height: 1.5; max-width: 62ch; }
+.fu-note { margin: 0; color: var(--ink-2); }
+.fu-note strong { color: var(--accent); font-weight: 600; letter-spacing: .02em; }
+.fu-label { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 12px 0 4px; }
+.fu-list { list-style: none; margin: 0; padding: 0; }
+.fu-list li { margin: 3px 0; }
+.fu-list a { text-decoration: none; }
+.fu-list a:hover { text-decoration: underline; }
+.fu-date { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 4px; }
+.lead aside.fu { margin-top: 0; align-self: start; }
+
+/* Feature (importance 3) */
+.feature { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px clamp(28px, 4vw, 64px); margin-bottom: clamp(40px, 6vw, 80px); }
+.feature .fig img { aspect-ratio: 3 / 2; }
+.feature h3 { font-size: clamp(30px, 3.6vw, 52px); line-height: 1.04; letter-spacing: -.02em; }
+.feature .dek { font-size: clamp(19px, 1.6vw, 23px); }
+.feature .summary { font-size: 17.5px; max-width: 62ch; }
+@media (min-width: 900px) {
+  .feature.has-img { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: start; }
+  .section:nth-of-type(even) .feature.has-img .fig { order: 2; }
+  .feature.has-img .fig { position: sticky; top: 24px; }
+}
+/* Feature without image: a typographic cover on a tinted panel */
+.feature.no-img { background: var(--paper-2); padding: clamp(28px, 5vw, 72px); position: relative; }
+.feature.no-img::before { content: ""; display: block; width: 56px; height: 3px; background: var(--accent); }
+.feature.no-img h3 { font-size: clamp(32px, 4.6vw, 68px); max-width: 20ch; font-weight: 350; }
+.feature.no-img .dek { font-size: clamp(20px, 2vw, 28px); max-width: 40ch; }
+@media (min-width: 900px) {
+  .feature.no-img .ft-body { columns: 2; column-gap: 56px; max-width: none; }
+  .feature.no-img .ft-body .summary { max-width: none; margin-top: 0; }
+}
+
+/* Medium (importance 2) */
+.mediums { display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px clamp(28px, 3.5vw, 56px); margin-bottom: clamp(40px, 6vw, 72px); }
+@media (min-width: 720px) { .mediums.n2, .mediums.n4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .mediums.n3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .mediums.n3 > :first-child { grid-column: 1 / -1; } }
+@media (min-width: 1080px) { .mediums.n3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .mediums.n3 > :first-child { grid-column: auto; } }
+.medium .fig img { aspect-ratio: 4 / 3; }
+.medium h3 { font-size: clamp(23px, 2.1vw, 29px); line-height: 1.12; margin-top: 18px; }
+.medium .dek { font-size: 18px; }
+.medium .summary { font-size: 16.5px; line-height: 1.58; }
+.medium.no-img .plate {
+  aspect-ratio: 4 / 3; background: var(--paper-2); display: flex; flex-direction: column; justify-content: space-between;
+  padding: clamp(20px, 2.4vw, 32px);
+}
+.medium.no-img .plate .kicker { color: var(--accent); }
+.medium.no-img .plate .pq { font-family: var(--font-head); font-style: italic; font-weight: 300; font-size: clamp(22px, 2.2vw, 30px); line-height: 1.2; color: var(--ink); margin: 0; }
+.mediums.n1 .medium { display: grid; gap: 0 48px; }
+@media (min-width: 900px) { .mediums.n1 .medium { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); } .mediums.n1 .medium h3 { margin-top: 0; } }
+
+/* Small (importance 1): text-only tiles */
+.smalls { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 clamp(28px, 3.5vw, 56px); border-top: 1px solid var(--rule); }
+@media (min-width: 720px) { .smalls.n2, .smalls.n3, .smalls.n4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1080px) { .smalls.n3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.small { padding: 24px 0 28px; border-bottom: 1px solid var(--rule); }
+@media (min-width: 720px) { .smalls:not(.n1) .small { border-bottom: 0; } }
+.small h3 { font-size: 21px; line-height: 1.18; }
+.small .summary { font-size: 15.5px; line-height: 1.55; color: var(--ink-2); margin-top: 10px; }
+.small .dek { font-size: 16.5px; }
+@media (min-width: 900px) {
+  .smalls.n1 .small { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 0 clamp(28px, 4vw, 64px); }
+  .smalls.n1 .small .summary { margin-top: 0; max-width: 62ch; }
+}
+
+/* Briefs */
+.briefs ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 clamp(28px, 4vw, 64px); counter-reset: b; }
+@media (min-width: 820px) { .briefs ol { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.briefs li { border-bottom: 1px solid var(--rule); padding: 16px 0 18px; display: grid; grid-template-columns: 2.2em minmax(0, 1fr); counter-increment: b; }
+.briefs li::before { content: counter(b, decimal-leading-zero); font-family: var(--font-head); color: var(--accent); font-size: 17px; line-height: 1.4; }
+.briefs a { font-family: var(--font-head); font-size: 19px; line-height: 1.3; text-decoration: none; }
+.briefs a:hover { text-decoration: underline; }
+.brief-sec { display: block; font-size: 12px; color: var(--muted); margin-top: 6px; letter-spacing: .02em; }
+
+/* Weather */
+.weather { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px 48px; align-items: end; background: var(--paper-2); padding: clamp(24px, 4vw, 48px); margin-bottom: clamp(72px, 11vw, 160px); }
+@media (min-width: 720px) { .weather { grid-template-columns: auto minmax(0, 1fr); } }
+.weather .temps { font-family: var(--font-head); font-weight: 300; font-variation-settings: "opsz" 144; font-size: clamp(64px, 9vw, 120px); line-height: .85; letter-spacing: -.03em; }
+.weather .temps .lo { color: var(--muted); }
+.weather .kicker { color: var(--accent); margin-bottom: 10px; }
+.weather p.sum { font-family: var(--font-head); font-style: italic; font-size: clamp(20px, 2.2vw, 28px); line-height: 1.3; margin: 0; max-width: 34ch; }
+
+/* Footer */
+.colophon { border-top: 1px solid var(--ink); padding: 28px 0 56px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px 32px; font-size: 13px; color: var(--muted); }
+.colophon .title { font-family: var(--font-head); font-style: italic; font-size: 22px; color: var(--ink); }
+.colophon a.prev { color: var(--accent); text-decoration: none; font-weight: 500; }
+.colophon a.prev:hover { text-decoration: underline; }
+.colophon ul { margin: 0; padding-left: 1.1em; }
+.colophon p { margin: 0; }
+
+@media (max-width: 600px) {
+  body { font-size: 17px; }
+  .lead .summary { font-size: 17.5px; }
+  .feature .summary, .medium .summary { font-size: 16.5px; }
+  .masthead-bar .num-d { display: none; }
+  .lead .fig img { aspect-ratio: 4 / 5; max-height: 70vh; }
+  .toc ol { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 16px; }
+  .toc a { font-size: 14px; gap: 8px; }
+  .medium .fig img, .medium.no-img .plate { aspect-ratio: 3 / 2; }
+}
+</style>
+{% if edition.design_overrides %}<style>:root{ {% for k,v in edition.design_overrides.items() %}--{{k}}:{{v}};{% endfor %} }</style>{% endif %}
+</head>
+<body>
+
+<header class="wrap">
+  <div class="masthead-bar">
+    <span>{{ ed.date_display }}</span>
+    {%- if ed.weather %}
+    <span class="wx"><b>{{ ed.weather.high_c }}&deg;</b> / {{ ed.weather.low_c }}&deg; in {{ ed.weather.place }}</span>
+    {%- endif %}
+    <span class="num-d">Ausgabe Nr. {{ ed.number }}</span>
+  </div>
+  <div class="masthead">
+    <h1>{{ ed.title }}</h1>
+    {%- if ed.tagline %}<p class="tagline">{{ ed.tagline }}</p>{% endif %}
+    <span class="num">Nr. {{ ed.number }}</span>
+  </div>
+</header>
+
+<main>
+{%- set s = ed.lead %}
+<article class="lead story" id="{{ s.id }}" lang="{{ s.lang }}">
+  {%- if s.image %}{{ figure(s) }}{% endif %}
+  <div class="wrap">
+    <div class="lead-text">
+      <p class="kicker">{{ 'Titelgeschichte' if s.lang == 'de' else 'Cover story' }}</p>
+      <h2><a href="{{ s.url }}" rel="noopener">{{ s.headline }}</a></h2>
+      {%- if s.dek %}<p class="dek">{{ s.dek }}</p>{% endif %}
+    </div>
+    <div class="lead-body">
+      <div>
+        {{ summary(s) }}
+        {{ meta(s) }}
+      </div>
+      {{ followup(s) }}
+    </div>
+  </div>
+</article>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Inhalt">
+    <h2>In dieser Ausgabe</h2>
+    <ol>
+      {%- for sec in ed.sections %}
+      <li><a href="#{{ sec.id }}"><span class="n">{{ '%02d'|format(loop.index) }}</span>{{ sec.name }}</a></li>
+      {%- endfor %}
+      {%- if ed.briefs %}<li><a href="#kurz"><span class="n">{{ '%02d'|format(ed.sections|length + 1) }}</span>In aller Kürze</a></li>{% endif %}
+    </ol>
+  </nav>
+
+  {%- for sec in ed.sections %}
+  {%- set big = sec.stories|selectattr('importance', 'ge', 3)|list %}
+  {%- set mid = sec.stories|selectattr('importance', 'equalto', 2)|list %}
+  {%- set sm = sec.stories|selectattr('importance', 'le', 1)|list %}
+  <section class="section" id="{{ sec.id }}">
+    <header class="opener">
+      <span class="n" aria-hidden="true">{{ '%02d'|format(loop.index) }}</span>
+      <div>
+        <h2>{{ sec.name }}</h2>
+        {%- if sec.kicker %}<p class="kicker">{{ sec.kicker }}</p>{% endif %}
+      </div>
+    </header>
+
+    {%- for s in big %}
+    {%- if s.image %}
+    <article class="story feature has-img" id="{{ s.id }}" lang="{{ s.lang }}">
+      {{ figure(s) }}
+      <div>
+        <h3><a href="{{ s.url }}" rel="noopener">{{ s.headline }}</a></h3>
+        {%- if s.dek %}<p class="dek">{{ s.dek }}</p>{% endif %}
+        {{ summary(s) }}
+        {{ followup(s) }}
+        {{ meta(s) }}
+      </div>
+    </article>
+    {%- else %}
+    <article class="story feature no-img" id="{{ s.id }}" lang="{{ s.lang }}">
+      <div>
+        <h3><a href="{{ s.url }}" rel="noopener">{{ s.headline }}</a></h3>
+        {%- if s.dek %}<p class="dek">{{ s.dek }}</p>{% endif %}
+      </div>
+      <div class="ft-body">
+        {{ summary(s) }}
+      </div>
+      <div>
+        {{ followup(s) }}
+        {{ meta(s) }}
+      </div>
+    </article>
+    {%- endif %}
+    {%- endfor %}
+
+    {%- if mid %}
+    <div class="mediums n{{ mid|length if mid|length < 4 else 4 }}">
+      {%- for s in mid %}
+      <article class="story medium {{ 'has-img' if s.image else 'no-img' }}" id="{{ s.id }}" lang="{{ s.lang }}">
+        {%- if s.image %}{{ figure(s) }}{% else %}
+        <div class="plate" aria-hidden="true">
+          <p class="kicker">{{ s.source }}</p>
+          {%- if s.tags %}<p class="pq">{{ s.tags[:3]|join(', ') }}</p>{% endif %}
+        </div>
+        {%- endif %}
+        <div>
+          <h3><a href="{{ s.url }}" rel="noopener">{{ s.headline }}</a></h3>
+          {%- if s.dek %}<p class="dek">{{ s.dek }}</p>{% endif %}
+          {{ summary(s) }}
+          {{ followup(s) }}
+          {{ meta(s) }}
+        </div>
+      </article>
+      {%- endfor %}
+    </div>
+    {%- endif %}
+
+    {%- if sm %}
+    <div class="smalls n{{ sm|length if sm|length < 4 else 4 }}">
+      {%- for s in sm %}
+      <article class="story small" id="{{ s.id }}" lang="{{ s.lang }}">
+        <div class="sm-head">
+          <h3><a href="{{ s.url }}" rel="noopener">{{ s.headline }}</a></h3>
+          {%- if s.dek %}<p class="dek">{{ s.dek }}</p>{% endif %}
+        </div>
+        <div class="sm-body">
+          {{ summary(s) }}
+          {{ followup(s) }}
+          {{ meta(s) }}
+        </div>
+      </article>
+      {%- endfor %}
+    </div>
+    {%- endif %}
+  </section>
+  {%- endfor %}
+
+  {%- if ed.briefs %}
+  {%- set names = {} %}{% for sec in ed.sections %}{% set _ = names.update({sec.id: sec.name}) %}{% endfor %}
+  <section class="section briefs" id="kurz">
+    <header class="opener">
+      <span class="n" aria-hidden="true">{{ '%02d'|format(ed.sections|length + 1) }}</span>
+      <div><h2>In aller Kürze</h2><p class="kicker">Was sonst noch geschah</p></div>
+    </header>
+    <ol>
+      {%- for b in ed.briefs %}
+      <li><div><a href="{{ b.url }}" rel="noopener">{{ b.headline }}</a><span class="brief-sec">{{ b.source }}, {{ names.get(b.section, b.section) }}</span></div></li>
+      {%- endfor %}
+    </ol>
+  </section>
+  {%- endif %}
+
+  {%- if ed.weather %}
+  <section class="weather" aria-label="Wetter">
+    <div class="temps">{{ ed.weather.high_c }}&deg;<span class="lo">/{{ ed.weather.low_c }}&deg;</span></div>
+    <div>
+      <p class="kicker">Das Wetter in {{ ed.weather.place }}</p>
+      <p class="sum">{{ ed.weather.summary }}</p>
+    </div>
+  </section>
+  {%- endif %}
+
+  <footer class="colophon">
+    <div>
+      <p class="title">{{ ed.title }}</p>
+      <p>Nr. {{ ed.number }}, {{ ed.date_display }}</p>
+    </div>
+    <div>
+      <p>{{ ed.feedback_hint }}</p>
+      {%- if ed.previous %}<p><a class="prev" href="{{ ed.previous }}">&larr; Vorherige Ausgabe</a></p>{% endif %}
+      {%- if ed.recent_feedback %}
+      <p>Auf deinen Wunsch:</p>
+      <ul>{% for f in ed.recent_feedback %}<li>{{ f }}</li>{% endfor %}</ul>
+      {%- endif %}
+    </div>
+  </footer>
+</div>
+</main>
+</body>
+</html>

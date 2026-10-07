@@ -8,8 +8,12 @@ edition:
   briefs: 8 # one-liners in the "in brief" block
   lead_from: [any] # section ids the lead may come from, or [any]
 
+# weather.py asks Open-Meteo (free, no key) for this point when the edition
+# carries no weather. Set weather: null to drop the weather box.
 weather:
-  place: Gelnhausen # null drops the weather box
+  place: Gelnhausen
+  latitude: 50.2019
+  longitude: 9.1912
 
 # Default window for "new since the last edition", in days. A section may override it.
 freshness_days: 2
@@ -18,6 +22,7 @@ sections:
   - id: gelnhausen
     name: Gelnhausen & Main-Kinzig
     kicker: Aus der Barbarossastadt und dem Kreis
+    local: true # the home section; designs such as heimatblatt frame it as "Aus der Region"
     depth: 3 # 1 = briefs only, 2 = short summaries, 3 = full stories with context
     max_stories: 5
     freshness_days: 2

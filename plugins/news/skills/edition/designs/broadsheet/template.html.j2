@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>{{ edition.title }}, Nr. {{ edition.number }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Playfair+Display:ital,wght@0,400..900;1,400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f6f1e7;
+  --paper-2:#ede6d6;
+  --ink:#1b1a17;
+  --ink-2:#3a3833;
+  --muted:#6f685c;
+  --rule:#1b1a17;
+  --hair:#c9bfac;
+  --accent:#8a1c1c;
+  --font-mast:"UnifrakturMaguntia","Old English Text MT",serif;
+  --font-head:"Playfair Display","Bodoni 72",Didot,Georgia,serif;
+  --font-body:"Source Serif 4","Iowan Old Style",Georgia,serif;
+  --gap:2rem;
+  --img-filter:none;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#10141c;
+    --paper-2:#171c26;
+    --ink:#e7e1d2;
+    --ink-2:#c9c2b2;
+    --muted:#8d8878;
+    --rule:#d9d2c0;
+    --hair:#343a47;
+    --accent:#e08a74;
+    --img-filter:brightness(.88) contrast(1.04);
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font:400 1.0625rem/1.5 var(--font-body);
+  font-optical-sizing:auto;font-kerning:normal;
+  text-rendering:optimizeLegibility;
+}
+a{color:inherit;text-decoration-thickness:1px;text-underline-offset:.15em}
+a:hover{color:var(--accent)}
+img{display:block;max-width:100%}
+.sheet{max-width:1320px;margin:0 auto;padding:0 2.5rem 3rem}
+
+/* masthead */
+.mast{padding-top:1.25rem;text-align:center}
+.ears{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:1rem;
+  font-size:.8rem;color:var(--ink-2);font-variant-caps:all-small-caps;letter-spacing:.06em}
+.ears .l{text-align:left}.ears .r{text-align:right}
+.mast h1{font:400 clamp(2.6rem,7.4vw,6.4rem)/1 var(--font-mast);margin:.6rem 0 .35rem;letter-spacing:.005em}
+.tagline{font:italic 400 1.05rem/1.3 var(--font-head);color:var(--ink-2);margin:0 0 .9rem}
+.dateline{border-top:3px double var(--rule);border-bottom:1px solid var(--rule);
+  display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  padding:.4rem 0;font-size:.85rem;font-variant-caps:all-small-caps;letter-spacing:.07em}
+.dateline nav{display:flex;flex-wrap:wrap;gap:.2rem 1.1rem;justify-content:center}
+.dateline nav a{text-decoration:none}
+.dateline nav a:hover{text-decoration:underline}
+
+/* shared story bits */
+.kick{font-variant-caps:all-small-caps;letter-spacing:.08em;font-size:.95rem;color:var(--accent);margin:0 0 .25rem;font-weight:600}
+.hl{font-variant-numeric:lining-nums;font-family:var(--font-head);font-weight:700;line-height:1.08;margin:0 0 .45rem;text-wrap:balance;hyphens:manual}
+.hl a{text-decoration:none}
+.hl a:hover{text-decoration:underline;text-decoration-thickness:1px}
+.dek{font:italic 400 1.15rem/1.35 var(--font-head);color:var(--ink-2);margin:0 0 .7rem;text-wrap:pretty}
+.body p{margin:0;text-align:justify;hyphens:auto;-webkit-hyphens:auto;hyphenate-limit-chars:6 3 3}
+.body p+p{text-indent:1.2em}
+.meta{font-size:.78rem;color:var(--muted);margin:.6rem 0 0;line-height:1.5;
+  font-variant-caps:all-small-caps;letter-spacing:.05em;display:flex;flex-wrap:wrap;gap:0 .75rem}
+.meta span+span,.meta a{position:relative}
+.meta>*+*::before{content:"";position:absolute;left:-.4rem;top:.35em;bottom:.3em;border-left:1px solid var(--hair)}
+.meta .id{font-variant-caps:normal;font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:.72rem;letter-spacing:0;opacity:.85}
+.meta a{text-decoration:none;color:var(--ink-2)}
+.meta a:hover{color:var(--accent);text-decoration:underline}
+figure{margin:0 0 .75rem}
+figure img{width:100%;aspect-ratio:3/2;object-fit:cover;background:var(--paper-2);filter:var(--img-filter)}
+figcaption{font-size:.72rem;color:var(--muted);margin-top:.3rem;display:flex;justify-content:space-between;gap:1rem;line-height:1.35}
+figcaption .alt{font-style:italic}
+figcaption .cr{text-align:right;white-space:nowrap;font-variant-caps:all-small-caps;letter-spacing:.04em}
+.update{border-top:1px solid var(--rule);border-bottom:1px solid var(--hair);padding:.5rem 0;margin:.2rem 0 .8rem;font-size:.95rem;line-height:1.45}
+.update b{font-variant-caps:all-small-caps;letter-spacing:.08em;color:var(--accent);margin-right:.35em}
+.earlier{margin:.8rem 0 0;padding:.5rem 0 0;border-top:1px solid var(--hair);font-size:.85rem}
+.earlier h4{margin:0 0 .2rem;font-weight:600;font-size:.8rem;font-variant-caps:all-small-caps;letter-spacing:.08em;color:var(--muted)}
+.earlier ul{list-style:none;margin:0;padding:0}
+.earlier li{padding:.1rem 0}
+.earlier time{font-variant-numeric:tabular-nums;color:var(--muted);margin-right:.4em}
+article{scroll-margin-top:1rem}
+article:target .hl{background:linear-gradient(transparent 62%,color-mix(in srgb,var(--accent) 22%,transparent) 0)}
+
+/* front page */
+.front{display:grid;grid-template-columns:minmax(0,1fr) 19rem;gap:0 var(--gap);padding:1.4rem 0 1.6rem;border-bottom:4px solid var(--rule)}
+.lead .hl{font-size:clamp(2rem,4.2vw,3.6rem);font-weight:800;letter-spacing:-.01em;line-height:1.02}
+.lead .dek{font-size:clamp(1.15rem,1.7vw,1.45rem)}
+.lead figure img{aspect-ratio:16/9}
+.lead .body{columns:2 18rem;column-gap:var(--gap);column-rule:1px solid var(--hair)}
+.lead .body p:first-child::first-letter{float:left;font:700 3.6em/.82 var(--font-head);margin:.06em .08em 0 0;color:var(--ink)}
+.lead .cols-after{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
+.rail{border-left:1px solid var(--rule);padding-left:var(--gap)}
+.rail h2{font:700 1.5rem/1.1 var(--font-head);margin:0 0 .15rem}
+.rail .sub{font-variant-caps:all-small-caps;letter-spacing:.08em;font-size:.82rem;color:var(--muted);margin:0 0 .6rem;padding-bottom:.4rem;border-bottom:3px double var(--rule)}
+.briefs{list-style:none;margin:0;padding:0}
+.briefs li{padding:.55rem 0;border-bottom:1px solid var(--hair);font-size:.95rem;line-height:1.35}
+.briefs li:last-child{border-bottom:0}
+.briefs .sec{display:block;font-variant-caps:all-small-caps;letter-spacing:.07em;font-size:.78rem;color:var(--accent);font-weight:600}
+.briefs a{text-decoration:none}
+.briefs a:hover{text-decoration:underline}
+.briefs .src{color:var(--muted);font-size:.78rem;font-style:italic;white-space:nowrap}
+.wx{margin-top:1.2rem;border-top:3px double var(--rule);border-bottom:1px solid var(--rule);padding:.6rem 0 .7rem}
+.wx h3{margin:0;font-variant-caps:all-small-caps;letter-spacing:.08em;font-size:.85rem;font-weight:600}
+.wx .t{font:700 2.2rem/1 var(--font-head);margin:.25rem 0;font-variant-numeric:lining-nums}
+.wx .t small{font-size:1.1rem;font-weight:400;color:var(--muted)}
+.wx p{margin:0;font-size:.9rem;line-height:1.4;font-style:italic}
+
+/* sections */
+.section{padding-top:1.4rem}
+.section+.section{margin-top:1.4rem}
+.shead{border-top:4px solid var(--rule);padding-top:.35rem;margin-bottom:1rem;display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap;border-bottom:1px solid var(--rule);padding-bottom:.35rem}
+.shead h2{margin:0;font:800 1.65rem/1.1 var(--font-head);letter-spacing:.01em}
+.shead p{margin:0;font-style:italic;color:var(--muted);font-size:.95rem}
+.shead .n{margin-left:auto;font-size:.78rem;color:var(--muted);font-variant-caps:all-small-caps;letter-spacing:.08em}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.6rem var(--gap);overflow:hidden}
+.grid.n4>article:last-child,.grid.n2>article:last-child{grid-column:span 2}
+/* a short story stretched over two columns reads better with its picture beside it */
+.grid.n4>article.has-img:last-child,.grid.n2>article.has-img:last-child{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:0 var(--gap);align-items:start}
+.grid.n4>article.has-img:last-child figure img{aspect-ratio:4/3}
+.grid>article{position:relative}
+/* column and row rules drawn in the gutters; the grid clips the ones outside its edge */
+.grid>article::before{content:"";position:absolute;left:calc(var(--gap) / -2);top:0;bottom:0;border-left:1px solid var(--hair)}
+.grid>article::after{content:"";position:absolute;top:-.8rem;left:calc(var(--gap) / -2);right:calc(var(--gap) / -2);border-top:1px solid var(--hair)}
+.s3{grid-column:span 2}
+.s3 .hl{font-size:clamp(1.6rem,2.6vw,2.25rem)}
+.s3 figure img{aspect-ratio:2/1}
+.s3 .body{columns:2 16rem;column-gap:var(--gap);column-rule:1px solid var(--hair)}
+.s3.no-img .body p:first-child::first-letter{float:left;font:700 3.3em/.82 var(--font-head);margin:.06em .08em 0 0}
+.s3.no-img .dek{font-size:1.3rem}
+.s3.no-img .hl{font-size:clamp(1.8rem,3vw,2.6rem)}
+.s2 .hl{font-size:1.4rem}
+.s1 .hl{font-size:1.12rem;font-weight:700}
+.s1 .body{font-size:.98rem}
+.s1 figure img{aspect-ratio:2/1}
+.s1 figcaption .alt{display:none}
+.s1 .dek{font-size:1rem}
+
+/* footer */
+.foot{margin-top:2.5rem;border-top:3px double var(--rule);padding-top:.7rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-size:.85rem;color:var(--ink-2)}
+.foot .fin{font-family:var(--font-mast);font-size:1.3rem;color:var(--ink)}
+.foot .asked{flex-basis:100%;color:var(--muted)}
+
+@media (max-width:1100px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .s3{grid-column:1 / -1}
+  .grid.n4>article:last-child{grid-column:1 / -1}
+}
+@media (max-width:860px){
+  .front{grid-template-columns:1fr}
+  .rail{border-left:0;padding-left:0;border-top:4px solid var(--rule);margin-top:1.6rem;padding-top:.8rem}
+}
+@media (max-width:620px){
+  :root{--gap:1.25rem}
+  .sheet{padding:0 16px 2rem}
+  body{font-size:1.03rem}
+  .ears{grid-template-columns:1fr 1fr;font-size:.74rem}
+  .ears .c{display:none}
+  .dateline{justify-content:center;text-align:center}
+  .dateline .d{width:100%}
+  .grid{grid-template-columns:minmax(0,1fr);gap:1.5rem 0}
+  .grid>article::before{display:none}
+  .grid>article{grid-column:auto !important}
+  .grid>article::after{left:0;right:0}
+  .lead .body,.s3 .body{columns:1}
+  .s2 .hl{font-size:1.3rem}
+  /* narrow measure: ragged right beats rivers where the browser lacks a hyphenation dictionary */
+  .body p{text-align:left}
+  .grid.n4>article.has-img:last-child{display:block}
+  .shead h2{font-size:1.4rem}
+  .shead .n{display:none}
+  figcaption{flex-direction:column;gap:0}
+  figcaption .cr{text-align:left}
+}
+</style>
+{% if edition.design_overrides %}<style>:root{ {% for k,v in edition.design_overrides.items() %}--{{k}}:{{v}};{% endfor %} }</style>{% endif %}
+</head>
+<body>
+{%- set secnames = {} -%}
+{%- for s in edition.sections %}{% set _ = secnames.update({s.id: s.name}) %}{% endfor -%}
+
+{%- macro when(s) -%}{{ s.published_display }}{% if s.lang == 'de' %} Uhr{% endif %}{%- endmacro -%}
+
+{%- macro paras(text) -%}
+{%- for p in text.split('\n\n') if p.strip() %}<p>{{ p.strip() }}</p>{% endfor -%}
+{%- endmacro -%}
+
+{%- macro meta(s) -%}
+<p class="meta">
+  <span>{{ s.source }}</span>
+  <span>{{ s.lang|upper }}</span>
+  <time datetime="{{ s.published }}">{{ when(s) }}</time>
+  <a href="{{ s.url }}" rel="noopener">Original&#x2009;&rarr;</a>
+  <span class="id" title="{{ 'Feedback: mehr wie' if s.lang == 'de' else 'Feedback: more like' }} #{{ s.id }}">#{{ s.id }}</span>
+</p>
+{%- endmacro -%}
+
+{%- macro fig(s) -%}
+{%- if s.image -%}
+<figure>
+  <img src="{{ s.image.src }}" alt="{{ s.image.alt }}" loading="lazy" decoding="async" referrerpolicy="no-referrer">
+  <figcaption><span class="alt">{{ s.image.alt }}</span><span class="cr">Foto: {{ s.image.credit }}</span></figcaption>
+</figure>
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro followup(s) -%}
+{%- if s.update_note -%}
+<p class="update"><b>{{ 'Neu:' if s.lang == 'de' else 'New:' }}</b>{{ s.update_note }}</p>
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro earlier(s) -%}
+{%- if s.followups -%}
+<div class="earlier">
+  <h4>{{ 'Bisher berichtet' if s.lang == 'de' else 'Earlier coverage' }}</h4>
+  <ul>{% for f in s.followups %}<li><time datetime="{{ f.date }}">{{ f.date[8:10]|int }}.{{ f.date[5:7]|int }}.</time><a href="{{ f.href }}">{{ f.headline }}</a></li>{% endfor %}</ul>
+</div>
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro story(s, kicker=None) -%}
+<article id="{{ s.id }}" lang="{{ s.lang }}" class="s{{ s.importance }} {{ 'has-img' if s.image else 'no-img' }}">
+  {{ fig(s) }}
+  <div class="txt">
+    {% if s.update_note %}<p class="kick">{{ 'Fortsetzung' if s.lang == 'de' else 'Developing' }}</p>{% endif %}
+    <h3 class="hl"><a href="{{ s.url }}" rel="noopener">{{ s.headline }}</a></h3>
+    {% if s.dek %}<p class="dek">{{ s.dek }}</p>{% endif %}
+    {{ followup(s) }}
+    <div class="body">{{ paras(s.summary) }}</div>
+    {{ earlier(s) }}
+    {{ meta(s) }}
+  </div>
+</article>
+{%- endmacro -%}
+
+<div class="sheet">
+<header class="mast">
+  <div class="ears">
+    <span class="l">Nr. {{ edition.number }}</span>
+    <span class="c">Für einen Leser gesetzt</span>
+    <span class="r">{% if edition.weather %}{{ edition.weather.place }}, {{ edition.weather.high_c }}&deg; / {{ edition.weather.low_c }}&deg;{% endif %}</span>
+  </div>
+  <h1>{{ edition.title }}</h1>
+  <p class="tagline">{{ edition.tagline }}</p>
+  <div class="dateline">
+    <span class="d">{{ edition.date_display }}</span>
+    <nav aria-label="Ressorts">{% for s in edition.sections %}<a href="#{{ s.id }}">{{ s.name }}</a>{% endfor %}</nav>
+    {% if edition.previous %}<a class="d" href="{{ edition.previous }}">&larr; Vorige Ausgabe</a>{% else %}<span class="d">Erste Ausgabe</span>{% endif %}
+  </div>
+</header>
+
+<main>
+<section class="front" aria-label="Titelseite">
+  {%- set L = edition.lead %}
+  <article id="{{ L.id }}" lang="{{ L.lang }}" class="lead">
+    {% if L.update_note %}<p class="kick">{{ 'Fortsetzung' if L.lang == 'de' else 'Developing' }}</p>{% endif %}
+    <h2 class="hl"><a href="{{ L.url }}" rel="noopener">{{ L.headline }}</a></h2>
+    {% if L.dek %}<p class="dek">{{ L.dek }}</p>{% endif %}
+    {{ fig(L) }}
+    {{ followup(L) }}
+    <div class="body">{{ paras(L.summary) }}</div>
+    {{ earlier(L) }}
+    {{ meta(L) }}
+  </article>
+
+  <aside class="rail">
+    <h2>Kurz notiert</h2>
+    <p class="sub">In brief</p>
+    <ul class="briefs">
+    {%- for b in edition.briefs %}
+      <li><span class="sec">{{ secnames.get(b.section, b.section) }}</span><a href="{{ b.url }}" rel="noopener">{{ b.headline }}</a> <span class="src">{{ b.source }}</span></li>
+    {%- endfor %}
+    </ul>
+    {% if edition.weather %}
+    <div class="wx">
+      <h3>Wetter in {{ edition.weather.place }}</h3>
+      <p class="t">{{ edition.weather.high_c }}&deg; <small>/ {{ edition.weather.low_c }}&deg;</small></p>
+      <p>{{ edition.weather.summary }}</p>
+    </div>
+    {% endif %}
+  </aside>
+</section>
+
+{% for sec in edition.sections %}
+<section class="section" id="{{ sec.id }}" aria-labelledby="h-{{ sec.id }}">
+  <header class="shead">
+    <h2 id="h-{{ sec.id }}">{{ sec.name }}</h2>
+    {% if sec.kicker %}<p>{{ sec.kicker }}</p>{% endif %}
+    <span class="n">{{ sec.stories|length }} Beiträge</span>
+  </header>
+  <div class="grid n{{ sec.stories|length }}">
+    {%- for s in sec.stories %}
+    {{ story(s) }}
+    {%- endfor %}
+  </div>
+</section>
+{% endfor %}
+</main>
+
+<footer class="foot">
+  <span class="fin">{{ edition.title }}</span>
+  <span>{{ edition.feedback_hint }}. Zitieren Sie die Kennung eines Beitrags, etwa &bdquo;mehr wie #{{ edition.lead.id }}&ldquo;.</span>
+  <span>{% if edition.previous %}<a href="{{ edition.previous }}">&larr; Vorige Ausgabe</a>{% else %}Nr. {{ edition.number }}, {{ edition.date_display }}{% endif %}</span>
+  {%- if edition.recent_feedback %}
+  <span class="asked">Auf Ihren Wunsch: {% for f in edition.recent_feedback %}{{ f }}{% if not loop.last %}; {% endif %}{% endfor %}</span>
+  {%- endif %}
+</footer>
+</div>
+</body>
+</html>

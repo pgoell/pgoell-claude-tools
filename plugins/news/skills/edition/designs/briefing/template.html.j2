@@ -1,0 +1,399 @@
+{#- Briefing: a calm, reading-first morning brief. One reading column, a sticky index. -#}
+{%- set months = ['Jan.','Feb.','März','Apr.','Mai','Juni','Juli','Aug.','Sep.','Okt.','Nov.','Dez.'] -%}
+
+{%- macro minutes(stories) -%}
+  {%- set ns = namespace(w=0) -%}
+  {%- for s in stories %}{% set ns.w = ns.w + (s.summary.split()|length) + (s.headline.split()|length) %}{% endfor -%}
+  {{ [((ns.w / 220) + 0.5)|int, 1]|max }}
+{%- endmacro -%}
+{%- macro body(text) -%}
+  {%- for p in text.split('\n\n') if p.strip() %}<p>{{ p.strip() }}</p>{% endfor -%}
+{%- endmacro -%}
+{%- macro meta(s) -%}
+<footer class="meta">
+  <span class="src">{{ s.source }}</span>
+  <span class="lang" title="Sprache">{{ s.lang|upper }}</span>
+  <time datetime="{{ s.published }}">{{ s.published_display }}</time>
+  <a class="orig" href="{{ s.url }}" rel="noopener">{{ 'Zum Original' if s.lang == 'de' else 'Read original' }}<span aria-hidden="true"> &#8599;</span></a>
+  <a class="sid" href="#{{ s.id }}" title="Story-ID für Feedback">#{{ s.id }}</a>
+</footer>
+{%- endmacro -%}
+{%- macro followup(s) -%}
+{%- if s.update_note or s.followups %}
+<aside class="update" lang="{{ s.lang }}">
+  {%- if s.update_note %}<p><strong>{{ 'Neu:' if s.lang == 'de' else 'New:' }}</strong> {{ s.update_note }}</p>{% endif %}
+  {%- if s.followups %}
+  <p class="earlier"><span>Bisher berichtet</span>
+  {%- for f in s.followups %}
+    <a href="{{ f.href }}"><time datetime="{{ f.date }}">{{ f.date[8:10]|int }}. {{ months[f.date[5:7]|int - 1] }}</time> {{ f.headline }}</a>
+  {%- endfor %}</p>
+  {%- endif %}
+</aside>
+{%- endif %}
+{%- endmacro -%}
+{%- macro story(s, sec_name=None) -%}
+{%- set wide = s.image and s.importance == 3 -%}
+<article class="story imp{{ s.importance }}{% if s.update_note or s.followups %} is-followup{% endif %}" id="{{ s.id }}" lang="{{ s.lang }}">
+  {%- if wide %}
+  <figure class="wide">
+    <img src="{{ s.image.src }}" alt="{{ s.image.alt }}" loading="lazy" decoding="async" onerror="this.parentNode.remove()">
+    {%- if s.image.credit %}<figcaption>{{ s.image.credit }}</figcaption>{% endif %}
+  </figure>
+  {%- endif %}
+  <div class="head">
+    {%- if s.image and not wide %}
+    <figure class="thumb">
+      <img src="{{ s.image.src }}" alt="{{ s.image.alt }}" loading="lazy" decoding="async" onerror="this.parentNode.remove()">
+      {%- if s.image.credit %}<figcaption>{{ s.image.credit }}</figcaption>{% endif %}
+    </figure>
+    {%- endif %}
+    <div class="htext">
+      {%- if s.update_note or s.followups %}<p class="flag">{{ 'Fortsetzung' if s.lang == 'de' else 'Developing' }}</p>{% endif %}
+      <h3><a href="{{ s.url }}" rel="noopener">{{ s.headline }}</a></h3>
+      {%- if s.dek %}<p class="dek">{{ s.dek }}</p>{% endif %}
+    </div>
+  </div>
+  {{ followup(s) }}
+  <div class="summary">{{ body(s.summary) }}</div>
+  {{ meta(s) }}
+</article>
+{%- endmacro -%}
+{%- set all_stories = [edition.lead] + (edition.sections|map(attribute='stories')|sum(start=[])) -%}
+{%- set developing = all_stories|selectattr('update_note')|list + (all_stories|rejectattr('update_note')|selectattr('followups')|list) -%}
+{%- set sec_names = {} -%}{%- for sec in edition.sections %}{% set _ = sec_names.update({sec.id: sec.name}) %}{% endfor -%}
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>{{ edition.title }}, {{ edition.date_display }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&family=Instrument+Sans:wght@400..650&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #f8f6f1;
+  --paper-2: #efece4;
+  --ink: #1d1f1e;
+  --ink-2: #3c403e;
+  --muted: #6c706c;
+  --rule: #dcd8ce;
+  --accent: #1e5c58;
+  --accent-soft: #e2ebe7;
+  --flag: #a8471f;
+  --font-head: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --font-body: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --font-ui: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --measure: 38rem;
+  --bar: 3rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #141716;
+    --paper-2: #1c201f;
+    --ink: #e7e3da;
+    --ink-2: #c9c5bc;
+    --muted: #8f948f;
+    --rule: #2e3331;
+    --accent: #7fbfb5;
+    --accent-soft: #1d2b29;
+    --flag: #e39a72;
+  }
+}
+</style>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--font-body); font-size: 1.125rem; line-height: 1.55;
+  font-optical-sizing: auto; text-rendering: optimizeLegibility;
+}
+a { color: inherit; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: .18em; }
+a:hover { color: var(--accent); }
+img { display: block; max-width: 100%; }
+p { margin: 0; }
+:target { scroll-margin-top: calc(var(--bar) + 1rem); }
+[id] { scroll-margin-top: calc(var(--bar) + 1rem); }
+.ui { font-family: var(--font-ui); }
+
+/* --- masthead --- */
+.mast { padding: 1.75rem 16px 1.25rem; border-bottom: 1px solid var(--rule); }
+.mast-in { max-width: var(--measure); margin: 0 auto; }
+.mast .line { display: flex; justify-content: space-between; gap: 1rem; font-family: var(--font-ui);
+  font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.mast h1 { font-family: var(--font-head); font-weight: 600; font-size: clamp(2rem, 8vw, 2.9rem);
+  line-height: 1.02; letter-spacing: -.015em; margin: .55rem 0 .35rem; }
+.mast h1 span { color: var(--accent); }
+.mast .tag { font-style: italic; color: var(--ink-2); font-size: 1.05rem; }
+.mast .facts { display: flex; flex-wrap: wrap; gap: .4rem 1.25rem; margin-top: 1rem; font-family: var(--font-ui);
+  font-size: .82rem; color: var(--ink-2); }
+.mast .facts b { font-weight: 600; color: var(--ink); }
+.wx { display: flex; gap: .5rem; align-items: baseline; }
+.wx .t { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ink); white-space: nowrap; }
+
+/* --- index: chips on phone, sticky column on desktop --- */
+.index { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--paper) 92%, transparent);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-bottom: 1px solid var(--rule); }
+.index ol { list-style: none; margin: 0; padding: 0 16px; height: var(--bar); display: flex; align-items: center;
+  gap: .4rem; overflow-x: auto; scrollbar-width: none; font-family: var(--font-ui); font-size: .82rem; }
+.index ol::-webkit-scrollbar { display: none; }
+.index li { flex: none; }
+.index a { display: inline-flex; gap: .4rem; align-items: baseline; padding: .32rem .7rem; border-radius: 99px;
+  text-decoration: none; color: var(--ink-2); border: 1px solid var(--rule); white-space: nowrap; }
+.index a .m { color: var(--muted); font-size: .72rem; font-variant-numeric: tabular-nums; }
+.index a.on, .index a:hover { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+.index a.on .m, .index a:hover .m { color: inherit; opacity: .75; }
+.index .idx-h { display: none; }
+
+main { padding: 0 16px 3rem; }
+.col { max-width: var(--measure); margin: 0 auto; }
+
+/* --- section heads --- */
+.sec { padding-top: 2.25rem; }
+.sec-h { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+  border-top: 2px solid var(--ink); padding-top: .55rem; margin-bottom: .3rem; }
+.sec-h h2 { margin: 0; font-family: var(--font-ui); font-size: .8rem; font-weight: 650; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--ink); }
+.sec-h .m { font-family: var(--font-ui); font-size: .75rem; color: var(--muted); white-space: nowrap; }
+.sec-k { font-style: italic; color: var(--muted); font-size: .98rem; margin-bottom: .4rem; }
+
+/* --- developing box --- */
+.dev { margin-top: 1.5rem; background: var(--accent-soft); border-radius: 6px; padding: 1rem 1.1rem 1.1rem; }
+.dev h2 { margin: 0 0 .55rem; font-family: var(--font-ui); font-size: .75rem; font-weight: 650; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--accent); display: flex; gap: .5rem; align-items: center; }
+.dev h2::before { content: ""; width: .5rem; height: .5rem; border-radius: 50%; background: var(--flag); }
+.dev ol { list-style: none; margin: 0; padding: 0; }
+.dev li + li { border-top: 1px solid color-mix(in srgb, var(--accent) 20%, transparent); margin-top: .75rem; padding-top: .75rem; }
+.dev .hl { font-weight: 600; font-size: 1.05rem; line-height: 1.3; text-decoration: none; display: block; }
+.dev .hl:hover { text-decoration: underline; }
+.dev .nt { font-size: .95rem; color: var(--ink-2); margin-top: .2rem; line-height: 1.45;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
+.dev .ago { font-family: var(--font-ui); font-size: .75rem; color: var(--muted); margin-top: .35rem; }
+.dev .ago a { color: var(--accent); }
+
+/* --- stories --- */
+.story { padding: 1.35rem 0 1.25rem; border-bottom: 1px solid var(--rule); }
+.story:last-child { border-bottom: 0; }
+.story { display: flow-root; }
+.thumb { float: right; width: 5.5rem; margin: .3rem 0 .4rem 1rem; }
+.update { display: flow-root; }
+.meta { clear: both; }
+.story h3 { margin: 0; font-family: var(--font-head); font-weight: 600; font-size: 1.32rem; line-height: 1.2;
+  letter-spacing: -.005em; text-wrap: balance; }
+.story h3 a { text-decoration: none; }
+.story h3 a:hover { text-decoration: underline; text-decoration-thickness: 1px; }
+.imp3 h3 { font-size: 1.6rem; line-height: 1.14; }
+.imp1 h3 { font-size: 1.15rem; }
+.dek { margin-top: .35rem; font-style: italic; font-size: 1.05rem; line-height: 1.38; color: var(--accent); text-wrap: pretty; }
+.flag { font-family: var(--font-ui); font-size: .68rem; font-weight: 650; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--flag); margin-bottom: .3rem; }
+.thumb img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; background: var(--paper-2); }
+.thumb figcaption { font-family: var(--font-ui); font-size: .6rem; color: var(--muted); margin-top: .2rem; line-height: 1.2;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wide { margin: 0 0 1rem; }
+.wide img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 4px; background: var(--paper-2); }
+.wide figcaption, .lead figcaption { font-family: var(--font-ui); font-size: .68rem; color: var(--muted); margin-top: .35rem; text-align: right; }
+.summary { margin-top: .75rem; color: var(--ink-2); hyphens: auto; -webkit-hyphens: auto; }
+.summary p + p { margin-top: .7em; }
+.imp1 .summary { font-size: 1.02rem; }
+/* an image-less top story gets a quiet left rule so it still reads as the section's opener */
+.imp3:not(:has(figure)) .head { border-left: 3px solid var(--accent); padding-left: .85rem; }
+
+.update { margin-top: .85rem; border-left: 3px solid var(--flag); padding: .1rem 0 .1rem .85rem; font-size: 1rem; line-height: 1.45; }
+.update strong { font-family: var(--font-ui); font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; color: var(--flag); margin-right: .2rem; }
+.update .earlier { margin-top: .4rem; font-family: var(--font-ui); font-size: .78rem; color: var(--muted); display: flex; flex-direction: column; gap: .15rem; }
+.update .earlier span { text-transform: uppercase; letter-spacing: .06em; font-size: .68rem; }
+.update .earlier a { color: var(--ink-2); }
+.update .earlier time { color: var(--muted); margin-right: .3rem; }
+
+.meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: .25rem .9rem; margin-top: .85rem;
+  font-family: var(--font-ui); font-size: .76rem; color: var(--muted); }
+.meta .src { color: var(--ink); font-weight: 600; }
+.meta .lang { font-size: .64rem; letter-spacing: .06em; border: 1px solid var(--rule); border-radius: 3px; padding: 0 .3rem; }
+.meta .orig { color: var(--accent); text-decoration: none; font-weight: 550; }
+.meta .orig:hover { text-decoration: underline; }
+.meta .sid { margin-left: auto; color: var(--muted); opacity: .7; font-size: .68rem; text-decoration: none; font-variant-numeric: tabular-nums; }
+.meta .sid:hover { opacity: 1; text-decoration: underline; }
+
+/* --- lead --- */
+.lead { padding-top: 1.5rem; }
+.lead .story { border-bottom: 0; padding-top: 0; }
+.lead .kick { font-family: var(--font-ui); font-size: .72rem; font-weight: 650; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: .6rem; }
+.lead h3 { font-size: clamp(1.75rem, 6.4vw, 2.35rem); line-height: 1.08; letter-spacing: -.015em; font-weight: 650; }
+.lead .dek { font-size: 1.2rem; margin-top: .55rem; }
+.lead .summary { font-size: 1.15rem; color: var(--ink); }
+.lead .summary p:first-child::first-letter { font-weight: 600; }
+
+/* --- briefs --- */
+.briefs ol { list-style: none; margin: .4rem 0 0; padding: 0; counter-reset: b; }
+.briefs li { display: grid; grid-template-columns: 1.6rem 1fr; padding: .7rem 0; border-bottom: 1px solid var(--rule); counter-increment: b; }
+.briefs li::before { content: counter(b); font-family: var(--font-ui); font-size: .75rem; color: var(--accent); font-weight: 650; padding-top: .25rem; font-variant-numeric: tabular-nums; }
+.briefs li > div { line-height: 1.35; }
+.briefs a { text-decoration: none; font-size: 1.05rem; line-height: 1.35; }
+.briefs a:hover { text-decoration: underline; }
+.briefs .bm { display: block; font-family: var(--font-ui); font-size: .72rem; color: var(--muted); margin-top: .2rem; }
+
+/* --- footer --- */
+.foot { border-top: 2px solid var(--ink); margin-top: 2.5rem; padding-top: 1rem; font-family: var(--font-ui); font-size: .8rem; color: var(--muted);
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: .75rem; }
+.foot a { color: var(--accent); }
+.foot .asked { width: 100%; }
+.foot .fin { width: 100%; font-family: var(--font-head); font-style: italic; font-size: 1rem; color: var(--ink-2); }
+
+/* --- desktop: index column + reading column --- */
+@media (min-width: 1024px) {
+  body { font-size: 1.15rem; }
+  :root { --bar: 0px; }
+  .mast { padding: 3rem 2rem 1.75rem; }
+  .mast-in, .layout { max-width: calc(14rem + 4rem + var(--measure)); margin: 0 auto; }
+  .mast-in { padding-left: 18rem; }
+  .layout { display: grid; grid-template-columns: 14rem 1fr; gap: 4rem; padding: 0 2rem; }
+  main { padding: 0 0 4rem; }
+  .col { margin: 0; }
+  .index { position: relative; top: auto; background: none; backdrop-filter: none; -webkit-backdrop-filter: none; border: 0; }
+  .index nav { position: sticky; top: 0; padding-top: 1.75rem; max-height: 100vh; overflow-y: auto; }
+  .index .idx-h { display: block; font-family: var(--font-ui); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: .5rem; }
+  .index ol { flex-direction: column; align-items: stretch; height: auto; padding: 0; gap: 0; overflow: visible; font-size: .86rem; }
+  .index a { display: flex; justify-content: space-between; border: 0; border-radius: 0; padding: .45rem 0 .45rem .75rem;
+    border-left: 2px solid var(--rule); white-space: normal; }
+  .index a.on, .index a:hover { background: none; color: var(--accent); border-left-color: var(--accent); }
+  .index a.on { font-weight: 600; }
+  .index a.on .m { color: var(--accent); }
+  .index .total { margin-top: 1rem; font-family: var(--font-ui); font-size: .75rem; color: var(--muted); padding-left: .75rem; }
+  .thumb { width: 10rem; margin-left: 1.5rem; }
+  .thumb img { aspect-ratio: 4 / 3; }
+  .sec .wide img { aspect-ratio: 2 / 1; }
+  .lead { padding-top: 2rem; }
+}
+@media (max-width: 1023.98px) { .index .total { display: none; } }
+@media (max-width: 380px) { .thumb { width: 4.5rem; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+{% if edition.design_overrides %}<style>:root{ {% for k,v in edition.design_overrides.items() %}--{{k}}:{{v}};{% endfor %} }</style>{% endif %}
+</head>
+<body>
+<header class="mast">
+  <div class="mast-in">
+    <div class="line"><span>Nr. {{ edition.number }}</span><time datetime="{{ edition.date }}">{{ edition.date_display }}</time></div>
+    <h1>{{ edition.title }}<span>.</span></h1>
+    <p class="tag">{{ edition.tagline }}</p>
+    <div class="facts">
+      {%- if edition.weather %}
+      <span class="wx"><b>{{ edition.weather.place }}</b><span class="t">{{ edition.weather.high_c }}° / {{ edition.weather.low_c }}°</span><span>{{ edition.weather.summary }}</span></span>
+      {%- endif %}
+      <span><b>{{ minutes(all_stories) }} Min.</b> Lesezeit, {{ all_stories|length }} Meldungen</span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <div class="index ui">
+    <nav aria-label="Inhalt">
+      <p class="idx-h">Inhalt</p>
+      <ol>
+        {%- if developing %}<li><a href="#seit-gestern">Seit gestern <span class="m">{{ developing|length }}</span></a></li>{% endif %}
+        <li><a href="#top-story">Aufmacher</a></li>
+        {%- for sec in edition.sections %}
+        <li><a href="#s-{{ sec.id }}">{{ sec.name }} <span class="m">{{ minutes(sec.stories) }}&#8239;Min.</span></a></li>
+        {%- endfor %}
+        {%- if edition.briefs %}<li><a href="#in-kuerze">In Kürze <span class="m">{{ edition.briefs|length }}</span></a></li>{% endif %}
+      </ol>
+      <p class="total">Gesamt etwa {{ minutes(all_stories) }} Minuten</p>
+    </nav>
+  </div>
+
+  <main>
+    <div class="col">
+      {%- if developing %}
+      <section class="dev" id="seit-gestern" aria-labelledby="dev-h">
+        <h2 id="dev-h">Seit gestern</h2>
+        <ol>
+          {%- for s in developing %}
+          <li lang="{{ s.lang }}">
+            <a class="hl" href="#{{ s.id }}">{{ s.headline }}</a>
+            {%- if s.update_note %}<p class="nt">{{ s.update_note }}</p>{% endif %}
+            {%- if s.followups %}<p class="ago ui">Zuvor: {% for f in s.followups %}<a href="{{ f.href }}">{{ f.date[8:10]|int }}. {{ months[f.date[5:7]|int - 1] }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
+          </li>
+          {%- endfor %}
+        </ol>
+      </section>
+      {%- endif %}
+
+      <section class="lead" id="top-story" aria-label="Aufmacher">
+        <p class="kick">Aufmacher</p>
+        {%- set L = edition.lead %}
+        <article class="story imp3{% if L.update_note or L.followups %} is-followup{% endif %}" id="{{ L.id }}" lang="{{ L.lang }}">
+          <div class="head"><div class="htext">
+            <h3><a href="{{ L.url }}" rel="noopener">{{ L.headline }}</a></h3>
+            {%- if L.dek %}<p class="dek">{{ L.dek }}</p>{% endif %}
+          </div></div>
+          {%- if L.image %}
+          <figure class="wide" style="margin-top:1rem">
+            <img src="{{ L.image.src }}" alt="{{ L.image.alt }}" decoding="async" onerror="this.parentNode.remove()">
+            {%- if L.image.credit %}<figcaption>{{ L.image.credit }}</figcaption>{% endif %}
+          </figure>
+          {%- endif %}
+          {{ followup(L) }}
+          <div class="summary">{{ body(L.summary) }}</div>
+          {{ meta(L) }}
+        </article>
+      </section>
+
+
+      {%- for sec in edition.sections %}
+      <section class="sec" id="s-{{ sec.id }}" aria-labelledby="h-{{ sec.id }}">
+        <div class="sec-h"><h2 id="h-{{ sec.id }}">{{ sec.name }}</h2><span class="m">{{ sec.stories|length }} Meldungen, {{ minutes(sec.stories) }} Min.</span></div>
+        {%- if sec.kicker %}<p class="sec-k">{{ sec.kicker }}</p>{% endif %}
+        {%- for s in sec.stories %}
+        {{ story(s) }}
+        {%- endfor %}
+      </section>
+      {%- endfor %}
+
+      {%- if edition.briefs %}
+      <section class="sec briefs" id="in-kuerze" aria-labelledby="h-briefs">
+        <div class="sec-h"><h2 id="h-briefs">In Kürze</h2><span class="m">{{ edition.briefs|length }} Meldungen</span></div>
+        <ol>
+          {%- for b in edition.briefs %}
+          <li><div><a href="{{ b.url }}" rel="noopener">{{ b.headline }}</a><span class="bm">{{ b.source }}{% if sec_names.get(b.section) %}, {{ sec_names[b.section] }}{% endif %}</span></div></li>
+          {%- endfor %}
+        </ol>
+      </section>
+      {%- endif %}
+
+      <footer class="foot">
+        <p class="fin">Das war die Ausgabe Nr. {{ edition.number }}. Einen guten Tag.</p>
+        <span>{{ edition.feedback_hint }}. Story-IDs wie #{{ edition.lead.id }} helfen: „mehr wie #id“.</span>
+        {%- if edition.previous %}<a href="{{ edition.previous }}">&larr; Vorherige Ausgabe</a>{% endif %}
+        {%- if edition.recent_feedback %}
+        <span class="asked">Auf deinen Wunsch: {% for f in edition.recent_feedback %}{{ f }}{% if not loop.last %}; {% endif %}{% endfor %}</span>
+        {%- endif %}
+      </footer>
+    </div>
+  </main>
+</div>
+<script>
+// Mark the index entry for the section in view; on phones keep that chip visible in the bar.
+(function () {
+  var links = Array.prototype.slice.call(document.querySelectorAll('.index a'));
+  var bar = document.querySelector('.index ol');
+  if (!('IntersectionObserver' in window) || !links.length) return;
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      var a = byId[e.target.id];
+      links.forEach(function (l) { l.classList.toggle('on', l === a); });
+      if (a && bar.scrollWidth > bar.clientWidth) bar.scrollTo({ left: a.parentNode.offsetLeft - 16, behavior: 'smooth' });
+    });
+  }, { rootMargin: '-15% 0px -80% 0px' });
+  Object.keys(byId).forEach(function (id) { var el = document.getElementById(id); if (el) io.observe(el); });
+})();
+</script>
+</body>
+</html>
