@@ -1,0 +1,36 @@
+{
+  "name": "news",
+  "version": "0.1.0",
+  "description": "Build a personal daily newspaper as a self-contained HTML page in a kasten vault, linked from the daily note, shaped by your feedback.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "license": "MIT",
+  "keywords": [
+    "news",
+    "newspaper",
+    "daily-briefing",
+    "kasten",
+    "cron",
+    "claude-code",
+    "codex"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "News",
+    "shortDescription": "A personal daily newspaper in your kasten vault",
+    "longDescription": "Gathers the day's news per section (local, regional, national, world, AI and tech, AI evals, Deloitte, Allianz by default), drops what earlier editions already covered unless there is something new, writes each story in its source language, renders one self-contained HTML edition with a chosen design, and links it from the kasten daily note. Free-text feedback in a vault note, a feedback skill, and a tuning interview all end up as config changes, so the next edition follows them.",
+    "developerName": "Pascal Göllner",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Build today's newspaper edition",
+      "Less Polizeibericht, more Hanau in the local section",
+      "Re-render today's edition with the magazine design"
+    ],
+    "screenshots": []
+  }
+}

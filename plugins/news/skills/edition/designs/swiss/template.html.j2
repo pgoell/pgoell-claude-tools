@@ -1,0 +1,383 @@
+{#- Raster: a Swiss modernist newspaper on a strict 12-column grid. -#}
+{%- set de = (edition.lead.lang == 'de') -%}
+{%- set section_names = {} -%}
+{%- for s in edition.sections %}{% set _ = section_names.update({s.id: s.name}) %}{% endfor -%}
+
+
+{%- macro paras(text) -%}
+{%- for p in text.split('\n\n') if p.strip() %}<p>{{ p.strip() }}</p>{% endfor -%}
+{%- endmacro -%}
+
+{%- macro meta(s) -%}
+<div class="meta">
+  <span class="src">{{ s.source }}</span>
+  <span class="lang">{{ s.lang|upper }}</span>
+  <time datetime="{{ s.published }}">{{ s.published_display }}</time>
+  <a class="orig" href="{{ s.url }}" rel="noopener">{{ 'Original' if s.lang == 'de' else 'Source' }}&nbsp;&#8599;</a>
+  <a class="sid" href="#{{ s.id }}" title="{{ 'Story-ID für Feedback' if de else 'Story id for feedback' }}">#{{ s.id }}</a>
+</div>
+{%- endmacro -%}
+
+{%- macro followup(s) -%}
+{%- if s.update_note or s.followups -%}
+<aside class="fu">
+  {%- if s.update_note %}<p class="fu-note"><b>{{ 'Neu:' if s.lang == 'de' else 'New:' }}</b> {{ s.update_note }}</p>{% endif -%}
+  {%- if s.followups %}
+  <p class="fu-head">{{ 'Bisher berichtet' if s.lang == 'de' else 'Earlier coverage' }}</p>
+  <ol class="fu-list">
+    {%- for f in s.followups %}
+    <li><time datetime="{{ f.date }}">{{ f.date[8:10] }}.{{ f.date[5:7] }}.</time><a href="{{ f.href }}">{{ f.headline }}</a></li>
+    {%- endfor %}
+  </ol>
+  {%- endif %}
+</aside>
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro figure(s, num, cls='') -%}
+{%- if s.image -%}
+<figure class="fig {{ cls }}">
+  <div class="frame"><img src="{{ s.image.src }}" alt="{{ s.image.alt }}" loading="lazy" decoding="async" referrerpolicy="no-referrer"></div>
+  {%- if s.image.credit %}<figcaption>{{ 'Bild' if s.lang == 'de' else 'Image' }}: {{ s.image.credit }}</figcaption>{% endif %}
+</figure>
+{%- else -%}
+<div class="fig noimg {{ cls }}" aria-hidden="true">
+  <div class="frame"><span class="ni-src">{{ s.source }}</span><span class="ni-num">{{ num }}</span></div>
+</div>
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro story(s, num, kind) -%}
+<article class="story {{ kind }} imp{{ s.importance }}{{ ' has-fu' if (s.update_note or s.followups) }}" id="{{ s.id }}" lang="{{ s.lang }}">
+  {{ figure(s, num) }}
+  <div class="body">
+    <p class="num">{{ num }}</p>
+    <h3 class="hl"><a href="{{ s.url }}" rel="noopener">{{ s.headline }}</a></h3>
+    {%- if s.dek %}<p class="dek">{{ s.dek }}</p>{% endif %}
+    {{ followup(s) }}
+    <div class="sum">{{ paras(s.summary) }}</div>
+    {{ meta(s) }}
+  </div>
+</article>
+{%- endmacro -%}
+<!doctype html>
+<html lang="{{ edition.lead.lang or 'de' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>{{ edition.title }}, Nr. {{ edition.number }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#fbfbf8;
+  --ink:#111111;
+  --accent:#e2001a;
+  --muted:#6b6b66;
+  --rule:#d6d6d0;
+  --panel:#eeeee9;
+  --font-head:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --font-body:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --gap:24px;
+  --gutter:40px;
+  --max:1360px;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#121212;
+    --ink:#ececea;
+    --accent:#ff4a4a;
+    --muted:#9a9a94;
+    --rule:#33332f;
+    --panel:#1d1d1b;
+  }
+  img{filter:brightness(.88) contrast(1.05)}
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font:400 17px/1.55 var(--font-body);
+  font-optical-sizing:auto;font-feature-settings:"cv11","ss03";
+  -webkit-font-smoothing:antialiased;
+  overflow-wrap:break-word;
+}
+a{color:inherit;text-decoration:none}
+a:hover{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+p{margin:0}
+h1,h2,h3{margin:0;font-family:var(--font-head);font-weight:700}
+.tnum,time,.num,.meta,.idx-n,.tab-n,.wx-t{font-variant-numeric:tabular-nums lining-nums}
+
+/* the raster: 12 columns, margin labels in 1-2, copy in 3-12 */
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gutter)}
+.row{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap)}
+
+/* masthead */
+.mast{padding-top:28px}
+.mast-top{border-top:8px solid var(--ink);padding-top:10px;font-size:13px;line-height:1.35;letter-spacing:.01em;align-items:start}
+.mast-top .nr{grid-column:1/3;font-weight:700}
+.mast-top .nr b{color:var(--accent)}
+.mast-top .date{grid-column:3/7}
+.mast-top .wx{grid-column:7/13;display:flex;gap:16px;justify-content:space-between}
+.wx-place{font-weight:700}
+.wx-t{white-space:nowrap}
+.wx-sum{color:var(--muted)}
+.title{grid-column:1/13;font-size:clamp(42px,8.6vw,124px);line-height:.92;letter-spacing:-.045em;font-weight:800;margin:44px 0 0;font-variation-settings:"opsz" 32}
+.tagline{grid-column:3/9;margin-top:18px;font-size:19px;line-height:1.35;color:var(--muted)}
+
+/* contents */
+.idx{margin-top:48px;border-top:1px solid var(--ink);padding-top:10px;font-size:13px;line-height:1.3}
+.idx-label{grid-column:1/3;font-weight:700}
+.idx ol{grid-column:3/13;list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));column-gap:var(--gap);row-gap:8px}
+.idx a{display:flex;gap:8px}
+.idx-n{color:var(--accent);font-weight:700;min-width:1.4em}
+
+/* section frame with the hanging tab in the margin */
+.sec{margin-top:88px}
+.sec-head{border-top:4px solid var(--ink);padding-top:12px}
+.tab{grid-column:1/3;grid-row:1;align-self:start;position:sticky;top:16px;padding-bottom:16px}
+.tab-n{display:block;font-size:44px;line-height:1;font-weight:800;letter-spacing:-.04em;color:var(--accent)}
+.tab-name{display:block;margin-top:10px;font-size:15px;line-height:1.2;font-weight:700;letter-spacing:-.005em}
+.tab-kick{display:block;margin-top:6px;font-size:13px;line-height:1.35;font-weight:400;color:var(--muted)}
+.sec-body{grid-column:3/13;grid-row:1;display:grid;grid-template-columns:repeat(10,minmax(0,1fr));column-gap:var(--gap);row-gap:56px}
+
+/* figures: one ratio everywhere, 3:2 */
+.fig{margin:0}
+.frame{position:relative;aspect-ratio:3/2;overflow:hidden;background:var(--panel)}
+.frame img{display:block;width:100%;height:100%;object-fit:cover}
+figcaption{margin-top:6px;font-size:11px;line-height:1.3;color:var(--muted);letter-spacing:.01em}
+.noimg .frame{display:flex;flex-direction:column;justify-content:space-between;padding:14px 16px;border-top:2px solid var(--ink);background:var(--panel)}
+.ni-src{font-size:12px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+.ni-num{font-size:clamp(56px,7vw,112px);line-height:.8;font-weight:800;letter-spacing:-.05em;color:var(--accent);font-variant-numeric:tabular-nums}
+
+/* story parts */
+.noimg+.body .num{display:none}
+.num{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.02em;margin-bottom:8px}
+.hl{font-size:24px;line-height:1.15;letter-spacing:-.018em;hyphens:auto;-webkit-hyphens:auto}
+.dek{margin-top:10px;font-size:18px;line-height:1.35;font-weight:500;color:var(--muted)}
+.sum{margin-top:14px;hyphens:auto;-webkit-hyphens:auto;max-width:66ch}
+.sum p+p{margin-top:.75em}
+.meta{margin-top:16px;padding-top:8px;border-top:1px solid var(--rule);display:flex;flex-wrap:wrap;column-gap:14px;row-gap:2px;font-size:12px;line-height:1.5;color:var(--muted)}
+.meta .src{color:var(--ink);font-weight:600}
+.meta .lang{font-weight:700;letter-spacing:.06em}
+.meta .orig{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
+.meta .orig:hover{color:var(--accent)}
+.meta .sid{flex-basis:100%;opacity:.75}
+
+/* follow-ups: a red bar on the left, nothing else coloured */
+.fu{margin-top:16px;border-left:3px solid var(--accent);padding:2px 0 2px 14px;font-size:15px;line-height:1.45}
+.fu-note b{color:var(--accent);font-weight:700}
+.fu-head{margin-top:10px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.fu-list{list-style:none;margin:4px 0 0;padding:0}
+.fu-list li{display:grid;grid-template-columns:3.4em 1fr;gap:8px;padding:3px 0;font-size:14px}
+.fu-list time{color:var(--muted)}
+.fu-list a{text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:2px}
+
+/* lead: headline across ten columns, image six, a side column of four for dek, news and meta */
+.lead{grid-column:1/11;display:grid;grid-template-columns:repeat(10,minmax(0,1fr));column-gap:var(--gap)}
+.lead-hl{grid-column:1/11;font-size:clamp(34px,4.6vw,64px);line-height:1.02;letter-spacing:-.035em;font-weight:800;max-width:20ch;margin-bottom:28px}
+.lead .fig{grid-column:1/7;grid-row:2}
+.lead-side{grid-column:7/11;grid-row:2/4}
+.lead .dek{margin-top:0;font-size:21px;line-height:1.3;color:var(--ink);font-weight:500}
+.lead .fu{margin-top:20px}
+.lead .sum{grid-column:1/7;grid-row:3;margin-top:24px;font-size:18px;max-width:none}
+.lead .sum p:first-child::first-line{font-weight:600}
+
+/* first story of a section: image 6, text 4 */
+.story.top{grid-column:1/11;display:grid;grid-template-columns:repeat(10,minmax(0,1fr));column-gap:var(--gap)}
+.story.top .fig{grid-column:1/7}
+.story.top .body{grid-column:7/11}
+.story.top .hl{font-size:32px;line-height:1.08;letter-spacing:-.025em}
+/* the rest pair up 5 + 5 */
+.story.card{grid-column:span 5}
+.story.card .fig{margin-bottom:16px}
+.story.card.imp1 .hl{font-size:20px}
+/* an odd one out spans the full width and lies on its side, so no column stands alone */
+.story.card.solo{grid-column:1/11;display:grid;grid-template-columns:repeat(10,minmax(0,1fr));column-gap:var(--gap)}
+.story.card.solo .fig{grid-column:1/5;margin-bottom:0}
+.story.card.solo .body{grid-column:5/11}
+
+/* briefs */
+.briefs{grid-column:1/11;list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--gap)}
+.briefs li{border-top:1px solid var(--rule);padding:12px 0 16px;display:grid;grid-template-columns:8.5em 1fr;column-gap:16px}
+.br-sec{font-size:12px;line-height:1.5;font-weight:700;color:var(--muted);padding-top:2px}
+.br-hl{font-size:17px;line-height:1.3;font-weight:600;letter-spacing:-.008em}
+.br-src{display:block;margin-top:4px;font-size:12px;color:var(--muted);font-weight:400}
+
+/* footer */
+.foot{margin-top:112px;padding-bottom:56px}
+.foot .row{border-top:8px solid var(--ink);padding-top:12px;font-size:13px;line-height:1.45}
+.foot-l{grid-column:1/3;font-weight:700}
+.foot-m{grid-column:3/9;color:var(--muted)}
+.foot-m p+p{margin-top:6px}
+.foot-r{grid-column:9/13;text-align:right}
+.foot-r a{font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.foot-r .none{color:var(--muted)}
+
+/* tablet: margin tab narrows, cards stay paired */
+@media (max-width:1100px){
+  :root{--gap:20px;--gutter:28px}
+  .idx ol{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .story.top .fig,.lead .fig{grid-column:1/11}
+  .story.top .body{grid-column:1/11;margin-top:16px}
+  .lead-side{grid-column:1/11;grid-row:3;margin-top:20px}
+  .lead .sum{grid-column:1/11;grid-row:4;max-width:66ch}
+  .briefs{grid-template-columns:1fr}
+}
+
+/* phone: one column, tabs become a header row */
+@media (max-width:720px){
+  :root{--gap:16px;--gutter:16px}
+  body{font-size:16.5px}
+  .row,.sec-body,.story.top,.story.card.solo{display:block}
+  .mast{padding-top:16px}
+  .mast-top{display:grid;grid-template-columns:auto 1fr;column-gap:16px;row-gap:4px}
+  .mast-top .nr{grid-column:1}
+  .mast-top .date{grid-column:2;text-align:right}
+  .mast-top .wx{grid-column:1/3;display:block;border-top:1px solid var(--rule);padding-top:6px;margin-top:4px}
+  .wx-place::after{content:" "}
+  .wx-sum{display:block}
+  .title{margin-top:28px;font-size:clamp(38px,12.5vw,64px)}
+  .tagline{margin-top:12px;font-size:16px}
+  .idx{margin-top:32px}
+  .idx-label{margin-bottom:8px}
+  .idx ol{grid-template-columns:1fr 1fr;column-gap:16px}
+  .sec{margin-top:56px}
+  .tab{position:static;display:grid;grid-template-columns:auto 1fr;column-gap:12px;align-items:baseline;padding-bottom:20px}
+  .tab-n{font-size:32px;grid-row:1/3}
+  .tab-name{margin-top:0;font-size:17px}
+  .tab-kick{margin-top:2px}
+  .sec-body>*+*{margin-top:40px}
+  .story .fig{margin-bottom:14px}
+  .story.top .body{margin-top:0}
+  .lead{display:block}
+  .lead-side{margin-top:0}
+  .lead .sum{margin-top:16px}
+  .story.top .hl,.hl{font-size:22px}
+  .lead-hl{font-size:clamp(30px,8.4vw,40px);margin-bottom:12px}
+  .lead .dek{font-size:18px}
+  .lead .sum{font-size:17px}
+  /* on a phone a full 3:2 placeholder costs a screen: shrink it to a numbered strip */
+  .noimg .frame{aspect-ratio:auto;height:72px;flex-direction:row;align-items:flex-end;padding:10px 12px}
+  .ni-num{font-size:44px;order:-1}
+  .briefs li{grid-template-columns:1fr;row-gap:4px}
+  .foot{margin-top:72px}
+  .foot-l,.foot-m,.foot-r{text-align:left;margin-bottom:10px}
+  .meta .sid{margin-left:0}
+}
+</style>
+{% if edition.design_overrides %}<style>:root{ {% for k,v in edition.design_overrides.items() %}--{{k}}:{{v}};{% endfor %} }</style>{% endif %}
+</head>
+<body>
+<div class="wrap">
+
+<header class="mast">
+  <div class="row mast-top">
+    <p class="nr">Nr.&nbsp;<b class="tnum">{{ '%03d' % edition.number }}</b></p>
+    <p class="date"><time datetime="{{ edition.date }}">{{ edition.date_display }}</time></p>
+    {%- if edition.weather %}
+    {%- set w = edition.weather %}
+    <p class="wx"><span><span class="wx-place">{{ w.place }}</span> <span class="wx-t">{{ w.high_c }}°&thinsp;/&thinsp;{{ w.low_c }}°</span></span> <span class="wx-sum">{{ w.summary }}</span></p>
+    {%- endif %}
+  </div>
+  <div class="row">
+    <h1 class="title">{{ edition.title }}</h1>
+    <p class="tagline">{{ edition.tagline }}</p>
+  </div>
+  <nav class="row idx" aria-label="{{ 'Inhalt' if de else 'Contents' }}">
+    <p class="idx-label">{{ 'Inhalt' if de else 'Contents' }}</p>
+    <ol>
+      <li><a href="#{{ edition.lead.id }}"><span class="idx-n">00</span><span>{{ 'Aufmacher' if de else 'Lead' }}</span></a></li>
+      {%- for s in edition.sections %}
+      <li><a href="#s-{{ s.id }}"><span class="idx-n">{{ '%02d' % loop.index }}</span><span>{{ s.name }}</span></a></li>
+      {%- endfor %}
+      {%- if edition.briefs %}
+      <li><a href="#s-briefs"><span class="idx-n">{{ '%02d' % (edition.sections|length + 1) }}</span><span>{{ 'In Kürze' if de else 'In brief' }}</span></a></li>
+      {%- endif %}
+    </ol>
+  </nav>
+</header>
+
+<main>
+{%- set L = edition.lead %}
+<section class="sec" aria-label="{{ 'Aufmacher' if de else 'Lead' }}">
+  <div class="row sec-head">
+    <p class="tab"><span class="tab-n">00</span><span class="tab-name">{{ 'Aufmacher' if de else 'Lead' }}</span>{% if L.tags %}<span class="tab-kick">{{ L.tags|join(', ') }}</span>{% endif %}</p>
+    <div class="sec-body">
+      <article class="story lead" id="{{ L.id }}" lang="{{ L.lang }}">
+        <h2 class="lead-hl"><a href="{{ L.url }}" rel="noopener">{{ L.headline }}</a></h2>
+        {{ figure(L, '00') }}
+        <div class="lead-side">
+          {%- if L.dek %}<p class="dek">{{ L.dek }}</p>{% endif %}
+          {{ followup(L) }}
+          {{ meta(L) }}
+        </div>
+        <div class="sum">{{ paras(L.summary) }}</div>
+      </article>
+    </div>
+  </div>
+</section>
+
+{%- for sec in edition.sections %}
+{%- set sn = loop.index %}
+<section class="sec" id="s-{{ sec.id }}" aria-label="{{ sec.name }}">
+  <div class="row sec-head">
+    <h2 class="tab"><span class="tab-n">{{ '%02d' % sn }}</span><span class="tab-name">{{ sec.name }}</span>{% if sec.kicker %}<span class="tab-kick">{{ sec.kicker }}</span>{% endif %}</h2>
+    <div class="sec-body">
+      {%- set rest = sec.stories[1:] %}
+      {%- for s in sec.stories %}
+        {%- set num = sn ~ '.' ~ loop.index %}
+        {%- if loop.first %}
+          {{ story(s, num, 'top') }}
+        {%- elif loop.last and (rest|length) is odd %}
+          {{ story(s, num, 'card solo') }}
+        {%- else %}
+          {{ story(s, num, 'card') }}
+        {%- endif %}
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+{%- endfor %}
+
+{%- if edition.briefs %}
+<section class="sec" id="s-briefs" aria-label="{{ 'In Kürze' if de else 'In brief' }}">
+  <div class="row sec-head">
+    <h2 class="tab"><span class="tab-n">{{ '%02d' % (edition.sections|length + 1) }}</span><span class="tab-name">{{ 'In Kürze' if de else 'In brief' }}</span><span class="tab-kick">{{ edition.briefs|length }} {{ 'Meldungen' if de else 'items' }}</span></h2>
+    <div class="sec-body">
+      <ul class="briefs">
+        {%- for b in edition.briefs %}
+        <li><span class="br-sec">{{ section_names.get(b.section, b.section) }}</span><a class="br-hl" href="{{ b.url }}" rel="noopener">{{ b.headline }}<span class="br-src">{{ b.source }}</span></a></li>
+        {%- endfor %}
+      </ul>
+    </div>
+  </div>
+</section>
+{%- endif %}
+</main>
+
+<footer class="foot">
+  <div class="row">
+    <p class="foot-l">{{ edition.title }}</p>
+    <div class="foot-m">
+      <p>{{ edition.feedback_hint }}</p>
+      <p>{{ 'Jede Meldung trägt eine #ID. Nenne sie für „mehr davon“ oder „weniger davon“.' if de else 'Every story carries an #id. Quote it to ask for more or less like it.' }}</p>
+      {%- if edition.recent_feedback %}
+      <p>{{ 'Auf Wunsch geändert:' if de else 'Changed on request:' }}</p>
+      {%- for f in edition.recent_feedback %}<p>{{ f }}</p>{% endfor %}
+      {%- endif %}
+    </div>
+    <p class="foot-r">
+      {%- if edition.previous %}<a href="{{ edition.previous }}">&#8592; {{ 'Vorherige Ausgabe' if de else 'Previous edition' }}</a>
+      {%- else %}<span class="none">{{ 'Erste Ausgabe' if de else 'First edition' }}</span>{% endif %}
+    </p>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>
