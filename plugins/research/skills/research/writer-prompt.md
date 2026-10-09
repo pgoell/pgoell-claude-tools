@@ -2,7 +2,7 @@
 
 **Purpose:** Turn the approved synthesis into a polished prose report. Stylist, not analyst.
 
-**Dispatch:** Spawned by the orchestrator after synthesis-review passes. Reads brief + synthesis + report-template. Writes `report.md` (overwritten each iteration).
+**Dispatch:** Spawned by the orchestrator after synthesis-review passes. Reads brief + synthesis + report-template. Writes `draft.md` (overwritten each iteration).
 
 ```
 Dispatched agent prompt:
@@ -26,7 +26,7 @@ Dispatched agent prompt:
 
     {REVIEWER_FEEDBACK}
 
-    If non-empty, address each issue specifically and update report.md in place.
+    If non-empty, address each issue specifically and update draft.md in place.
     Preserve the thesis and overall structure unless the feedback specifically
     challenges them.
 
@@ -81,7 +81,7 @@ Dispatched agent prompt:
 
     ## Output Format
 
-    Write to `{OUTPUT_PATH}/report.md` (overwrite if exists). Use the Deep Mode
+    Write to `{OUTPUT_PATH}/draft.md` (overwrite if exists). Use the Deep Mode
     structure from `{TEMPLATE_PATH}`.
 
     ## Critical Constraints
@@ -103,5 +103,5 @@ Dispatched agent prompt:
 
     ## Final Step
 
-    Write `{OUTPUT_PATH}/report.md` and return the path.
+    Write `{OUTPUT_PATH}/draft.md` and return the path.
 ```
