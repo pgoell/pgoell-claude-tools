@@ -93,7 +93,7 @@
     }
     buildTools();
     $('.status').textContent = sel.length
-      ? `${sel.length} selected on slide ${slides().indexOf(slideOf(sel[0])) + 1}. Shift-click adds, double-click edits text, drag reorders, the chips below it resize, Esc clears.`
+      ? `${sel.length} selected on slide ${slides().indexOf(slideOf(sel[0])) + 1}. Shift-click adds, double-click edits text, drag reorders, the chips below it resize, Alt+drag or Alt+arrows move freely, Esc clears.`
       : 'Click an element to select it. Ctrl+Z undoes an edit.';
     try { sessionStorage.setItem('deck-editor', JSON.stringify({ note: note.value, sel: sel.map(selector) })); } catch (e) {}
     clearTimeout(sendTimer);
@@ -231,6 +231,47 @@
     window.addEventListener('pointermove', move, true);
     window.addEventListener('pointerup', up, true);
   }, true);
+
+  // Free move, opt-in: Alt+drag or Alt+arrows shift an element with the CSS translate property, which
+  // leaves flex and grid flow alone. Meant for diagram parts and things already placed absolutely.
+  const shift = (el) => {
+    const t = getComputedStyle(el).translate.split(' ').map(parseFloat), s = slideOf(el);
+    const inner = el instanceof SVGElement && !(el instanceof SVGSVGElement) && el.parentNode.getScreenCTM();
+    const scale = s.getBoundingClientRect().width / s.offsetWidth;
+    return { x: t[0] || 0, y: t[1] || 0, scale, unit: inner ? Math.hypot(inner.a, inner.b) : scale };
+  };
+  const place = (el, x, y) => { el.style.translate = `${+x.toFixed(1)}px ${+y.toFixed(1)}px`; };
+  const saveShift = (el) => op('style', () => ({ pos: pos(el), props: { translate: el.style.translate } }));
+  window.addEventListener('pointerdown', (e) => {
+    const hit = e.altKey && !e.button && !editing && target(e);
+    const el = hit && (sel.find(s => s.contains(hit)) || hit);
+    if (!el || el.parentElement === stage) return;
+    e.preventDefault();
+    sel = [el];
+    changed();
+    const from = shift(el);
+    const move = (m) => {
+      dragged = true;
+      place(el, from.x + (m.clientX - e.clientX) / from.unit, from.y + (m.clientY - e.clientY) / from.unit);
+    };
+    const up = () => {
+      window.removeEventListener('pointermove', move, true);
+      window.removeEventListener('pointerup', up, true);
+      if (dragged) saveShift(el);
+    };
+    window.addEventListener('pointermove', move, true);
+    window.addEventListener('pointerup', up, true);
+  }, true);
+  let nudgeTimer;
+  window.addEventListener('keydown', (e) => {
+    const el = sel.length === 1 && !editing && sel[0];
+    if (!e.altKey || !e.key.startsWith('Arrow') || !el || el.parentElement === stage) return;
+    e.preventDefault(); // Alt+Left is "back" in the browser
+    const from = shift(el), step = (e.shiftKey ? 10 : 1) * from.scale / from.unit;
+    place(el, from.x + step * ((e.key === 'ArrowRight') - (e.key === 'ArrowLeft')), from.y + step * ((e.key === 'ArrowDown') - (e.key === 'ArrowUp')));
+    clearTimeout(nudgeTimer);
+    nudgeTimer = setTimeout(() => saveShift(el), 400);
+  });
 
   // Handles: one chip per property under the selection. Drag the label to scrub, or type a number.
   // Gap, padding and font size go to every element of the same kind on the slide, as one rule in
