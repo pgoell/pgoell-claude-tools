@@ -1,6 +1,6 @@
 # presentations
 
-Skills covering the full presentation lifecycle: content design, HTML deck building with an integrated perfecting loop, native PowerPoint export, and brand preset extraction.
+Skills covering the full presentation lifecycle: content design, HTML deck building with an integrated perfecting loop, a local deck editor, native PowerPoint export, and brand preset extraction.
 
 ## Skills
 
@@ -8,10 +8,11 @@ Skills covering the full presentation lifecycle: content design, HTML deck build
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `designing-presentations`         | Content design from sourced audience brief through competing storylines and written checks. Produces a `deck.md`; no rendering.                              |
 | `creating-presentations`          | Builds multi-slide HTML decks styled from a preset, with a deck-stage engine, a two-window presenter view, default render checks, and an opt-in review loop. |
+| `editing-presentations`           | Runs a local editor on a deck: click slide elements and type a note, and the agent reads the selection with slide, selector, and source lines.               |
 | `exporting-presentations-to-pptx` | Converts a finished HTML deck into native, editable PowerPoint (real text boxes, autoshapes, embedded images, speaker notes).                                |
 | `extracting-presets`              | Turns brand material (PPTX templates, PDF guidelines, example decks) into reusable presets: CSS variables, assets, icon libraries, example slides.           |
 
-The typical flow: `designing-presentations` writes `deck.md`, `creating-presentations` renders and perfects the deck, `exporting-presentations-to-pptx` produces the editable file when someone needs PowerPoint.
+The typical flow: `designing-presentations` writes `deck.md`, `creating-presentations` renders and perfects the deck, `editing-presentations` opens it for changes by hand, `exporting-presentations-to-pptx` produces the editable file when someone needs PowerPoint.
 
 ## Presets
 
@@ -39,4 +40,4 @@ Name: acme-corp
 
 ## Runtime dependencies
 
-No install-time setup. At runtime the skills reach for tools when a branch needs them: a Chromium-based browser (presenting, headless screenshots), `uv` (ad hoc Python for PPTX/PDF work and a local HTTP server), and a container engine (rendering source PPTX decks during preset extraction). Each skill degrades gracefully and says so when a tool is missing.
+No install-time setup. At runtime the skills reach for tools when a branch needs them: a Chromium-based browser (presenting, editing, headless screenshots), Python 3 (the deck editor's server), `uv` (ad hoc Python for PPTX/PDF work and a local HTTP server), and a container engine (rendering source PPTX decks during preset extraction). Each skill degrades gracefully and says so when a tool is missing.
