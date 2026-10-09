@@ -1,0 +1,255 @@
+{#- The insights page. render.py passes `page` (the day's JSON plus computed fields); contract in page-contract.md. -#}
+{%- set labels = {"doc": "Documented, still happening", "rec": "Recurring", "new": "New", "fade": "Fading"} -%}
+{%- macro spark(p) -%}
+<svg class="spark" viewBox="0 0 210 44" preserveAspectRatio="none" role="img" aria-label="Hits per day over 14 days, peak {{ p.peak }}">
+  <line x1="4" y1="40" x2="206" y2="40" stroke="var(--rule)" stroke-width="1"/>
+  <polygon points="4,40 {{ p.spark_line }} 206,40" fill="var(--s-{{ p.status }})" fill-opacity="0.15"/>
+  <polyline points="{{ p.spark_line }}" fill="none" stroke="var(--s-{{ p.status }})" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+  <circle cx="{{ p.spark_last[0] }}" cy="{{ p.spark_last[1] }}" r="3" fill="var(--s-{{ p.status }})"/>
+</svg>
+<div class="spark-axis"><span>{{ page.window_start_short }}</span><span>peak {{ p.peak }}/day</span><span>{{ page.window_end_short }}</span></div>
+{%- endmacro -%}
+{%- macro card(p) -%}
+<article class="card" id="p{{ p.id }}">
+  <div class="meta">
+    <div class="idline"><span class="id">#{{ p.id }}</span><span class="badge" data-s="{{ p.status }}">{{ labels[p.status] }}</span></div>
+    <span class="kind">{{ p.kind }}</span>
+    <div class="stats num">
+      <div class="stat"><div class="n">{{ p.yesterday }}</div><div class="l">yesterday</div></div>
+      <div class="stat"><div class="n">{{ p.total }}</div><div class="l">14 days</div></div>
+      <div class="stat"><div class="n">{{ p.days_hit }}</div><div class="l">days hit</div></div>
+    </div>
+    <div>{{ spark(p) }}</div>
+    <div class="chips">{% for x in p.projects %}<span class="chip">{{ x }}</span>{% endfor %}</div>
+  </div>
+  <div class="body">
+    <h3>{{ p.title }}</h3>
+    <div class="sec"><span class="eyebrow">What happened</span><div class="quote">{{ p.what }}</div></div>
+    <div class="sec"><span class="eyebrow">Why{% if not p.verified %}<span class="unverified">unverified</span>{% endif %}</span><p>{{ p.why }}</p></div>
+    <div class="sec"><span class="eyebrow">Fix</span>
+      <div class="fix"><pre>{% for t, line in p.fix %}<span class="{{ {'a': 'add', 'd': 'del'}.get(t, '') }}">{{ line }}</span>{% if not loop.last %}
+{% endif %}{% endfor %}</pre>
+        <div class="fix-foot"><span class="dest">Goes to <code>{{ p.destination }}</code>{% if p.destination_note %}, {{ p.destination_note }}{% endif %}</span><span class="action">{{ p.action }}</span></div>
+      </div>
+    </div>
+    <div class="evidence">Evidence: {{ p.evidence | join(", ") }}</div>
+  </div>
+</article>
+{%- endmacro -%}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Session Insights {{ page.date }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* An inspection sheet: summary strip, then one defect card per problem, evidence left, diagnosis and fix right. */
+:root {
+  --bg: #eef1f3;
+  --sheet: #ffffff;
+  --ink: #17212b;
+  --muted: #5b6874;
+  --rule: #d5dbe0;
+  --accent: #0f5c6e;
+  --code-bg: #f4f6f8;
+  --s-doc: #b8361f;   /* documented, still happening */
+  --s-rec: #a86a0c;   /* recurring */
+  --s-new: #2a62c4;   /* new */
+  --s-fade: #3b7f55;  /* fading */
+  --s-doc-bg: #fbe9e5; --s-rec-bg: #fbf0dc; --s-new-bg: #e5edfb; --s-fade-bg: #e3f1e8;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11171c; --sheet: #182129; --ink: #e3e9ee; --muted: #93a1ad; --rule: #2c3a45;
+  --accent: #5fb7c9; --code-bg: #0f151a;
+  --s-doc: #f08a74; --s-rec: #e2ad55; --s-new: #86aef5; --s-fade: #7cc596;
+  --s-doc-bg: #3a201b; --s-rec-bg: #35290f; --s-new-bg: #1b2842; --s-fade-bg: #18301f;
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11171c; --sheet: #182129; --ink: #e3e9ee; --muted: #93a1ad; --rule: #2c3a45;
+  --accent: #5fb7c9; --code-bg: #0f151a;
+  --s-doc: #f08a74; --s-rec: #e2ad55; --s-new: #86aef5; --s-fade: #7cc596;
+  --s-doc-bg: #3a201b; --s-rec-bg: #35290f; --s-new-bg: #1b2842; --s-fade-bg: #18301f;
+  color-scheme: dark }
+
+* { box-sizing: border-box }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body); }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 56px; display: grid; gap: 28px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); font-weight: 700; letter-spacing: -0.01em; line-height: 1.1; }
+h2 { font-size: 1.25rem; font-weight: 700; }
+h3 { font-size: 1.12rem; font-weight: 700; line-height: 1.3; }
+.eyebrow { font: 500 0.72rem/1 var(--f-mono); text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); }
+.num { font-variant-numeric: tabular-nums; }
+code, pre { font-family: var(--f-mono); font-size: 0.82rem; }
+p { margin: 0; }
+
+header { display: grid; gap: 10px; }
+.scope { display: flex; flex-wrap: wrap; gap: 6px 18px; color: var(--muted); font-size: 0.9rem; }
+.scope b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 0.85rem; color: var(--muted); border-left: 3px solid var(--rule); padding-left: 10px; max-width: 70ch; }
+
+.summary { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 18px; display: grid; gap: 16px; }
+.summary > h2 { font: 500 0.72rem/1 var(--f-mono); }
+.tally { display: flex; flex-wrap: wrap; gap: 10px; }
+.tile { flex: 1 1 150px; border: 1px solid var(--rule); border-radius: 4px; padding: 10px 12px; display: grid; gap: 2px; }
+.tile .n { font: 700 1.7rem/1 var(--f-display); }
+.tile .l { font-size: 0.82rem; color: var(--muted); }
+.tile[data-s="doc"] .n { color: var(--s-doc) } .tile[data-s="rec"] .n { color: var(--s-rec) }
+.tile[data-s="new"] .n { color: var(--s-new) } .tile[data-s="fade"] .n { color: var(--s-fade) }
+.bars { display: grid; gap: 6px; }
+.bar-row { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) 4.5rem; gap: 10px; align-items: center; font-size: 0.86rem; text-decoration: none; color: inherit; }
+.bar-row:hover .bar-label, .bar-row:focus-visible .bar-label { color: var(--accent); text-decoration: underline; }
+.bar-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-track { height: 14px; position: relative; }
+.bar-14 { position: absolute; inset: 0 auto 0 0; border-radius: 2px; opacity: 0.28; }
+.bar-y { position: absolute; inset: 3px auto 3px 0; border-radius: 2px; }
+.bar-val { text-align: right; color: var(--muted); font-family: var(--f-mono); font-size: 0.78rem; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.8rem; color: var(--muted); }
+.legend i { display: inline-block; width: 18px; height: 8px; border-radius: 2px; background: var(--muted); vertical-align: middle; margin-right: 5px; }
+.legend i.f { opacity: 0.28; height: 12px; }
+
+.group { display: grid; gap: 14px; }
+.group-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.group-head p { color: var(--muted); font-size: 0.88rem; }
+.card { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); scroll-margin-top: 16px; }
+.card:target { outline: 2px solid var(--accent); outline-offset: 2px; }
+.meta { padding: 16px; border-right: 1px solid var(--rule); display: grid; gap: 12px; align-content: start; }
+.body { padding: 16px 18px; display: grid; gap: 14px; min-width: 0; }
+.idline { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.id { font: 500 0.78rem var(--f-mono); color: var(--muted); }
+.badge { font: 600 0.72rem/1 var(--f-body); padding: 4px 7px; border-radius: 3px; white-space: nowrap; }
+.badge[data-s="doc"] { color: var(--s-doc); background: var(--s-doc-bg) }
+.badge[data-s="rec"] { color: var(--s-rec); background: var(--s-rec-bg) }
+.badge[data-s="new"] { color: var(--s-new); background: var(--s-new-bg) }
+.badge[data-s="fade"] { color: var(--s-fade); background: var(--s-fade-bg) }
+.kind { font-size: 0.8rem; color: var(--muted); }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.stat .n { font: 700 1.2rem/1.1 var(--f-display); }
+.stat .l { font-size: 0.72rem; color: var(--muted); line-height: 1.2; }
+.spark { width: 100%; height: 44px; display: block; }
+.spark-axis { display: flex; justify-content: space-between; font: 0.68rem var(--f-mono); color: var(--muted); margin-top: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip { font: 0.72rem var(--f-mono); border: 1px solid var(--rule); border-radius: 3px; padding: 1px 5px; color: var(--muted); }
+.sec { display: grid; gap: 5px; }
+.sec > .eyebrow { color: var(--accent); }
+.quote { font: 0.8rem/1.45 var(--f-mono); background: var(--code-bg); border-radius: 4px; padding: 8px 10px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+.unverified { font: 600 0.68rem var(--f-body); text-transform: uppercase; letter-spacing: 0.06em; color: var(--s-rec); margin-left: 6px; }
+.lede .unverified { margin: 0; }
+.fix { border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
+.fix pre { margin: 0; padding: 10px 12px; background: var(--code-bg); overflow-x: auto; line-height: 1.5; }
+.fix .add { color: var(--s-fade) } .fix .del { color: var(--s-doc) }
+.fix-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; padding: 8px 12px; font-size: 0.8rem; border-top: 1px solid var(--rule); }
+.dest { color: var(--muted); } .dest code { color: var(--ink); }
+.action { font-weight: 600; color: var(--accent); }
+.evidence { font: 0.75rem var(--f-mono); color: var(--muted); overflow-wrap: anywhere; }
+.empty { color: var(--muted); font-size: 0.9rem; }
+
+.seen { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 16px 18px; display: grid; gap: 10px; }
+.seen-table { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font: 500 0.72rem var(--f-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+th.r, td.r { text-align: right; font-variant-numeric: tabular-nums; }
+
+.review { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 18px; }
+.review > div { display: grid; gap: 10px; align-content: start; }
+.review > div > p { font-size: 0.9rem; }
+.review ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 0.9rem; }
+.review pre { margin: 0; background: var(--code-bg); border-radius: 4px; padding: 12px; overflow-x: auto; line-height: 1.55; white-space: pre-wrap; }
+footer { color: var(--muted); font-size: 0.82rem; display: grid; gap: 4px; }
+footer ul { margin: 0; padding-left: 18px; }
+
+@media (max-width: 720px) {
+  .card { grid-template-columns: minmax(0, 1fr); }
+  .meta { border-right: 0; border-bottom: 1px solid var(--rule); }
+  .review { grid-template-columns: minmax(0, 1fr); }
+  .bar-row { grid-template-columns: minmax(0, 1fr) 4.5rem; }
+  .bar-track { grid-column: 1 / -1; grid-row: 2; }
+}
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Session insights, {{ page.date_display }}</span>
+    <h1>{{ page.headline }}</h1>
+    <div class="scope num">
+      <span><b>{{ page.scope.main_sessions }}</b> main sessions</span>
+      <span><b>{{ page.scope.subagent_files }}</b> subagent files</span>
+      <span><b>{{ page.scope.newspaper_runs }}</b> newspaper runs</span>
+      <span><b>{{ page.scope.projects }}</b> projects</span>
+      <span>14-day window, {{ page.window[0] }} to {{ page.window[1] }}, Europe/Berlin</span>
+    </div>
+    <p class="lede">Counts come straight from <code>~/.claude/projects</code> and the newspaper's logs. A diagnosis marked <span class="unverified">unverified</span> is a best guess that was not checked against the live system.{% if page.scope.skipped_large %} {{ page.scope.skipped_large | length }} transcript files over 300 MB were skipped.{% endif %}</p>
+  </header>
+
+  <section class="summary" aria-labelledby="sum-h">
+    <h2 id="sum-h" class="eyebrow">At a glance</h2>
+    <div class="tally">{% for k, label in labels.items() %}<div class="tile" data-s="{{ k }}"><span class="n num">{{ page.tally[k] }}</span><span class="l">{{ label }}</span></div>{% endfor %}</div>
+    <div class="bars">{% for p in page.sorted %}
+      <a class="bar-row" href="#p{{ p.id }}">
+        <span class="bar-label">{{ p.title }}</span>
+        <span class="bar-track"><span class="bar-14" style="width:{{ p.bar_total }}%;background:var(--s-{{ p.status }})"></span><span class="bar-y" style="width:{{ p.bar_yesterday }}%;background:var(--s-{{ p.status }})"></span></span>
+        <span class="bar-val num">{{ p.yesterday }} / {{ p.total }}</span>
+      </a>{% endfor %}
+    </div>
+    <div class="legend"><span><i class="f"></i>hits in 14 days</span><span><i></i>hits yesterday</span></div>
+  </section>
+
+  <section class="group" aria-labelledby="g-dev-h">
+    <div class="group-head"><h2 id="g-dev-h">Your sessions</h2><p>{{ page.dev | length }} problem{{ "" if page.dev | length == 1 else "s" }} across {{ page.scope.projects }} projects</p></div>
+    {% for p in page.dev %}{{ card(p) }}{% else %}<p class="empty">Nothing above the bar.</p>{% endfor %}
+  </section>
+
+  <section class="group" aria-labelledby="g-news-h">
+    <div class="group-head"><h2 id="g-news-h">Newspaper runs</h2><p>{{ page.newspaper_note or "From the 06:00 edition sessions and their logs." }}</p></div>
+    {% for p in page.news %}{{ card(p) }}{% else %}<p class="empty">Nothing above the bar.</p>{% endfor %}
+  </section>
+
+  {% if page.seen %}
+  <section class="seen" aria-labelledby="seen-h">
+    <div class="group-head"><h2 id="seen-h">Seen, not proposed</h2><p>Below the bar (2 days or 5 hits), rejected earlier, or noise from the sites a session visited.</p></div>
+    <div class="seen-table"><table>
+      <thead><tr><th>Pattern</th><th>Where</th><th class="r">Yesterday</th><th class="r">14 days</th><th>Why dropped</th></tr></thead>
+      <tbody>{% for s in page.seen %}
+        <tr><td>{{ s.pattern }}</td><td>{{ s.where }}</td><td class="r">{{ s.yesterday }}</td><td class="r">{{ s.total }}</td><td>{{ s.why }}</td></tr>{% endfor %}
+      </tbody>
+    </table></div>
+  </section>
+  {% endif %}
+
+  <section class="review" aria-labelledby="rev-h">
+    <div>
+      <h2 id="rev-h">How to decide</h2>
+      <p>This page can't write anything. You decide in the note beside it, <code>{{ page.note_path }}</code>, from any device.</p>
+      <ul>
+        <li><b>Keep a line</b> to accept the fix.</li>
+        <li><b>Edit a line</b> to change the fix before it goes out.</li>
+        <li><b>Delete a line</b> to reject it. It won't come back unless its hits triple.</li>
+        <li><b>Start a line with <code>no:</code></b> to reject it with a reason the next run reads.</li>
+        <li>Rename <code>## Proposed</code> to <code>## Keep</code> when done. <code>/insights:apply</code>, or the next morning's run, then opens PRs where a repo exists and adds todos and feedback lines for the rest.</li>
+      </ul>
+    </div>
+    <pre>{{ page.note_text }}</pre>
+  </section>
+
+  <footer>
+    {% if page.applied %}
+    <span>Fixes applied lately:</span>
+    <ul>{% for a in page.applied %}<li>{{ a.date }}: #{{ a.id }} {{ a.title }} ({{ a.ref }}). {{ a.effect }}</li>{% endfor %}</ul>
+    {% else %}
+    <span>Fixes applied lately: none yet. Once a fix goes out, this line says whether its problem stopped.</span>
+    {% endif %}
+    <span>Rendered {{ page.generated_display }}.</span>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "name": "insights",
+  "version": "0.1.0",
+  "description": "Find what went wrong in yesterday's Claude Code sessions and newspaper runs, and propose one concrete fix per problem on a page in a kasten vault; kept fixes become pull requests, todos and feedback lines.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "license": "MIT",
+  "keywords": [
+    "insights",
+    "session-review",
+    "transcripts",
+    "kasten",
+    "cron",
+    "claude-code",
+    "codex"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Insights",
+    "shortDescription": "Daily problems and fixes from your Claude Code sessions",
+    "longDescription": "Reads 14 days of Claude Code transcripts and the newspaper's logs through a script, groups recurring errors, guard refusals and typed corrections into problems, checks memory and the files a fix would go to, verifies causes where a check is cheap, and writes one page per day to a kasten vault with a concrete fix per problem. A review note beside the page decides: kept fixes become pull requests, todos or newspaper feedback lines; deleted ones stay rejected until their hits triple.",
+    "developerName": "Pascal Göllner",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Run the session insights for yesterday",
+      "Apply the insights I kept for 2026-10-08"
+    ],
+    "screenshots": []
+  }
+}

@@ -245,6 +245,22 @@
       }
     },
     {
+      "name": "insights",
+      "source": {
+        "source": "local",
+        "path": "./plugins/insights"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity",
+      "interface": {
+        "displayName": "Insights",
+        "shortDescription": "Daily problems and fixes from your Claude Code sessions"
+      }
+    },
+    {
       "name": "ponytail",
       "source": {
         "source": "url",
