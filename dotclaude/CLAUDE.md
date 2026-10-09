@@ -49,7 +49,15 @@ Terraform experiments live in `~/Code/aws-account/` (local-only repo, no GitHub 
 
 ## Chrome MCP (browser automation)
 
-The `chrome-devtools-mcp` plugin exposes `mcp__plugin_chrome-devtools-mcp_chrome-devtools__*` tools (`navigate_page`, `fill`, `fill_form`, `click`, `type_text`, `press_key`, `evaluate_script`, `take_snapshot`, `take_screenshot`, `list_pages`, `list_network_requests`, `wait_for`, …). Useful for interactive flows the user can complete inline (email-OTP logins, OAuth consent, captchas they finish themselves). Profile lives at `~/.cache/chrome-devtools-mcp/chrome-profile` and persists cookies across sessions. If a call returns "The browser is already running for …chrome-profile", another live Claude session owns that browser. Never kill it and never remove the `Singleton*` files: that breaks the other session. Tell the user, name the owning session (`ps -o pid,etime,args` up the parent chain of the Chrome using that profile), and carry on without the browser.
+One shared headless Chrome runs as the systemd user unit `chrome-devtools.service` on `127.0.0.1:9222`, profile `~/.cache/chrome-devtools-mcp/chrome-profile`. Every session attaches to it through the user-scope MCP server `chrome-devtools` (`mcp__chrome-devtools__*` tools: `new_page`, `navigate_page`, `fill`, `click`, `evaluate_script`, `take_snapshot`, `take_screenshot`, `list_pages`, `wait_for`, …). Useful for interactive flows the user can complete inline (email-OTP logins, OAuth consent, captchas they finish themselves). All sessions share the cookies and logins.
+
+- Open your own page with `new_page` and pass only that page's ID. Other pages in `list_pages` belong to other sessions: never navigate, select, or close them.
+- Page IDs are local to this session and change after a browser restart. Call `list_pages` again.
+- Close your page when the work is done.
+- For work that must not touch the shared logins, use `new_page` with `isolatedContext`.
+- Never kill Chrome and never remove `Singleton*` files. If a call returns "Could not connect to Chrome", check `systemctl --user status chrome-devtools.service` and tell the user. Restart (`systemctl --user restart chrome-devtools.service`) only when the user says so: a restart closes every session's pages. A timer restarts the unit every Sunday at 04:30.
+- After a login, wait 35 seconds before any restart, so Chrome writes the cookie to disk.
+- A session started before 2026-10-09 still has the old plugin server and gets "The browser is already running for …chrome-profile". That session needs a restart; carry on without the browser until then.
 
 ## Subagents and workflows
 
