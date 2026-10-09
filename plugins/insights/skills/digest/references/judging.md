@@ -37,9 +37,25 @@ Read `memory/problems.jsonl` (one line per fingerprint) and
   `total` reached three times `hits_at_verdict`. The card's `why` then says
   "Rejected on <date> at N hits; now M." Otherwise it goes to `seen` with
   "rejected on <date>".
-- A fingerprint with verdict `applied` that still hits is `doc`: the fix went
-  out and did not hold. Propose a stronger fix (a hook instead of a sentence),
-  never the same one again.
+- A fingerprint with verdict `applied` that still hits after its
+  `verdict_date` is `doc`: the fix went out and did not hold. Count only the
+  `series` days after that date; hits on or before it say nothing about the
+  fix. Propose a stronger fix (a hook instead of a sentence), never the same
+  one again.
+- A fingerprint with verdict `pending` has a PR open (`ref`). Its fix has not
+  gone out, so its hits never mean the fix failed. Keep its status from the
+  rules below, say in `why` that the PR is open, and propose no new fix while
+  it is.
+- A fingerprint with verdict `already-done` had its fix in place before the
+  card was written, so later hits do not show a fix that failed. It goes to
+  `seen` with "already in place on <date>: <reason>", unless hits triple from
+  `hits_at_verdict`; then the card says the existing fix does not stop it,
+  and proposes something stronger.
+- A fingerprint with verdict `deferred` waits for its `until`. Check that
+  condition where a check is cheap (a PR merged, a note or file exists). Until
+  it holds, the problem goes to `seen` with "deferred on <date>: <reason>";
+  it is never `new` and never `rejected`. Once it holds, propose it again with
+  its old status and say in `why` that the wait is over.
 - A fingerprint with verdict `watch` stays a `fade` card until three quiet
   days, then drops to `seen`.
 - A fingerprint proposed before with no verdict yet is simply proposed again.

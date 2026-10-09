@@ -14,10 +14,12 @@ happens: kept fixes become pull requests, todos or newspaper feedback lines.
   go to, verifies causes where a check is cheap, and writes the page, the
   review note and memory. The date is the day analysed, yesterday in Berlin by
   default. It first applies any review note you finished since the last run.
-- `/insights:apply [--date YYYY-MM-DD]`: acts on a review note whose
-  `## Proposed` you renamed `## Keep`. Opens a pull request per kept fix where
-  a repository exists (never merges), adds todos to today's daily note, adds
-  newspaper feedback lines, and records deleted lines as rejections.
+- `/insights:apply [--date YYYY-MM-DD]`: acts on a review note you finished.
+  Run by hand, it takes the note as approved whether or not you renamed
+  `## Proposed`. Opens a pull request per kept fix where a repository exists
+  (never merges), adds todos to today's daily note, adds newspaper feedback
+  lines, and records a verdict per line. A partly applied note picks up where
+  it stopped.
 
 ## What it reads
 
@@ -63,12 +65,20 @@ device:
 - delete a line to reject it: that problem comes back only when its hits
   triple;
 - start a line with `no:` to reject it with a reason the next run reads;
+- indent a bullet under a line to give that fix a note or a question
+  ("done", "works as intended, no?"); an indented `no:` rejects it;
 - rename `## Proposed` to `## Keep` when done.
 
-The next morning's run, or `/insights:apply`, then carries out what you kept
-and appends a `## Done` section with the PR links. A note you never rename
-decides nothing. The page footer lists the fixes applied in the last 14 days
-and whether each problem stopped.
+The next morning's run carries out a note renamed `## Keep`; running
+`/insights:apply` yourself carries out the note renamed or not. Either
+appends a `## Done` line per item. Each item gets one verdict in memory:
+`applied`, `pending` (a PR is open; it counts as applied once merged, which
+the next run checks with `gh`), `already-done`, `deferred` (with what ends
+the wait), `rejected` or `watch`. A line whose id matches nothing on the page
+is reported, never taken as a rejection. Each card shows its problem's
+verdict, and the page footer lists the fixes applied in the last 14 days and
+whether each problem stopped, the PRs waiting to merge, and what is
+deferred.
 
 ## Setup
 
