@@ -1,11 +1,11 @@
 ---
 name: editing-presentations
-description: Use when the user wants to change an existing HTML deck by hand in the browser, or wants to point at slide elements instead of describing them. Starts a local editor on a deck from the creating-presentations skill, and reads what the user selected there. Triggers on requests like "open the deck editor", "let me edit this deck myself", "I selected something, fix it", or "change this" while the editor runs. For building a deck or reviewing it to done, see the creating-presentations skill.
+description: Use when the user wants to change an existing HTML deck by hand in the browser, or wants to point at slide elements instead of describing them. Starts a local editor on a deck from the creating-presentations skill, and reads what the user selected there. Triggers on requests like "open the deck editor", "let me edit this deck myself", "I selected something, fix it", "change this" while the editor runs, or a pasted block of deck editor feedback. For building a deck or reviewing it to done, see the creating-presentations skill.
 ---
 
 # Editing Presentations
 
-A local editor for the HTML decks the `creating-presentations` skill builds. The user clicks elements in the running deck and types a note; the host agent reads the selection from a file and edits the source. The deck HTML and its stylesheet on disk stay the only source: the editor and the agent take turns on the same files, and the browser reloads when either one writes.
+A local editor for the HTML decks the `creating-presentations` skill builds. The user clicks elements in the running deck and types a note; the host agent reads the selection from a file and edits the source. For a longer review the user adds numbered comments and drawings across slides and copies them out as one prompt. The deck HTML and its stylesheet on disk stay the only source: the editor and the agent take turns on the same files, and the browser reloads when either one writes.
 
 ## Dependencies
 
@@ -58,6 +58,18 @@ In the editor the user clicks an element to select it, shift-clicks to add more,
 When the user says "this", "these", "the selected one", or refers to something on screen while the editor runs, read that file before anything else. Per element: `slide` is the 1-based slide number, `label` its `data-screen-label`, `lines` the first and last line of the element in `file`, `html` the element's source text (cut at 4000 characters), and `rect` its box on the 1920x1080 canvas as x, y, width, height. An empty `elements` list means nothing is selected: ask what the user means.
 
 To see the selection, run the command in `screenshot`. It renders the selected slide in headless Chrome with a pink outline around each selected element, writes `.deck-editor/selection.png`, and prints the path; read that image. Take it when the note is about how something looks, and skip it for copy changes.
+
+## Feedback as one prompt
+
+For a review pass over many slides the user collects feedback in the editor and hands it over in one go:
+
+- "Add comment" keeps the current selection and note as a numbered comment. A note with nothing selected becomes a comment on the slide as a whole.
+- "Draw" turns the pointer into a red pen on the slide. Drawings live in the editor only, never in the deck file.
+- "Copy prompt" puts everything on the clipboard as markdown, and writes the same text to `.deck-editor/prompt.md`. "Clear" drops all comments and drawings.
+
+The prompt lists, per slide, a screenshot path (`.deck-editor/slide-NN.png`, the slide with each commented element boxed and numbered in orange and the drawings in red) and each comment with its elements' source lines, selector, and source HTML. When the user pastes such a prompt, or says the feedback is ready, read every screenshot it names before editing: a comment such as "see my circle" has no other source. Work through the comments in order, then tell the user which ones you applied. Line numbers in the prompt go stale with the first edit, so find later elements by their selector and HTML.
+
+The screenshot paths are on the machine that runs the server. If the session runs elsewhere, ask for the images.
 
 ## What the user edits by hand
 

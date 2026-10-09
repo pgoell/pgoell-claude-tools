@@ -94,7 +94,10 @@ class Scan(HTMLParser):
         return [el for el in self.els if stage and stage["start"] < el["start"] < stage["end"]]
 
 
-def annotated(text, outline=()):
+marks = {}  # slide offset -> SVG laid over that slide in a prompt screenshot
+
+
+def annotated(text, outline=(), marked=False):
     """The deck as served: offsets on every slide element, overlay script appended."""
     out, at = [], 0
     for el in Scan(text).in_stage():
@@ -102,10 +105,14 @@ def annotated(text, outline=()):
         out += [text[at:cut], f' data-de="{el["start"]}"']
         at = cut
     html = "".join(out) + text[at:]
+    if marked:  # prompt screenshot: comment boxes and drawings over each slide
+        return html.replace("<deck-stage", "<deck-stage no-rail", 1) + "<script>" + "".join(
+            f"document.querySelector('[data-de=\"{p}\"]')?.insertAdjacentHTML('beforeend', {json.dumps(svg)});"
+            for p, svg in marks.items()) + "</script>"
     if outline:  # screenshot render: mark the selection, no overlay, no rail
-        marks = ",".join(f'[data-de="{int(p)}"]' for p in outline)
+        picked = ",".join(f'[data-de="{int(p)}"]' for p in outline)
         return html.replace("<deck-stage", "<deck-stage no-rail", 1) + (
-            f"<style>{marks}{{outline:6px solid #ff2d95;outline-offset:6px}}</style>"
+            f"<style>{picked}{{outline:6px solid #ff2d95;outline-offset:6px}}</style>"
         )
     return html + f'<script src="/__editor/overlay.js" data-rev="{rev_of(text)}"></script>'
 
@@ -285,10 +292,64 @@ def write_selection(body):
     }, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
+CHROME = next((p for p in map(shutil.which, ("google-chrome", "chromium", "chromium-browser", "chrome", "msedge")) if p), None)
+
+
+def snap(query, slide, out):
+    """Screenshot one slide of the served deck in headless Chrome."""
+    subprocess.run([CHROME, "--headless", "--hide-scrollbars", "--window-size=1920,1167", "--virtual-time-budget=4000",
+                    f"--screenshot={out}", f"http://127.0.0.1:{PORT}{DECK_URL}?{query}#{slide}"], capture_output=True, timeout=60)
+    return out.exists()
+
+
+def write_prompt(body):
+    """All comments and drawings as one prompt: sources as text, one marked screenshot per slide."""
+    text = read()
+    scan = Scan(text)
+    fresh = body.get("rev") == rev_of(text)
+    w, h = body["size"]
+    STATE.mkdir(exist_ok=True)
+    (STATE / ".gitignore").write_text("*\n")
+    out = [f"Feedback on the deck `{DECK}`, collected in the deck editor. Each comment names its elements by source "
+           "line. Each screenshot shows the slide with the commented elements boxed and numbered in orange and my "
+           "drawings in red.", ""]
+    marks.clear()
+    for s in body["slides"]:
+        svg = [f'<svg viewBox="0 0 {w} {h}" style="position:absolute;inset:0;width:100%;height:100%;z-index:2147483647;pointer-events:none">']
+        out += [f"## Slide {s['n']}: {s['label']}", ""]
+        for c in s["comments"]:
+            out += [f"### Comment {c['n']}", "", c["note"] or "(no text, see the drawing)", ""]
+            for item in c["elements"]:
+                x, y, rw, rh = item["rect"]
+                svg.append(f'<rect x="{x}" y="{y}" width="{rw}" height="{rh}" fill="none" stroke="#ff9f1a" stroke-width="5"/>'
+                           f'<rect x="{x}" y="{y - 44}" width="52" height="44" fill="#ff9f1a"/>'
+                           f'<text x="{x + 26}" y="{y - 10}" font-size="32" font-weight="700" font-family="sans-serif" text-anchor="middle">{c["n"]}</text>')
+                el = scan.by_pos.get(item["pos"]) if fresh else None
+                if el:
+                    end = el["end"] or el["open_end"]
+                    src = text[el["start"]:end] if end - el["start"] <= 1500 else text[el["start"]:el["start"] + 1500] + " ..."
+                    out += [f"`{DECK.name}` lines {scan.line(el['start'])} to {scan.line(end)}, `{item['selector']}`", "", "```html", src, "```", ""]
+                else:
+                    out += [f"`{item['selector']}`", ""]
+        svg += [f'<polyline points="{" ".join(map(str, stroke))}" fill="none" stroke="#ff2d2d" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>'
+                for stroke in s["strokes"]]
+        if s["strokes"]:
+            out += ["I drew on this slide: see the red strokes on the screenshot.", ""]
+        marks[int(s["pos"])] = "".join(svg) + "</svg>"
+    for s in body["slides"]:  # after every slide's marks are known to the served page
+        png = STATE / f"slide-{s['n']:02d}.png"
+        png.unlink(missing_ok=True)
+        if CHROME and snap("de-marks", s["n"], png):
+            at = out.index(f"## Slide {s['n']}: {s['label']}")
+            out[at + 1:at + 1] = ["", f"Screenshot: `{png}`"]
+    prompt = "\n".join(out).rstrip() + "\n"
+    (STATE / "prompt.md").write_text(prompt, encoding="utf-8")
+    return prompt
+
+
 def screenshot():
     """Render the selected slide in headless Chrome with the selection outlined."""
-    chrome = next((p for p in map(shutil.which, ("google-chrome", "chromium", "chromium-browser", "chrome", "msedge")) if p), None)
-    if not chrome:
+    if not CHROME:
         return 501, "no Chrome or Chromium binary on PATH"
     try:
         elements = json.loads((STATE / "selection.json").read_text(encoding="utf-8"))["elements"]
@@ -297,11 +358,9 @@ def screenshot():
     if not elements:
         return 409, "nothing is selected in the editor"
     out = STATE / "selection.png"
-    marks = ",".join(str(el["pos"]) for el in elements)
-    url = f"http://127.0.0.1:{PORT}{DECK_URL}?de-shot={marks}#{elements[0]['slide']}"
-    subprocess.run([chrome, "--headless", "--hide-scrollbars", "--window-size=1920,1167", "--virtual-time-budget=4000",
-                    f"--screenshot={out}", url], capture_output=True, timeout=60)
-    return (200, str(out)) if out.exists() else (500, "Chrome wrote no screenshot")
+    out.unlink(missing_ok=True)
+    picked = ",".join(str(el["pos"]) for el in elements)
+    return (200, str(out)) if snap(f"de-shot={picked}", elements[0]["slide"], out) else (500, "Chrome wrote no screenshot")
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -349,7 +408,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(404, "not found")
             if path == DECK:
                 shot = re.match(r"de-shot=([\d,]+)", url.query)
-                return self.send(200, annotated(read(), shot.group(1).split(",") if shot else ()), "text/html; charset=utf-8")
+                return self.send(200, annotated(read(), shot.group(1).split(",") if shot else (), url.query == "de-marks"),
+                                 "text/html; charset=utf-8")
             watched.setdefault(path, path.stat().st_mtime_ns)
             self.send(200, path.read_bytes(), mimetypes.guess_type(path.name)[0] or "application/octet-stream")
 
@@ -383,6 +443,8 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/__editor/selection":
             write_selection(body)
             self.send(200, "{}", "application/json")
+        elif self.path == "/__editor/prompt":
+            self.send(200, write_prompt(body))
         elif self.path == "/__editor/op":
             result = apply(body)
             self.send(200 if result else 409, json.dumps(result or {}), "application/json")
