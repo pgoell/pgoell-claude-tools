@@ -1,0 +1,92 @@
+#!/usr/bin/env python3
+# PreToolUse guard for Bash: deny `pkill -f` with a plain pattern.
+#
+# Why: Claude Code runs each Bash call through a `bash -c '<command>'` whose
+# own command line contains the pattern, so `pkill -f 'uvicorn app'` matches
+# and kills the agent's shell. The call then ends in "Exit code 144", even
+# with `; true` after it. Over 14 days this host logged 83 such exits, 44 of
+# them from `pkill -f`. A pattern whose first letter sits in a bracket class
+# (`'[u]vicorn app'`) still matches the process but no longer matches its own
+# text, so it passes.
+#
+# Fails open: a command shlex cannot parse (stray quote, heredoc) passes.
+import json
+import shlex
+import sys
+
+SEPARATORS = {";", "&&", "||", "|", "&", "(", ")"}
+# Options that take a value, so the token after them is not the pattern.
+SHORT_WITH_VALUE = set("gGPstuUF")
+LONG_WITH_VALUE = {
+    "--signal", "--euid", "--uid", "--group", "--pgroup", "--parent",
+    "--session", "--terminal", "--pidfile", "--ns", "--nslist",
+}
+
+REASON = (
+    "Blocked: `pkill -f {pattern}` also matches the `bash -c` running this "
+    "command, so it kills your own shell (exit 144). Instead, stop the process "
+    "by port with `fuser -k <port>/tcp`, or bracket the first letter of the "
+    "pattern so it cannot match itself: `pkill -f '[{first}]{rest}'`."
+)
+
+
+def segments(command):
+    """Split a command into simple commands, respecting quotes."""
+    lexer = shlex.shlex(command.replace("\n", ";"), posix=True, punctuation_chars=True)
+    lexer.whitespace_split = True
+    segment = []
+    for token in lexer:
+        if token in SEPARATORS:
+            yield segment
+            segment = []
+        else:
+            segment.append(token)
+    yield segment
+
+
+def self_matching_pattern(args):
+    """Return the pattern when these pkill args use -f with an unbracketed pattern."""
+    full = False
+    tokens = iter(args)
+    for token in tokens:
+        if token == "--full":
+            full = True
+        elif token in LONG_WITH_VALUE:
+            next(tokens, None)
+        elif token.startswith("--"):
+            continue
+        elif token.startswith("-") and len(token) > 1:
+            full = full or "f" in token
+            if token[-1] in SHORT_WITH_VALUE:
+                next(tokens, None)
+        else:
+            return token if full and not token.startswith("[") else None
+    return None
+
+
+def main():
+    command = json.load(sys.stdin).get("tool_input", {}).get("command", "")
+    if "pkill" not in command:
+        return
+    try:
+        parts = list(segments(command))
+    except ValueError:
+        return
+    for part in parts:
+        for i, token in enumerate(part):
+            if token.rsplit("/", 1)[-1] != "pkill":
+                continue
+            pattern = self_matching_pattern(part[i + 1 :])
+            if pattern:
+                reason = REASON.format(
+                    pattern=shlex.quote(pattern), first=pattern[0], rest=pattern[1:]
+                )
+                print(json.dumps({"hookSpecificOutput": {
+                    "hookEventName": "PreToolUse",
+                    "permissionDecision": "deny",
+                    "permissionDecisionReason": reason,
+                }}))
+                return
+
+
+main()

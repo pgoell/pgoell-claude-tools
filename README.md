@@ -2,7 +2,7 @@
 
 Plugin marketplace for Claude Code and Codex.
 
-Bundles 21 plugins across Atlassian, Google Workspace, Databricks, agent-system management, design workflows, research, writing, presentations, diagrams, a daily newspaper, terminal control, learning, idea critique, prose output styles, code minimalism, frontend design taste, and more.
+Bundles 22 plugins across Atlassian, Google Workspace, Databricks, agent-system management, design workflows, research, writing, presentations, diagrams, a daily newspaper, terminal control, learning, idea critique, prose output styles, shell guard hooks, code minimalism, frontend design taste, and more.
 
 ## Skills at a glance
 
@@ -70,7 +70,7 @@ Bundles 21 plugins across Atlassian, Google Workspace, Databricks, agent-system 
 
 The `deprecated` plugin additionally archives twelve superseded skills: `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations` point at their replacement in the `presentations` plugin; `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode` point at their replacement in the `workbench` plugin (`terse-mode` retires without replacement); `writing`, `pyramid`, `tech-doc` point at `ghostwrite` and `coach` in the `writing` plugin; `frontend-design` (from the retired plugin of that name) points at `taste-skill:taste-skill`.
 
-The `prose-styles` plugin ships no skills. It provides four Claude Code output styles instead, which govern how the agent writes prose for a whole session rather than for one task. See its section below.
+The `prose-styles` plugin ships no skills. It provides four Claude Code output styles instead, which govern how the agent writes prose for a whole session rather than for one task. See its section below. The `guards` plugin ships no skills either: it adds Claude Code hooks that block shell commands known to fail.
 
 Skills are invoked from the host agent (Claude Code or Codex) using the fully qualified form `/<plugin>:<skill>`, for example `/atlassian:jira` or `/workbench:pilot`.
 
@@ -96,6 +96,7 @@ Skills are invoked from the host agent (Claude Code or Codex) using the fully qu
 /plugin install diagrams@pgoell-claude-tools
 /plugin install news@pgoell-claude-tools
 /plugin install prose-styles@pgoell-claude-tools
+/plugin install guards@pgoell-claude-tools
 /plugin install ponytail@pgoell-claude-tools
 /plugin install emil@pgoell-claude-tools
 /plugin install taste-skill@pgoell-claude-tools
@@ -114,7 +115,7 @@ codex
 /plugins
 ```
 
-In the `/plugins` picker, install any combination of `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, `news`, and `ponytail` (plus `deprecated` if an old workflow needs the archived skill names). `prose-styles` is absent from the Codex picker on purpose, because Codex has no output-style mechanism. `emil`, `taste-skill`, and `vercel` are absent too: their upstreams ship no Codex manifest.
+In the `/plugins` picker, install any combination of `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, `news`, and `ponytail` (plus `deprecated` if an old workflow needs the archived skill names). `prose-styles` is absent from the Codex picker on purpose, because Codex has no output-style mechanism. `guards` is absent too, because its hooks use Claude Code's hook format. `emil`, `taste-skill`, and `vercel` are absent too: their upstreams ship no Codex manifest.
 
 To pick up updates: `codex plugin marketplace upgrade pgoell-claude-tools` and re-install the affected plugins.
 
@@ -346,6 +347,14 @@ Every style governs prose only. Code, identifiers, API names, CLI flags, config 
 
 **Setup:** select a style after install with `/output-style prose-styles:house`, or pick it from the Output style list in `/config`. The choice persists for the project. Revert with `/output-style default`. Claude Code only; Codex has no output-style mechanism, so the plugin is not in the Codex marketplace.
 
+### guards
+
+Claude Code hooks that block shell commands known to fail. Each hook denies the call and tells the agent what to run instead. One hook so far:
+
+- `pkill-self-match` (`PreToolUse` on `Bash`): denies `pkill -f` (also `--full`, `-9f`, `-fx`) with a plain pattern. Claude Code runs each command through a `bash -c` whose command line holds the pattern, so `pkill -f` kills the agent's own shell and the call ends in exit 144. Over 14 days on one host, 83 Bash calls ended that way, 44 of them from `pkill -f`. The deny message offers `fuser -k <port>/tcp` or a bracketed pattern such as `pkill -f '[u]vicorn app'`.
+
+Claude Code only; the plugin is not in the Codex marketplace. See `plugins/guards/README.md`.
+
 ### ponytail
 
 Lazy senior dev mode: a reflex ladder that questions whether code needs to exist at all, reaches for the standard library and native platform features before dependencies, and prefers one line over fifty. Three intensity levels (`lite`, `full`, `ultra`).
@@ -427,6 +436,10 @@ Overlaps with `emil`; install both only to compare. Replaces the retired `fronte
 ### deprecated
 
 Archive of superseded skills, kept installable so old workflows keep resolving. Each skill is frozen, carries a deprecation banner, and names its replacement: `crafting-presentations`, `perfecting-presentations`, and `exporting-decks-to-pptx` (formerly `workbench`) plus `presentations` (formerly `writing`) point at the `presentations` plugin; `autopilot`, `copilot`, and `dispatching-parallel-agents` (formerly `workbench`) point at their replacements in the `workbench` plugin (`pilot` and `subagent-driven-development`), `terse-mode` (formerly `workbench`) retires without replacement, and `writing`, `pyramid`, and `tech-doc` (formerly `writing`) point at `ghostwrite` and `coach` in the `writing` plugin; and `frontend-design` (from the retired `frontend-design` plugin, an Anthropic Apache 2.0 port; see `plugins/deprecated/NOTICE`) points at `taste-skill:taste-skill`. Do not install alongside `presentations`, `workbench`, or `writing` unless you need the old skill names.
+
+## Global instructions
+
+`dotclaude/` holds my global Claude Code instructions (`~/.claude/CLAUDE.md`) under version control. It is not a plugin. See `dotclaude/README.md` for the symlink and where private sections go.
 
 ---
 
