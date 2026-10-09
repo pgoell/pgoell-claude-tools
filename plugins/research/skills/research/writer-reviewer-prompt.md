@@ -2,7 +2,7 @@
 
 **Purpose:** Independently judge the report's prose: representation fidelity to the synthesis, style, flow, format. May note suspected content gaps but cannot escalate to research directly.
 
-**Dispatch:** Spawned by the orchestrator after writer. Reads brief + synthesis + report. Writes `report-review-{N}.md`.
+**Dispatch:** Spawned by the orchestrator after writer. Reads brief + synthesis + report. Writes `draft-review-{N}.md`.
 
 ````
 Dispatched agent prompt:
@@ -31,9 +31,9 @@ Dispatched agent prompt:
 
     1. `{OUTPUT_PATH}/research/synthesis.md`: the canonical content the report
        should faithfully represent.
-    2. `{OUTPUT_PATH}/report.md`: the report under review.
+    2. `{OUTPUT_PATH}/draft.md`: the report under review.
     3. `{TEMPLATE_PATH}`: the structure spec (Deep Mode section).
-    4. If iteration > 1: `{OUTPUT_PATH}/report-review-{ITERATION-1}.md` (prior
+    4. If iteration > 1: `{OUTPUT_PATH}/draft-review-{ITERATION-1}.md` (prior
        review). Reuse stable issue ids when the same issue persists.
 
     ## Checks
@@ -96,7 +96,7 @@ Dispatched agent prompt:
 
     ## Output Format
 
-    Write `{OUTPUT_PATH}/report-review-{ITERATION}.md`:
+    Write `{OUTPUT_PATH}/draft-review-{ITERATION}.md`:
 
     ```markdown
     # Report Review (Iteration {ITERATION})
@@ -108,7 +108,7 @@ Dispatched agent prompt:
         severity: critical | minor
         category: accuracy | format | prose | flow | content-gap-suspected
         description: <one line>
-        location: <pointer into report.md>
+        location: <pointer into draft.md>
 
     SUMMARY:
     <1-2 sentences on overall state>

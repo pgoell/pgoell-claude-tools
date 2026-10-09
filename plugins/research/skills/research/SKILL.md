@@ -55,7 +55,7 @@ mkdir -p {OUTPUT_PATH}/research
 
 ### Step 3: Plan (orchestrator-internal)
 
-YOU plan, not an agent. Decompose the brief into sub-questions and cluster them into coherent topics. As many clusters as the brief demands; each cluster should be deep enough to warrant a dedicated researcher. Cluster slugs must be unique and avoid colliding with reserved names (`synthesis`, `gap-N-*`, `*-review-*`).
+YOU plan, not an agent. Decompose the brief into sub-questions and cluster them into coherent topics. As many clusters as the brief demands; each cluster should be deep enough to warrant a dedicated researcher. Cluster slugs must be unique and avoid colliding with reserved names (`synthesis`, `gap-N-*`, `*-review-*`). A slug must not start with `report`, `summary`, `findings` or `analysis` (see File Layout).
 
 Write `{OUTPUT_PATH}/plan.md`:
 
@@ -153,7 +153,7 @@ Update the progress list at every step so the user can inspect live status throu
 1. Read `writer-prompt.md`.
 2. Inject: BRIEF, OUTPUT_PATH, TEMPLATE_PATH (path to report-template.md), REVIEWER_FEEDBACK (empty on first pass; populated on re-dispatch).
 3. Dispatch via the host subagent tool. Wait for completion.
-4. Verify `{OUTPUT_PATH}/report.md` exists.
+4. Verify `{OUTPUT_PATH}/draft.md` exists.
 
 ### Step 9: Review report (iteration M)
 
@@ -186,11 +186,11 @@ For any `content-gap-suspected` issues:
 
 ### Loop safeguards (Steps 9-10)
 
-Same as synthesis loop. Stall detection on consecutive identical id sets in `report-review-{M}.md` and `report-review-{M-1}.md`. Check-in every 3 iterations of writer-review. Same options.
+Same as synthesis loop. Stall detection on consecutive identical id sets in `draft-review-{M}.md` and `draft-review-{M-1}.md`. Check-in every 3 iterations of writer-review. Same options.
 
 ### Step 11: Present
 
-Surface output path + brief summary: total iterations of each loop, final artifact paths, any minor (non-blocking) issues from the final reviews.
+Rename the passed draft with the shell: `mv {OUTPUT_PATH}/draft.md {OUTPUT_PATH}/report.md`. Then surface output path + brief summary: total iterations of each loop, final artifact paths, any minor (non-blocking) issues from the final reviews.
 
 ## File Layout (output directory)
 
@@ -203,9 +203,11 @@ Surface output path + brief summary: total iterations of each loop, final artifa
 │   ├── gap-{n}-{slug}.md         (gap-fill research)
 │   ├── synthesis.md              (overwritten each iteration)
 │   └── synthesis-review-{n}.md
-├── report.md                     (overwritten each iteration)
-└── report-review-{n}.md
+├── draft.md                      (overwritten each iteration; renamed report.md in Step 11)
+└── draft-review-{n}.md
 ```
+
+Subagents never write a file named `report*`, `summary*`, `findings*` or `analysis*` with a `.md` extension: Claude Code refuses those writes from a subagent ("Subagents should return findings as text, not write report files"). That is why the writer writes `draft.md` and only the orchestrator, in Step 11, names it `report.md`.
 
 ## Verdict Parsing
 
