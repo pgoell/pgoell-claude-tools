@@ -158,8 +158,9 @@
     if (!out.moves || reload) return location.reload();
     rev = out.rev;
     stage.querySelectorAll('[data-de]').forEach(el => {
-      if (el.dataset.de in out.moves) el.dataset.de = out.moves[el.dataset.de];
-      else el.removeAttribute('data-de');
+      const to = out.moves[el.dataset.de];
+      if (to === undefined) el.removeAttribute('data-de');
+      else if (String(to) !== el.dataset.de) el.dataset.de = to; // untouched slides keep their thumbnails
     });
     changed();
     checkGates();
@@ -194,16 +195,19 @@
   }, true);
 
   // Reorder: drag the selected element among its siblings.
+  window.addEventListener('dragstart', (e) => { if (target(e)) e.preventDefault(); }, true); // no native image drag
   window.addEventListener('pointerdown', (e) => {
     const el = sel.length === 1 && sel[0];
     if (!el || editing || e.button || e.altKey || e.shiftKey || !el.contains(e.target) || el.parentElement === stage) return;
-    e.preventDefault();
+    // The press itself stays native, so a double-click still selects its word for the text edit.
     const sibs = [...el.parentElement.children].filter(c => c !== el && c.dataset.de);
     const first = sibs[0] && sibs[0].getBoundingClientRect(), own = el.getBoundingClientRect();
     const row = first && Math.abs(first.left - own.left) > Math.abs(first.top - own.top);
     let drop = null;
     const move = (m) => {
       if (!drop && Math.hypot(m.clientX - e.clientX, m.clientY - e.clientY) < 6) return;
+      document.documentElement.style.userSelect = 'none';
+      getSelection().removeAllRanges();
       const at = row ? m.clientX : m.clientY;
       const mid = (c) => { const r = c.getBoundingClientRect(); return row ? r.left + r.width / 2 : r.top + r.height / 2; };
       const sib = sibs.reduce((a, b) => Math.abs(mid(a) - at) <= Math.abs(mid(b) - at) ? a : b, sibs[0]);
@@ -216,6 +220,7 @@
     const up = () => {
       window.removeEventListener('pointermove', move, true);
       window.removeEventListener('pointerup', up, true);
+      document.documentElement.style.userSelect = '';
       dropLine = null;
       if (!drop) return;
       dragged = true;

@@ -28,7 +28,7 @@ What the server does:
 - Adds a `data-de` attribute (the element's offset in the source file) to every element inside `<deck-stage>` and appends the overlay script. Both exist only in the served page, never in the file.
 - Watches every file the page loaded and reloads the browser when one changes. The slide, the note, and the selection survive the reload where the selected elements still exist.
 
-One server edits one deck file. Stop it when the user is done (`pkill -f '[s]erver.py'`).
+One server edits one deck file. Stop it when the user is done (`pkill -f '[e]diting-presentations/assets/server.py'`).
 
 ## Read the selection
 
@@ -63,14 +63,14 @@ To see the selection, run the command in `screenshot`. It renders the selected s
 
 Tell the user these once, when the editor starts. Each edit is written to the deck file at once, as a splice at the element's source offsets, so every byte outside the edited span stays as it was.
 
-| Action                                                               | Result in the file                                                                                                                                                                                                          |
-| -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Double-click a text, type, Enter                                     | The element's content is replaced. Esc cancels. Entities such as `&rsquo;` keep their spelling.                                                                                                                             |
-| Drag the selected element onto a sibling                             | The element's source block moves before or after that sibling (cards, bullets, columns).                                                                                                                                    |
-| Drag a chip in the panel, or type in it                              | `font`, `gap`, and `pad` set font size, gap, and padding in px on every element of the same kind on that slide, as one rule in `<style id="deck-edits">` in the deck head. `width` sets an inline width on an image or SVG. |
-| "swap image" chip on an `<img>`                                      | The picked file is saved to `assets/` next to the deck and `src` points at it. A deck that inlines images as `data:` URIs gets a `data:` URI.                                                                               |
-| Alt+drag, or Alt+arrow keys on the selection (Shift for 10 px steps) | Free move, written as an inline `translate: Xpx Ypx`. The element keeps its place in flex or grid flow; only its painted position shifts.                                                                                   |
-| Ctrl+Z, Ctrl+Shift+Z                                                 | Undo and redo of editor writes. Refused after someone else wrote the file.                                                                                                                                                  |
+| Action                                                                    | Result in the file                                                                                                                                                                                                          |
+| ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Double-click a text (the word under the pointer is selected), type, Enter | The element's content is replaced. Esc cancels. Entities such as `&rsquo;` keep their spelling.                                                                                                                             |
+| Drag the selected element onto a sibling                                  | The element's source block moves before or after that sibling (cards, bullets, columns).                                                                                                                                    |
+| Drag a chip in the panel, or type in it                                   | `font`, `gap`, and `pad` set font size, gap, and padding in px on every element of the same kind on that slide, as one rule in `<style id="deck-edits">` in the deck head. `width` sets an inline width on an image or SVG. |
+| "swap image" chip on an `<img>`                                           | The picked file is saved to `assets/` next to the deck and `src` points at it. A deck that inlines images as `data:` URIs gets a `data:` URI.                                                                               |
+| Alt+drag, or Alt+arrow keys on the selection (Shift for 10 px steps)      | Free move, written as an inline `translate: Xpx Ypx`. The element keeps its place in flex or grid flow; only its painted position shifts.                                                                                   |
+| Ctrl+Z, Ctrl+Shift+Z                                                      | Undo and redo of editor writes. Refused after someone else wrote the file.                                                                                                                                                  |
 
 After each edit the overlay runs hard gates H1 (clipped text), H2 (overlapping text), and H7 (type floor) on the slide and lists new failures in red in its panel. Failures the slide already had are counted, not listed. The full gate set stays with the `creating-presentations` render check.
 
