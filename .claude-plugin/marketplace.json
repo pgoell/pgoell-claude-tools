@@ -101,6 +101,12 @@
       "version": "0.1.0"
     },
     {
+      "name": "guards",
+      "source": "./plugins/guards",
+      "description": "Claude Code hooks that block shell commands known to fail, such as a pkill -f that kills the agent's own shell.",
+      "version": "0.1.0"
+    },
+    {
       "name": "ponytail",
       "source": {
         "source": "url",

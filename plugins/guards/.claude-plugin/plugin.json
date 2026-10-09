@@ -1,0 +1,15 @@
+{
+  "name": "guards",
+  "version": "0.1.0",
+  "description": "Claude Code hooks that block shell commands known to fail, such as a pkill -f that kills the agent's own shell.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "license": "MIT",
+  "keywords": [
+    "hooks",
+    "guards",
+    "bash",
+    "pkill"
+  ]
+}
