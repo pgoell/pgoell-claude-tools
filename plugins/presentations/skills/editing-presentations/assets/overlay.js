@@ -28,17 +28,18 @@
     .status { color: #9aa; }
     .drop { background: #4da3ff; }
     .bad { border: 2px dashed #ff5a5a; }
-    .tools { position: fixed; z-index: 2147483601; display: flex; gap: 4px; }
-    .tools > * { background: #16181d; border: 1px solid #4da3ff; border-radius: 4px; padding: 2px 6px; display: flex; gap: 4px; align-items: center; }
+    .tools { display: flex; flex-wrap: wrap; gap: 4px; }
+    .tools:empty { display: none; }
+    .tools > * { border: 1px solid #4da3ff; border-radius: 4px; padding: 2px 6px; display: flex; gap: 4px; align-items: center; }
     .tools span { cursor: ew-resize; user-select: none; }
     .tools input[type=number] { all: unset; width: 44px; color: #fff; }
     .tools button { all: unset; cursor: pointer; }
     .gates { color: #ff8a8a; display: grid; gap: 2px; max-height: 120px; overflow: auto; }
   </style>
   <div class="boxes"></div>
-  <div class="tools"></div>
   <div class="panel">
     <div class="crumbs"></div>
+    <div class="tools"></div>
     <textarea placeholder="Note for Claude"></textarea>
     <div class="status"></div>
     <div class="gates"></div>
@@ -93,7 +94,7 @@
     }
     buildTools();
     $('.status').textContent = sel.length
-      ? `${sel.length} selected on slide ${slides().indexOf(slideOf(sel[0])) + 1}. Shift-click adds, double-click edits text, drag reorders, the chips below it resize, Alt+drag or Alt+arrows move freely, Esc clears.`
+      ? `${sel.length} selected on slide ${slides().indexOf(slideOf(sel[0])) + 1}. Shift-click adds, double-click edits text, drag reorders, the chips above resize, Alt+drag or Alt+arrows move freely, Esc clears.`
       : 'Click an element to select it. Ctrl+Z undoes an edit.';
     try { sessionStorage.setItem('deck-editor', JSON.stringify({ note: note.value, sel: sel.map(selector) })); } catch (e) {}
     clearTimeout(sendTimer);
@@ -120,10 +121,6 @@
       b.className = 'box ' + kind;
       b.style.cssText = `left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`;
     });
-    if (sel.length === 1) {
-      const r = sel[0].getBoundingClientRect();
-      $('.tools').style.cssText = `left:${Math.max(4, r.left)}px;top:${Math.min(r.bottom + 6, innerHeight - 34)}px`;
-    }
     requestAnimationFrame(draw);
   };
   draw();
@@ -273,7 +270,7 @@
     nudgeTimer = setTimeout(() => saveShift(el), 400);
   });
 
-  // Handles: one chip per property under the selection. Drag the label to scrub, or type a number.
+  // Handles: one chip per property in the panel. Drag the label to scrub, or type a number.
   // Gap, padding and font size go to every element of the same kind on the slide, as one rule in
   // <style id="deck-edits"> scoped by the slide's label. Width is an inline style on the one element.
   const live = document.head.appendChild(document.createElement('style')); // mirrors rules written this session
