@@ -1,0 +1,18 @@
+{
+  "name": "insights",
+  "version": "0.1.0",
+  "description": "Find what went wrong in yesterday's Claude Code sessions and newspaper runs, and propose one concrete fix per problem on a page in a kasten vault; kept fixes become pull requests, todos and feedback lines.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "license": "MIT",
+  "keywords": [
+    "insights",
+    "session-review",
+    "transcripts",
+    "kasten",
+    "cron",
+    "claude-code",
+    "codex"
+  ]
+}
