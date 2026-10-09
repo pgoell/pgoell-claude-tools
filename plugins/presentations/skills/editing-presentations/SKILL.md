@@ -59,9 +59,23 @@ When the user says "this", "these", "the selected one", or refers to something o
 
 To see the selection, run the command in `screenshot`. It renders the selected slide in headless Chrome with a pink outline around each selected element, writes `.deck-editor/selection.png`, and prints the path; read that image. Take it when the note is about how something looks, and skip it for copy changes.
 
+## What the user edits by hand
+
+Tell the user these once, when the editor starts. Each edit is written to the deck file at once, as a splice at the element's source offsets, so every byte outside the edited span stays as it was.
+
+| Action                                   | Result in the file                                                                              |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Double-click a text, type, Enter         | The element's content is replaced. Esc cancels. Entities such as `&rsquo;` keep their spelling. |
+| Drag the selected element onto a sibling | The element's source block moves before or after that sibling (cards, bullets, columns).        |
+| Ctrl+Z, Ctrl+Shift+Z                     | Undo and redo of editor writes. Refused after someone else wrote the file.                      |
+
+After each edit the overlay runs hard gates H1 (clipped text), H2 (overlapping text), and H7 (type floor) on the slide and lists new failures in red in its panel. Failures the slide already had are counted, not listed. The full gate set stays with the `creating-presentations` render check.
+
+When the user has edited by hand, read the file again before changing it: line numbers have moved.
+
 ## Edit and hand back
 
-Edit the deck files with the usual tools, at the lines the selection names. The deck contract, the canvas rules, and the type floors from the `creating-presentations` skill apply to every edit. The browser reloads on save; the selection file then describes the new source, so read it again before a follow-up change.
+Edit the deck files with the usual tools, at the lines the selection names. Never copy `data-de` attributes or the overlay script into the file; they appear in the browser's view of the page only. The deck contract, the canvas rules, and the type floors from the `creating-presentations` skill apply to every edit. The browser reloads on save; the selection file then describes the new source, so read it again before a follow-up change.
 
 ## Self-healing
 

@@ -9,6 +9,7 @@ either: every edit is a splice of the source text at offsets, so the bytes
 outside the edited span stay as they were.
 """
 import hashlib
+import html
 import json
 import mimetypes
 import re
@@ -50,7 +51,8 @@ class Scan(HTMLParser):
         self.lines = [0] + [m.end() for m in re.finditer("\n", text)]
         self.feed(text)
         self.close()
-        self.by_pos = {el["start"]: el for el in self.els}
+        self.by_pos = {el["start"]: el for el in self.els}  # for display
+        self.closed = {el["start"]: el for el in self.els if el["end"]}  # for edits
 
     def at(self):
         line, col = self.getpos()
@@ -136,6 +138,74 @@ def watch():
             with changed:
                 version += 1
                 changed.notify_all()
+
+
+def cut_start(text, el):
+    """Start of an element including the line break and indent before it, so a move leaves no hole."""
+    return re.search(r"(\r?\n)?[ \t]*\Z", text[:el["start"]]).start()
+
+
+def op_text(scan, text, body):
+    """Replace an element's content. Characters the source wrote as entities go back to that spelling."""
+    el = scan.closed[body["pos"]]
+    old, new = text[el["open_end"]:el["close"]], body["html"]
+    for entity in set(re.findall(r"&#?\w+;", old)):
+        char = html.unescape(entity)
+        if char not in "&<>\"'" and char != entity:
+            new = new.replace(char, entity)
+    return [(el["open_end"], len(old), new)], None
+
+
+def op_move(scan, text, body):
+    """Move an element before or after a sibling."""
+    el, ref = scan.closed[body["pos"]], scan.closed[body["ref"]]
+    start = cut_start(text, el)
+    at = ref["end"] if body["after"] else cut_start(text, ref)
+    chunk = text[start:el["end"]]
+    return [(start, len(chunk), ""), (at, 0, chunk)], (start, len(chunk), at)
+
+
+OPS = {"text": op_text, "move": op_move}
+undo, redo = [], []  # earlier and later versions of the deck text, editor writes only
+
+
+def apply(body):
+    """Run one edit as splices on the source. Returns the new rev and where every element moved to."""
+    global own_write
+    text = read()
+    if body["op"] in ("undo", "redo"):
+        src, dst = (undo, redo) if body["op"] == "undo" else (redo, undo)
+        if not src or text != own_write:  # nothing to undo, or someone else wrote since
+            return None
+        dst.append(text)
+        new, moves = src.pop(), None
+    else:
+        if body.get("rev") != rev_of(text):
+            return None
+        scan = Scan(text)
+        try:
+            splices, moved = OPS[body["op"]](scan, text, body)
+        except (KeyError, TypeError):  # unknown element, or one without an end tag
+            return None
+        new = text
+        for at, removed, inserted in sorted(splices, reverse=True):
+            new = new[:at] + inserted + new[at + removed:]
+        moves = {}
+        for el in scan.in_stage():
+            p = el["start"]
+            if moved and moved[0] <= p < moved[0] + moved[1]:
+                moves[p] = moved[2] - (moved[1] if moved[0] < moved[2] else 0) + p - moved[0]
+            elif not any(at <= p < at + removed for at, removed, _ in splices):
+                moves[p] = p + sum(len(inserted) - removed for at, removed, inserted in splices if at + removed <= p)
+        # Every element must still sit where the map says, or the page reloads instead of trusting it.
+        if any(new[at:at + 1 + len(scan.by_pos[old]["tag"])].lower() != "<" + scan.by_pos[old]["tag"] for old, at in moves.items()):
+            return None
+        undo.append(text)
+        redo.clear()
+    with open(DECK, "w", encoding="utf-8", newline="") as f:
+        f.write(new)
+    own_write = new
+    return {"rev": rev_of(new), "moves": moves}
 
 
 def write_selection(body):
@@ -259,6 +329,9 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/__editor/selection":
             write_selection(body)
             self.send(200, "{}", "application/json")
+        elif self.path == "/__editor/op":
+            result = apply(body)
+            self.send(200 if result else 409, json.dumps(result or {}), "application/json")
         else:
             self.send(404, "not found")
 
