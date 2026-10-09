@@ -5,10 +5,11 @@
 """Check a day's insights JSON against the contract and render it into its HTML page.
 
 Reads <insights>/<date>.json, the review note <date>.md beside it, and
-memory/applied.jsonl, and writes <insights>/<date>.html. It works out
-everything a template cannot: totals, sparkline points, bar widths, the sort
-order, the tally, and for each fix applied in the last 14 days whether its
-problem still showed up on the analysed day. Exits 1 with every contract error
+memory/applied.jsonl and problems.jsonl, and writes <insights>/<date>.html.
+It works out everything a template cannot: totals, sparkline points, bar
+widths, the sort order, the tally, each card's standing verdict, the fixes
+waiting on a PR or deferred, and for each fix applied in the last 14 days
+whether its problem still showed up on the analysed day. Exits 1 with every contract error
 listed, rendering nothing, so a broken JSON never reaches the vault as a page.
 """
 
@@ -83,6 +84,17 @@ def applied_lately(folder, day: date, page: dict) -> list[dict]:
     return out[::-1]
 
 
+def standing(folder, day: date) -> dict[str, list[dict]]:
+    """Memory lines by verdict: every pending and deferred one, already-done ones from the window."""
+    since = (day - timedelta(days=WINDOW)).isoformat()
+    out = {"pending": [], "deferred": [], "already-done": []}
+    for m in read_jsonl(folder / "memory" / "problems.jsonl"):
+        v = m.get("verdict")
+        if v in ("pending", "deferred") or v == "already-done" and m["verdict_date"] >= since:
+            out[v].append(m)
+    return out
+
+
 def main() -> None:
     args = base_parser(__doc__.splitlines()[0]).parse_args()
     day = analysed_day(args)
@@ -116,6 +128,11 @@ def main() -> None:
     text = note.read_text() if note.exists() else ""
     page["note_text"] = text.split("---\n", 2)[2].strip() if text.startswith("---\n") else text.strip()
     page["applied"] = applied_lately(folder, day, page)
+    page["standing"] = standing(folder, day)
+    memory = {m["fingerprint"]: m for m in read_jsonl(folder / "memory" / "problems.jsonl")}
+    for p in problems:
+        m = memory.get(p["fingerprint"]) or {}
+        p["verdict"] = m if m.get("verdict") else None
     page["generated_display"] = datetime.now(BERLIN).strftime("%Y-%m-%d %H:%M")
 
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE.parent), autoescape=True)

@@ -32,15 +32,22 @@ Below, `ARGS` stands for `--vault "<vault>" --periodic "<periodic>" --date <date
 
 1. **Seed.** `uv run "${CLAUDE_SKILL_DIR}/scripts/seed.py" ARGS`. It creates
    `IN/feedback.md`, `IN/memory/rules.md` and the memory files when missing,
-   and lists in `to_apply` review notes renamed to `## Keep` and not yet
-   applied.
+   and lists in `to_apply` review notes renamed to `## Keep` that still hold
+   lines with no verdict. Then
+   `uv run "${CLAUDE_SKILL_DIR}/scripts/remember.py" ARGS --check-prs`: a
+   `pending` fix whose PR merged becomes `applied` as of the merge date, one
+   whose PR closed unmerged becomes `rejected`. Report what it prints.
 2. **Apply reviewed notes.** For each date in `to_apply`, follow
    `../apply/SKILL.md` with that date. This is how a review done on the phone
-   takes effect the next morning.
+   takes effect the next morning. A note still under `## Proposed` is never
+   applied here: only the user's own `/insights:apply` treats it as kept.
 3. **Read feedback.** `IN/feedback.md` and `IN/memory/rules.md`. Turn each
    bullet under `## Open` into a rule line at the end of `rules.md`
-   (`- D: the rule (from: the feedback, short)`), or, for a `no: #id reason`
-   line, into a `rejected` verdict (step 9 records it). Move the bullet to the
+   (`- D: the rule (from: the feedback, short)`) when it says something a
+   rule can use. A bullet that ends `(recorded: <verdict>)` came from apply,
+   which recorded its verdict already: never record it again. Only a
+   `no: #id reason` bullet the user wrote here by hand becomes a `rejected`
+   verdict (step 9 records it). Move the bullet to the
    top of `## Applied` as `- D: <the words> -> <what changed>`. Follow every
    rule in `rules.md` from here on.
 4. **Extract.**
@@ -64,7 +71,7 @@ Below, `ARGS` stands for `--vault "<vault>" --periodic "<periodic>" --date <date
    the JSON and writes `IN/D.html`. Fix every error it lists and run it again
    until it renders.
 9. **Remember.** `uv run "${CLAUDE_SKILL_DIR}/scripts/remember.py" ARGS`.
-   If step 3 produced rejections, write them as a JSON list
+   If step 3 produced new rejections, write them as a JSON list
    (`[{"fingerprint", "id", "verdict": "rejected", "reason"}]`) to
    `/tmp/insights-verdicts-D.json` and run
    `uv run "${CLAUDE_SKILL_DIR}/scripts/remember.py" ARGS --verdicts /tmp/insights-verdicts-D.json`.

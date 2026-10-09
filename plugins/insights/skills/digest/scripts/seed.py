@@ -8,7 +8,8 @@ Copies feedback.md and memory/rules.md from the plugin defaults when they are
 missing and creates empty memory/problems.jsonl and memory/applied.jsonl,
 never overwriting a file that exists. Prints one JSON object: the folder, what
 it created, and `to_apply`, the dates of review notes from the analysed day and the 7 before it
-whose `## Proposed` was renamed `## Keep` and that hold no `## Done` yet.
+whose `## Proposed` was renamed `## Keep` and that still hold lines with no
+verdict, so a partly applied note is picked up again.
 """
 
 import json
@@ -16,6 +17,7 @@ import shutil
 from datetime import timedelta
 
 from common import DEFAULTS, analysed_day, base_parser, insights_dir
+from review import read_review
 
 SEEDS = {"feedback.md": "feedback.md", "memory/rules.md": "rules.md"}
 
@@ -40,12 +42,11 @@ def main() -> None:
 
     to_apply = []
     for back in range(8):
-        note = folder / f"{(day - timedelta(days=back)).isoformat()}.md"
-        if not note.exists():
+        date = (day - timedelta(days=back)).isoformat()
+        if not (folder / f"{date}.md").exists() or not (folder / f"{date}.json").exists():
             continue
-        lines = note.read_text().splitlines()
-        if "## Keep" in lines and "## Done" not in lines:
-            to_apply.append(note.stem)
+        if read_review(folder, date)["state"] == "keep":
+            to_apply.append(date)
 
     print(json.dumps({"insights_dir": str(folder), "date": day.isoformat(), "created": created,
                       "to_apply": sorted(to_apply)}, indent=2))

@@ -340,7 +340,7 @@ A look back at yesterday's Claude Code sessions and the newspaper's runs, every 
 **Skills:**
 
 - `/insights:digest`: Applies any finished review note, then analyses one day (yesterday by default) and writes the page, the review note, and memory. Takes `--vault`, `--date`, and `--periodic`.
-- `/insights:apply`: Acts on a review note whose `## Proposed` was renamed `## Keep`: opens a PR per kept fix where a repository exists (never merges), adds todos and newspaper feedback lines, and records deleted lines as rejections that stay rejected until their hits triple.
+- `/insights:apply`: Acts on a finished review note (renamed `## Keep`, or any note when you run it by hand): opens a PR per kept fix where a repository exists (never merges), adds todos and newspaper feedback lines, and records a verdict per line (applied, pending PR, already done, deferred, rejected, watch). Deleted lines stay rejected until their hits triple; a partly applied note picks up where it stopped.
 
 **Setup:** needs `uv`, plus `git` and a logged-in `gh` for the PRs. To run it at 05:30 Europe/Berlin, before the newspaper, add this line to the host's crontab (`crontab -e`), with your own clone and vault paths:
 

@@ -17,9 +17,11 @@ from common import INSIGHTS, analysed_day, base_parser, insights_dir
 
 HOWTO = (
     "Keep a line to accept its fix, edit it to change the fix, delete it to reject it, "
-    "or start it with `no:` to reject it with a reason. Then rename `## Proposed` to `## Keep`; "
-    "`/insights:apply` or the next morning's run acts on it."
+    "or start it with `no:` to reject it with a reason. A bullet indented under a line is a note "
+    "for that fix (an indented `no:` rejects it). Then rename `## Proposed` to `## Keep`; "
+    "the next morning's run acts on it. Running `/insights:apply` yourself acts on it renamed or not."
 )
+EMPTY = "nothing to decide today"
 
 
 def proposal(p: dict) -> str:
@@ -36,7 +38,7 @@ def main() -> None:
     if note.exists() and any(line in ("## Keep", "## Done") for line in note.read_text().splitlines()):
         print(f"{note}: already reviewed, left alone")
         return
-    lines = [proposal(p) for p in page["problems"]] or ["- nothing to decide today"]
+    lines = [proposal(p) for p in page["problems"]] or [f"- {EMPTY}"]
     note.write_text(
         "---\ntype: Note\n---\n\n"
         f"# Insights {day}\n\n"
