@@ -49,6 +49,10 @@ def self_matching_pattern(args):
     full = False
     tokens = iter(args)
     for token in tokens:
+        if token == "--":
+            # Everything after `--` is the pattern, even when it starts with `-`.
+            token = next(tokens, None)
+            return token if full and token and not token.startswith("[") else None
         if token == "--full":
             full = True
         elif token in LONG_WITH_VALUE:

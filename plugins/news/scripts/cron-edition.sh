@@ -10,8 +10,9 @@ set -uo pipefail
 VAULT="${1:?usage: cron-edition.sh VAULT_PATH}"
 VAULT="$(cd "$VAULT" && pwd)" || exit 1
 
-# Cron has a minimal PATH; claude and uv live in ~/.local/bin.
-export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin"
+# Cron has a minimal PATH; claude and uv live in ~/.local/bin, and bunx, which
+# a statusline hook calls on every prompt, in ~/.bun/bin.
+export PATH="$HOME/.local/bin:$HOME/.bun/bin:/usr/local/bin:/usr/bin:/bin"
 
 LOG_DIR="${NEWS_LOG_DIR:-$HOME/.local/state/news}"
 mkdir -p "$LOG_DIR"
