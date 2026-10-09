@@ -63,13 +63,23 @@ To see the selection, run the command in `screenshot`. It renders the selected s
 
 Tell the user these once, when the editor starts. Each edit is written to the deck file at once, as a splice at the element's source offsets, so every byte outside the edited span stays as it was.
 
-| Action                                   | Result in the file                                                                              |
-| ---------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Double-click a text, type, Enter         | The element's content is replaced. Esc cancels. Entities such as `&rsquo;` keep their spelling. |
-| Drag the selected element onto a sibling | The element's source block moves before or after that sibling (cards, bullets, columns).        |
-| Ctrl+Z, Ctrl+Shift+Z                     | Undo and redo of editor writes. Refused after someone else wrote the file.                      |
+| Action                                         | Result in the file                                                                                                                                                                                                          |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Double-click a text, type, Enter               | The element's content is replaced. Esc cancels. Entities such as `&rsquo;` keep their spelling.                                                                                                                             |
+| Drag the selected element onto a sibling       | The element's source block moves before or after that sibling (cards, bullets, columns).                                                                                                                                    |
+| Drag a chip under the selection, or type in it | `font`, `gap`, and `pad` set font size, gap, and padding in px on every element of the same kind on that slide, as one rule in `<style id="deck-edits">` in the deck head. `width` sets an inline width on an image or SVG. |
+| "swap image" chip on an `<img>`                | The picked file is saved to `assets/` next to the deck and `src` points at it. A deck that inlines images as `data:` URIs gets a `data:` URI.                                                                               |
+| Ctrl+Z, Ctrl+Shift+Z                           | Undo and redo of editor writes. Refused after someone else wrote the file.                                                                                                                                                  |
 
 After each edit the overlay runs hard gates H1 (clipped text), H2 (overlapping text), and H7 (type floor) on the slide and lists new failures in red in its panel. Failures the slide already had are counted, not listed. The full gate set stays with the `creating-presentations` render check.
+
+Handle edits are plain CSS, so the `exporting-presentations-to-pptx` skill lifts them like any other rule. A rule in `deck-edits` is scoped by the slide's label and the element's class path:
+
+```css
+[data-screen-label="04 Status quo"] div.cards3 div.card { padding: 20px; }
+```
+
+The overlay writes the rule only when it wins the cascade on the selected element. When it loses, or the slide has no `data-screen-label`, the same values go into inline `style` attributes instead. When cleaning up after the user, fold a `deck-edits` rule into the deck's stylesheet if the change should hold for every slide, and leave it in place if it is a one-slide exception.
 
 When the user has edited by hand, read the file again before changing it: line numbers have moved.
 

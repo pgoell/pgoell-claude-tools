@@ -28,9 +28,15 @@
     .status { color: #9aa; }
     .drop { background: #4da3ff; }
     .bad { border: 2px dashed #ff5a5a; }
+    .tools { position: fixed; z-index: 2147483601; display: flex; gap: 4px; }
+    .tools > * { background: #16181d; border: 1px solid #4da3ff; border-radius: 4px; padding: 2px 6px; display: flex; gap: 4px; align-items: center; }
+    .tools span { cursor: ew-resize; user-select: none; }
+    .tools input[type=number] { all: unset; width: 44px; color: #fff; }
+    .tools button { all: unset; cursor: pointer; }
     .gates { color: #ff8a8a; display: grid; gap: 2px; max-height: 120px; overflow: auto; }
   </style>
   <div class="boxes"></div>
+  <div class="tools"></div>
   <div class="panel">
     <div class="crumbs"></div>
     <textarea placeholder="Note for Claude"></textarea>
@@ -85,8 +91,9 @@
         crumbs.append(i ? ' › ' : '', b);
       });
     }
+    buildTools();
     $('.status').textContent = sel.length
-      ? `${sel.length} selected on slide ${slides().indexOf(slideOf(sel[0])) + 1}. Shift-click adds, double-click edits text, drag reorders, Esc clears.`
+      ? `${sel.length} selected on slide ${slides().indexOf(slideOf(sel[0])) + 1}. Shift-click adds, double-click edits text, drag reorders, the chips below it resize, Esc clears.`
       : 'Click an element to select it. Ctrl+Z undoes an edit.';
     try { sessionStorage.setItem('deck-editor', JSON.stringify({ note: note.value, sel: sel.map(selector) })); } catch (e) {}
     clearTimeout(sendTimer);
@@ -113,6 +120,10 @@
       b.className = 'box ' + kind;
       b.style.cssText = `left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`;
     });
+    if (sel.length === 1) {
+      const r = sel[0].getBoundingClientRect();
+      $('.tools').style.cssText = `left:${Math.max(4, r.left)}px;top:${Math.min(r.bottom + 6, innerHeight - 34)}px`;
+    }
     requestAnimationFrame(draw);
   };
   draw();
@@ -220,6 +231,81 @@
     window.addEventListener('pointermove', move, true);
     window.addEventListener('pointerup', up, true);
   }, true);
+
+  // Handles: one chip per property under the selection. Drag the label to scrub, or type a number.
+  // Gap, padding and font size go to every element of the same kind on the slide, as one rule in
+  // <style id="deck-edits"> scoped by the slide's label. Width is an inline style on the one element.
+  const live = document.head.appendChild(document.createElement('style')); // mirrors rules written this session
+  const TOOLS = [
+    ['font', 'font-size', 'font-size', (el) => el instanceof HTMLElement && [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())],
+    ['gap', 'gap', 'column-gap', (el) => /flex|grid/.test(getComputedStyle(el).display)],
+    ['pad', 'padding', 'padding-top', (el) => el instanceof HTMLElement && !el.matches('img, video, canvas')],
+    ['width', 'width', 'width', (el) => el.matches('img, svg, video, canvas')],
+  ];
+  const setProp = (el, prop, probe, px, prior, commit) => {
+    const slide = slideOf(el), label = slide.dataset.screenLabel, path = [];
+    for (let n = el; n !== slide; n = n.parentElement) path.unshift(n.tagName.toLowerCase() + [...n.classList].map(c => '.' + CSS.escape(c)).join(''));
+    const peers = prop === 'width' ? [el] : [...slide.querySelectorAll(path.join(' '))];
+    const props = prop === 'width' ? { width: px, height: 'auto' } : { [prop]: px };
+    const inline = () => peers.forEach(p => Object.entries(props).forEach(([k, v]) => p.style.setProperty(k, v)));
+    peers.forEach(p => prior.has(p) || prior.set(p, p.style.getPropertyValue(prop)));
+    inline();
+    if (!commit) return;
+    if (prop !== 'width' && label) {
+      // Try the rule first. It only stands when it wins the cascade on this element.
+      const rule = `[data-screen-label="${label.replace(/["\\]/g, '\\$&')}"] ${path.join(' ')}`;
+      const before = live.textContent;
+      peers.forEach(p => p.style.setProperty(prop, prior.get(p)));
+      live.textContent += `${rule} { ${prop}: ${px}; }\n`;
+      if (Math.abs(parseFloat(getComputedStyle(el).getPropertyValue(probe)) - parseFloat(px)) < 0.5) {
+        return op('rule', () => ({ selector: rule, props }));
+      }
+      live.textContent = before;
+      inline();
+    }
+    peers.forEach(p => op('style', () => ({ pos: pos(p), props })));
+  };
+  const buildTools = () => {
+    const tools = $('.tools'), el = sel.length === 1 && !editing && sel[0];
+    tools.replaceChildren();
+    if (!el) return;
+    TOOLS.filter(([, , , fits]) => fits(el)).forEach(([label, prop, probe]) => {
+      const chip = document.createElement('label'), grip = document.createElement('span'), input = document.createElement('input');
+      const prior = new Map();
+      grip.textContent = label;
+      input.type = 'number';
+      input.min = 0;
+      input.value = Math.round(parseFloat(getComputedStyle(el).getPropertyValue(probe)) || 0);
+      const set = (commit) => setProp(el, prop, probe, Math.max(0, +input.value) + 'px', prior, commit);
+      input.addEventListener('input', () => set(false));
+      input.addEventListener('change', () => set(true));
+      grip.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        grip.setPointerCapture(e.pointerId);
+        const from = +input.value;
+        grip.onpointermove = (m) => { input.value = Math.max(0, Math.round(from + m.clientX - e.clientX)); set(false); };
+        grip.onpointerup = () => { grip.onpointermove = grip.onpointerup = null; set(true); };
+      });
+      chip.append(grip, input);
+      tools.append(chip);
+    });
+    if (el.tagName === 'IMG') {
+      const swap = document.createElement('button'), file = Object.assign(document.createElement('input'), { type: 'file', accept: 'image/*' });
+      swap.textContent = 'swap image';
+      swap.onclick = () => file.click();
+      file.onchange = async () => {
+        const f = file.files[0];
+        if (!f) return;
+        // A deck that inlines its images keeps doing so; otherwise the file goes to the deck's assets/.
+        const src = (el.getAttribute('src') || '').startsWith('data:')
+          ? await new Promise(done => { const r = new FileReader(); r.onload = () => done(r.result); r.readAsDataURL(f); })
+          : await (await fetch('/__editor/upload?' + encodeURIComponent(f.name), { method: 'POST', body: f })).text();
+        el.src = src;
+        op('attr', () => ({ pos: pos(el), name: 'src', value: src }));
+      };
+      tools.append(swap);
+    }
+  };
 
   // Hard gates H1, H2 and H7 on the active slide, condensed from creating-presentations'
   // references/hard-gates.md and measured through the stage scale instead of noscale. Failures the

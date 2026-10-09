@@ -60,7 +60,7 @@ class Scan(HTMLParser):
 
     def handle_starttag(self, tag, attrs, closed=False):
         start = self.at()
-        el = {"tag": tag, "start": start, "open_end": start + len(self.get_starttag_text()), "close": None, "end": None}
+        el = {"tag": tag, "attrs": dict(attrs), "start": start, "open_end": start + len(self.get_starttag_text()), "close": None, "end": None}
         self.els.append(el)
         if tag in VOID or (closed and self.foreign):
             el["close"] = el["end"] = el["open_end"]
@@ -165,7 +165,54 @@ def op_move(scan, text, body):
     return [(start, len(chunk), ""), (at, 0, chunk)], (start, len(chunk), at)
 
 
-OPS = {"text": op_text, "move": op_move}
+def set_attr(text, el, name, value):
+    """Splice that sets one attribute in an element's start tag, leaving the others as written."""
+    quoted = '"' + value.replace("&", "&amp;").replace('"', "&quot;") + '"'
+    tag = text[el["start"]:el["open_end"]]
+    for m in re.finditer(r"""\s([^\s"'<>/=]+)(?:\s*=\s*("[^"]*"|'[^']*'|[^\s"'=<>`]+))?""", tag[1 + len(el["tag"]):]):
+        if m.group(1).lower() == name and m.group(2):
+            return (el["start"] + 1 + len(el["tag"]) + m.start(2), len(m.group(2)), quoted)
+    end = el["open_end"] - (2 if tag.endswith("/>") else 1)
+    return (end, 0, f" {name}={quoted}")
+
+
+def declare(css, props):
+    """A declaration list with props set: earlier values of the same properties go, the rest stays."""
+    for prop in props:
+        css = re.sub(rf"(?:^|(?<=;))\s*{re.escape(prop)}\s*:[^;]*;?", "", css)
+    return "; ".join([css.strip().rstrip(";")] * bool(css.strip()) + [f"{k}: {v}" for k, v in props.items()])
+
+
+def op_style(scan, text, body):
+    """Set inline style properties on one element."""
+    el = scan.closed[body["pos"]]
+    return [set_attr(text, el, "style", declare(html.unescape(el["attrs"].get("style") or ""), body["props"]))], None
+
+
+def op_attr(scan, text, body):
+    return [set_attr(text, scan.closed[body["pos"]], body["name"], body["value"])], None
+
+
+def op_rule(scan, text, body):
+    """Set properties in one rule of <style id="deck-edits">, the block that holds slide-scoped edits."""
+    block = next((el for el in scan.els if el["tag"] == "style" and el["attrs"].get("id") == "deck-edits"), None)
+    selector = body["selector"]
+    if not block:
+        head = next((el for el in scan.els if el["tag"] == "head" and el["end"]), None)
+        at = head["close"] if head else next(el for el in scan.els if el["tag"] == "deck-stage")["start"]
+        return [(at, 0, f'<style id="deck-edits">\n{selector} {{ {declare("", body["props"])}; }}\n</style>\n')], None
+    old = text[block["open_end"]:block["close"]]
+    lines, prefix = old.split("\n"), selector + " {"
+    for i, line in enumerate(lines):
+        if line.startswith(prefix):
+            lines[i] = f'{prefix} {declare(line[len(prefix):].rstrip().rstrip("}"), body["props"])}; }}'
+            break
+    else:
+        lines.insert(len(lines) - 1, f'{prefix} {declare("", body["props"])}; }}')
+    return [(block["open_end"], len(old), "\n".join(lines))], None
+
+
+OPS = {"text": op_text, "move": op_move, "style": op_style, "attr": op_attr, "rule": op_rule}
 undo, redo = [], []  # earlier and later versions of the deck text, editor writes only
 
 
@@ -185,7 +232,7 @@ def apply(body):
         scan = Scan(text)
         try:
             splices, moved = OPS[body["op"]](scan, text, body)
-        except (KeyError, TypeError):  # unknown element, or one without an end tag
+        except (KeyError, TypeError, StopIteration):  # unknown element, or one without an end tag
             return None
         new = text
         for at, removed, inserted in sorted(splices, reverse=True):
@@ -325,7 +372,14 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         if not self.local():
             return
-        body = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
+        data = self.rfile.read(int(self.headers.get("Content-Length", 0)))
+        if self.path.startswith("/__editor/upload?"):  # an image for a swap, stored under a name its content fixes
+            name = re.sub(r"[^\w.-]", "-", Path(unquote(urlsplit(self.path).query)).name)
+            name = f"{Path(name).stem}-{hashlib.sha1(data).hexdigest()[:6]}{Path(name).suffix}"
+            (DECK.parent / "assets").mkdir(exist_ok=True)
+            (DECK.parent / "assets" / name).write_bytes(data)
+            return self.send(200, "assets/" + name)
+        body = json.loads(data or b"{}")
         if self.path == "/__editor/selection":
             write_selection(body)
             self.send(200, "{}", "application/json")
