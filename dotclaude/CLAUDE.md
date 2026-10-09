@@ -19,7 +19,7 @@ Govern prose: docs, PR text, messages. Never touch code or technical terms; swap
 ### Punctuation
 
 - Never use em-dashes (U+2014) or en-dashes (U+2013) in prose under any circumstance.
-- Never use the interpunct / middle dot (·) as a separator (e.g., "AI Engineer · Deloitte"). Use a comma, "at", a line break, or rephrase ("AI Engineer at Deloitte").
+- Never use the interpunct / middle dot (·) as a separator (e.g., "Engineer · Acme"). Use a comma, "at", a line break, or rephrase ("Engineer at Acme").
 - Never use hyphens (-) as sentence punctuation (e.g., " - " standing in for a comma or dash mid-sentence).
 - Rewrite with commas, periods, colons, semicolons, parentheses, or by splitting into separate sentences.
 - Hyphens in compound words (spec-driven, AI-assisted, two-week, 35-step) are hyphenation, not punctuation. Those stay.
