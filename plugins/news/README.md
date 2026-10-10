@@ -27,7 +27,7 @@ from `skills/edition/references/defaults/`:
 
 ```text
 05 Newspaper/
-  config/topics.yaml     sections, queries, sources, depth, freshness, interests, avoid
+  config/topics.yaml     style, sections, queries, sources, depth, freshness, interests, avoid
   config/design.yaml     design, title, tagline, colour and font overrides
   feedback.md            your feedback note: write under "## Open"
   memory/stories.jsonl   every story that ran, the record dedupe checks against

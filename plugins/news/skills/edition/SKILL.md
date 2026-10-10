@@ -65,14 +65,18 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
    3 is 90 to 150 words with context, 2 is 50 to 90, 1 is 25 to 45. A section's
    depth caps that: depth 2 writes no importance 3, depth 1 gives briefs only.
    The page is read over breakfast, so a long day means fewer stories, not
-   longer ones. Facts from the fetched article only; no opinion, no filler. Give every story `entities` and two to four
+   longer ones. When `edition.style` is `smart-brevity`, write every summary,
+   the lead's included, as three paragraphs: a one-sentence lede, then
+   `Warum das wichtig ist:` (`Why it matters:` in English) with one or two
+   sentences, then `Die Details:` (`The details:`) with the rest. The word
+   ranges stay the same. Any other value, or none, means plain paragraphs. Facts from the fetched article only; no opinion, no filler. Give every story `entities` and two to four
    `key_facts`, which memory uses to spot repeats tomorrow. Story ids are
    `<date>-<slug>-NN`, where slug is the section id or a short subject slug
    (`anthropic`, `bnd`), lowercase ASCII, NN counting from 01 per slug.
 7. **Assemble** `NP/<date>.json` per `references/edition-contract.md`: `title`
    and `tagline` from design.yaml, `date_display` in German ("Mittwoch, 7.
    Oktober 2026"), `number` and `previous` from step 1, sections in config
-   order (skip a section with no stories; keep 4 to 10) with `local: true` on
+   order (skip a section with no stories; keep 4 to 16) with `local: true` on
    a section whose topics.yaml entry has it, `weather: null` unless you have
    something better than a forecast, and `feedback_hint` as
    `Feedback: <periodic>/05 Newspaper/feedback.md`. Then
