@@ -13,21 +13,11 @@ kasten's `<leader>gd` creates one, as the news plugin's link_daily.py does.
 """
 
 import argparse
-from datetime import date, timedelta
+from datetime import date
 
-from common import INSIGHTS, analysed_day, base_parser, today
+from common import INSIGHTS, analysed_day, base_parser, daily_note, today
 
 LABEL = "Einsichten:"
-WEEKDAYS = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
-
-
-def daily_note(day: date, periodic: str) -> str:
-    """Mirror of kasten's `daily_note`; keep the two in step."""
-    year, week, _ = day.isocalendar()
-    before = f"{periodic}/00 Daily/{(day - timedelta(days=1)).isoformat()}"
-    after = f"{periodic}/00 Daily/{(day + timedelta(days=1)).isoformat()}"
-    nav = f"[[{before}]] | [[{periodic}/01 Weekly/{year}-W{week:02d}]] | [[{after}]]"
-    return f"---\ntype: Periodic Note\n---\n\n# {day.isoformat()} {WEEKDAYS[day.weekday()]}\n\n{nav}\n\n## TODOs\n"
 
 
 def with_link(text: str, link: str) -> str:

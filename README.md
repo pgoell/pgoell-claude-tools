@@ -51,6 +51,7 @@ Bundles 24 plugins across Atlassian, Google Workspace, Databricks, agent-system 
 | `tune`                                                                                          | `news`                    | Reconfigure the newspaper by interview and compare designs on today's edition                                                           |
 | `digest`                                                                                        | `insights`                | Find yesterday's recurring problems in Claude Code sessions and newspaper runs, with one concrete fix each, on a page in a kasten vault |
 | `apply`                                                                                         | `insights`                | Carry out the fixes kept in a reviewed insights note: PRs, todos, newspaper feedback lines                                              |
+| `activity`                                                                                      | `insights`                | What your agents did yesterday per repo and what waits for you, on a page in a kasten vault                                             |
 | `ponytail`                                                                                      | `ponytail`                | Force the laziest solution that works: YAGNI, stdlib first, one line over fifty                                                         |
 | `ponytail-review`                                                                               | `ponytail`                | Review a diff for over-engineering only: what to delete and what replaces it                                                            |
 | `ponytail-audit`                                                                                | `ponytail`                | Whole-repo over-engineering audit, ranked by what to delete, simplify, or replace                                                       |
@@ -346,14 +347,16 @@ A look back at yesterday's Claude Code sessions and the newspaper's runs, every 
 
 - `/insights:digest`: Applies any finished review note, then analyses one day (yesterday by default) and writes the page, the review note, and memory. Takes `--vault`, `--date`, and `--periodic`.
 - `/insights:apply`: Acts on a finished review note (renamed `## Keep`, or any note when you run it by hand): opens a PR per kept fix where a repository exists (never merges), adds todos and newspaper feedback lines, and records a verdict per line (applied, pending PR, already done, deferred, rejected, watch). Deleted lines stay rejected until their hits triple; a partly applied note picks up where it stopped.
+- `/insights:activity`: Counts one day per repository through a script (your pull requests, issues, failed CI, commits, issue-loop ledger lines, sessions, tokens and cost from `ccusage`, cron job results, vault notes) and writes a second page under `<periodic>/07 Activity/`: what needs you (one link per item), what shipped (at most two sentences per repo, from PR titles and ledger lines only), and the counts. Links it from the daily note with up to five lines. Takes `--vault`, `--date`, and `--periodic`.
 
-**Setup:** needs `uv`, plus `git` and a logged-in `gh` for the PRs. To run it at 05:30 Europe/Berlin, before the newspaper, add this line to the host's crontab (`crontab -e`), with your own clone and vault paths:
+**Setup:** needs `uv`, plus `git` and a logged-in `gh` for the PRs. To run the digest at 05:30 and the activity page at 05:45 Europe/Berlin, before the newspaper, add these lines to the host's crontab (`crontab -e`), with your own clone and vault paths:
 
 ```
 30 5 * * * /home/pascal/Code/pgoell-claude-tools/plugins/insights/scripts/cron-insights.sh /home/pascal/kasten-data/vault
+45 5 * * * /home/pascal/Code/pgoell-claude-tools/plugins/insights/scripts/cron-activity.sh /home/pascal/kasten-data/vault
 ```
 
-The wrapper runs `claude -p "/insights:digest ..."` with the needed tools allowed, logs to `~/.local/state/insights/`, and exits non-zero when no page was written. Cron uses the host's time zone; elsewhere, put `CRON_TZ=Europe/Berlin` above the line. See `plugins/insights/README.md`.
+Each wrapper runs its skill through `claude -p` with the needed tools allowed, logs to `~/.local/state/insights/`, and exits non-zero when no page was written. The activity job also needs `bunx` for `ccusage`. Cron uses the host's time zone; elsewhere, put `CRON_TZ=Europe/Berlin` above the line. See `plugins/insights/README.md`.
 
 ### issue-loop
 

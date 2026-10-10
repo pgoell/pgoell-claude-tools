@@ -98,7 +98,7 @@
       "name": "insights",
       "source": "./plugins/insights",
       "description": "Find what went wrong in yesterday's Claude Code sessions and newspaper runs, with one concrete fix per problem on a page in a kasten vault.",
-      "version": "0.2.0"
+      "version": "0.3.0"
     },
     {
       "name": "issue-loop",

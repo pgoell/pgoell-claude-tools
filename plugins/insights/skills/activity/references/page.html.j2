@@ -1,0 +1,127 @@
+{#- The activity page. render.py passes `page` (the day's JSON) and `view` (totals, flags); contract in page-contract.md. No external requests: system fonts only. -#}
+{%- macro cell(r, key, text) -%}
+<td class="r{% if key in r.flags %} flag{% endif %}">{{ text }}</td>
+{%- endmacro -%}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Activity {{ page.date }}</title>
+<style>
+/* Same sheet as the insights page: tokens, type scale and cards, with system fonts. */
+:root {
+  --bg: #eef1f3; --sheet: #ffffff; --ink: #17212b; --muted: #5b6874; --rule: #d5dbe0;
+  --accent: #0f5c6e; --code-bg: #f4f6f8; --warn: #b8361f; --warn-bg: #fbe9e5;
+  --f-display: "Segoe UI", system-ui, sans-serif;
+  --f-body: "Segoe UI", system-ui, sans-serif;
+  --f-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11171c; --sheet: #182129; --ink: #e3e9ee; --muted: #93a1ad; --rule: #2c3a45;
+  --accent: #5fb7c9; --code-bg: #0f151a; --warn: #f08a74; --warn-bg: #3a201b;
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11171c; --sheet: #182129; --ink: #e3e9ee; --muted: #93a1ad; --rule: #2c3a45;
+  --accent: #5fb7c9; --code-bg: #0f151a; --warn: #f08a74; --warn-bg: #3a201b;
+  color-scheme: dark }
+
+* { box-sizing: border-box }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body); }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 56px; display: grid; gap: 28px; }
+.wrap > * { min-width: 0; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); font-weight: 700; letter-spacing: -0.01em; line-height: 1.1; }
+h2 { font-size: 1.25rem; font-weight: 700; }
+h3 { font-size: 1.05rem; font-weight: 700; line-height: 1.3; }
+.eyebrow { font: 500 0.72rem/1 var(--f-mono); text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); }
+.num { font-variant-numeric: tabular-nums; }
+code { font-family: var(--f-mono); font-size: 0.82rem; background: var(--code-bg); border-radius: 3px; padding: 1px 4px; overflow-wrap: anywhere; }
+p { margin: 0; }
+a { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+header { display: grid; gap: 10px; }
+.scope { display: flex; flex-wrap: wrap; gap: 6px 18px; color: var(--muted); font-size: 0.9rem; }
+.scope b { color: var(--ink); font-weight: 600; }
+.lede { font-size: 0.85rem; color: var(--muted); border-left: 3px solid var(--rule); padding-left: 10px; max-width: 78ch; }
+.lede b { color: var(--warn); font-weight: 600; }
+
+section { display: grid; gap: 14px; }
+.head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.head p { color: var(--muted); font-size: 0.88rem; }
+.card { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; padding: 14px 16px; display: grid; gap: 6px; }
+.need { border-left: 4px solid var(--warn); }
+.need p { color: var(--muted); }
+.links { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.9rem; }
+.repo-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.repo-line span { color: var(--muted); font-size: 0.88rem; }
+.empty { color: var(--muted); font-size: 0.9rem; }
+
+.table { background: var(--sheet); border: 1px solid var(--rule); border-radius: 6px; overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th { font: 500 0.7rem var(--f-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+th.r, td.r { text-align: right; font-variant-numeric: tabular-nums; }
+td.flag { color: var(--warn); background: var(--warn-bg); font-weight: 700; }
+tfoot td { font-weight: 700; border-bottom: 0; }
+footer { color: var(--muted); font-size: 0.82rem; display: grid; gap: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Agent activity, {{ view.date_display }}</span>
+    <h1>{% if page.needs %}{{ page.needs | length }} thing{{ "" if page.needs | length == 1 else "s" }} need{{ "s" if page.needs | length == 1 else "" }} you{% else %}Nothing needs you{% endif %}</h1>
+    <div class="scope num">
+      <span><b>{{ view.totals.sessions }}</b> sessions</span>
+      <span><b>{{ view.totals.commits }}</b> commits</span>
+      <span><b>{{ view.totals.prs_merged }}</b> PRs merged</span>
+      <span><b>{{ page.open_prs | length }}</b> PRs open now</span>
+      <span><b>{{ view.totals.issues_opened }}</b> issues opened, <b>{{ view.totals.issues_closed }}</b> closed</span>
+      {% if page.usage %}<span><b>{{ page.usage.cost | usd }}</b>, {{ page.usage.tokens | tokens }} tokens</span>{% endif %}
+    </div>
+    <p class="lede">PRs, issues and CI come from <code>gh</code>, commits from <code>git log --all</code>, sessions from <code>~/.claude/projects</code> (Europe/Berlin, the insights jobs' own {{ page.scope.own_runs_skipped }} runs left out), loop minutes from <code>ledger.tsv</code>, tokens and cost from <code>ccusage claude daily --instances</code> at list prices, all sessions included. Summaries come from PR titles and ledger lines only; nobody read a diff.{% if view.unavailable %} <b>Unavailable on this run: {{ view.unavailable | join(", ") }}.</b>{% endif %}{% if page.scope.skipped_large %} {{ page.scope.skipped_large | length }} transcript files over 300 MB were skipped.{% endif %}</p>
+  </header>
+
+  <section aria-labelledby="needs-h">
+    <div class="head"><h2 id="needs-h">Needs you</h2><p>Open PRs, CI still red, loop warnings, failed jobs.</p></div>
+    {% for n in page.needs %}
+    <article class="card need">
+      <h3>{{ n.headline }}</h3>
+      <p>{{ n.why }}</p>
+      {% if n.links or n.resume %}<div class="links">{% for l in n.links %}<a href="{{ l.url }}">{{ l.label }}</a>{% endfor %}{% if n.resume %}<code>claude --resume {{ n.resume }}</code>{% endif %}</div>{% endif %}
+    </article>
+    {% else %}<p class="empty">Nothing on {{ page.date }} waits for you.</p>{% endfor %}
+  </section>
+
+  <section aria-labelledby="shipped-h">
+    <div class="head"><h2 id="shipped-h">Shipped</h2><p>{{ view.totals.prs_merged }} PRs merged in {{ view.shipped | length }} repo{{ "" if view.shipped | length == 1 else "s" }}.</p></div>
+    {% for r in view.shipped %}
+    <article class="card">
+      <div class="repo-line"><h3>{{ r.name }}</h3><span class="num">{{ r.prs_merged }} merged{% if r.loop_tasks %}, {{ r.loop_tasks }} loop tasks in {{ r.loop_minutes }} min{% endif %}</span></div>
+      {% if page.shipped[r.name] %}<p>{{ page.shipped[r.name] }}</p>{% endif %}
+      {% if r.merged_url %}<div class="links"><a href="{{ r.merged_url }}">The {{ r.prs_merged }} merged PRs</a></div>{% endif %}
+    </article>
+    {% else %}<p class="empty">{{ "GitHub was unavailable." if "github" in view.unavailable else "No PR merged." }}</p>{% endfor %}
+  </section>
+
+  <section aria-labelledby="churn-h">
+    <div class="head"><h2 id="churn-h">Churn</h2><p>Counts only.{% if view.flagged %} {{ view.flagged }} marked cell{{ "" if view.flagged == 1 else "s" }} at or over the limit ({% for k, v in view.limits.items() %}{{ k | replace("_", " ") }} {{ v }}{{ ", " if not loop.last }}{% endfor %}).{% endif %}</p></div>
+    <div class="table"><table>
+      <thead><tr><th>Repo</th><th class="r">Sessions</th><th class="r">Commits</th><th class="r">PRs opened</th><th class="r">Merged</th><th class="r">Issues opened</th><th class="r">Closed</th><th class="r">Loop min</th><th class="r">Tokens</th><th class="r">Cost</th></tr></thead>
+      <tbody>{% for r in page.repos %}
+        <tr><td>{% if r.url %}<a href="{{ r.url }}">{{ r.name }}</a>{% else %}{{ r.name }}{% endif %}</td>{{ cell(r, "sessions", r.sessions) }}{{ cell(r, "commits", r.commits) }}{{ cell(r, "prs_opened", r.prs_opened) }}<td class="r">{{ r.prs_merged }}</td>{{ cell(r, "issues_opened", r.issues_opened) }}<td class="r">{{ r.issues_closed }}</td>{{ cell(r, "loop_minutes", r.loop_minutes) }}<td class="r">{{ r.tokens | tokens }}</td>{{ cell(r, "cost", r.cost | usd) }}</tr>{% endfor %}
+      </tbody>
+      <tfoot><tr><td>Total</td><td class="r">{{ view.totals.sessions }}</td><td class="r">{{ view.totals.commits }}</td><td class="r">{{ view.totals.prs_opened }}</td><td class="r">{{ view.totals.prs_merged }}</td><td class="r">{{ view.totals.issues_opened }}</td><td class="r">{{ view.totals.issues_closed }}</td><td class="r">{{ view.totals.loop_minutes }}</td><td class="r">{{ (page.usage.tokens if page.usage else none) | tokens }}</td><td class="r">{{ (page.usage.cost if page.usage else none) | usd }}</td></tr></tfoot>
+    </table></div>
+  </section>
+
+  <footer>
+    <span>Cron jobs: {% for j in page.cron %}{{ j.job }} {{ j.date }} {{ j.state }}{{ "; " if not loop.last }}{% else %}no log found{% endfor %}.</span>
+    {% if page.vault %}<span>Vault: {{ page.vault.notes }} notes written or changed{% if page.vault.folders %} ({% for name, n in page.vault.folders %}{{ name }} {{ n }}{{ ", " if not loop.last }}{% endfor %}){% endif %}.</span>{% endif %}
+    <span>"vault" counts sessions in private folders, "other" those outside a repo. Rendered {{ view.generated }}.</span>
+  </footer>
+</div>
+</body>
+</html>
