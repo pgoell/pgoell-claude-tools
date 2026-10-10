@@ -31,7 +31,7 @@ What goes in, and what the successor cannot get from anywhere else:
 
 - **Standing orders**, in the user's words, with dates. Above all the ones that changed a default: what they approved for good, what they do not want raised again, how they want reports.
 - **The implementer's exact state**: name, idle or working, the commit it sits on, the token of a running task.
-- **The file `orch-name`**: the successor writes its own name into it as its first step, or the implementer's `notify.sh` keeps telling the retired session.
+- **A running task's clock**: when it began (`task.start`), and whether `wait.sh` has said `TIMEOUT` for it. `TIMEOUT` comes once per task, so the successor will not hear it again.
 - **The queue**, in order, with the reason for the order, and what is not for the loop.
 - **Told the user, no answer yet.** Without this list the successor asks again, or forgets.
 - **Local facts**: where the live data is and its baseline counts, the way back, known flaky tests, what a typical task costs.
@@ -53,7 +53,9 @@ The first message, with your words in the angle brackets and nothing else change
 
 **4. Check that it took over.** Read the successor's screen after a minute. It took over when it has read the file and either sent a task or started the wait. If its state is `gone`, the session quit at the start: read its pane, fix the cause, start again. If it asks for a go-ahead, answer "go" or "1" once.
 
-**5. Tell the user and stop.** Three lines: the successor's name and tab, what runs, that you are retired. From then on send nothing to the implementer. Two orchestrators on one implementer is the same fault as two sessions in one checkout.
+**5. Pass the name and stop your wait.** Write the successor's name into `orch-name` (`echo <new name> >orch-name`), so the implementer's `notify.sh` tells the successor. Stop your own background `wait.sh`: two waits on one task share the one `TIMEOUT`, and the retired session must not be the one that gets it.
+
+**6. Tell the user and stop.** Three lines: the successor's name and tab, what runs, that you are retired. From then on send nothing to the implementer. Two orchestrators on one implementer is the same fault as two sessions in one checkout.
 
 ## Faults seen in a handover
 

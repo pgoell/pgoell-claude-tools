@@ -18,7 +18,7 @@ for v in REPO BASE DEPLOY_WORKFLOW ALIVE_URL; do
     exit 3
   fi
 done
-if grep -q 'notify\.sh' "$S/rules.md" && [ ! -s "$S/orch-name" ]; then
+if grep -q 'notify\.sh' "$S/rules.md" && ! grep -q '[^[:space:]]' "$S/orch-name" 2>/dev/null; then
   echo "rules.md tells the implementer to run notify.sh but orch-name is missing: write your session name into $S/orch-name, or delete that rule" >&2
   exit 3
 fi

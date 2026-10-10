@@ -4,7 +4,7 @@ Rules for this job:
 
 1. Bar. <FILL: one sentence that says when a feature is good enough, for example "it works and behaves like the same control in a well-known product">. That bar covers what the issue asks for and the controls the issue touches. It does not cover the rest of the product.
 
-2. Checklist first, then freeze it. Read the issue (gh issue view N --comments). Before any code, write the checklist into the PR body as task boxes, in two parts:
+2. Checklist first, then freeze it. Read the issue (gh issue view N --json title,body,comments). Before any code, write the checklist into the PR body as task boxes, in two parts:
    - Asked: one line per behaviour the issue names.
    - Implied: what the bar of rule 1 means for those same controls (edge cases, undo, error paths). At most 8 lines. Rank them; open issues for the rest before you code.
      Get one outside look at the checklist before coding (the advisor tool if you have it, else one fresh subagent). After that the list is closed. Whatever you find later sorts into three bins:
@@ -29,7 +29,7 @@ Rules for this job:
 
 8. Git. Start from an up to date {{BASE}} on a new branch, unless told to continue an existing PR. Follow the repo's commit and PR title rules. The PR body has "Closes #N" and the checklist. Push early: CI runs while the review runs.
 
-9. Merge and deploy without standing by. gh pr merge --squash --auto --delete-branch, then one wait: gh pr checks N --watch --fail-fast, with a shell timeout of <FILL: minutes, about three times a normal CI run>. If the wait runs out, the job hangs: gh run cancel, gh run rerun, once. After the merge, gh run watch on the {{DEPLOY_WORKFLOW}} run. Then check the deploy with two commands: gh run list --workflow {{DEPLOY_WORKFLOW}} -L 1 --json headSha,conclusion shows the merge commit and success, and curl -fsS {{ALIVE_URL}} answers. The tests prove the behaviour; the live check only proves the deploy. If the deploy or that check fails, fix it. A test that fails in the PR's CI is yours until proven otherwise: before any rerun, take auto-merge off (gh pr merge --disable-auto), run that test ten times on {{BASE}} and ten times on your branch, and rerun only when both fail alike or neither fails. Say the counts in the PR. Then turn auto-merge on again.
+9. Merge and deploy without standing by. gh pr merge --squash --auto --delete-branch, then one wait: gh pr checks N --watch --fail-fast, with a shell timeout of <FILL: minutes, about three times a normal CI run>. If the wait runs out, the job hangs: gh run cancel, gh run rerun, once. After the merge, gh run watch on the {{DEPLOY_WORKFLOW}} run. Then check the deploy with two commands: gh run list --workflow {{DEPLOY_WORKFLOW}} -L 1 --json headSha,conclusion shows the merge commit and success, and curl -fsS {{ALIVE_URL}} answers. The tests prove the behaviour; the live check only proves the deploy. If the deploy or that check fails, fix it. A test that fails in the PR's CI is yours until proven otherwise: before you rerun a failed test, take auto-merge off (gh pr merge --disable-auto), run that test ten times on {{BASE}} and ten times on your branch, and rerun only when both fail alike or neither fails. Say the counts in the PR. Then turn auto-merge on again.
 
 10. Time box. An issue should take 30 to 45 minutes. At 60 minutes, write in the PR what is done and what holds you up, cut the open Implied items into issues if the Asked items hold, and finish. Those issues stay open and get built next, so nothing is dropped. Never spend more than 15 minutes on one thing without a decision.
 
@@ -49,4 +49,4 @@ Rules for this job:
 
 18. Permission questions. You run in auto mode. If a tool call is refused or a hook blocks a command, do not work around it: pick an allowed way, or end with BLOCKED and the reason.
 
-19. Tell the orchestrator. As your very last tool call, right before you write the final report, run: {{LOOP}}/notify.sh "DONE #N" (or "BLOCKED #N: reason"), with the same words as the last line of your report. Once, no more. If the call fails or is refused, go on to the report: do not try another way and do not end with BLOCKED over it, since the orchestrator's wait finds your last line anyway. The last line of the report stays as rule 12 says.
+19. Tell the orchestrator. As your last tool call, right before you write the final report, run: "{{LOOP}}/notify.sh" "DONE #N" (or "BLOCKED #N: reason"), with the same words as the last line of your report. Once, no more. If the call fails or is refused, go on to the report: do not try another way and do not end with BLOCKED over it, since the orchestrator's wait finds your last line anyway. The last line of the report stays as rule 12 says.

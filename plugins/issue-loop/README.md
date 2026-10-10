@@ -44,9 +44,9 @@ Read `skills/running-the-loop/references/limits.md` before you rely on the loop.
 
 ## Tests
 
-`tests/run.sh` runs the script templates against a stub driver and fake `gh`, `git` and `curl`: no session, no network, about a second. It covers `init.sh`, the brief that `next.sh` builds (also with a URL that holds `&` and `|`), its refusal while the implementer works, both forms of the go-ahead question (and that a permission menu is left alone, also below a paste marker), every exit of `wait.sh` (also a DONE line above a tall pane's blank rows, and that it says `TIMEOUT` once per task and then watches on), `notify.sh` (one line to the name in `orch-name`, nothing but DONE or BLOCKED, the first line only), each failure of `gate.sh`, and `start.sh` with a start dialog and with a session that quits.
+`tests/run.sh` runs the script templates against a stub driver and fake `gh`, `git` and `curl`: no session, no network, about a second. It covers `init.sh`, the brief that `next.sh` builds (also with a URL that holds `&` and `|`), its refusal while the implementer works, both forms of the go-ahead question (and that a permission menu is left alone, also below a paste marker), every exit of `wait.sh` (also a DONE line above a tall pane's blank rows, and that it says `TIMEOUT` once per task and then watches on), `notify.sh` (one line to the name in `orch-name`, nothing but DONE or BLOCKED, the first line only, nothing into a session that sits on a question), each failure of `gate.sh`, and `start.sh` with a start dialog and with a session that quits.
 
-Last run, 2026-10-10: 94 of 94 checks pass.
+Last run, 2026-10-10: 103 of 103 checks pass.
 
 The herdr driver was tried live the same day on herdr 0.7.5, with throwaway sessions that ran no tools: `start.sh` in a trusted folder (prints the state, exit 0) and in a never-seen folder (stops on the folder trust question, sends nothing, exit 5); `wait.sh` to `settled` and, after the pane was closed, to `GONE`; `next.sh` with `/clear` and a brief, and its refusal while the session worked. Not tried live: `gate.sh` (it needs a repo with a deploy), `ASKING`, the go-ahead answers, and `notify.sh` (the example project's loop sent the same line with the driver's own command; the script came after).
 

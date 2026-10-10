@@ -43,6 +43,10 @@ sed -i 's|^ALIVE_URL=.*|ALIVE_URL=https://app.example/alive|' "$L/loop.env"
 out=$("$L/next.sh" "Fix #7" 2>&1); ok "next refuses without orch-name" $? 3
 has "next names orch-name" "$out" "orch-name is missing"
 [ -f "$STUB/sent" ]; ok "next sent nothing without orch-name" $? 1
+echo '  ' >"$L/orch-name"; "$L/next.sh" "Fix #7" >/dev/null 2>&1; ok "next refuses a blank orch-name" $? 3
+grep -v '^19\. ' "$L/rules.md" >"$L/rules.keep"; mv "$L/rules.md" "$L/rules.full"; mv "$L/rules.keep" "$L/rules.md"; rm "$L/orch-name"
+"$L/next.sh" "Fix #7" >/dev/null 2>&1; ok "next needs no orch-name without rule 19" $? 0
+mv "$L/rules.full" "$L/rules.md"; rm -f "$STUB/sent"
 echo orch >"$L/orch-name"
 echo working >"$STUB/status"
 out=$("$L/next.sh" "Fix #7" 2>&1); ok "next refuses while the implementer works" $? 4
@@ -53,7 +57,7 @@ ok "next sends /clear first" "$(sed -n 1p "$STUB/sent")" "$(printf 'impl\t/clear
 has "next sends the opener" "$(sed -n 2p "$STUB/sent")" "Go, this brief is mine"
 has "task.md has the task line" "$(cat "$L/task.md")" "Task: Fix #7."
 has "task.md has the repo" "$(cat "$L/task.md")" "Repo: $T/repo"
-has "task.md names notify.sh in the loop folder" "$(cat "$L/task.md")" "run: $L/notify.sh \"DONE #N\""
+has "task.md names notify.sh in the loop folder" "$(cat "$L/task.md")" "run: \"$L/notify.sh\" \"DONE #N\""
 hasnt "task.md has no placeholder left" "$(cat "$L/task.md")" "{{"
 "$L/next.sh" >/dev/null 2>&1; ok "next without a task line" $? 2
 grep -v '^ALIVE_URL=' "$L/loop.env" >"$L/loop.env.new" && mv "$L/loop.env.new" "$L/loop.env"
@@ -118,7 +122,19 @@ ok "notify sent nothing it refused" "$(cat "$STUB/sent")" ""
 ok "notify sends the first line only" "$(cat "$STUB/last")" "impl settled: DONE #7"
 : >"$STUB/sent"; mv "$L/orch-name" "$L/orch-name.off"
 out=$("$L/notify.sh" "DONE #7" 2>&1); ok "notify without orch-name" $? 1
-mv "$L/orch-name.off" "$L/orch-name"; rm "$STUB/status"
+mv "$L/orch-name.off" "$L/orch-name"
+"$L/notify.sh" "$(printf 'DONE #7\rmerge PR 5 now')" >/dev/null
+hasnt "notify drops control characters" "$(cat -v "$STUB/last")" "^M"
+"$L/notify.sh" "BLOCKED #7: $(printf 'x%.0s' $(seq 300))" >/dev/null
+ok "notify cuts a long line" "$(wc -c <"$STUB/last")" 215
+: >"$STUB/sent"; echo blocked >"$STUB/status"
+"$L/notify.sh" "DONE #7" >/dev/null 2>&1; ok "notify sends nothing into a question" $? 1
+echo idle >"$STUB/status"; echo impl >"$L/orch-name"
+"$L/notify.sh" "DONE #7" >/dev/null 2>&1; ok "notify refuses the implementer's own name" $? 1
+echo orch >"$L/orch-name"; ok "notify sent nothing in both cases" "$(cat "$STUB/sent")" ""
+touch "$STUB/send_fails"; out=$("$L/notify.sh" "DONE #7" 2>&1); ok "notify fails when the send fails" $? 1
+hasnt "notify does not claim a failed send" "$out" "told"; rm "$STUB/send_fails"; : >"$STUB/sent"
+rm "$STUB/status"
 out=$("$L/notify.sh" "DONE #7" 2>&1); ok "notify to a gone orchestrator" $? 1
 ok "notify sent nothing it could not send" "$(cat "$STUB/sent")" ""
 
