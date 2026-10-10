@@ -149,7 +149,7 @@ The loop was built and run with Claude Code sessions only. Under Codex the orche
 
 ## Self-Healing
 
-- `next.sh` exits 3: `rules.md` has a `FILL:` marker left.
+- `next.sh` exits 3: `rules.md` has a `FILL:` marker left, or it uses a setting that is empty in `loop.env` (a repo with no deploy: rewrite rule 9, then leave `DEPLOY_WORKFLOW` and `ALIVE_URL` empty).
 - `gate.sh` fails "not on <base>" or "working tree dirty" in the middle of a task: that is normal, the gate is for after the task.
 - `gate.sh` fails "live is X, <base> is Y" right after the DONE line: the deploy may still run. Look at `gh run list`, wait a minute, run the gate again.
 - A driver call fails: run the driver's own command by hand (`herdr agent list`) and read `references/driver.md`.

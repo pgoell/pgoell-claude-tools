@@ -9,8 +9,9 @@ nap() { sleep $(($1 * ${LOOP_SLEEP_SCALE:-1})); }
 
 # A session that gets a pasted brief may ask for a typed go-ahead, as text
 # ('Reply "go"') or as a menu about the brief. Answer it, twice at most.
-# A menu that does not speak of a brief or a paste is some other question
-# (a tool permission, say): leave it for the orchestrator to read.
+# Only the six lines above the menu count: they must speak of a brief or a
+# paste, and must not speak of allowing or permission. Any other menu is some
+# other question (a tool permission, say): leave it for the orchestrator.
 answer_go_ahead() {
   local name=$1 screen
   for _ in 1 2; do
@@ -18,7 +19,8 @@ answer_go_ahead() {
     if grep -q 'Reply "go"' <<<"$screen"; then
       drv_send "$name" "go"
       echo "sent go"
-    elif grep -qE '^\s*❯ 1\.' <<<"$screen" && grep -qiE 'brief|paste' <<<"$screen"; then
+    elif menu=$(grep -B6 -E '^\s*❯ 1\.' <<<"$screen") && grep -qiE 'brief|paste' <<<"$menu" &&
+      ! grep -qiE 'allow|permission|approve' <<<"$menu"; then
       drv_send "$name" "1"
       echo "picked 1"
     else

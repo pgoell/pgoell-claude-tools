@@ -40,9 +40,9 @@ Read `skills/running-the-loop/references/limits.md` before you rely on the loop.
 
 ## Tests
 
-`tests/run.sh` runs the script templates against a stub driver and fake `gh`, `git` and `curl`: no session, no network, about a second. It covers `init.sh`, the brief that `next.sh` builds, both forms of the go-ahead question (and that a permission menu is left alone), every exit of `wait.sh`, each failure of `gate.sh`, and `start.sh`.
+`tests/run.sh` runs the script templates against a stub driver and fake `gh`, `git` and `curl`: no session, no network, about a second. It covers `init.sh`, the brief that `next.sh` builds, both forms of the go-ahead question (and that a permission menu is left alone, also below a paste marker), the refusal of a brief with an unfilled mark or an empty setting, every exit of `wait.sh`, each failure of `gate.sh`, and `start.sh`.
 
-Last run, 2026-10-10: 55 of 55 checks pass. `driver-herdr.sh` itself has no test: its calls were taken from the loop's run and checked against the help text of herdr 0.7.5. `drv_status` and `drv_read` were tried read-only on a live herdr; `drv_send`, `drv_wait` and `drv_start` were not, and the pane id that `drv_start` reads was not tried on a live tab.
+Last run, 2026-10-10: 59 of 59 checks pass. `driver-herdr.sh` itself has no test. Its calls were taken from the loop's run and checked against the help text and the API schema of herdr 0.7.5 (the schema shows the pane id that `drv_start` reads, under `root_pane`). `drv_status` and `drv_read` were tried read-only on a live herdr; `drv_send`, `drv_wait` and `drv_start` were not tried from this file.
 
 `evals/` holds five trigger fixtures (three that should fire a skill, two that should not). They have not been run yet.
 

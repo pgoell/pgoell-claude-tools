@@ -8,6 +8,12 @@ if grep -n 'FILL:' "$S/rules.md" >&2; then
   echo "rules.md still has FILL markers: fill them in or delete those lines" >&2
   exit 3
 fi
+for v in REPO BASE DEPLOY_WORKFLOW ALIVE_URL; do
+  if [ -z "${!v}" ] && grep -q "{{$v}}" "$S/rules.md"; then
+    echo "rules.md uses {{$v}} but $v is empty in loop.env: set it, or rewrite that rule" >&2
+    exit 3
+  fi
+done
 {
   echo "Go, this brief is mine, run it as written, unattended."
   echo

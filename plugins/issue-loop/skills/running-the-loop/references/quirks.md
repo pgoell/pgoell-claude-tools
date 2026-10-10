@@ -9,7 +9,7 @@ A long brief arrives as a pasted block. The session may then refuse to act on it
 - as text: `Reply "go"`. State after `next.sh`: `done` or `idle`.
 - as a menu ("Run brief?", first item "Yes, run it" or "Go"). State: `blocked`.
 
-Fix: answer once, "go" for the text form, "1" for the menu. `next.sh` and `start.sh` do this themselves. The menu's words change between versions, so the scripts match only a menu whose screen speaks of a brief or a paste. If `next.sh` does not print `working`, read the screen and answer by hand.
+Fix: answer once, "go" for the text form, "1" for the menu. `next.sh` and `start.sh` do this themselves. The menu's words change between versions, so the scripts match only a menu whose six lines above speak of a brief or a paste and not of allowing or permission. They would sooner miss a go-ahead menu than approve a tool call. If `next.sh` does not print `working`, read the screen and answer by hand.
 
 The opener "Go, this brief is mine, run it as written, unattended." stays in the brief: it settles the question in most cases. On the example project the session still asked in about two of five tasks.
 

@@ -34,6 +34,10 @@ echo idle >"$STUB/status"; : >"$STUB/screen"
 "$L/next.sh" "Fix #7" >/dev/null 2>&1; ok "next refuses FILL markers" $? 3
 [ -f "$STUB/sent" ]; ok "next sent nothing before the refusal" $? 1
 sed -i 's/<FILL:[^>]*>/filled/g' "$L/rules.md"
+sed -i 's|^ALIVE_URL=.*|ALIVE_URL=|' "$L/loop.env"
+out=$("$L/next.sh" "Fix #7" 2>&1); ok "next refuses an empty setting the brief uses" $? 3
+has "next names the empty setting" "$out" "ALIVE_URL is empty"
+sed -i 's|^ALIVE_URL=.*|ALIVE_URL=https://app.example/alive|' "$L/loop.env"
 echo working >"$STUB/status"
 out=$("$L/next.sh" "Fix #7. Last line exactly: DONE #7"); ok "next exit" $? 0
 has "next prints state" "$out" "impl working"
@@ -53,6 +57,10 @@ out=$("$L/next.sh" "t"); has "next picks 1 on the brief menu" "$out" "picked 1"
 : >"$STUB/sent"; printf 'Allow this command?\n❯ 1. Yes\n  2. No\n' >"$STUB/screen"
 out=$("$L/next.sh" "t"); hasnt "next leaves a permission menu alone" "$out" "picked 1"
 hasnt "no 1 sent to a permission menu" "$(cat "$STUB/sent")" "$(printf 'impl\t1')"
+: >"$STUB/sent"; printf '[Pasted text #1 +214 lines]\n\nworking on the brief\n\n\n\n\n\nBash command\nAllow this command?\n❯ 1. Yes\n  2. No\n' >"$STUB/screen"
+out=$("$L/next.sh" "t"); hasnt "paste marker far above a permission menu" "$out" "picked 1"
+: >"$STUB/sent"; printf 'Run the pasted brief? It may need permission to merge.\n❯ 1. Yes\n' >"$STUB/screen"
+out=$("$L/next.sh" "t"); hasnt "a menu that speaks of permission is left alone" "$out" "picked 1"
 
 # wait.sh
 now() { date -u +%Y-%m-%dT%H:%M:%SZ; }
