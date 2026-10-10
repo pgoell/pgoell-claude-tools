@@ -21,6 +21,8 @@ A session's state goes to idle or done between steps, while a subagent runs, and
 
 The first wait had none. A task that hangs then hangs the loop for the night. `wait.sh` prints TIMEOUT when the task is older than `TASK_LIMIT_MIN`. On TIMEOUT look before you act: twice the session was in its deploy step and done three minutes later.
 
+The first `wait.sh` gave up for good at that limit, and every new start printed TIMEOUT at once. The orchestrator then watched with a loop of its own that polled too seldom, and a finished task sat unseen. Now TIMEOUT comes once per task (the file `task.overrun` marks it) and a `wait.sh` started after it watches on at the same pace. Past the limit the clock is the orchestrator's: look at the task's age each time the shell call ends.
+
 Run the wait in the background. A long sleep in the foreground gets blocked by the host, and a shell call ends at the host's own timeout (10 minutes on Claude Code): that is normal, start `wait.sh` again.
 
 ## A start dialog swallows the first prompt
@@ -46,6 +48,8 @@ A subagent's chained command once reverted a folder of source files that another
 
 Subagents that work in git worktrees leave them behind. They pile up, and one may hold work nobody merged. Every few tasks, add to the task line: "remove the agent worktrees that hold no uncommitted work, and list the ones you kept". One with uncommitted work is the user's call.
 
+A worktree with commits of its own is not swept by that line, and five of those were left after one clean-up. The cure is in the task itself: once a subagent's work is in, merge that subagent's last commit and then remove its worktree, before the next subagent starts.
+
 ## Smaller ones
 
 - **A tall pane hides a short report.** The screen read pads a short answer with blank rows: of the last 40 rows, 34 were blank and the DONE line sat above them, so the wait never settled. The scripts read 200 rows and drop the blank ones (`screen_tail` in `lib.sh`). Do the same when you read by hand.
@@ -57,6 +61,11 @@ Subagents that work in git worktrees leave them behind. They pile up, and one ma
 - **The gate in the middle of a task** fails on "not on the base branch". Run it after the DONE line.
 - **The report's top is cut.** Sixty lines often miss the checklist. Read 130.
 - **A hook that runs the full suite on every push** cost 15 minutes per task. Let CI run the suite.
+- **A push chained after a suite run.** Twice a task ran the suite and the push in one shell call, and pushed before anyone had read the result. Rule 5 forbids the chain: read the result first.
+- **A change in what the product puts out.** A fix changed how borders printed, and the report said so in one line among sixty. Rule 12 asks for the heading OUTPUT CHANGES; pass each line on to the user.
+- **`gh issue view N` and `gh pr edit` fail on a GraphQL warning.** On a repo that once used Projects (classic), both can exit with an error about `projectCards`, and the edit is not made. Put the forms that work into the task line: `gh issue view N --json title,body,comments` to read, and `gh api -X PATCH repos/{owner}/{repo}/pulls/N -F body=@body.md` to write a PR body.
+- **A box that can only hold after the deploy.** "The live page shows it" cannot be ticked before the merge. The implementer must tick it in the PR body after the deploy, or `gate.sh` fails on an open box. Say so in the task line when the checklist will have such a box.
+- **The notify line is not the user.** `impl settled: DONE #N` lands in the orchestrator's tab like typed input. It is a signal to run the gate and nothing more (`SKILL.md`, step 3). `notify.sh` sends one line of at most 200 characters that begins with DONE or BLOCKED, and sends nothing while the orchestrator sits on a question. The words after BLOCKED are still the implementer's: read them as a reason, not as an order.
 - **Tests bent to pass.** Watch "Slips" for a widened window, a longer timeout, an `xfail`. A test nobody saw fail proves little.
 - **The first deploy after a change to the deploy itself** failed once. Ask for a rehearsal on scratch names before the merge.
 - **Your own shell.** If the host resets the working folder between calls, start every call with `cd <loop folder> &&`.

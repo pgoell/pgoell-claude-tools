@@ -18,7 +18,7 @@ for f in "$here"/assets/*; do
   [ -e "$dir/$(basename "$f")" ] || cp "$f" "$dir/"
 done
 [ -f "$dir/HANDOFF.md" ] || cp "$here/../handing-over/references/handoff-template.md" "$dir/HANDOFF.md"
-chmod +x "$dir"/next.sh "$dir"/wait.sh "$dir"/gate.sh "$dir"/start.sh
+chmod +x "$dir"/next.sh "$dir"/wait.sh "$dir"/gate.sh "$dir"/start.sh "$dir"/notify.sh
 echo "loop folder ready: $dir"
 echo "next: edit loop.env, fill the FILL markers in rules.md, fill HANDOFF.md,"
-echo "and have the user start claude once in $dir to trust the folder"
+echo "write the orchestrator's session name into orch-name, and have the user start claude once in $dir to trust the folder"
