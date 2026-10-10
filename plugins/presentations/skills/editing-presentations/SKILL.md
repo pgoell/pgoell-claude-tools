@@ -1,0 +1,112 @@
+---
+name: editing-presentations
+description: Use when the user wants to change an existing HTML deck by hand in the browser, or wants to point at slide elements instead of describing them. Starts a local editor on a deck from the creating-presentations skill, and reads what the user selected there. Triggers on requests like "open the deck editor", "let me edit this deck myself", "I selected something, fix it", "change this" while the editor runs, or a pasted block of deck editor feedback. For building a deck or reviewing it to done, see the creating-presentations skill.
+---
+
+# Editing Presentations
+
+A local editor for the HTML decks the `creating-presentations` skill builds. The user clicks elements in the running deck and types a note; the host agent reads the selection from a file and edits the source. For a longer review the user adds numbered comments and drawings across slides and copies them out as one prompt. The deck HTML and its stylesheet on disk stay the only source: the editor and the agent take turns on the same files, and the browser reloads when either one writes.
+
+## Dependencies
+
+- Python 3.9 or later runs the server (`python3`, or `uv run python` when the host has only `uv`). Standard library only, nothing to install.
+- A Chromium-based browser shows the editor. The same binary on `PATH`, headless, takes the selection screenshot; without one the screenshot step is skipped and everything else works.
+
+## Start the editor
+
+Run the server in the background from this skill's directory and give the user the URL it prints:
+
+```bash
+python3 assets/server.py <path/to/deck.html> [port]
+```
+
+The port defaults to 4747. The server binds to 127.0.0.1 only. When the session runs on a remote machine, the user forwards the port first (`ssh -L 4747:127.0.0.1:4747 <host>`) and opens the same URL locally.
+
+What the server does:
+
+- Serves the deck from the highest directory its `../` references reach, so a shared engine or asset folder outside the deck directory resolves.
+- Adds a `data-de` attribute (the element's offset in the source file) to every element inside `<deck-stage>` and appends the overlay script. Both exist only in the served page, never in the file.
+- Watches every file the page loaded and reloads the browser when one changes. The slide, the note, and the selection survive the reload where the selected elements still exist.
+
+One server edits one deck file. Stop it when the user is done (`pkill -f '[e]diting-presentations/assets/server.py'`).
+
+## Read the selection
+
+In the editor the user clicks an element to select it, shift-clicks to add more, clicks a name in the panel's path to step up to a parent, and types a note. Every change lands in `.deck-editor/selection.json` next to the deck:
+
+```json
+{
+  "deck": "/abs/path/index.html",
+  "updated": "2026-10-09T22:07:31+0200",
+  "note": "make these two match",
+  "screenshot": "curl -s http://127.0.0.1:4747/__editor/shot",
+  "elements": [
+    {
+      "slide": 4,
+      "label": "04 Status quo",
+      "selector": "section[data-screen-label=\"04 Status quo\"] > div.cards3 > div.card:nth-of-type(2)",
+      "file": "/abs/path/index.html",
+      "lines": [112, 129],
+      "rect": [680, 300, 560, 440],
+      "html": "<div class=\"card\">...</div>",
+      "pos": 28013
+    }
+  ]
+}
+```
+
+When the user says "this", "these", "the selected one", or refers to something on screen while the editor runs, read that file before anything else. Per element: `slide` is the 1-based slide number, `label` its `data-screen-label`, `lines` the first and last line of the element in `file`, `html` the element's source text (cut at 4000 characters), and `rect` its box on the 1920x1080 canvas as x, y, width, height. An empty `elements` list means nothing is selected: ask what the user means.
+
+To see the selection, run the command in `screenshot`. It renders the selected slide in headless Chrome with a pink outline around each selected element, writes `.deck-editor/selection.png`, and prints the path; read that image. Take it when the note is about how something looks, and skip it for copy changes.
+
+## Feedback as one prompt
+
+For a review pass over many slides the user collects feedback in the editor and hands it over in one go:
+
+- "Add comment" keeps the current selection and note as a numbered comment. A note with nothing selected becomes a comment on the slide as a whole.
+- "Draw" turns the pointer into a red pen on the slide. Drawings live in the editor only, never in the deck file.
+- "Copy prompt" puts everything on the clipboard as markdown, and writes the same text to `.deck-editor/prompt.md`. "Clear" drops all comments and drawings.
+
+The prompt lists, per slide, a screenshot path (`.deck-editor/slide-NN.png`, the slide with each commented element boxed and numbered in orange and the drawings in red) and each comment with its elements' source lines, selector, and source HTML. When the user pastes such a prompt, or says the feedback is ready, read every screenshot it names before editing: a comment such as "see my circle" has no other source. Work through the comments in order, then tell the user which ones you applied. Line numbers in the prompt go stale with the first edit, so find later elements by their selector and HTML.
+
+The screenshot paths are on the machine that runs the server. If the session runs elsewhere, ask for the images.
+
+## What the user edits by hand
+
+Tell the user these once, when the editor starts. Each edit is written to the deck file at once, as a splice at the element's source offsets, so every byte outside the edited span stays as it was.
+
+| Action                                                                    | Result in the file                                                                                                                                                                                                          |
+| ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Double-click a text (the word under the pointer is selected), type, Enter | The element's content is replaced. Esc cancels. Entities such as `&rsquo;` keep their spelling.                                                                                                                             |
+| Drag the selected element onto a sibling                                  | The element's source block moves before or after that sibling (cards, bullets, columns).                                                                                                                                    |
+| Drag a chip in the panel, or type in it                                   | `font`, `gap`, and `pad` set font size, gap, and padding in px on every element of the same kind on that slide, as one rule in `<style id="deck-edits">` in the deck head. `width` sets an inline width on an image or SVG. |
+| "swap image" chip on an `<img>`                                           | The picked file is saved to `assets/` next to the deck and `src` points at it. A deck that inlines images as `data:` URIs gets a `data:` URI.                                                                               |
+| Alt+drag, or Alt+arrow keys on the selection (Shift for 10 px steps)      | Free move, written as an inline `translate: Xpx Ypx`. The element keeps its place in flex or grid flow; only its painted position shifts.                                                                                   |
+| Ctrl+Z, Ctrl+Shift+Z                                                      | Undo and redo of editor writes. Refused after someone else wrote the file.                                                                                                                                                  |
+
+After each edit the overlay runs hard gates H1 (clipped text), H2 (overlapping text), and H7 (type floor) on the slide and lists new failures in red in its panel. Failures the slide already had are counted, not listed. The full gate set stays with the `creating-presentations` render check.
+
+Free move is opt-in for a reason. Most slide elements sit in flex or grid flow, and a shifted element no longer lines up with its siblings when the content around it changes. It fits diagram parts (SVG lines, nodes, labels) and elements that are already placed absolutely. When the user has shifted an element that sits in flow, offer to turn the shift into a layout change (gap, padding, order) and remove the `translate`.
+
+Handle edits are plain CSS, so the `exporting-presentations-to-pptx` skill lifts them like any other rule. A rule in `deck-edits` is scoped by the slide's label and the element's class path:
+
+```css
+[data-screen-label="04 Status quo"] div.cards3 div.card { padding: 20px; }
+```
+
+The overlay writes the rule only when it wins the cascade on the selected element. When it loses, or the slide has no `data-screen-label`, the same values go into inline `style` attributes instead. When cleaning up after the user, fold a `deck-edits` rule into the deck's stylesheet if the change should hold for every slide, and leave it in place if it is a one-slide exception.
+
+When the user has edited by hand, read the file again before changing it: line numbers have moved.
+
+## Edit and hand back
+
+Edit the deck files with the usual tools, at the lines the selection names. Never copy `data-de` attributes or the overlay script into the file; they appear in the browser's view of the page only. The deck contract, the canvas rules, and the type floors from the `creating-presentations` skill apply to every edit. The browser reloads on save; the selection file then describes the new source, so read it again before a follow-up change.
+
+## Self-healing
+
+- `Address already in use`: another editor holds the port. Pass a different port, or stop the old server.
+- The page loads without styles or engine (404s in the server's terminal are silent; check the browser console): the deck references a file above the served root through CSS. Start the server on a copy of the deck that keeps those files below the deck's own `../` reach.
+- `403 forbidden`: the page was opened under another host name. Use `127.0.0.1` or `localhost` with the server's port.
+- The screenshot command prints `no Chrome or Chromium binary on PATH`: skip the screenshot and work from `html`, `lines`, and `rect`.
+- Alt+drag moves the browser window instead of the element (some Linux desktops bind Alt+drag): use Alt+arrow keys, or rebind the window manager.
+- `elements` is empty although the user selected something: the file changed between the click and the write. Ask the user to click again.

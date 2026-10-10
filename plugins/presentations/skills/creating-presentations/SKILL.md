@@ -137,6 +137,8 @@ Notes are editable live from the presenter: edits autosave to localStorage per d
 
 Sync uses `BroadcastChannel`, no server required, and works across `file://` pages in Chromium (they share one storage origin). Never reach into a sibling window's DOM: `file://` documents are opaque origins to each other, which is why notes and state travel over the channel and `postMessage`.
 
+To change a finished deck by hand, or to point at elements instead of describing them, see the `editing-presentations` skill.
+
 Sharing in Teams, Zoom, or Meet: open the deck, press `P`, then pick **Share to Window** and select the deck window only. Never **Share screen**, or the presenter notes leak.
 
 ## Perfecting the deck

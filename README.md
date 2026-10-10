@@ -42,6 +42,7 @@ Bundles 23 plugins across Atlassian, Google Workspace, Databricks, agent-system 
 | `critiquing-ideas`                                                                              | `critique`                | Critique an idea, plan, or decision through independent thinking frames, one fresh subagent each, ending in one decision                |
 | `designing-presentations`                                                                       | `presentations`           | Design slide-deck content from audience brief through critiqued storyboard, producing a `deck.md`                                       |
 | `creating-presentations`                                                                        | `presentations`           | Build multi-slide HTML decks from brand presets, with a presenter view, default render checks, and a review-to-done loop                |
+| `editing-presentations`                                                                         | `presentations`           | Edit an HTML deck by hand in a local browser editor, and point Claude at selected slide elements                                        |
 | `exporting-presentations-to-pptx`                                                               | `presentations`           | Convert a finished HTML deck into a native, editable PowerPoint (.pptx) via python-pptx                                                 |
 | `extracting-presets`                                                                            | `presentations`           | Turn brand material (PPTX templates, PDF guidelines, decks) into reusable presentation presets                                          |
 | `creating-diagrams`                                                                             | `diagrams`                | Draw validated architecture, workflow, sequence, data-flow, and lifecycle diagrams as themeable interactive HTML                        |
@@ -292,12 +293,13 @@ Critique ideas, plans, decisions, claims, and situations from several independen
 
 ### presentations
 
-The full presentation lifecycle in one plugin: content design, HTML deck building with an integrated perfecting loop, native PowerPoint export, and brand preset extraction.
+The full presentation lifecycle in one plugin: content design, HTML deck building with an integrated perfecting loop, a local deck editor, native PowerPoint export, and brand preset extraction.
 
 **Skills:**
 
 - `/presentations:designing-presentations`: Design slide-deck content end to end (audience brief with sourced or assumed inputs, message architecture, competing storylines, per-slide drafts, critique panel with written storyline checks). Produces a markdown `deck.md`; also runs in audit mode against an existing `deck.md`.
 - `/presentations:creating-presentations`: Build multi-slide HTML decks styled from a brand preset, presented through a bundled deck-stage engine with a two-window presenter view (`BroadcastChannel` sync, live-editable speaker notes). Every build runs deterministic hard gates (type floors, copy lint, layout geometry) plus one fresh screenshot review; a per-deck visual direction step runs when no client preset is active. The full review-to-done loop with judge panels and adversarial verification stays opt-in.
+- `/presentations:editing-presentations`: Start a local editor on a deck (a standard-library Python server plus an overlay script, nothing to install). Click slide elements and type a note; the agent reads slide, selector, source lines, and source HTML from `.deck-editor/selection.json` and can take a screenshot with the selection outlined. For a review pass, add numbered comments and pen drawings across slides and copy them out as one prompt with sources and marked screenshots. The deck files stay the only source, and the browser reloads when the agent edits them.
 - `/presentations:exporting-presentations-to-pptx`: Convert a finished HTML deck into a native, editable PowerPoint file via a freshly written python-pptx generator, with a containerized LibreOffice render-verify loop and an optional per-slide adversarial verification panel.
 - `/presentations:extracting-presets`: Turn brand material (PPTX templates and slide masters, PDF guidelines, icon libraries, example decks) into reusable presets: layered CSS variables, guidance files, assets, and self-contained example slides.
 
