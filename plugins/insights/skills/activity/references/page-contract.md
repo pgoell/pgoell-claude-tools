@@ -31,7 +31,6 @@ marked **checked**, and `link_daily.py` reads the result.
           "url": "https://github.com/..."
         }
       ],
-      "commits_url": "https://github.com/pgoell/blattwerk/commits?since=...",
       "prs_opened": 29,
       "prs_merged": 30,
       "prs_open": 1,

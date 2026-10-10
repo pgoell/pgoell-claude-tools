@@ -331,7 +331,6 @@ def main() -> None:
             r["url"] = f"https://github.com/{r['slug']}"
             merged = f"is:pr is:merged author:@me merged:{start.isoformat()}..{end.isoformat()}"
             r["merged_url"] = f"{r['url']}/pulls?q={quote(merged)}"
-            r["commits_url"] = f"{r['url']}/commits?since={day.isoformat()}&until={day.isoformat()}"
     notes = vault_notes(args.vault, start, end)
 
     def word(ok: bool) -> str:
