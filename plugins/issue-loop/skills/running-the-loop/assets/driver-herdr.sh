@@ -18,11 +18,17 @@ drv_wait() {
   true
 }
 
-# Print the last LINES lines of session NAME's screen, one report line per line.
-drv_read() { herdr agent read "$1" --source recent-unwrapped --lines "$2"; }
+# Print the last LINES lines of a session's screen, one report line per line.
+# NAME is a session name, or the handle drv_start printed (a pane id): a
+# session that sits on a start dialog has no name yet.
+drv_read() {
+  herdr agent read "$1" --source recent-unwrapped --lines "$2" 2>/dev/null ||
+    herdr pane read "$1" --source recent-unwrapped --lines "$2"
+}
 
 # Start a Claude Code session NAME in a new tab with working folder CWD and tab
-# label LABEL, in the permission mode from loop.env. Print the pane id.
+# label LABEL, in the permission mode from loop.env. Print a handle that
+# drv_read accepts (here: the pane id).
 drv_start() {
   local pane
   pane=$(herdr tab create ${HERDR_WORKSPACE:+--workspace "$HERDR_WORKSPACE"} --cwd "$2" --label "$3" --no-focus |

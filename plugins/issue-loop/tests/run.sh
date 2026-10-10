@@ -15,11 +15,13 @@ hasnt() { if grep -qF -- "$3" <<<"$2"; then fail=$((fail + 1)); echo "FAIL $1: f
 # init.sh: copies templates, refuses a folder inside a checkout
 L="$T/loop"
 out=$("$skill/scripts/init.sh" "$L" 2>&1); ok "init exit" $? 0
+hasnt "init prints no cp warning" "$out" "cp:"
 for f in loop.env lib.sh next.sh wait.sh gate.sh start.sh rules.md ledger.tsv driver-herdr.sh HANDOFF.md; do
   [ -f "$L/$f" ]; ok "init copies $f" $? 0
 done
 mkdir -p "$T/co" && git -C "$T/co" init -q
-"$skill/scripts/init.sh" "$T/co/loop" >/dev/null 2>&1; ok "init refuses a checkout" $? 1
+out=$("$skill/scripts/init.sh" "$T/co/a/loop" 2>&1); ok "init refuses a checkout" $? 1
+[ -e "$T/co/a" ]; ok "a refused folder is not left behind" $? 1
 echo keep >"$L/ledger.tsv"; "$skill/scripts/init.sh" "$L" >/dev/null 2>&1
 ok "init keeps existing files" "$(cat "$L/ledger.tsv")" keep
 
@@ -39,7 +41,9 @@ out=$("$L/next.sh" "Fix #7" 2>&1); ok "next refuses an empty setting the brief u
 has "next names the empty setting" "$out" "ALIVE_URL is empty"
 sed -i 's|^ALIVE_URL=.*|ALIVE_URL=https://app.example/alive|' "$L/loop.env"
 echo working >"$STUB/status"
-out=$("$L/next.sh" "Fix #7. Last line exactly: DONE #7"); ok "next exit" $? 0
+out=$("$L/next.sh" "Fix #7" 2>&1); ok "next refuses while the implementer works" $? 4
+[ -f "$STUB/sent" ]; ok "no /clear sent to a working implementer" $? 1
+out=$("$L/next.sh" --force "Fix #7. Last line exactly: DONE #7"); ok "next --force exit" $? 0
 has "next prints state" "$out" "impl working"
 ok "next sends /clear first" "$(sed -n 1p "$STUB/sent")" "$(printf 'impl\t/clear')"
 has "next sends the opener" "$(sed -n 2p "$STUB/sent")" "Go, this brief is mine"
@@ -47,26 +51,34 @@ has "task.md has the task line" "$(cat "$L/task.md")" "Task: Fix #7."
 has "task.md has the repo" "$(cat "$L/task.md")" "Repo: $T/repo"
 hasnt "task.md has no placeholder left" "$(cat "$L/task.md")" "{{"
 "$L/next.sh" >/dev/null 2>&1; ok "next without a task line" $? 2
+grep -v '^ALIVE_URL=' "$L/loop.env" >"$L/loop.env.new" && mv "$L/loop.env.new" "$L/loop.env"
+echo "ALIVE_URL='https://app.example/alive?a=1&b=2|c/d'" >>"$L/loop.env"
+"$L/next.sh" --force "t" >/dev/null
+has "a URL with & and | survives" "$(cat "$L/task.md")" "curl -fsS https://app.example/alive?a=1&b=2|c/d answers"
+rm "$STUB/status"; "$L/next.sh" "t" >/dev/null 2>&1; ok "next refuses a gone implementer" $? 1
+echo working >"$STUB/status"
 
 # go-ahead: text form, menu about the brief, and a menu that is not about the brief
 : >"$STUB/sent"; echo 'Reply "go" to run the brief.' >"$STUB/screen"
-out=$("$L/next.sh" "t"); has "next answers go" "$out" "sent go"
+out=$("$L/next.sh" --force "t"); has "next answers go" "$out" "sent go"
 has "go was sent" "$(cat "$STUB/sent")" "$(printf 'impl\tgo')"
 : >"$STUB/sent"; printf 'Your message was only a pasted brief.\n❯ 1. Yes, run it\n  2. No\n' >"$STUB/screen"
-out=$("$L/next.sh" "t"); has "next picks 1 on the brief menu" "$out" "picked 1"
+out=$("$L/next.sh" --force "t"); has "next picks 1 on the brief menu" "$out" "picked 1"
 : >"$STUB/sent"; printf 'Allow this command?\n❯ 1. Yes\n  2. No\n' >"$STUB/screen"
-out=$("$L/next.sh" "t"); hasnt "next leaves a permission menu alone" "$out" "picked 1"
+out=$("$L/next.sh" --force "t"); hasnt "next leaves a permission menu alone" "$out" "picked 1"
 hasnt "no 1 sent to a permission menu" "$(cat "$STUB/sent")" "$(printf 'impl\t1')"
 : >"$STUB/sent"; printf '[Pasted text #1 +214 lines]\n\nworking on the brief\n\n\n\n\n\nBash command\nAllow this command?\n❯ 1. Yes\n  2. No\n' >"$STUB/screen"
-out=$("$L/next.sh" "t"); hasnt "paste marker far above a permission menu" "$out" "picked 1"
+out=$("$L/next.sh" --force "t"); hasnt "paste marker far above a permission menu" "$out" "picked 1"
 : >"$STUB/sent"; printf 'Run the pasted brief? It may need permission to merge.\n❯ 1. Yes\n' >"$STUB/screen"
-out=$("$L/next.sh" "t"); hasnt "a menu that speaks of permission is left alone" "$out" "picked 1"
+out=$("$L/next.sh" --force "t"); hasnt "a menu that speaks of permission is left alone" "$out" "picked 1"
 
 # wait.sh
 now() { date -u +%Y-%m-%dT%H:%M:%SZ; }
 now >"$L/task.start"; echo done >"$STUB/status"; printf 'report\n  DONE #210 #212\n' >"$STUB/screen"
 out=$("$L/wait.sh" "#210"); ok "wait settles on the token" "$out" settled
 out=$(timeout 2 "$L/wait.sh" "#21"); ok "wait: #21 does not match #210" $? 124
+{ printf 'hello\n  DONE #210\n'; yes '' | head -60; printf 'status bar\n'; } >"$STUB/screen"
+out=$(timeout 5 "$L/wait.sh" "#210"); ok "wait finds DONE above a tall pane's blank rows" "$out" settled
 printf 'DONE #9\n' >"$STUB/screen"
 out=$(timeout 2 "$L/wait.sh" "#210"); ok "wait: an old DONE line does not match" $? 124
 printf 'BLOCKED #210: no token\n' >"$STUB/screen"
@@ -124,9 +136,20 @@ good; printf '.github/workflows/deploy.yml\nsrc/a.py\n' >"$FAKE/files"; out=$(ga
 has "gate tells the human" "$out" "TELL HUMAN: PR 5 touched .github/workflows/deploy.yml"
 
 # start.sh
-echo "take over" >"$T/msg"; : >"$STUB/sent"; : >"$STUB/screen"
+echo "take over" >"$T/msg"; : >"$STUB/sent"; : >"$STUB/screen"; rm -f "$STUB/start_status"
 out=$("$L/start.sh" orch2 "$L" "orchestrator 2" "$T/msg"); ok "start exit" $? 0
 has "start prints state" "$out" "orch2 working"; has "start sends the message" "$(cat "$STUB/sent")" "$(printf 'orch2\ttake over')"
+: >"$STUB/sent"; printf 'Quick safety check: Is this a project you created or one you trust?\n❯ 1. Yes, I trust this folder\n  2. No, exit\n' >"$STUB/screen"
+out=$("$L/start.sh" orch3 "$L" "orchestrator 3" "$T/msg" 2>&1); ok "start stops on a trust dialog" $? 5
+has "start says what it saw" "$out" "one you trust"; has "start says what to do" "$out" "start claude once"
+ok "start sends nothing into a dialog" "$(cat "$STUB/sent")" ""
+: >"$STUB/screen"; echo gone >"$STUB/start_status"
+out=$("$L/start.sh" orch4 "$L" "o" "$T/msg" 2>&1); ok "start fails when the session is gone" $? 1
+ok "nothing sent to a gone session" "$(cat "$STUB/sent")" ""
+
+: >"$STUB/sent"; rm -f "$STUB/start_status"; touch "$STUB/die_on_send"
+out=$("$L/start.sh" orch5 "$L" "o" "$T/msg" 2>&1); ok "start fails when the session quits after the send" $? 1
+has "start says it quit" "$out" "quit after the first message"; rm "$STUB/die_on_send"
 
 echo "$pass passed, $fail failed"
 [ $fail = 0 ]

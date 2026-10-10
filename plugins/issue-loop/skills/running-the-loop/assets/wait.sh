@@ -10,7 +10,7 @@
 . "$(dirname "$0")/lib.sh"
 tok=${1:?usage: wait.sh "<token>"}
 limit=$((${TASK_LIMIT_MIN:-100} * 60))
-has_token() { drv_read "$IMPL" 40 | grep -E '^\s*(DONE|BLOCKED) ' | grep -qE " ${tok}([^0-9A-Za-z]|\$)"; }
+has_token() { screen_tail "$IMPL" 40 | grep -E '^\s*(DONE|BLOCKED) ' | grep -qE " ${tok}([^0-9A-Za-z]|\$)"; }
 while true; do
   age=$(($(date +%s) - $(date -d "$(cat "$S/task.start")" +%s)))
   [ "$age" -gt "$limit" ] && { echo TIMEOUT; exit 1; }

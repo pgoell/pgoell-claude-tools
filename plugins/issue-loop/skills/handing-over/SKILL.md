@@ -44,7 +44,7 @@ Leave out the story of how you got here. The ledger has it.
 ./start.sh <new name> "$PWD" "orchestrator <n>" first-message.txt
 ```
 
-`start.sh` starts it in auto mode (`--permission-mode auto`), waits, checks the session is there, sends the message, and answers the go-ahead question. It must print `working`.
+`start.sh` starts it in auto mode (`--permission-mode auto`), waits, reads the screen for a start dialog, sends the message, and answers the go-ahead question. It must print `working` and exit 0. Exit 5 means a start dialog shows and nothing was sent; exit 1 means the session is gone.
 
 The first message, with your words in the angle brackets and nothing else changed:
 
@@ -57,6 +57,7 @@ The first message, with your words in the angle brackets and nothing else change
 ## Faults seen in a handover
 
 - **The start dialog ate the prompt.** A successor started with a skip-permissions flag sat on an accept dialog; the first message's Enter chose "No, exit". The driver still called the start a success, and the fault stayed hidden because the output went to `/dev/null`. Auto mode has no such dialog, and it is the rule anyway.
+- **The folder trust question ate the prompt.** Same fault, other dialog: a successor started in a loop folder that Claude Code had never seen asked whether the folder is trusted, default "No, exit". `start.sh` now reads the screen first, sends nothing into a dialog and exits 5 with what it saw. The answer is the user's: ask them to start `claude` once in the loop folder and accept. If the session is gone after the first message, `start.sh` exits 1.
 - **The successor asked the go-ahead question.** The first message is a paste too. `start.sh` answers it.
 - **A stop order got lost.** If the user had stopped the loop, the first thing in `HANDOFF.md` is "STOPPED: send no task until the user says go", and the first message must not say "start the next task".
 

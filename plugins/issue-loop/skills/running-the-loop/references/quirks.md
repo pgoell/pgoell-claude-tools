@@ -29,6 +29,8 @@ A session started with a flag that shows an accept dialog (the skip-permissions 
 
 Fix: auto mode shows no such dialog. `start.sh` waits, checks that the session is still there, and only then sends. After any start, read the screen once before you trust it.
 
+The folder trust question is the same trap, and auto mode does not remove it. A session started in a folder Claude Code has never seen asks "Is this a project you created or one you trust?", with "No, exit" as the default. A fresh loop folder is such a folder, so the first successor orchestrator started there hits it. `start.sh` reads the screen before it sends; when it sees a start dialog it sends nothing, prints the screen and exits 5. Do not accept the question for the user: ask them to start `claude` once in that folder and accept, or to name a folder they trust. Then close the pane and run `start.sh` again. During the dialog the session cannot be read by name, only by its pane.
+
 After making a new tab, wait a few seconds before starting a session in it; `drv_start` does.
 
 ## Two sessions in one checkout collide
@@ -45,6 +47,9 @@ A subagent's chained command once reverted a folder of source files that another
 Subagents that work in git worktrees leave them behind. They pile up, and one may hold work nobody merged. Every few tasks, add to the task line: "remove the agent worktrees that hold no uncommitted work, and list the ones you kept". One with uncommitted work is the user's call.
 
 ## Smaller ones
+
+- **A tall pane hides a short report.** The screen read pads a short answer with blank rows: of the last 40 rows, 34 were blank and the DONE line sat above them, so the wait never settled. The scripts read 200 rows and drop the blank ones (`screen_tail` in `lib.sh`). Do the same when you read by hand.
+- **`/clear` on a working session** throws its task away. `next.sh` refuses while the state is `working`.
 
 - **The session died.** Reading it by name fails; `wait.sh` prints GONE. With herdr, `herdr pane read <pane id>` still shows the last screen.
 - **Merge before CI.** A merge once fired before CI ran on the PR's last commit. Only branch protection stops that (`references/setup.md`).

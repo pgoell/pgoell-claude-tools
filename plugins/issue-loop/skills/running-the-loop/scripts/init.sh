@@ -6,13 +6,19 @@
 set -eu
 dir=${1:?usage: init.sh <loop folder>}
 here=$(cd "$(dirname "$0")/.." && pwd)
-mkdir -p "$dir"
-if git -C "$dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+# Check before making anything: look at the nearest folder that exists.
+at=$dir
+while [ ! -d "$at" ]; do at=$(dirname "$at"); done
+if git -C "$at" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   echo "$dir is inside a git checkout: pick a folder outside every checkout" >&2
   exit 1
 fi
-cp -n "$here"/assets/* "$dir"/
+mkdir -p "$dir"
+for f in "$here"/assets/*; do
+  [ -e "$dir/$(basename "$f")" ] || cp "$f" "$dir/"
+done
 [ -f "$dir/HANDOFF.md" ] || cp "$here/../handing-over/references/handoff-template.md" "$dir/HANDOFF.md"
 chmod +x "$dir"/next.sh "$dir"/wait.sh "$dir"/gate.sh "$dir"/start.sh
 echo "loop folder ready: $dir"
-echo "next: edit loop.env, fill the FILL markers in rules.md, fill HANDOFF.md"
+echo "next: edit loop.env, fill the FILL markers in rules.md, fill HANDOFF.md,"
+echo "and have the user start claude once in $dir to trust the folder"

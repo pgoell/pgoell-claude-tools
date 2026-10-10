@@ -39,7 +39,8 @@ It copies `loop.env`, `rules.md`, `next.sh`, `wait.sh`, `gate.sh`, `start.sh`, `
 1. Edit `loop.env`: the implementer's session name, its checkout, the base branch, the deploy workflow, a URL that proves the app is alive.
 2. Fill every `<FILL: ...>` in `rules.md` with the user, or delete the rule. `next.sh` refuses to send a brief with a marker left. `references/brief-rules.md` gives the reason behind each rule, so the user can drop one that does not fit.
 3. Write the user's standing orders into `HANDOFF.md` as they give them. That file is your memory.
-4. Start the implementer if none runs: write a one-line hello to a file and run `./start.sh <name> <checkout> "<tab label>" <file>`. The implementer should have a checkout of its own that no other session works in.
+4. Ask the user to start `claude` once in the loop folder and accept the folder trust question. A successor orchestrator starts in that folder, and a session in a folder Claude Code has never seen sits on that question. Trusting a folder is the user's choice: never answer it for them.
+5. Start the implementer if none runs: write a one-line hello to a file and run `./start.sh <name> <checkout> "<tab label>" <file>`. The implementer should have a checkout of its own that no other session works in.
 
 If the host has no herdr, read `references/driver.md` and write the five driver functions for what the host has, before anything else.
 
@@ -51,7 +52,7 @@ Run every script from the loop folder (`cd <loop folder> && ...` in each call).
 
 > Three issues in ONE PR: #41, #38, #39. Read each with gh issue view N --comments. #41 is a regression: do it first, it must hold, and name the PR that brought it in. For #38 and #39 add a test that fails before your fix and passes after. Where the parts touch different files, run subagents side by side. Last line of your report exactly: DONE #41 #38 #39
 
-**2. Send it.** `./next.sh "<task line>"`. It prints the implementer's state, which must be `working`. If it prints `done`, `idle` or `blocked`, read the screen (`references/quirks.md`, "The go-ahead question").
+**2. Send it.** `./next.sh "<task line>"`. It refuses while the implementer works, because `/clear` would destroy the running task (`--force` sends anyway; use it only to stop a task on purpose). It prints the implementer's state, which must be `working`. If it prints `done`, `idle` or `blocked`, read the screen (`references/quirks.md`, "The go-ahead question").
 
 **3. Wait in the background.** `./wait.sh "#41"` with the first issue of the DONE line as the token. Run it as a background shell call with the longest timeout the host allows. It prints one word:
 
@@ -149,6 +150,8 @@ The loop was built and run with Claude Code sessions only. Under Codex the orche
 
 ## Self-Healing
 
+- `next.sh` exits 4: the implementer still works. Wait for its DONE line.
+- `start.sh` exits 5: a start dialog shows and nothing was sent. It prints the screen. A folder trust question goes to the user.
 - `next.sh` exits 3: `rules.md` has a `FILL:` marker left, or it uses a setting that is empty in `loop.env` (a repo with no deploy: rewrite rule 9, then leave `DEPLOY_WORKFLOW` and `ALIVE_URL` empty).
 - `gate.sh` fails "not on <base>" or "working tree dirty" in the middle of a task: that is normal, the gate is for after the task.
 - `gate.sh` fails "live is X, <base> is Y" right after the DONE line: the deploy may still run. Look at `gh run list`, wait a minute, run the gate again.
