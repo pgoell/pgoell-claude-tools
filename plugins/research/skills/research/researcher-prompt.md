@@ -122,6 +122,11 @@ Dispatched agent prompt:
       gap inline ("No usable sources for X angle") and move on.
     - WebFetch fails: try an alternative source for the same claim. Mark
       inaccessible URLs inline with "[inaccessible]".
+    - reddit.com and web.archive.org: WebFetch and WebSearch always refuse
+      them (Anthropic's domain check). Do not retry. Read Reddit with
+      curl from https://arctic-shift.photon-reddit.com/api/ (posts/search,
+      comments/search), and archived pages with curl from web.archive.org.
+      If curl fails too, say the thread exists and was not read.
     - Saturation unclear: when in doubt, run one more round. False stops are
       worse than over-investigation.
 
