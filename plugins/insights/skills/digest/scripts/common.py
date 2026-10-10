@@ -20,6 +20,7 @@ PERIODIC = "01 Periodic"
 INSIGHTS = "06 Insights"
 WINDOW = 14
 """Days of history behind every count: the analysed day and the 13 before it."""
+WEEKDAYS = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
 
 def today() -> date:
@@ -53,3 +54,12 @@ def read_jsonl(path: Path) -> list[dict]:
 def write_jsonl(path: Path, rows: list[dict]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows))
+
+
+def daily_note(day: date, periodic: str) -> str:
+    """Mirror of kasten's `daily_note`; keep the two in step."""
+    year, week, _ = day.isocalendar()
+    before = f"{periodic}/00 Daily/{(day - timedelta(days=1)).isoformat()}"
+    after = f"{periodic}/00 Daily/{(day + timedelta(days=1)).isoformat()}"
+    nav = f"[[{before}]] | [[{periodic}/01 Weekly/{year}-W{week:02d}]] | [[{after}]]"
+    return f"---\ntype: Periodic Note\n---\n\n# {day.isoformat()} {WEEKDAYS[day.weekday()]}\n\n{nav}\n\n## TODOs\n"

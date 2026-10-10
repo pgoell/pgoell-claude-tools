@@ -1,6 +1,6 @@
 {
   "name": "insights",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Find what went wrong in yesterday's Claude Code sessions and newspaper runs, and propose one concrete fix per problem on a page in a kasten vault; kept fixes become pull requests, todos and feedback lines.",
   "author": {
     "name": "Pascal Göllner"
@@ -12,6 +12,7 @@
     "transcripts",
     "kasten",
     "cron",
+    "activity",
     "claude-code",
     "codex"
   ],
@@ -19,7 +20,7 @@
   "interface": {
     "displayName": "Insights",
     "shortDescription": "Daily problems and fixes from your Claude Code sessions",
-    "longDescription": "Reads 14 days of Claude Code transcripts and the newspaper's logs through a script, groups recurring errors, guard refusals and typed corrections into problems, checks memory and the files a fix would go to, verifies causes where a check is cheap, and writes one page per day to a kasten vault with a concrete fix per problem. A review note beside the page decides: kept fixes become pull requests, todos or newspaper feedback lines; deleted ones stay rejected until their hits triple.",
+    "longDescription": "Reads 14 days of Claude Code transcripts and the newspaper's logs through a script, groups recurring errors, guard refusals and typed corrections into problems, checks memory and the files a fix would go to, verifies causes where a check is cheap, and writes one page per day to a kasten vault with a concrete fix per problem. A review note beside the page decides: kept fixes become pull requests, todos or newspaper feedback lines; deleted ones stay rejected until their hits triple. A second page per day counts what the agents did per repository (pull requests, issues, CI, commits, sessions, cost) and lists what waits for you.",
     "developerName": "Pascal Göllner",
     "category": "Productivity",
     "capabilities": [
@@ -28,7 +29,8 @@
     ],
     "defaultPrompt": [
       "Run the session insights for yesterday",
-      "Apply the insights I kept for 2026-10-08"
+      "Apply the insights I kept for 2026-10-08",
+      "Show what my agents did yesterday and what needs me"
     ],
     "screenshots": []
   }

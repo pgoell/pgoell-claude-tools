@@ -20,6 +20,11 @@ happens: kept fixes become pull requests, todos or newspaper feedback lines.
   (never merges), adds todos to today's daily note, adds newspaper feedback
   lines, and records a verdict per line. A partly applied note picks up where
   it stopped.
+- `/insights:activity [--vault PATH] [--date YYYY-MM-DD]`: what your agents
+  did on a day, per repository, and what waits for you now. A script counts;
+  the model picks what needs you and writes at most two sentences per repo
+  from PR titles and ledger lines. The date is the day counted, yesterday in
+  Berlin by default.
 
 ## What it reads
 
@@ -40,6 +45,43 @@ Sessions run in the vault give no typed text unless they touched a path under
 `02 Projects/`; their errors still count. The job's own sessions are skipped.
 A day's digest is about 80 KB.
 
+## The activity page
+
+`collect.py` counts one day and groups it by repository:
+
+| Source                                                                       | Gives                                                                                                          |
+| ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `gh search prs --author=@me --owner=<you>`, `gh search issues --owner=<you>` | PRs opened and merged on the day, every such PR open now, issues opened and closed; your own repositories only |
+| `gh run list` and `gh pr list` per active repo                               | branches whose newest finished CI run of the day failed: the default branch and those with an open PR          |
+| `git log` of the default branch in each checkout under `~/Code` (`--code`)   | commits; side branches are left out, so a squash or rebase copy is not counted twice                           |
+| issue-loop `ledger.tsv` files under the code root (`--ledger`)               | the day's task lines: issues, PR, minutes, notes                                                               |
+| `~/.claude/projects`                                                         | sessions with a record on the day, folded into the repo their working directory belongs to, worktrees included |
+| `bunx ccusage@20.0.28 claude daily --json --instances`                       | tokens and cost per project folder and in total, at list prices                                                |
+| `~/.local/state/insights` and `~/.local/state/news`                          | how each cron run ended                                                                                        |
+| the vault's git log                                                          | how many notes were written or changed, by top folder                                                          |
+
+A source that fails (no `gh` login, no ledger, `ccusage` down) is marked
+unavailable on the page; the run goes on. Sessions in the vault, and in every
+folder under `--private` or `$INSIGHTS_PRIVATE`, are counted under `vault` and
+give nothing else. The insights jobs' own sessions are left out. Cost comes
+from `ccusage` alone and covers every session, the jobs' own too.
+
+The page has three parts. **Needs you** is the only part with a link per
+item: open PRs (a series is one item), CI that ended the day red, insights fixes
+waiting on a PR, ledger warnings, PRs open for more than 7 days, failed cron
+jobs; at most 8 items, the rest folded into groups that keep their links.
+**Shipped** has one block per repo with one link to its merged PRs.
+**Churn** is a table of counts with outliers marked. `render.py` refuses a
+link that is not in a URL field of the collected data, and any text over its
+limit.
+
+A session is named only for an open PR under "Needs you". The transcript's
+`bridge-session` record gives the `claude.ai/code/session_...` link when the
+session was bridged; that link opens the remote session, which can cover
+many local ones, so the page also prints `claude --resume <id>`.
+
+The page loads nothing from outside: system fonts, no scripts.
+
 ## In the vault
 
 ```text
@@ -51,10 +93,16 @@ A day's digest is about 80 KB.
   memory/problems.jsonl    one line per problem, with your verdict
   memory/applied.jsonl     every fix carried out, for the page footer
   memory/rules.md          standing rules made from your feedback
+07 Activity/
+  2026-10-08.html          the activity page: needs you, shipped, churn
+  2026-10-08.json          the counts and the model's notes it was rendered from
 ```
 
 The daily note gets `Einsichten: [[01 Periodic/06 Insights/2026-10-08.html]]`
-above its first heading, next to the newspaper's `Zeitung:` line.
+above its first heading, next to the newspaper's `Zeitung:` line. The
+activity job adds `Aktivität: [[01 Periodic/07 Activity/2026-10-08.html]]`
+there too, with up to five lines under it, one per linked thing that needs
+you. A rerun replaces only that label line and its own link lines.
 
 ## Deciding
 
@@ -83,17 +131,38 @@ deferred.
 ## Setup
 
 Needs `uv` (the scripts are Python with inline dependencies), and `git` plus
-a logged-in `gh` for the pull requests. To run it every morning at 05:30
-Europe/Berlin, before the 06:00 newspaper, add this line to the crontab:
+a logged-in `gh` for the pull requests. The activity page also needs `bunx`
+for `ccusage`. To run both every morning, at 05:30 and 05:45 Europe/Berlin,
+before the 06:00 newspaper, add these lines to the crontab:
 
 ```text
 30 5 * * * /home/pascal/Code/pgoell-claude-tools/plugins/insights/scripts/cron-insights.sh /home/pascal/kasten-data/vault
+45 5 * * * /home/pascal/Code/pgoell-claude-tools/plugins/insights/scripts/cron-activity.sh /home/pascal/kasten-data/vault
 ```
 
-The wrapper runs `claude -p "/insights:digest --vault <vault> --date <yesterday>"`
+The first wrapper runs `claude -p "/insights:digest --vault <vault> --date <yesterday>"`
 with the tools the job needs allowed, logs to
 `~/.local/state/insights/<date>.log` (`INSIGHTS_LOG_DIR` changes that;
 `INSIGHTS_PLUGIN_DIR` loads the plugin from a working tree to test a change),
 and exits non-zero when claude fails or no page was written. Cron uses the
 host's time zone; on a host not set to Europe/Berlin, add
 `CRON_TZ=Europe/Berlin` above the line.
+`cron-activity.sh` does the same for `/insights:activity`, allows the model
+only `Read`, `Write` and `uv run`, stops after 30 minutes, and logs to
+`~/.local/state/insights/<date>-activity.log`.
+
+## Tests
+
+`tests/run.sh` runs the activity scripts against fixture transcripts, two
+ledgers, a git checkout made on the spot, and fake `gh`, `bunx` and `claude`:
+no session, no network, about fifteen seconds. It covers the counts (commits
+on the default branch only), the fold of a removed worktree into its repo,
+the private folder, the skipped own run, torn transcript lines, the CI rule,
+the ledger parsing and its repo mapping, every check `render.py` makes, the
+daily note block (a rerun changes only its own lines; frontmatter, todos, the
+user's bullets and a mention under a heading stay), the cron wrapper's tool
+list, and a run with `gh` and `ccusage` down.
+
+Last run, 2026-10-10: 66 of 66 checks pass.
+
+The digest and apply skills have no test.
