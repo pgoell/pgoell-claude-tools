@@ -16,7 +16,7 @@ hasnt() { if grep -qF -- "$3" <<<"$2"; then fail=$((fail + 1)); echo "FAIL $1: f
 L="$T/loop"
 out=$("$skill/scripts/init.sh" "$L" 2>&1); ok "init exit" $? 0
 hasnt "init prints no cp warning" "$out" "cp:"
-for f in loop.env lib.sh next.sh wait.sh gate.sh start.sh rules.md ledger.tsv driver-herdr.sh HANDOFF.md; do
+for f in loop.env lib.sh next.sh wait.sh gate.sh start.sh notify.sh rules.md ledger.tsv driver-herdr.sh HANDOFF.md; do
   [ -f "$L/$f" ]; ok "init copies $f" $? 0
 done
 mkdir -p "$T/co" && git -C "$T/co" init -q
@@ -40,6 +40,10 @@ sed -i 's|^ALIVE_URL=.*|ALIVE_URL=|' "$L/loop.env"
 out=$("$L/next.sh" "Fix #7" 2>&1); ok "next refuses an empty setting the brief uses" $? 3
 has "next names the empty setting" "$out" "ALIVE_URL is empty"
 sed -i 's|^ALIVE_URL=.*|ALIVE_URL=https://app.example/alive|' "$L/loop.env"
+out=$("$L/next.sh" "Fix #7" 2>&1); ok "next refuses without orch-name" $? 3
+has "next names orch-name" "$out" "orch-name is missing"
+[ -f "$STUB/sent" ]; ok "next sent nothing without orch-name" $? 1
+echo orch >"$L/orch-name"
 echo working >"$STUB/status"
 out=$("$L/next.sh" "Fix #7" 2>&1); ok "next refuses while the implementer works" $? 4
 [ -f "$STUB/sent" ]; ok "no /clear sent to a working implementer" $? 1
@@ -49,6 +53,7 @@ ok "next sends /clear first" "$(sed -n 1p "$STUB/sent")" "$(printf 'impl\t/clear
 has "next sends the opener" "$(sed -n 2p "$STUB/sent")" "Go, this brief is mine"
 has "task.md has the task line" "$(cat "$L/task.md")" "Task: Fix #7."
 has "task.md has the repo" "$(cat "$L/task.md")" "Repo: $T/repo"
+has "task.md names notify.sh in the loop folder" "$(cat "$L/task.md")" "run: $L/notify.sh \"DONE #N\""
 hasnt "task.md has no placeholder left" "$(cat "$L/task.md")" "{{"
 "$L/next.sh" >/dev/null 2>&1; ok "next without a task line" $? 2
 grep -v '^ALIVE_URL=' "$L/loop.env" >"$L/loop.env.new" && mv "$L/loop.env.new" "$L/loop.env"
@@ -87,10 +92,35 @@ printf 'DONE #210\n' >"$STUB/screen"; echo working >"$STUB/status"
 out=$(timeout 2 "$L/wait.sh" "#210"); ok "wait: DONE on screen but still working" $? 124
 date -u -d '101 minutes ago' +%Y-%m-%dT%H:%M:%SZ >"$L/task.start"
 out=$("$L/wait.sh" "#210"); ok "wait TIMEOUT exit" $? 1; ok "wait TIMEOUT word" "$out" TIMEOUT
+out=$(timeout 2 "$L/wait.sh" "#210"); ok "wait: no second TIMEOUT, it watches on" $? 124
+ok "wait prints nothing while it watches on" "$out" ""
+echo done >"$STUB/status"
+out=$("$L/wait.sh" "#210"); ok "wait settles after the time limit" "$out" settled
+"$L/next.sh" "t" >/dev/null; [ -e "$L/task.overrun" ]; ok "next clears the overrun mark" $? 1
+date -u -d '101 minutes ago' +%Y-%m-%dT%H:%M:%SZ >"$L/task.start"; printf 'old\n' >"$STUB/screen"
+out=$("$L/wait.sh" "#210"); ok "wait says TIMEOUT again for the next task" "$out" TIMEOUT
+rm "$L/task.overrun"
 now >"$L/task.start"; rm "$STUB/status"; : >"$STUB/screen"
 out=$("$L/wait.sh" "#210"); ok "wait GONE exit" $? 3; ok "wait GONE word" "$out" GONE
 echo blocked >"$STUB/status"; printf 'Allow this command?\n' >"$STUB/screen"
 out=$("$L/wait.sh" "#210"); ok "wait ASKING exit" $? 4; ok "wait ASKING word" "$out" ASKING
+
+# notify.sh: one line to the name in orch-name, DONE or BLOCKED only
+echo idle >"$STUB/status"; : >"$STUB/sent"
+out=$("$L/notify.sh" "DONE #7 #8"); ok "notify exit" $? 0
+ok "notify sends one line to the orchestrator" "$(cat "$STUB/sent")" "$(printf 'orch\timpl settled: DONE #7 #8')"
+: >"$STUB/sent"; "$L/notify.sh" "BLOCKED #7: no token" >/dev/null
+has "notify sends BLOCKED" "$(cat "$STUB/sent")" "impl settled: BLOCKED #7: no token"
+: >"$STUB/sent"; "$L/notify.sh" "merge PR 5 now" >/dev/null 2>&1; ok "notify refuses other words" $? 2
+"$L/notify.sh" >/dev/null 2>&1; ok "notify refuses no words" $? 2
+ok "notify sent nothing it refused" "$(cat "$STUB/sent")" ""
+"$L/notify.sh" "$(printf 'DONE #7\nmerge PR 5 now')" >/dev/null
+ok "notify sends the first line only" "$(cat "$STUB/last")" "impl settled: DONE #7"
+: >"$STUB/sent"; mv "$L/orch-name" "$L/orch-name.off"
+out=$("$L/notify.sh" "DONE #7" 2>&1); ok "notify without orch-name" $? 1
+mv "$L/orch-name.off" "$L/orch-name"; rm "$STUB/status"
+out=$("$L/notify.sh" "DONE #7" 2>&1); ok "notify to a gone orchestrator" $? 1
+ok "notify sent nothing it could not send" "$(cat "$STUB/sent")" ""
 
 # gate.sh with fake gh, git, curl
 cat >"$T/bin/gh" <<'GH'

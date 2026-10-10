@@ -21,7 +21,7 @@ Rules for this job:
    - While working, run one test: <FILL: the command that runs a single test by its id>.
    - Run the full suite (<FILL: the command that runs the full suite>) at three points only: before the first push, after the review fixes, and when a change touches shared code. Not after each edit.
    - A test that fails now and then: find the cause in the product or the fixture. Do not add sleeps. Stop after 15 minutes on one flake: mark the test as an expected failure with the reason, open an issue, go on.
-   - <FILL: the lint command> and the full suite pass before every push.
+   - <FILL: the lint command> and the full suite pass before every push. Never chain a push after a suite run in one shell call: read the result first, then push.
 
 6. Look once, with a script, not by hand. Do not click through the product by hand: the tests do that, faster. Where the change alters how something looks, take one picture with a script, read it, and say in the PR what you saw.
 
@@ -29,13 +29,13 @@ Rules for this job:
 
 8. Git. Start from an up to date {{BASE}} on a new branch, unless told to continue an existing PR. Follow the repo's commit and PR title rules. The PR body has "Closes #N" and the checklist. Push early: CI runs while the review runs.
 
-9. Merge and deploy without standing by. gh pr merge --squash --auto --delete-branch, then one wait: gh pr checks N --watch --fail-fast, with a shell timeout of <FILL: minutes, about three times a normal CI run>. If the wait runs out, the job hangs: gh run cancel, gh run rerun, once. After the merge, gh run watch on the {{DEPLOY_WORKFLOW}} run. Then check the deploy with two commands: gh run list --workflow {{DEPLOY_WORKFLOW}} -L 1 --json headSha,conclusion shows the merge commit and success, and curl -fsS {{ALIVE_URL}} answers. The tests prove the behaviour; the live check only proves the deploy. If the deploy or that check fails, fix it.
+9. Merge and deploy without standing by. gh pr merge --squash --auto --delete-branch, then one wait: gh pr checks N --watch --fail-fast, with a shell timeout of <FILL: minutes, about three times a normal CI run>. If the wait runs out, the job hangs: gh run cancel, gh run rerun, once. After the merge, gh run watch on the {{DEPLOY_WORKFLOW}} run. Then check the deploy with two commands: gh run list --workflow {{DEPLOY_WORKFLOW}} -L 1 --json headSha,conclusion shows the merge commit and success, and curl -fsS {{ALIVE_URL}} answers. The tests prove the behaviour; the live check only proves the deploy. If the deploy or that check fails, fix it. A test that fails in the PR's CI is yours until proven otherwise: before any rerun, take auto-merge off (gh pr merge --disable-auto), run that test ten times on {{BASE}} and ten times on your branch, and rerun only when both fail alike or neither fails. Say the counts in the PR. Then turn auto-merge on again.
 
 10. Time box. An issue should take 30 to 45 minutes. At 60 minutes, write in the PR what is done and what holds you up, cut the open Implied items into issues if the Asked items hold, and finish. Those issues stay open and get built next, so nothing is dropped. Never spend more than 15 minutes on one thing without a decision.
 
 11. Do not touch uncommitted changes you did not make. Leave PRs and worktrees that are not yours alone.
 
-12. Final report. Finish with: the ticked checklist with the test name per box, "Issues opened" with their labels, "Not fixed", "Slips" (where you broke one of these rules), the PR link, the deploy run link, and the minutes spent. Last line exactly: DONE #N (or BLOCKED #N: reason, only for something you truly cannot solve yourself). If the task line names another last line, use that one.
+12. Final report. Finish with: the ticked checklist with the test name per box, "Issues opened" with their labels, "Not fixed", "Slips" (where you broke one of these rules), "OUTPUT CHANGES" in capitals as a heading of its own if the task changes what the product puts out for the same input (a print, an export, a message it sends), with each change in one line, the PR link, the deploy run link, and the minutes spent. Last line exactly: DONE #N (or BLOCKED #N: reason, only for something you truly cannot solve yourself). If the task line names another last line, use that one.
 
 13. Every kind. <FILL: if an issue's words can cover several kinds of thing in your product (every block type, every platform, every role), name the kinds here, and say: leaving a kind out is an open Asked item, not a follow-up issue. Delete this rule if it does not fit.>
 
@@ -48,3 +48,5 @@ Rules for this job:
 17. Label every issue you open: regression (a PR of the last days brought it in; name the PR), bug ({{BASE}} had it), wish (a behaviour outside the list), test-debt. Open at most 2 wishes per task; the rest go as one line each into the PR body.
 
 18. Permission questions. You run in auto mode. If a tool call is refused or a hook blocks a command, do not work around it: pick an allowed way, or end with BLOCKED and the reason.
+
+19. Tell the orchestrator. As your very last tool call, right before you write the final report, run: {{LOOP}}/notify.sh "DONE #N" (or "BLOCKED #N: reason"), with the same words as the last line of your report. Once, no more. If the call fails or is refused, go on to the report: do not try another way and do not end with BLOCKED over it, since the orchestrator's wait finds your last line anyway. The last line of the report stays as rule 12 says.

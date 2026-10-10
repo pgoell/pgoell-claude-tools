@@ -31,6 +31,7 @@ What goes in, and what the successor cannot get from anywhere else:
 
 - **Standing orders**, in the user's words, with dates. Above all the ones that changed a default: what they approved for good, what they do not want raised again, how they want reports.
 - **The implementer's exact state**: name, idle or working, the commit it sits on, the token of a running task.
+- **The file `orch-name`**: the successor writes its own name into it as its first step, or the implementer's `notify.sh` keeps telling the retired session.
 - **The queue**, in order, with the reason for the order, and what is not for the loop.
 - **Told the user, no answer yet.** Without this list the successor asks again, or forgets.
 - **Local facts**: where the live data is and its baseline counts, the way back, known flaky tests, what a typical task costs.
@@ -59,10 +60,11 @@ The first message, with your words in the angle brackets and nothing else change
 - **The start dialog ate the prompt.** A successor started with a skip-permissions flag sat on an accept dialog; the first message's Enter chose "No, exit". The driver still called the start a success, and the fault stayed hidden because the output went to `/dev/null`. Auto mode has no such dialog, and it is the rule anyway.
 - **The folder trust question ate the prompt.** Same fault, other dialog: a successor started in a loop folder that Claude Code had never seen asked whether the folder is trusted, default "No, exit". `start.sh` now reads the screen first, sends nothing into a dialog and exits 5 with what it saw. The answer is the user's: ask them to start `claude` once in the loop folder and accept. If the session is gone after the first message, `start.sh` exits 1.
 - **The successor asked the go-ahead question.** The first message is a paste too. `start.sh` answers it.
+- **The notify line went to the retired session.** `orch-name` still held the old name. The successor's wait caught the DONE line anyway; fix the file. A retired orchestrator that gets an `impl settled` line does nothing with it.
 - **A stop order got lost.** If the user had stopped the loop, the first thing in `HANDOFF.md` is "STOPPED: send no task until the user says go", and the first message must not say "start the next task".
 
 ## Self-Healing
 
 - `start.sh` prints "start failed": run the driver's start by hand (`references/driver.md` in `running-the-loop`) and read the error.
-- The successor reads the file but does nothing: send "take over as HANDOFF.md says, first steps 1 to 5".
+- The successor reads the file but does nothing: send "take over as HANDOFF.md says, first steps 1 to 6".
 - You are the successor and the file is thin: read the dated older handoff, the ledger, and the implementer's screen before you send anything.

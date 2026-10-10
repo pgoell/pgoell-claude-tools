@@ -24,7 +24,7 @@ Run the loop by the skill `issue-loop:running-the-loop`. This file holds what th
 
 ## How to drive
 
-Scripts in this folder: next.sh, wait.sh, gate.sh, start.sh (see the skill). Local notes:
+Scripts in this folder: next.sh, wait.sh, gate.sh, start.sh, notify.sh (see the skill). Local notes:
 
 - <What differs here from the skill: a changed time limit, an extra check, a driver quirk>
 - <Rules added to rules.md since the start, with the fault behind each>
@@ -58,8 +58,9 @@ Not for the loop: <issues that need the user, a real device, or a decision; say 
 
 ## First steps
 
-1. Read rules.md and the scripts in this folder.
-2. List the sessions and the open issues. Confirm the implementer's state.
-3. <If a task runs: start wait.sh for token X. If not: send queue item 1 with next.sh, then start wait.sh.>
-4. Tell the user in three lines that you have taken over and what runs.
-5. Keep the loop going unattended. Hand over on your own at about 150k tokens of context.
+1. Write your own session name into the file orch-name in this folder (the driver's list command shows it). The implementer tells that name when a task is done.
+2. Read rules.md and the scripts in this folder.
+3. List the sessions and the open issues. Confirm the implementer's state.
+4. <If a task runs: start wait.sh for token X. If not: send queue item 1 with next.sh, then start wait.sh.>
+5. Tell the user in three lines that you have taken over and what runs.
+6. Keep the loop going unattended. Hand over on your own at about 150k tokens of context.

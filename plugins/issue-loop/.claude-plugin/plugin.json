@@ -1,6 +1,6 @@
 {
   "name": "issue-loop",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Run an unattended build loop: one orchestrator session drives one implementer session through a repo's GitHub issues, one merged and deployed PR per task, with a gate between tasks.",
   "author": {
     "name": "Pascal Göllner"

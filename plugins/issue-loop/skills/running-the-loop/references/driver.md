@@ -16,6 +16,8 @@ Four things, plus a state word that the wait is built on.
 
 `wait.sh` builds "wait for the DONE token" from `drv_wait`, `drv_read` and `drv_status`: it waits, reads the last 40 lines, looks for `DONE <token>` or `BLOCKED <token>` at the start of a line, and settles only when the state is no longer `working`. So a driver does not need to know about tokens.
 
+`notify.sh` is the one script the implementer runs. It calls `drv_send` with the name in `orch-name`, so a new driver needs nothing more for it, and no rule in the brief names the driver's own command.
+
 Three demands are easy to miss:
 
 - **Reading a session that has no name yet.** A session that sits on a start dialog is not an agent to herdr, so `herdr agent read <name>` fails. `start.sh` then reads by the handle from `drv_start` (with herdr, the pane id through `herdr pane read`).
