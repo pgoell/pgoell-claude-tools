@@ -13,17 +13,17 @@ The plugin is the written-down form of a loop that ran for two days on one examp
 
 `scripts/init.sh <folder>` copies these templates into a folder outside every checkout:
 
-| File              | What it is                                                                                             |
-| ----------------- | ------------------------------------------------------------------------------------------------------ |
-| `loop.env`        | The settings: implementer name, its checkout, base branch, deploy workflow, alive URL, driver          |
-| `rules.md`        | The brief every task gets: 18 rules, with `<FILL: ...>` marks for your test commands and your bar      |
-| `next.sh`         | Sends `/clear` and the brief, answers the go-ahead question, prints the implementer's state            |
-| `wait.sh`         | Waits for `DONE <token>` or `BLOCKED <token>`; prints `settled`, `TIMEOUT`, `ASKING` or `GONE`         |
-| `gate.sh`         | Pass or fail from outside: issues closed, PRs merged with no open box, live commit, clean tree, app up |
-| `start.sh`        | Starts a session in auto mode and sends its first message                                              |
-| `driver-herdr.sh` | The only file that knows herdr. Five functions: send, wait, read, start, status                        |
-| `ledger.tsv`      | One line per task                                                                                      |
-| `HANDOFF.md`      | The orchestrator's memory, from the handoff template                                                   |
+| File              | What it is                                                                                                                       |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `loop.env`        | The settings: implementer name, its checkout, base branch, deploy workflow, alive URL, driver                                    |
+| `rules.md`        | The brief every task gets: 18 rules, with `<FILL: ...>` marks for your test commands and your bar                                |
+| `next.sh`         | Sends `/clear` and the brief, answers the go-ahead question, prints the implementer's state. Refuses while the implementer works |
+| `wait.sh`         | Waits for `DONE <token>` or `BLOCKED <token>`; prints `settled`, `TIMEOUT`, `ASKING` or `GONE`                                   |
+| `gate.sh`         | Pass or fail from outside: issues closed, PRs merged with no open box, live commit, clean tree, app up                           |
+| `start.sh`        | Starts a session in auto mode, looks for a start dialog, then sends its first message                                            |
+| `driver-herdr.sh` | The only file that knows herdr. Five functions: send, wait, read, start, status                                                  |
+| `ledger.tsv`      | One line per task                                                                                                                |
+| `HANDOFF.md`      | The orchestrator's memory, from the handoff template                                                                             |
 
 ## Setup
 
@@ -31,6 +31,7 @@ The plugin is the written-down form of a loop that ran for two days on one examp
 - `gh` (logged in), `git`, `jq`, `curl`, `timeout` and GNU `date`.
 - In the repo: issues as the queue; labels `bug`, `regression`, `wish`, `test-debt` and one for "not now"; CI as a required check on the newest commit of a PR; a deploy that can be checked from outside; a way back. `skills/running-the-loop/references/setup.md` has the list with a check for each point.
 - A checkout for the implementer that no other session works in.
+- The loop folder trusted once by you: start `claude` in it and accept the folder trust question. The loop never accepts it for you.
 
 Sessions run in auto mode (`claude --permission-mode auto`). The loop never starts a session with skipped permissions.
 
@@ -40,9 +41,11 @@ Read `skills/running-the-loop/references/limits.md` before you rely on the loop.
 
 ## Tests
 
-`tests/run.sh` runs the script templates against a stub driver and fake `gh`, `git` and `curl`: no session, no network, about a second. It covers `init.sh`, the brief that `next.sh` builds, both forms of the go-ahead question (and that a permission menu is left alone, also below a paste marker), the refusal of a brief with an unfilled mark or an empty setting, every exit of `wait.sh`, each failure of `gate.sh`, and `start.sh`.
+`tests/run.sh` runs the script templates against a stub driver and fake `gh`, `git` and `curl`: no session, no network, about a second. It covers `init.sh`, the brief that `next.sh` builds (also with a URL that holds `&` and `|`), its refusal while the implementer works, both forms of the go-ahead question (and that a permission menu is left alone, also below a paste marker), every exit of `wait.sh` (also a DONE line above a tall pane's blank rows), each failure of `gate.sh`, and `start.sh` with a start dialog and with a session that quits.
 
-Last run, 2026-10-10: 59 of 59 checks pass. `driver-herdr.sh` itself has no test. Its calls were taken from the loop's run and checked against the help text and the API schema of herdr 0.7.5 (the schema shows the pane id that `drv_start` reads, under `root_pane`). `drv_status` and `drv_read` were tried read-only on a live herdr; `drv_send`, `drv_wait` and `drv_start` were not tried from this file.
+Last run, 2026-10-10: 74 of 74 checks pass.
+
+The herdr driver was tried live the same day on herdr 0.7.5, with throwaway sessions that ran no tools: `start.sh` in a trusted folder (prints the state, exit 0) and in a never-seen folder (stops on the folder trust question, sends nothing, exit 5); `wait.sh` to `settled` and, after the pane was closed, to `GONE`; `next.sh` with `/clear` and a brief, and its refusal while the session worked. Not tried live: `gate.sh` (it needs a repo with a deploy), `ASKING`, and the go-ahead answers.
 
 `evals/` holds five trigger fixtures (three that should fire a skill, two that should not). They have not been run yet.
 

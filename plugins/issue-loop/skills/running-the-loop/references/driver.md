@@ -6,18 +6,19 @@ The loop needs something that can type into another terminal session and read it
 
 Four things, plus a state word that the wait is built on.
 
-| Function                   | Must do                                                                                               |
-| -------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `drv_send NAME TEXT`       | Type TEXT into session NAME and submit it. TEXT may be many lines (the whole brief)                   |
-| `drv_wait NAME SECONDS`    | Return when the session stops working, or after SECONDS. Always return 0                              |
-| `drv_read NAME LINES`      | Print the last LINES lines of the session's screen, unwrapped: one report line stays one line         |
-| `drv_start NAME CWD LABEL` | Start a Claude Code session with that name and working folder, in the permission mode from `loop.env` |
-| `drv_status NAME`          | Print `working`, `idle`, `done`, `blocked` or `unknown`; print `gone` when no session has the name    |
+| Function                   | Must do                                                                                                                                        |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `drv_send NAME TEXT`       | Type TEXT into session NAME and submit it. TEXT may be many lines (the whole brief)                                                            |
+| `drv_wait NAME SECONDS`    | Return when the session stops working, or after SECONDS. Always return 0                                                                       |
+| `drv_read NAME LINES`      | Print the last LINES lines of the session's screen, unwrapped: one report line stays one line. NAME may also be the handle `drv_start` printed |
+| `drv_start NAME CWD LABEL` | Start a Claude Code session with that name and working folder, in the permission mode from `loop.env`. Print a handle `drv_read` accepts       |
+| `drv_status NAME`          | Print `working`, `idle`, `done`, `blocked` or `unknown`; print `gone` when no session has the name                                             |
 
 `wait.sh` builds "wait for the DONE token" from `drv_wait`, `drv_read` and `drv_status`: it waits, reads the last 40 lines, looks for `DONE <token>` or `BLOCKED <token>` at the start of a line, and settles only when the state is no longer `working`. So a driver does not need to know about tokens.
 
-Two demands are easy to miss:
+Three demands are easy to miss:
 
+- **Reading a session that has no name yet.** A session that sits on a start dialog is not an agent to herdr, so `herdr agent read <name>` fails. `start.sh` then reads by the handle from `drv_start` (with herdr, the pane id through `herdr pane read`).
 - **Unwrapped lines.** `wait.sh` and the go-ahead check match at the start of a line. A driver that returns the screen as wrapped rows breaks the match when the DONE line is long.
 - **A state that can say "blocked".** That is how `wait.sh` sees a permission question. A driver without it can print `unknown`; then a waiting session is found only by the clock.
 
@@ -37,11 +38,11 @@ herdr pane read <pane id>                                          # the screen 
 
 Also herdr-specific, and named as such where the skills mention them: tabs, panes and workspace ids; the state words; and the fact that `herdr agent start` reports success even when the session then exits on a start dialog (`references/quirks.md`).
 
-`drv_start` reads the pane id from the JSON that `herdr tab create` prints. The first time you use it on a host, start one session by hand with the commands above and check that the pane id comes out, since that shape belongs to herdr and may change.
+`drv_start` reads the pane id from the JSON that `herdr tab create` prints. That was tried live on herdr 0.7.5; the shape belongs to herdr and may change.
 
 ## Swapping the driver
 
-Copy `driver-herdr.sh` to `driver-<name>.sh`, rewrite the five functions, set `DRIVER=driver-<name>.sh` in `loop.env`. A tmux sketch, to show the size of the job (untested):
+Copy `driver-herdr.sh` to `driver-<name>.sh`, rewrite the five functions, set `DRIVER=driver-<name>.sh` in `loop.env`. A tmux sketch, to show the size of the job (untested; its `drv_start` prints no handle, so add one):
 
 ```bash
 drv_send()   { tmux send-keys -t "$1" -l "$2"; tmux send-keys -t "$1" Enter; }
