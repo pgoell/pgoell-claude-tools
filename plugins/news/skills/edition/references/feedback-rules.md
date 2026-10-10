@@ -10,8 +10,8 @@ All paths sit under `<vault>/<periodic>/05 Newspaper/`:
 
 - `feedback.md`: the reader's note. Items under `## Open` wait; items under
   `## Applied` are done.
-- `config/topics.yaml`: sections, queries, sources, depth, `max_stories`,
-  `freshness_days`, `exclude`, `interests`, `avoid`, `blocked_sources`.
+- `config/topics.yaml`: `edition.style`, sections, queries, sources, depth,
+  `max_stories`, `freshness_days`, `exclude`, `interests`, `avoid`, `blocked_sources`.
 - `config/design.yaml`: `design`, `title`, `tagline`, `overrides`.
 - `memory/changelog.md`: one line per applied change.
 - `memory/stories.jsonl`: what ran. Look up a story id here (`recent.py` or a
@@ -27,6 +27,7 @@ All paths sit under `<vault>/<periodic>/05 Newspaper/`:
 | source X is paywalled, broken, bad  | remove it from `sources` or move its domain to `blocked_sources`; note a free alternative if known          |
 | use source X                        | add it to that section's `sources` with a one-line `notes`                                                  |
 | shorter, longer, more detail        | change that section's `depth` (1 briefs, 2 short, 3 full) or `max_stories`                                  |
+| writing style, Smart Brevity, form  | `edition.style` in topics.yaml: `smart-brevity` or `normal`                                                 |
 | older news is fine, only today      | change that section's `freshness_days`                                                                      |
 | look, colours, fonts, design        | `design.yaml` (`design`, or `overrides` tokens such as `accent`, `font-body`)                               |
 

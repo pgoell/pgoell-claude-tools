@@ -116,7 +116,7 @@ def edition(e: object) -> list[dict]:
 
     sections = e.get("sections")
     section_ids = set()
-    if check(isinstance(sections, list) and 4 <= len(sections) <= 10, "edition", "sections must be a list of 4 to 10"):
+    if check(isinstance(sections, list) and 4 <= len(sections) <= 16, "edition", "sections must be a list of 4 to 16"):
         for i, sec in enumerate(sections):
             where = f"sections[{i}]"
             if not check(isinstance(sec, dict), where, "must be an object"):

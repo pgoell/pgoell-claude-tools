@@ -18,7 +18,7 @@ edition:
   weather: { place: str, summary: str, high_c: int, low_c: int } | null # weather.py fills it from Open-Meteo when null
   previous: str | null # relative href to the previous edition, e.g. "2026-10-06.html", from seed.py
   lead: story # the front-page lead; it does not repeat in a section
-  sections: [{ id: str, name: str, kicker: str | null, local: bool, stories: [story] }] # 4 to 10 sections, config order; local is optional, true on the home section from topics.yaml
+  sections: [{ id: str, name: str, kicker: str | null, local: bool, stories: [story] }] # 4 to 16 sections, config order; local is optional, true on the home section from topics.yaml
   briefs: [{ headline: str, url: str, source: str, section: str }] # one-liners, "in brief"; section is a section id
   feedback_hint: str # how to give feedback, naming the feedback note's path
   recent_feedback: [str] # optional; the newest applied changes, "YYYY-MM-DD: what changed"
