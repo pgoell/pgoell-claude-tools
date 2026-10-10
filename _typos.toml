@@ -24,6 +24,8 @@ ser = "ser"
 Canva = "Canva"
 # German month name in the news plugin's date examples ("7. Oktober 2026").
 Oktober = "Oktober"
+# German Smart Brevity label in the news edition skill ("Warum das wichtig ist").
+ist = "ist"
 
 [files]
 # The news designs print German page chrome ("Foto", "Juli", "Sie"), which an
