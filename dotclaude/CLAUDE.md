@@ -28,6 +28,7 @@ Govern prose: docs, PR text, messages. Never touch code or technical terms; swap
 ## Working tree hygiene
 
 - **Uncommitted changes in the working tree at session start are intentional.** Never `git checkout --` / `git restore --` / `git stash drop` them without first showing the diff and asking what to do. Treat them as work-in-progress until told otherwise; the safe defaults are "keep on master" or "carry onto the feature branch", not "revert".
+- Create git worktrees inside the repo, under `.claude/worktrees/<name>` or `.worktrees/<name>`, never as a sibling folder such as `~/Code/<repo>-<name>`. Remove a worktree when its branch is merged.
 
 ## Upstream license verification
 
