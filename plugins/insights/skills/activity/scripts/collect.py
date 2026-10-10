@@ -6,18 +6,20 @@
 
 Sources, each of which may be missing; a missing one is marked "unavailable"
 under `sources` and the run goes on:
-- gh: pull requests you opened or merged on the day, every pull request of
-  yours that is open now, issues opened and closed in your repositories, and
-  failed CI runs of the day that no later run on the same branch and workflow
-  passed.
-- git: commits of the day on every ref of each repository under --code.
+- gh: pull requests you opened or merged on the day in your own repositories,
+  every such pull request that is open now, issues opened and closed there, and
+  CI of the day that ended red: the newest finished run per branch and
+  workflow failed, on the default branch or a branch with an open pull
+  request.
+- git: commits of the day on the default branch of each repository under
+  --code, so a squash or rebase copy on a side branch is not counted twice.
 - issue-loop ledgers (ledger.tsv): the day's task lines.
 - ~/.claude/projects: sessions with a record on the day (Europe/Berlin, by the
   record's own timestamp, through the digest skill's extract.scan), folded
   into the repository their working directory belongs to. The insights jobs'
   own sessions are left out. Sessions in a --private folder are counted under
   "vault" and give nothing else.
-- bunx ccusage: tokens and cost per project folder and in total.
+- bunx ccusage@20.0.28: tokens and cost per project folder and in total.
 - cron logs of the insights and news jobs, and the vault's git log.
 
 It judges nothing: the model adds `needs` and `shipped` through render.py.
@@ -29,7 +31,7 @@ import re
 import subprocess
 import sys
 from collections import Counter
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, timezone
 from pathlib import Path
 from urllib.parse import quote
 
@@ -66,9 +68,10 @@ def stamp(text: str) -> datetime:
 
 
 def blank(name: str) -> dict:
-    return {"name": name, "slug": None, "sessions": 0, "subagent_files": 0, "commits": 0, "commit_list": [],
-            "prs_opened": 0, "prs_merged": 0, "prs_open": 0, "issues_opened": 0, "issues_closed": 0,
-            "loop_tasks": 0, "loop_minutes": 0, "tokens": None, "cost": None, "merged": []}
+    return {"name": name, "slug": None, "sessions": 0, "commits": 0,
+            "prs_opened": 0, "prs_merged": 0, "issues_opened": 0, "issues_closed": 0,
+            "loop_tasks": 0, "loop_minutes": 0, "tokens": None, "cost": None, "merged": [],
+            "_branch": None, "_numbers": set()}
 
 
 def local_repos(code: Path, start: datetime, end: datetime) -> dict[str, dict]:
@@ -76,17 +79,19 @@ def local_repos(code: Path, start: datetime, end: datetime) -> dict[str, dict]:
     repos = {}
     for path in sorted(code.iterdir()) if code.is_dir() else []:
         if not (path / ".git").is_dir():
-            continue  # a `.git` file is a worktree; --all in its main checkout covers it
+            continue  # a `.git` file is a worktree of a checkout counted here
         repo = repos[path.name] = blank(path.name)
         m = re.search(r"github\.com[:/](.+?)(?:\.git)?$", (run(["git", "-C", str(path), "remote", "get-url", "origin"]) or "").strip())
         repo["slug"] = m.group(1) if m else None
-        log = run(["git", "-C", str(path), "log", "--all", f"--since={start.isoformat()}", f"--until={end.isoformat()}",
-                   "--format=%H%x09%s"]) or ""
-        commits = [line.split("\t", 1) for line in log.splitlines() if line]
-        repo["commits"] = len(commits)
-        for sha, subject in commits[:20]:
-            url = f"https://github.com/{repo['slug']}/commit/{sha}" if repo["slug"] else None
-            repo["commit_list"].append({"sha": sha[:8], "subject": subject, "url": url})
+        # The default branch as origin has it; a checkout with no remote counts its own HEAD.
+        refs = ("origin/HEAD", "origin/main", "origin/master", "HEAD")
+        ref = next((r for r in refs if run(["git", "-C", str(path), "rev-parse", "--verify", "-q", r]) is not None), None)
+        if ref is None:
+            continue  # no commit yet
+        name = run(["git", "-C", str(path), "rev-parse", "--abbrev-ref", ref]) or ""
+        repo["_branch"] = name.strip().removeprefix("origin/")
+        log = run(["git", "-C", str(path), "log", ref, f"--since={start.isoformat()}", f"--until={end.isoformat()}", "--format=%H"])
+        repo["commits"] = len((log or "").split())
     return repos
 
 
@@ -128,14 +133,19 @@ def read_sessions(projects: Path, day, start: datetime, code: Path, known: dict,
             for raw in fh:
                 if not any(w in raw for w in EXTRA):
                     continue
-                r = json.loads(raw)
+                try:
+                    r = json.loads(raw)
+                except ValueError:
+                    continue  # a torn line
+                if not r.get("sessionId"):
+                    continue
                 if r.get("bridgeSessionId"):
                     bridge[r["sessionId"]] = "https://claude.ai/code/session_" + r["bridgeSessionId"].removeprefix("cse_")
                 elif r.get("prUrl"):
                     pr_session[r["prUrl"]] = r["sessionId"]
 
     cache: dict[str, str] = {}
-    counts, subs, folders = Counter(), Counter(), {}
+    counts, folders = Counter(), {}
     for sid, s in sessions.items():
         if s.cwd not in cache:
             cache[s.cwd] = repo_of(s.cwd, code, known, private) if s.cwd else "other"
@@ -143,10 +153,8 @@ def read_sessions(projects: Path, day, start: datetime, code: Path, known: dict,
             folders.setdefault(folder_of[sid], Counter())[cache[s.cwd]] += 1
         if s.days and not s.own:
             counts[cache[s.cwd]] += 1
-            subs[cache[s.cwd]] += s.subagent_files
     return {
         "counts": counts,
-        "subs": subs,
         "folder_repo": {f: c.most_common(1)[0][0] for f, c in folders.items()},
         "session_of": {
             url: {"id": sid, "resume": f"claude --resume {sid}", "url": bridge.get(sid)}
@@ -160,14 +168,17 @@ def read_sessions(projects: Path, day, start: datetime, code: Path, known: dict,
 
 def github(day_range: str, by_slug: dict, repo, now: datetime, session_of: dict, pending: set) -> tuple[list, bool]:
     """Fill PR and issue counts into the repos; return the open pull requests and whether gh answered."""
-    search = ["gh", "search", "prs", "--author=@me", "--limit", "1000", "--json", PR_FIELDS]
+    owner = (run(["gh", "api", "user", "--jq", ".login"]) or "").strip()
+    if not owner:
+        return [], False
+    # --owner on both searches: a title from another organisation never reaches the vault or the model.
+    search = ["gh", "search", "prs", "--author=@me", f"--owner={owner}", "--limit", "1000", "--json", PR_FIELDS]
     opened = run_json([*search, f"--created={day_range}"])
     merged = run_json([*search, f"--merged-at={day_range}"])
     still_open = run_json([*search, "--state=open"])
-    owner = (run(["gh", "api", "user", "--jq", ".login"]) or "").strip()
     issues = ["gh", "search", "issues", f"--owner={owner}", "--limit", "1000", "--json", "number,repository"]
-    issues_opened = run_json([*issues, f"--created={day_range}"]) if owner else None
-    issues_closed = run_json([*issues, f"--closed={day_range}"]) if owner else None
+    issues_opened = run_json([*issues, f"--created={day_range}"])
+    issues_closed = run_json([*issues, f"--closed={day_range}"])
     if None in (opened, merged, still_open, issues_opened, issues_closed):
         return [], False
 
@@ -177,10 +188,12 @@ def github(day_range: str, by_slug: dict, repo, now: datetime, session_of: dict,
         r["slug"] = slug
         return r
 
-    for key, items in (("prs_opened", opened), ("prs_merged", merged), ("prs_open", still_open),
+    for key, items in (("prs_opened", opened), ("prs_merged", merged),
                        ("issues_opened", issues_opened), ("issues_closed", issues_closed)):
         for item in items:
             of(item)[key] += 1
+    for pr in [*opened, *merged, *still_open]:
+        of(pr)["_numbers"].add(pr["number"])
     for pr in merged:
         of(pr)["merged"].append({"number": pr["number"], "title": pr["title"], "url": pr["url"]})
     open_prs = []
@@ -192,23 +205,27 @@ def github(day_range: str, by_slug: dict, repo, now: datetime, session_of: dict,
     return open_prs, True
 
 
-def failed_ci(repos: list[dict], day, start: datetime, end: datetime) -> tuple[list, bool]:
-    """The newest failed run of the day per branch and workflow, unless a later run there passed."""
+def failed_ci(repos: list[dict], start: datetime, end: datetime) -> tuple[list, bool]:
+    """Branches whose newest finished run of the day failed, per workflow: the default branch and those with an open PR."""
+    utc = "%Y-%m-%dT%H:%M:%SZ"
+    created = f"{start.astimezone(timezone.utc).strftime(utc)}..{end.astimezone(timezone.utc).strftime(utc)}"
     out, ok = [], True
     for repo in repos:
-        runs = run_json(["gh", "run", "list", "-R", repo["slug"], "--created", f">={(day - timedelta(days=1)).isoformat()}",
-                         "--limit", "1000", "--json", "conclusion,createdAt,headBranch,workflowName,url"])
-        if runs is None:
+        runs = run_json(["gh", "run", "list", "-R", repo["slug"], "--created", created, "--limit", "1000",
+                         "--json", "conclusion,status,createdAt,headBranch,workflowName,url"])
+        heads = run_json(["gh", "pr", "list", "-R", repo["slug"], "--state", "open", "--limit", "1000", "--json", "headRefName"])
+        if runs is None or heads is None:
             ok = False
             continue
+        watched = {h["headRefName"] for h in heads} | {repo["_branch"]}
         groups: dict[tuple, list] = {}
         for r in sorted(runs, key=lambda r: r["createdAt"]):
-            groups.setdefault((r["headBranch"], r["workflowName"]), []).append(r)
+            if r["status"] == "completed" and r["headBranch"] in watched:
+                groups.setdefault((r["headBranch"], r["workflowName"]), []).append(r)
         for (branch, workflow), group in groups.items():
-            bad = [r for r in group if r["conclusion"] in FAILED and start <= stamp(r["createdAt"]) <= end]
-            if bad and not any(r["conclusion"] == "success" and r["createdAt"] > bad[-1]["createdAt"] for r in group):
-                out.append({"repo": repo["name"], "branch": branch, "workflow": workflow, "failures": len(bad),
-                            "url": bad[-1]["url"]})
+            if group[-1]["conclusion"] in FAILED:
+                out.append({"repo": repo["name"], "branch": branch, "workflow": workflow,
+                            "failures": sum(r["conclusion"] in FAILED for r in group), "url": group[-1]["url"]})
     return out, ok
 
 
@@ -234,7 +251,7 @@ def read_ledgers(files: list[Path], day: str, repos: dict[str, dict], code: Path
         name = Path(m.group(1).strip("'\" ")).name if m else None
         if name not in repos:
             numbers = {n for row in mine for n in pr_numbers(row)}
-            hits = {r["name"]: len(numbers & {p["number"] for p in r["merged"]}) for r in repos.values()}
+            hits = {r["name"]: len(numbers & r["_numbers"]) for r in repos.values()}
             best = max(hits, key=hits.get, default=None)
             inside = file.relative_to(code).parts[0] if file.is_relative_to(code) else "other"
             name = best if best and hits[best] else inside
@@ -251,7 +268,7 @@ def read_ledgers(files: list[Path], day: str, repos: dict[str, dict], code: Path
 def usage(day, repos, folder_repo: dict) -> dict | None:
     """Tokens and cost from ccusage, per project folder and in total."""
     compact = day.strftime("%Y%m%d")
-    data = run_json(["bunx", "ccusage", "claude", "daily", "--json", "--instances", "--since", compact, "--until", compact,
+    data = run_json(["bunx", "ccusage@20.0.28", "claude", "daily", "--json", "--instances", "--since", compact, "--until", compact,
                      "--timezone", "Europe/Berlin"])
     if not data or "projects" not in data:
         return None
@@ -311,7 +328,6 @@ def main() -> None:
     seen = read_sessions(args.projects, day, start, code, repos, private)
     for name, n in seen["counts"].items():
         repo(name)["sessions"] = n
-        repo(name)["subagent_files"] = seen["subs"][name]
 
     pending = {m.get("ref") for m in read_jsonl(insights_dir(args.vault, args.periodic) / "memory" / "problems.jsonl")
                if m.get("verdict") == "pending"}
@@ -325,7 +341,7 @@ def main() -> None:
     def active(r: dict) -> bool:
         return any(r[k] for k in ("sessions", "commits", "prs_opened", "prs_merged", "issues_opened", "issues_closed", "loop_tasks", "tokens"))
 
-    ci, ci_ok = failed_ci([r for r in repos.values() if r["slug"] and active(r)], day, start, end) if gh_ok else ([], False)
+    ci, ci_ok = failed_ci([r for r in repos.values() if r["slug"] and active(r)], start, end) if gh_ok else ([], False)
     for r in repos.values():
         if r["slug"]:
             r["url"] = f"https://github.com/{r['slug']}"
@@ -345,7 +361,8 @@ def main() -> None:
             "usage": word(cost is not None),
             "vault": word(notes is not None),
         },
-        "repos": sorted((r for r in repos.values() if active(r) or r["prs_open"]), key=lambda r: (-r["sessions"], -r["commits"], r["name"])),
+        "repos": sorted(({k: v for k, v in r.items() if not k.startswith("_")} for r in repos.values() if active(r)),
+                        key=lambda r: (-r["sessions"], -r["commits"], r["name"])),
         "open_prs": open_prs,
         "failed_ci": ci,
         "ledger": ledger,

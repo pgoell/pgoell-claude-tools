@@ -65,7 +65,7 @@ Below, `ARGS` stands for `--vault "<vault>" --periodic "<periodic>" --date <date
    every error it lists in the notes file and run it again until it renders.
 7. **Link.** `uv run "${CLAUDE_SKILL_DIR}/scripts/link_daily.py" ARGS` puts
    `Aktivität: [[<periodic>/07 Activity/D.html]]` into today's daily note
-   beside the `Einsichten:` and `Zeitung:` lines, with the first five `needs`
+   beside the `Einsichten:` and `Zeitung:` lines, with the first five linked `needs`
    headlines under it. Never edit the daily note by hand.
 8. **Report** in under ten lines: the page path, how many items need the
    user, PRs merged, total cost, and every source that was unavailable.
@@ -94,11 +94,17 @@ The scripts import shared helpers from `../digest/scripts`, so the two skills
 must stay in one plugin. Sessions come from Claude Code transcripts
 (`~/.claude/projects`) only.
 
+## Tools
+
+The protocol needs three tools and no other: `Read`, `Write`, and Bash for
+`uv run`. `collect.py` calls `git`, `gh` and `bunx` itself. Never call them
+yourself, and never look at a repository to add to what the script counted.
+
 ## Self-Healing
 
 - **`uv` missing**: stop and say so. Do not hand-write the page.
 - **A source is `unavailable`**: go on. `gh` not logged in empties the PR,
-  issue and CI counts; a failing `bunx ccusage` empties tokens and cost; a
+  issue and CI counts; a failing `bunx ccusage@20.0.28` empties tokens and cost; a
   vault that is no git repository empties the note count. The page names each
   gap. Never fill one by hand or from memory.
 - **render.py lists errors**: fix the notes file, never the template or

@@ -49,16 +49,16 @@ A day's digest is about 80 KB.
 
 `collect.py` counts one day and groups it by repository:
 
-| Source                                                         | Gives                                                                                                          |
-| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `gh search prs --author=@me`, `gh search issues --owner=<you>` | PRs opened and merged on the day, every PR of yours open now, issues opened and closed                         |
-| `gh run list` per active repo                                  | CI runs that failed on the day, unless a later run on the same branch and workflow passed                      |
-| `git log --all` in each checkout under `~/Code` (`--code`)     | commits, with URLs from the origin remote                                                                      |
-| issue-loop `ledger.tsv` files under the code root (`--ledger`) | the day's task lines: issues, PR, minutes, notes                                                               |
-| `~/.claude/projects`                                           | sessions with a record on the day, folded into the repo their working directory belongs to, worktrees included |
-| `bunx ccusage claude daily --json --instances`                 | tokens and cost per project folder and in total, at list prices                                                |
-| `~/.local/state/insights` and `~/.local/state/news`            | how each cron run ended                                                                                        |
-| the vault's git log                                            | how many notes were written or changed, by top folder                                                          |
+| Source                                                                       | Gives                                                                                                          |
+| ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `gh search prs --author=@me --owner=<you>`, `gh search issues --owner=<you>` | PRs opened and merged on the day, every such PR open now, issues opened and closed; your own repositories only |
+| `gh run list` and `gh pr list` per active repo                               | branches whose newest finished CI run of the day failed: the default branch and those with an open PR          |
+| `git log` of the default branch in each checkout under `~/Code` (`--code`)   | commits; side branches are left out, so a squash or rebase copy is not counted twice                           |
+| issue-loop `ledger.tsv` files under the code root (`--ledger`)               | the day's task lines: issues, PR, minutes, notes                                                               |
+| `~/.claude/projects`                                                         | sessions with a record on the day, folded into the repo their working directory belongs to, worktrees included |
+| `bunx ccusage@20.0.28 claude daily --json --instances`                       | tokens and cost per project folder and in total, at list prices                                                |
+| `~/.local/state/insights` and `~/.local/state/news`                          | how each cron run ended                                                                                        |
+| the vault's git log                                                          | how many notes were written or changed, by top folder                                                          |
 
 A source that fails (no `gh` login, no ledger, `ccusage` down) is marked
 unavailable on the page; the run goes on. Sessions in the vault, and in every
@@ -67,11 +67,12 @@ give nothing else. The insights jobs' own sessions are left out. Cost comes
 from `ccusage` alone and covers every session, the jobs' own too.
 
 The page has three parts. **Needs you** is the only part with a link per
-item: open PRs (a series is one item), CI that is still red, insights fixes
+item: open PRs (a series is one item), CI that ended the day red, insights fixes
 waiting on a PR, ledger warnings, PRs open for more than 7 days, failed cron
 jobs. **Shipped** has one block per repo with one link to its merged PRs.
 **Churn** is a table of counts with outliers marked. `render.py` refuses a
-link that `collect.py` did not find, and any text over its limit.
+link that is not in a URL field of the collected data, and any text over its
+limit.
 
 A session is named only for an open PR under "Needs you". The transcript's
 `bridge-session` record gives the `claude.ai/code/session_...` link when the
@@ -99,7 +100,8 @@ The page loads nothing from outside: system fonts, no scripts.
 The daily note gets `Einsichten: [[01 Periodic/06 Insights/2026-10-08.html]]`
 above its first heading, next to the newspaper's `Zeitung:` line. The
 activity job adds `Aktivität: [[01 Periodic/07 Activity/2026-10-08.html]]`
-there too, with up to five lines under it, one per thing that needs you.
+there too, with up to five lines under it, one per linked thing that needs
+you. A rerun replaces only that label line and its own link lines.
 
 ## Deciding
 
@@ -144,19 +146,22 @@ with the tools the job needs allowed, logs to
 and exits non-zero when claude fails or no page was written. Cron uses the
 host's time zone; on a host not set to Europe/Berlin, add
 `CRON_TZ=Europe/Berlin` above the line.
-`cron-activity.sh` does the same for `/insights:activity` and logs to
+`cron-activity.sh` does the same for `/insights:activity`, allows the model
+only `Read`, `Write` and `uv run`, stops after 30 minutes, and logs to
 `~/.local/state/insights/<date>-activity.log`.
 
 ## Tests
 
-`tests/run.sh` runs the activity scripts against two fixture transcripts, one
-ledger, a git checkout made on the spot, and fake `gh` and `bunx`: no session,
-no network, about ten seconds. It covers the counts, the fold of a removed
-worktree into its repo, the private folder, the skipped own run, the CI rule,
-the ledger parsing, the checks `render.py` makes, the daily note block (one
-block after two runs, frontmatter and todos untouched), and a run with `gh`
-and `ccusage` down.
+`tests/run.sh` runs the activity scripts against fixture transcripts, two
+ledgers, a git checkout made on the spot, and fake `gh`, `bunx` and `claude`:
+no session, no network, about fifteen seconds. It covers the counts (commits
+on the default branch only), the fold of a removed worktree into its repo,
+the private folder, the skipped own run, torn transcript lines, the CI rule,
+the ledger parsing and its repo mapping, every check `render.py` makes, the
+daily note block (a rerun changes only its own lines; frontmatter, todos, the
+user's bullets and a mention under a heading stay), the cron wrapper's tool
+list, and a run with `gh` and `ccusage` down.
 
-Last run, 2026-10-10: 45 of 45 checks pass.
+Last run, 2026-10-10: 62 of 62 checks pass.
 
 The digest and apply skills have no test.

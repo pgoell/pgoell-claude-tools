@@ -22,18 +22,9 @@ marked **checked**, and `link_daily.py` reads the result.
       "slug": "pgoell/blattwerk",
       "url": "https://github.com/pgoell/blattwerk",
       "sessions": 34,
-      "subagent_files": 97,
-      "commits": 110,
-      "commit_list": [
-        {
-          "sha": "1a2b3c4d",
-          "subject": "fix: ...",
-          "url": "https://github.com/..."
-        }
-      ],
+      "commits": 30,
       "prs_opened": 29,
       "prs_merged": 30,
-      "prs_open": 1,
       "issues_opened": 97,
       "issues_closed": 74,
       "loop_tasks": 9,
@@ -100,17 +91,21 @@ marked **checked**, and `link_daily.py` reads the result.
 
 - `sources`: `ok` or the reason a source gave nothing. The page prints every
   source that is not `ok`. Never fill a gap by hand.
-- `repos`: one row per repository with any activity on the day or an open PR.
+- `repos`: one row per repository with any activity on the day. `commits`
+  counts the default branch only, so a squash or rebase copy on a side branch
+  is not counted twice.
   `vault` is every session in a private folder; `other` is every session
   outside a repository under the code root. `tokens` and `cost` are `null`
   where ccusage had no row.
-- `open_prs`: every PR of yours open now, oldest first. `stale` means older
+- `open_prs`: every PR of yours in your own repositories that is open
+  now, oldest first. `stale` means older
   than 7 days. `insights` means an insights fix waits on it. `session` is set
   when a transcript recorded that a session opened the PR. Its `url` opens the
   claude.ai session the local one was bridged to, and one such session can
   cover many local ones; `resume` names the exact local session.
-- `failed_ci`: runs of the day that failed, one per branch and workflow, when
-  no later run there passed.
+- `failed_ci`: one row per branch and workflow whose newest finished run of
+  the day failed. Only the default branch and branches with an open PR; a
+  cancelled last run is not a failure.
 - `ledger`: the day's issue-loop task lines, cells as written.
 - `cron`: `ok`, `failed, exit N`, or `running or died` (the log has no exit
   line).
@@ -139,22 +134,26 @@ Write this to `/tmp/activity-notes-<date>.json`:
 
 ### A needs item
 
-- `headline`: what waits, at most 80 characters (**checked**). Name the repo
+- `headline`: what waits, at most 80 characters, with none of
+  `[`, `]`, `<`, `>` (**checked**). Name the repo
   and the number or count.
 - `why`: one line on why it matters, at most 160 characters (**checked**).
   Quote the number or the ledger words that make it matter.
-- `links`: `label` and `url` pairs. Every `url` must stand in the collected
-  data (**checked**). Give one link per PR or run the item covers, so a series
+- `links`: `label` (at most 40 characters) and `url` pairs. Every `url`
+  must stand in a URL field of the collected data: `url`, `merged_url` or
+  `pr_urls` (**checked**). A title or a log path is not a link. Give one link per PR or run the item covers, so a series
   is one item with all its links. An item with no URL in the data, such as a
-  failed cron job, has no links; name the log path in `why`.
+  failed cron job, has no links; name the log path in `why`. The daily note takes only items
+  with a link.
 - `resume`: optional, the full `session.id` of one open PR the item covers
   (**checked** against the data). The page prints `claude --resume <id>`.
-- Order the items by how much they block: the first five go into the daily
+- Order the items by how much they block: the first five with a link go into the daily
   note.
 
 ### shipped
 
-One entry per repo that merged a PR: the repo `name` (**checked**) and a
+One entry per repo that merged a PR, and for no other: the repo `name`
+(**checked**) and a
 summary of at most two sentences and 300 characters (**checked**), built from
 `merged` titles and that repo's `ledger` lines only.
 
@@ -166,5 +165,5 @@ No em-dash, no en-dash, no interpunct, no hyphen used as punctuation
 ## What render.py works out
 
 Totals, and the outlier marks in the churn table: a cell is marked when it
-reaches its limit (sessions 40, commits 100, PRs opened 20, issues opened 30,
+reaches its limit (sessions 40, commits 40, PRs opened 20, issues opened 30,
 loop minutes 480, cost 200 dollars).

@@ -75,13 +75,13 @@ footer { color: var(--muted); font-size: 0.82rem; display: grid; gap: 4px; }
     <h1>{% if page.needs %}{{ page.needs | length }} thing{{ "" if page.needs | length == 1 else "s" }} need{{ "s" if page.needs | length == 1 else "" }} you{% else %}Nothing needs you{% endif %}</h1>
     <div class="scope num">
       <span><b>{{ view.totals.sessions }}</b> sessions</span>
-      <span><b>{{ view.totals.commits }}</b> commits</span>
+      <span><b>{{ view.totals.commits }}</b> commits on default branches</span>
       <span><b>{{ view.totals.prs_merged }}</b> PRs merged</span>
       <span><b>{{ page.open_prs | length }}</b> PRs open now</span>
       <span><b>{{ view.totals.issues_opened }}</b> issues opened, <b>{{ view.totals.issues_closed }}</b> closed</span>
       {% if page.usage %}<span><b>{{ page.usage.cost | usd }}</b>, {{ page.usage.tokens | tokens }} tokens</span>{% endif %}
     </div>
-    <p class="lede">PRs, issues and CI come from <code>gh</code>, commits from <code>git log --all</code>, sessions from <code>~/.claude/projects</code> (Europe/Berlin, the insights jobs' own {{ page.scope.own_runs_skipped }} runs left out), loop minutes from <code>ledger.tsv</code>, tokens and cost from <code>ccusage claude daily --instances</code> at list prices, all sessions included. Summaries come from PR titles and ledger lines only; nobody read a diff.{% if view.unavailable %} <b>Unavailable on this run: {{ view.unavailable | join(", ") }}.</b>{% endif %}{% if page.scope.skipped_large %} {{ page.scope.skipped_large | length }} transcript files over 300 MB were skipped.{% endif %}</p>
+    <p class="lede">PRs, issues and CI come from <code>gh</code>, commits from <code>git log</code> of each default branch, sessions from <code>~/.claude/projects</code> (Europe/Berlin, the insights jobs' own {{ page.scope.own_runs_skipped }} runs left out), loop minutes from <code>ledger.tsv</code>, tokens and cost from <code>ccusage claude daily --instances</code> at list prices, all sessions included. Summaries come from PR titles and ledger lines only; nobody read a diff.{% if view.unavailable %} <b>Unavailable on this run: {{ view.unavailable | join(", ") }}.</b>{% endif %}{% if page.scope.skipped_large %} {{ page.scope.skipped_large | length }} transcript files over 300 MB were skipped.{% endif %}</p>
   </header>
 
   <section aria-labelledby="needs-h">
@@ -109,7 +109,7 @@ footer { color: var(--muted); font-size: 0.82rem; display: grid; gap: 4px; }
   <section aria-labelledby="churn-h">
     <div class="head"><h2 id="churn-h">Churn</h2><p>Counts only.{% if view.flagged %} {{ view.flagged }} marked cell{{ "" if view.flagged == 1 else "s" }} at or over the limit ({% for k, v in view.limits.items() %}{{ k | replace("_", " ") }} {{ v }}{{ ", " if not loop.last }}{% endfor %}).{% endif %}</p></div>
     <div class="table"><table>
-      <thead><tr><th>Repo</th><th class="r">Sessions</th><th class="r">Commits</th><th class="r">PRs opened</th><th class="r">Merged</th><th class="r">Issues opened</th><th class="r">Closed</th><th class="r">Loop min</th><th class="r">Tokens</th><th class="r">Cost</th></tr></thead>
+      <thead><tr><th>Repo</th><th class="r">Sessions</th><th class="r">Commits, default branch</th><th class="r">PRs opened</th><th class="r">Merged</th><th class="r">Issues opened</th><th class="r">Closed</th><th class="r">Loop min</th><th class="r">Tokens</th><th class="r">Cost</th></tr></thead>
       <tbody>{% for r in page.repos %}
         <tr><td>{% if r.url %}<a href="{{ r.url }}">{{ r.name }}</a>{% else %}{{ r.name }}{% endif %}</td>{{ cell(r, "sessions", r.sessions) }}{{ cell(r, "commits", r.commits) }}{{ cell(r, "prs_opened", r.prs_opened) }}<td class="r">{{ r.prs_merged }}</td>{{ cell(r, "issues_opened", r.issues_opened) }}<td class="r">{{ r.issues_closed }}</td>{{ cell(r, "loop_minutes", r.loop_minutes) }}<td class="r">{{ r.tokens | tokens }}</td>{{ cell(r, "cost", r.cost | usd) }}</tr>{% endfor %}
       </tbody>
