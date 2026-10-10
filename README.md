@@ -2,7 +2,7 @@
 
 Plugin marketplace for Claude Code and Codex.
 
-Bundles 23 plugins across Atlassian, Google Workspace, Databricks, agent-system management, design workflows, research, writing, presentations, diagrams, a daily newspaper, daily session insights, terminal control, learning, idea critique, prose output styles, shell guard hooks, code minimalism, frontend design taste, and more.
+Bundles 24 plugins across Atlassian, Google Workspace, Databricks, agent-system management, design workflows, research, writing, presentations, diagrams, a daily newspaper, daily session insights, terminal control, learning, idea critique, an unattended issue loop, prose output styles, shell guard hooks, code minimalism, frontend design taste, and more.
 
 ## Skills at a glance
 
@@ -70,6 +70,8 @@ Bundles 23 plugins across Atlassian, Google Workspace, Databricks, agent-system 
 | `minimalist-skill`, `soft-skill`, `brutalist-skill`                                             | `taste-skill`             | Style variants: editorial minimalist, soft premium agency, Swiss brutalist                                                              |
 | `image-to-code-skill`, `imagegen-frontend-web`, `imagegen-frontend-mobile`, `brandkit`          | `taste-skill`             | Generate design reference images first (web, mobile, brand kit), then build from them                                                   |
 | `stitch-skill`, `gpt-tasteskill`, `taste-skill-v1`                                              | `taste-skill`             | Google Stitch `DESIGN.md` export, GPT/Codex-tuned variant, frozen v1                                                                    |
+| `running-the-loop`                                                                              | `issue-loop`              | Run an unattended build loop as orchestrator: drive one implementer session through the GitHub issue queue, with a gate between tasks   |
+| `handing-over`                                                                                  | `issue-loop`              | Pass a running issue loop to a fresh orchestrator session through a rewritten handoff file                                              |
 
 The `deprecated` plugin additionally archives twelve superseded skills: `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations` point at their replacement in the `presentations` plugin; `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode` point at their replacement in the `workbench` plugin (`terse-mode` retires without replacement); `writing`, `pyramid`, `tech-doc` point at `ghostwrite` and `coach` in the `writing` plugin; `frontend-design` (from the retired plugin of that name) points at `taste-skill:taste-skill`.
 
@@ -99,6 +101,7 @@ Skills are invoked from the host agent (Claude Code or Codex) using the fully qu
 /plugin install diagrams@pgoell-claude-tools
 /plugin install news@pgoell-claude-tools
 /plugin install insights@pgoell-claude-tools
+/plugin install issue-loop@pgoell-claude-tools
 /plugin install prose-styles@pgoell-claude-tools
 /plugin install guards@pgoell-claude-tools
 /plugin install ponytail@pgoell-claude-tools
@@ -119,7 +122,7 @@ codex
 /plugins
 ```
 
-In the `/plugins` picker, install any combination of `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, `news`, `insights`, and `ponytail` (plus `deprecated` if an old workflow needs the archived skill names). `prose-styles` is absent from the Codex picker on purpose, because Codex has no output-style mechanism. `guards` is absent too, because its hooks use Claude Code's hook format. `emil`, `taste-skill`, and `vercel` are absent too: their upstreams ship no Codex manifest.
+In the `/plugins` picker, install any combination of `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, `news`, `insights`, and `ponytail` (plus `deprecated` if an old workflow needs the archived skill names). `prose-styles` is absent from the Codex picker on purpose, because Codex has no output-style mechanism. `guards` is absent too, because its hooks use Claude Code's hook format. `issue-loop` is absent because it drives Claude Code sessions (`/clear`, `--permission-mode auto`) and was never run under Codex. `emil`, `taste-skill`, and `vercel` are absent too: their upstreams ship no Codex manifest.
 
 To pick up updates: `codex plugin marketplace upgrade pgoell-claude-tools` and re-install the affected plugins.
 
@@ -351,6 +354,19 @@ A look back at yesterday's Claude Code sessions and the newspaper's runs, every 
 ```
 
 The wrapper runs `claude -p "/insights:digest ..."` with the needed tools allowed, logs to `~/.local/state/insights/`, and exits non-zero when no page was written. Cron uses the host's time zone; elsewhere, put `CRON_TZ=Europe/Berlin` above the line. See `plugins/insights/README.md`.
+
+### issue-loop
+
+An unattended build loop over a repo's GitHub issues. One Claude Code session, the orchestrator, drives a second one, the implementer, task after task: `/clear`, a full brief, a wait for an exact DONE line, a gate from outside, a ledger line, a short report, the next task. The orchestrator never codes and never writes to the implementer's checkout; subagents implement and review; one task is one PR, merged and deployed. Written down from a two-day run on one example project, with the numbers and the limits an outside review found.
+
+**Skills:**
+
+- `/issue-loop:running-the-loop`: Makes this session the orchestrator: checks what the repo needs, sets up a loop folder from templates, and turns the loop. Covers queue order (regressions and gaps first, bug batches of about five, then a feature), what goes to the human (taste, money, real devices, anything that loosens a gate), and what to do when a session stops on a permission question.
+- `/issue-loop:handing-over`: Passes the loop to a fresh orchestrator at about 150k tokens of context: rewrites the handoff file, starts the successor in auto mode, sends the exact first message, checks it took over.
+
+**Setup:** needs Claude Code sessions in a terminal manager the orchestrator can drive (the bundled driver is for herdr; another manager needs five shell functions), plus a logged-in `gh`, `git`, `jq`, `curl`, `timeout` and GNU `date`. The repo needs issues as the queue, the labels `bug`, `regression`, `wish`, `test-debt` and one for "not now", CI as a required check on the newest commit of a PR, a deploy that can be checked from outside, and a way back. The implementer needs a checkout no other session works in, and the loop folder lives outside every checkout. Sessions run in auto mode (`claude --permission-mode auto`), never with skipped permissions.
+
+Claude Code only; the plugin is not in the Codex marketplace. Read the limits before relying on it: tests prove logic and not taste, and no check in the loop is a person who uses the product. See `plugins/issue-loop/README.md`.
 
 ### prose-styles
 

@@ -1,0 +1,35 @@
+{
+  "name": "issue-loop",
+  "version": "0.1.0",
+  "description": "Run an unattended build loop: one orchestrator session drives one implementer session through a repo's GitHub issues, one merged and deployed PR per task, with a gate between tasks.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "license": "MIT",
+  "keywords": [
+    "orchestrator",
+    "unattended",
+    "github-issues",
+    "agent-loop",
+    "herdr",
+    "handoff",
+    "claude-code"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Issue Loop",
+    "shortDescription": "An orchestrator session drives an implementer through the issue queue",
+    "longDescription": "Teaches a Claude Code session to run an unattended build loop as orchestrator: it sends one task at a time to an implementer session (clear, full brief), waits for an exact DONE line with a clock, checks the result from outside with a gate script, keeps a ledger, reports in a few lines and sends the next task. Ships the brief template with the reason behind each rule, script templates with a swappable session driver (herdr bundled), a handoff template, and the honest limits of such a loop. Built for Claude Code sessions; not registered in the Codex marketplace.",
+    "developerName": "Pascal Göllner",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Run the issue loop on this repo",
+      "Hand the loop over to a fresh orchestrator"
+    ],
+    "screenshots": []
+  }
+}
