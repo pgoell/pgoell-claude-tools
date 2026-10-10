@@ -546,11 +546,15 @@
     }
   `;
 
+  // True only while a thumbnail builds its inert <deck-stage> copy.
+  let SHELL = false;
+
   class DeckStage extends HTMLElement {
     static get observedAttributes() { return ['width', 'height', 'noscale', 'no-rail']; }
 
     constructor() {
       super();
+      if (SHELL) { this._shell = true; return; }
       this._root = this.attachShadow({ mode: 'open' });
       this._index = 0;
       this._slides = [];
@@ -584,6 +588,7 @@
     }
 
     connectedCallback() {
+      if (this._shell) return;
       // Presenter-view popup loads deckUrl?_snthumb=...#N for its prev/cur/
       // next thumbnails, the rail has no business rendering inside those
       // (wrong scale, and it offsets the stage so the thumb shows a gutter).
@@ -673,18 +678,13 @@
       this._onTweakChange = () => {
         clearTimeout(this._tweakTimer);
         this._tweakTimer = setTimeout(() => {
-          this._snapshotAuthorCss();
-          // One getComputedStyle for the whole batch, each
-          // getPropertyValue read below reuses the same computed style
-          // as long as nothing invalidates layout between thumbs.
-          const cs = getComputedStyle(this);
+          this._thumbCssCache = null;
           (this._thumbs || []).forEach((t) => {
-            if (t.host) this._syncThumbHostAttrs(t.host, cs);
+            if (t.host) this._syncThumbShell(t);
           });
         }, 120);
       };
       window.addEventListener('tweakchange', this._onTweakChange);
-      this._snapshotAuthorCss();
       // Build the rail now that it's enabled, slotchange already fired,
       // so _renderRail's early-return skipped the initial build.
       this._syncRailHidden();
@@ -692,92 +692,140 @@
       this._fit();
     }
 
-    /** Snapshot document stylesheets into a constructable sheet that each
-     *  thumbnail's nested shadow root adopts, so author CSS styles the
-     *  cloned slide content without touching this component's chrome.
-     *  Cross-origin sheets throw on .cssRules, skip them. Re-callable:
-     *  the existing constructable sheet is reused via replaceSync so every
-     *  already-adopted shadow root picks up the fresh CSS without re-adopt. */
-    _snapshotAuthorCss() {
-      // :root in an adopted sheet inside a shadow root matches nothing
-      // (only the document root qualifies), so author rules like
-      // `:root[data-voice="modern"] .serif` never reach the clones.
-      // Rewrite :root → :host and mirror <html>'s data-*/class/lang onto
-      // each thumb host (see _syncThumbHostAttrs) so the same selectors
-      // match inside the thumbnail's shadow tree.
-      const authorCss = Array.from(document.styleSheets).map((sh) => {
-        try {
-          return Array.from(sh.cssRules).map((r) => r.cssText).join('\n');
-        } catch (e) { return ''; }
-      }).join('\n')
-        // The shadow host is featureless outside the functional :host(...)
-        // form, so any compound on :root, [attr], .class, #id, :pseudo ,
-        // must become :host(<compound>) not :host<compound>. Same for the
-        // html type selector (Tailwind class-strategy dark mode emits
-        // html.dark; Pico uses html[data-theme]), which has nothing to
-        // match inside the thumb's shadow tree.
-        .replace(/:root((?:\[[^\]]*\]|[.#][-\w]+|:[-\w]+(?:\([^)]*\))?)+)/g, ':host($1)')
-        .replace(/:root\b/g, ':host')
-        .replace(/(^|[\s,>~+(}])html((?:\[[^\]]*\]|[.#][-\w]+|:[-\w]+(?:\([^)]*\))?)+)(?![-\w])/g, '$1:host($2)')
-        .replace(/(^|[\s,>~+(}])html(?![-\w])/g, '$1:host');
-      // Every custom property the author references. _syncThumbHostAttrs
-      // mirrors each one's *computed* value at <deck-stage> onto the
-      // thumb host so the live value wins over the :host default above
-      // regardless of which ancestor the tweak wrote to (<html>, <body>,
-      // a wrapper div, or the deck-stage element itself all inherit
-      // down to getComputedStyle(this)).
-      this._authorVars = new Set(authorCss.match(/--[\w-]+/g) || []);
-      try {
-        if (!this._adoptedSheet) this._adoptedSheet = new CSSStyleSheet();
-        this._adoptedSheet.replaceSync(authorCss);
-      } catch (e) {
-        this._adoptedSheet = null;
-        this._authorCss = authorCss;
-      }
+    /** Thumbnails render in a nested shadow root, where author selectors
+     *  that name the slide's ancestors (`deck-stage > section`, `body .x`,
+     *  `html.dark .x`) match nothing and the clone inherits the rail's own
+     *  color and font. So each thumb rebuilds the ancestor chain inside its
+     *  shadow root: boxless (display:contents) copies of <html>, <body>,
+     *  any wrappers and an inert <deck-stage>, attributes included, with
+     *  the slide clone at the bottom. A linked sheet is attached as a copy
+     *  of its <link>, because cssRules throws for linked sheets on file://
+     *  and for cross-origin sheets; see _thumbCss for the exception. */
+    _syncThumbSheets(entry) {
+      const now = Array.from(document.styleSheets).filter((sh) => sh.ownerNode && !sh.disabled);
+      const old = entry.sheets || [];
+      const same = now.length === old.length && now.every((sh, i) => sh.ownerNode === old[i].src);
+      const sr = entry.host.shadowRoot;
+      entry.sheets = now.map((sh, i) => {
+        const src = sh.ownerNode;
+        const css = this._thumbCss(sh);
+        const isStyle = css != null;
+        let node = same ? old[i].node : (old.find((o) => o.src === src) || {}).node;
+        if (node && (node.localName === 'style') !== isStyle) { node.remove(); node = null; }
+        if (!node) {
+          if (isStyle) {
+            node = document.createElement('style');
+            if (sh.media.mediaText) node.media = sh.media.mediaText;
+          } else {
+            // Linked sheets load async even from cache; keep the thumb
+            // hidden until they have, so it never paints unstyled.
+            node = src.cloneNode(true);
+            node.removeAttribute('id');
+            entry.pending = (entry.pending || 0) + 1;
+            const done = () => {
+              if (--entry.pending <= 0) { entry.pending = 0; entry.host.style.visibility = ''; }
+            };
+            node.addEventListener('load', done, { once: true });
+            node.addEventListener('error', done, { once: true });
+          }
+        }
+        if (isStyle && node.textContent !== css) node.textContent = css;
+        return { node, src };
+      });
+      if (same && entry.sheets.every((n, i) => n.node === old[i].node)) return;
+      old.forEach((o) => { if (!entry.sheets.some((n) => n.node === o.node)) o.node.remove(); });
+      entry.sheets.forEach((n) => sr.insertBefore(n.node, entry.chain[0][0]));
     }
 
-    _syncThumbHostAttrs(host, cs) {
+    /** CSS text for a sheet the thumb gets as a <style>, or null when it
+     *  gets a copy of the <link>. :root matches only the document root, so
+     *  it is pointed at the copied <html> (a class, same specificity). That
+     *  needs the rules as text: always possible for an inline <style>, and
+     *  for a linked sheet only where cssRules is readable (not file://).
+     *  Unreadable, a linked `:root { --x }` still works by inheritance;
+     *  `:root.dark .x` and non-custom properties under :root do not.
+     *  Cached per sheet until the next tweakchange. */
+    _thumbCss(sh) {
+      const cache = this._thumbCssCache || (this._thumbCssCache = new WeakMap());
+      if (cache.has(sh)) return cache.get(sh);
+      const link = sh.ownerNode.localName !== 'style';
+      let css = link ? null : '';
+      try {
+        css = Array.from(sh.cssRules, (r) => r.cssText).join('\n');
+        if (link && !/:root\b/.test(css)) css = null;
+      } catch (e) {}
+      if (css) {
+        css = css.replace(/:root\b/g, '.deck-thumb-root');
+        // cssText keeps url() as written, relative to the sheet's own file.
+        if (link) {
+          css = css.replace(/url\((["']?)([^"')]+)\1\)/g, (m, q, u) => {
+            if (/^(#|data:)/.test(u)) return m;
+            try { return 'url("' + new URL(u, sh.href) + '")'; } catch (e) { return m; }
+          });
+        }
+      }
+      cache.set(sh, css);
+      return css;
+    }
+
+    _syncThumbShell(entry) {
       const de = document.documentElement;
-      // setAttribute overwrites but can't delete, an attr removed from
-      // <html> (toggleAttribute off, classList emptied) would linger on
-      // the host and :host([data-*]) / :host(.foo) rules would keep
-      // matching. Remove stale mirrored attrs first; iterate backward
-      // because removeAttribute mutates the live NamedNodeMap.
-      for (let i = host.attributes.length - 1; i >= 0; i--) {
-        const n = host.attributes[i].name;
-        if ((n.startsWith('data-') || n === 'class' || n === 'lang')
-            && !de.hasAttribute(n)) {
-          host.removeAttribute(n);
+      this._syncThumbSheets(entry);
+      // Start from browser defaults, as <html> does, not from the rail's
+      // own text styles, then take what the real <html> ended up with
+      // (covers `:root { color }` in a sheet _thumbCss could not read).
+      // line-height is left out: it reads back in px, not as a multiplier.
+      const cs = getComputedStyle(de);
+      entry.host.style.cssText = 'all:initial;position:absolute;inset:0;display:block;' +
+        'color:' + cs.color + ';font-family:' + cs.fontFamily + ';font-size:' + cs.fontSize +
+        ';font-weight:' + cs.fontWeight + ';font-style:' + cs.fontStyle +
+        ';letter-spacing:' + cs.letterSpacing + ';text-align:' + cs.textAlign +
+        ';direction:' + cs.direction + ';color-scheme:' + cs.colorScheme + ';' +
+        (entry.pending ? 'visibility:hidden;' : '');
+      // The real element also takes color and font-family from this
+      // component's own :host rule, which the inert copy does not have.
+      const own = getComputedStyle(this);
+      entry.chain.forEach(([el, src]) => {
+        for (let i = el.attributes.length - 1; i >= 0; i--) el.removeAttribute(el.attributes[i].name);
+        for (const a of src.attributes) el.setAttribute(a.name, a.value);
+        if (src === de) el.classList.add('deck-thumb-root');
+        el.style.setProperty('display', 'contents', 'important');
+        if (src === this) {
+          el.style.color = own.color;
+          el.style.fontFamily = own.fontFamily;
         }
-      }
-      for (const a of de.attributes) {
-        if (a.name.startsWith('data-') || a.name === 'class' || a.name === 'lang') {
-          host.setAttribute(a.name, a.value);
-        }
-      }
-      // The :root→:host rewrite in _snapshotAuthorCss pins each custom
-      // property to its stylesheet default on the thumb host, shadowing
-      // the live value that would otherwise inherit. Tweaks can write the
-      // live value on any ancestor, <html>, <body>, a wrapper div, the
-      // deck-stage element, so read it as the *computed* value at
-      // <deck-stage> (which sees the whole inheritance chain) rather than
-      // trying to guess which element the author wrote to. Inline on the
-      // host beats the :host{} rule. remove-stale covers vars dropped
-      // from the stylesheet between snapshots.
-      const vars = this._authorVars || new Set();
-      for (let i = host.style.length - 1; i >= 0; i--) {
-        const p = host.style[i];
-        if (p.startsWith('--') && !vars.has(p)) host.style.removeProperty(p);
-      }
-      const live = cs || getComputedStyle(this);
-      vars.forEach((p) => {
-        const v = live.getPropertyValue(p);
-        if (v) host.style.setProperty(p, v.trim());
-        else host.style.removeProperty(p);
       });
     }
 
+    _buildThumbShell(entry, clone) {
+      const host = document.createElement('div');
+      const sr = host.attachShadow({ mode: 'open' });
+      try { sr.adoptedStyleSheets = document.adoptedStyleSheets; } catch (e) {}
+      // Ancestor chain, outermost first.
+      const srcs = [];
+      for (let n = this; n; n = n.parentElement) srcs.unshift(n);
+      entry.chain = [];
+      let parent = sr;
+      srcs.forEach((src) => {
+        let el;
+        if (src === this) {
+          SHELL = true;
+          try { el = document.createElement(this.localName); } finally { SHELL = false; }
+        } else {
+          el = document.createElement(src.localName.includes('-') ? 'div' : src.localName);
+        }
+        entry.chain.push([el, src]);
+        parent.appendChild(el);
+        parent = el;
+      });
+      parent.appendChild(clone);
+      entry.host = host;
+      this._syncThumbShell(entry);
+      entry.frame.appendChild(host);
+    }
+
     disconnectedCallback() {
+      if (this._shell) return;
       window.removeEventListener('keydown', this._onKey);
       window.removeEventListener('resize', this._onResize);
       window.removeEventListener('mousemove', this._onMouseMove);
@@ -795,6 +843,7 @@
     }
 
     attributeChangedCallback() {
+      if (this._shell) return;
       if (this._canvas) {
         this._canvas.style.width = this.designWidth + 'px';
         this._canvas.style.height = this.designHeight + 'px';
@@ -1492,8 +1541,8 @@
     }
 
     /** Lazily build the clone for a thumb that has scrolled into view. */
-    _materialize(entry) {
-      if (entry.host) return;
+    _materialize(entry, refresh) {
+      if (entry.host && !refresh) return;
       const dw = this.designWidth, dh = this.designHeight;
       let clone = entry.slide.cloneNode(true);
       clone.removeAttribute('id');
@@ -1560,19 +1609,14 @@
       clone.style.cssText += ';position:absolute;top:0;left:0;transform-origin:0 0;' +
         'pointer-events:none;width:' + dw + 'px;height:' + dh + 'px;' +
         'box-sizing:border-box;overflow:hidden;visibility:visible;opacity:1;';
-      const host = document.createElement('div');
-      host.style.cssText = 'position:absolute;inset:0;';
-      this._syncThumbHostAttrs(host);
-      const sr = host.attachShadow({ mode: 'open' });
-      if (this._adoptedSheet) sr.adoptedStyleSheets = [this._adoptedSheet];
-      else {
-        const st = document.createElement('style');
-        st.textContent = this._authorCss || '';
-        sr.appendChild(st);
-      }
-      sr.appendChild(clone);
-      entry.frame.appendChild(host);
-      entry.host = host;
+      // Same :root rewrite for <style> blocks authored inside the slide.
+      clone.querySelectorAll('style').forEach((st) => {
+        st.textContent = st.textContent.replace(/:root\b/g, '.deck-thumb-root');
+      });
+      // A refresh swaps only the clone, so the shell and its loaded
+      // sheets stay and the thumb does not flash.
+      if (entry.host) entry.clone.replaceWith(clone);
+      else this._buildThumbShell(entry, clone);
       entry.clone = clone;
       if (this._thumbScale) clone.style.transform = 'scale(' + this._thumbScale + ')';
       // Once materialized the IO callback is a no-op early-return ,
@@ -1586,9 +1630,7 @@
     _refreshThumb(slide) {
       const entry = (this._thumbs || []).find((t) => t.slide === slide);
       if (!entry || !entry.host) return;
-      entry.host.remove();
-      entry.host = entry.clone = null;
-      this._materialize(entry);
+      this._materialize(entry, true);
     }
 
     _scaleThumbs() {
