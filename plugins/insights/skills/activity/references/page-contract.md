@@ -106,9 +106,11 @@ marked **checked**, and `link_daily.py` reads the result.
 - `failed_ci`: one row per branch and workflow whose newest finished run of
   the day failed. Only the default branch and branches with an open PR; a
   cancelled last run is not a failure.
-- `ledger`: the day's issue-loop task lines, cells as written.
+- `ledger`: the day's issue-loop task lines, cells as written. Only a line
+  that asks the user to act or leaves a risk open becomes a `needs` item;
+  friction such as time lost to a hook does not.
 - `cron`: `ok`, `failed, exit N`, or `running or died` (the log has no exit
-  line).
+  line). The activity job's own log of the day it runs is left out.
 
 ## What you add
 
@@ -147,8 +149,10 @@ Write this to `/tmp/activity-notes-<date>.json`:
   with a link.
 - `resume`: optional, the full `session.id` of one open PR the item covers
   (**checked** against the data). The page prints `claude --resume <id>`.
-- Order the items by how much they block: the first five with a link go into the daily
-  note.
+- At most 8 items (**checked**). Order: the user must act, then open risks,
+  then open PRs, then stale PRs. A PR stands in one item only. Fold what is
+  over the cap into grouped items that keep every link. The first five with a
+  link go into the daily note.
 
 ### shipped
 

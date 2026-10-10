@@ -110,6 +110,14 @@ ok "pending insights pr is marked" "$(q '.open_prs[1].insights')" true
 ok "session url from the bridge id" "$(q '.open_prs[1].session.url')" https://claude.ai/code/session_01ABC
 ok "cron states" "$(q '.cron|map("\(.job) \(.state)")|join("; ")')" "insights failed, exit 1; news ok"
 
+# cron rows: the activity job's own open log of the run day is left out, an older one stays
+: >"$S/insights/2026-10-10-activity.log"
+own() { python3 -c 'import sys; sys.path[:0] = [sys.argv[1], sys.argv[1] + "/../../digest/scripts"]; import collect, datetime, pathlib
+print(",".join(j["job"] for j in collect.cron_jobs(pathlib.Path(sys.argv[2]), datetime.date(2026, 10, 9), sys.argv[3])))' "$scripts" "$S" "$1"; }
+ok "own activity log of the run day is skipped" "$(own 2026-10-10-activity)" insights,news
+ok "an activity log of another day stays" "$(own 2026-10-11-activity)" insights,insights-activity,news
+rm "$S/insights/2026-10-10-activity.log"
+
 # render: refuses bad notes, then renders
 N="$T/notes.json"
 note() { jq -n --arg h "$1" --arg u "$2" --arg l "${3:-#9}" --arg r "${4:-app}" '{needs:[{headline:$h,why:"Open since 2026-10-09.",links:[{label:$l,url:$u}],resume:"s-app"}],shipped:{($r):"1 PR: seven."}}' >"$N"; }
@@ -131,6 +139,9 @@ out=$(render); ok "render refuses a bracket in a headline" $? 1
 note "app #9 waits" https://github.com/me/app/pull/9 "#9" vault
 out=$(render); ok "render refuses a summary for a repo that merged nothing" $? 1
 has "render names the repo" "$out" "shipped['vault']"
+jq -n '{needs:[range(9)|{headline:"item \(.)",why:"It waits.",links:[]}],shipped:{}}' >"$N"
+out=$(render); ok "render refuses a ninth needs item" $? 1
+has "render names the cap" "$out" "the limit is 8"
 [ -e "$V/01 Periodic/07 Activity/$D.html" ]; ok "nothing rendered on errors" $? 1
 note "app #9 waits" https://github.com/me/app/pull/9
 out=$(render); ok "render exit" $? 0

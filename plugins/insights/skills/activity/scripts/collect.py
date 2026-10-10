@@ -36,7 +36,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 sys.path.append(str(Path(__file__).resolve().parents[2] / "digest" / "scripts"))
-from common import BERLIN, analysed_day, base_parser, insights_dir, read_jsonl  # noqa: E402
+from common import BERLIN, analysed_day, base_parser, insights_dir, read_jsonl, today  # noqa: E402
 from extract import MAX_BYTES, Session, scan  # noqa: E402
 
 ACTIVITY = "07 Activity"
@@ -281,12 +281,14 @@ def usage(day, repos, folder_repo: dict) -> dict | None:
     return {"tokens": totals.get("totalTokens"), "cost": round(totals.get("totalCost") or 0, 2)}
 
 
-def cron_jobs(state: Path, day) -> list[dict]:
-    """How each insights and news cron run of the day, and of the morning after, ended."""
+def cron_jobs(state: Path, day, running: str) -> list[dict]:
+    """How each insights and news cron run of the day, and of the morning after, ended. `running` is this run's own log."""
     out = []
     for folder in ("insights", "news"):
         for d in (day, day + timedelta(days=1)):
             for log in sorted((state / folder).glob(f"{d.isoformat()}*.log")):
+                if log.stem == running:
+                    continue  # this run's own log, still open
                 exits = re.findall(r"^== \S+ exit (\d+)", log.read_text(errors="replace"), re.M)
                 state_word = "running or died" if not exits else "ok" if exits[-1] == "0" else f"failed, exit {exits[-1]}"
                 out.append({"job": f"{folder}{log.stem[10:]}", "date": d.isoformat(), "state": state_word, "log": str(log)})
@@ -367,7 +369,7 @@ def main() -> None:
         "failed_ci": ci,
         "ledger": ledger,
         "usage": cost,
-        "cron": cron_jobs(args.state, day),
+        "cron": cron_jobs(args.state, day, f"{today().isoformat()}-activity"),
         "vault": notes,
         "scope": {"own_runs_skipped": seen["own"], "skipped_large": seen["skipped"]},
         "needs": [],

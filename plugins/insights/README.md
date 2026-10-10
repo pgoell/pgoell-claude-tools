@@ -69,7 +69,8 @@ from `ccusage` alone and covers every session, the jobs' own too.
 The page has three parts. **Needs you** is the only part with a link per
 item: open PRs (a series is one item), CI that ended the day red, insights fixes
 waiting on a PR, ledger warnings, PRs open for more than 7 days, failed cron
-jobs. **Shipped** has one block per repo with one link to its merged PRs.
+jobs; at most 8 items, the rest folded into groups that keep their links.
+**Shipped** has one block per repo with one link to its merged PRs.
 **Churn** is a table of counts with outliers marked. `render.py` refuses a
 link that is not in a URL field of the collected data, and any text over its
 limit.
@@ -162,6 +163,6 @@ daily note block (a rerun changes only its own lines; frontmatter, todos, the
 user's bullets and a mention under a heading stay), the cron wrapper's tool
 list, and a run with `gh` and `ccusage` down.
 
-Last run, 2026-10-10: 62 of 62 checks pass.
+Last run, 2026-10-10: 66 of 66 checks pass.
 
 The digest and apply skills have no test.

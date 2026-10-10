@@ -27,6 +27,7 @@ from common import BERLIN, analysed_day, base_parser  # noqa: E402
 ACTIVITY = "07 Activity"
 TEMPLATE = Path(__file__).resolve().parent.parent / "references" / "page.html.j2"
 HEADLINE_MAX, WHY_MAX, SUMMARY_MAX, LABEL_MAX = 80, 160, 300, 40
+MAX_NEEDS = 8
 URL_KEYS = ("url", "merged_url", "pr_urls")
 BANNED = re.compile("[\u2014\u2013\u00b7]| - ")
 LIMITS = {"sessions": 40, "commits": 40, "prs_opened": 20, "issues_opened": 30, "loop_minutes": 480, "cost": 200}
@@ -62,6 +63,8 @@ def check(page: dict) -> list[str]:
         elif BANNED.search(text):
             errors.append(f"{where}: holds a dash, an interpunct or a hyphen used as punctuation")
 
+    if len(page["needs"]) > MAX_NEEDS:
+        errors.append(f"needs: {len(page['needs'])} items, the limit is {MAX_NEEDS}; fold the rest into grouped items that keep their links")
     for i, n in enumerate(page["needs"]):
         where = f"needs[{i}]"
         prose(f"{where}.headline", n.get("headline"), HEADLINE_MAX)
