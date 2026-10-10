@@ -62,7 +62,7 @@ Emit decks that honor this structure, so the stage engine, the presenter view, t
 
 ## The stage engine
 
-This skill bundles the deck-stage engine in its `assets/` directory: `deck-stage.js`, `presenter.js`, and `presenter.html`. Copy them unmodified next to the deck; they are brand-neutral and carry no preset styling. `deck-stage.js` defines the `<deck-stage>` web component: CSS-transform scaling of the authored canvas to any viewport, keyboard navigation (arrows, Space, Home/End, number keys), a resizable thumbnail rail with drag-to-reorder and skip, a print stylesheet that lays one slide per page so Print to PDF just works, and slide hiding via `visibility` so iframe and video state survives navigation. Tooling that measures geometry (the review probes, the PPTX exporter) sets the `noscale` attribute on `<deck-stage>` to read authored-canvas pixels.
+This skill bundles the deck-stage engine in its `assets/` directory: `deck-stage.js`, `presenter.js`, and `presenter.html`. Copy them unmodified next to the deck; they are brand-neutral and carry no preset styling. `deck-stage.js` defines the `<deck-stage>` web component: CSS-transform scaling of the authored canvas to any viewport, keyboard navigation (arrows, Space, Home/End, number keys), a resizable thumbnail rail with drag-to-reorder and skip (each thumbnail is a live clone of its slide, styled by the deck's own CSS), a print stylesheet that lays one slide per page so Print to PDF just works, and slide hiding via `visibility` so iframe and video state survives navigation. Tooling that measures geometry (the review probes, the PPTX exporter) sets the `noscale` attribute on `<deck-stage>` to read authored-canvas pixels.
 
 Wire a deck like this:
 

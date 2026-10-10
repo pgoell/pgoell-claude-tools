@@ -1,6 +1,6 @@
 {
   "name": "presentations",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Design, build, review, export, and theme multi-slide HTML presentations with brand presets",
   "author": { "name": "Pascal Göllner" },
   "license": "MIT",
