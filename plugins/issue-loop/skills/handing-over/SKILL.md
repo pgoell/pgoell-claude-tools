@@ -31,6 +31,7 @@ What goes in, and what the successor cannot get from anywhere else:
 
 - **Standing orders**, in the user's words, with dates. Above all the ones that changed a default: what they approved for good, what they do not want raised again, how they want reports.
 - **The implementer's exact state**: name, idle or working, the commit it sits on, the token of a running task.
+- **A running task's clock**: when it began (`task.start`), and whether `wait.sh` has said `TIMEOUT` for it. `TIMEOUT` comes once per task, so the successor will not hear it again.
 - **The queue**, in order, with the reason for the order, and what is not for the loop.
 - **Told the user, no answer yet.** Without this list the successor asks again, or forgets.
 - **Local facts**: where the live data is and its baseline counts, the way back, known flaky tests, what a typical task costs.
@@ -52,17 +53,20 @@ The first message, with your words in the angle brackets and nothing else change
 
 **4. Check that it took over.** Read the successor's screen after a minute. It took over when it has read the file and either sent a task or started the wait. If its state is `gone`, the session quit at the start: read its pane, fix the cause, start again. If it asks for a go-ahead, answer "go" or "1" once.
 
-**5. Tell the user and stop.** Three lines: the successor's name and tab, what runs, that you are retired. From then on send nothing to the implementer. Two orchestrators on one implementer is the same fault as two sessions in one checkout.
+**5. Pass the name and stop your wait.** Write the successor's name into `orch-name` (`echo <new name> >orch-name`), so the implementer's `notify.sh` tells the successor. Stop your own background `wait.sh`: two waits on one task share the one `TIMEOUT`, and the retired session must not be the one that gets it.
+
+**6. Tell the user and stop.** Three lines: the successor's name and tab, what runs, that you are retired. From then on send nothing to the implementer. Two orchestrators on one implementer is the same fault as two sessions in one checkout.
 
 ## Faults seen in a handover
 
 - **The start dialog ate the prompt.** A successor started with a skip-permissions flag sat on an accept dialog; the first message's Enter chose "No, exit". The driver still called the start a success, and the fault stayed hidden because the output went to `/dev/null`. Auto mode has no such dialog, and it is the rule anyway.
 - **The folder trust question ate the prompt.** Same fault, other dialog: a successor started in a loop folder that Claude Code had never seen asked whether the folder is trusted, default "No, exit". `start.sh` now reads the screen first, sends nothing into a dialog and exits 5 with what it saw. The answer is the user's: ask them to start `claude` once in the loop folder and accept. If the session is gone after the first message, `start.sh` exits 1.
 - **The successor asked the go-ahead question.** The first message is a paste too. `start.sh` answers it.
+- **The notify line went to the retired session.** `orch-name` still held the old name. The successor's wait caught the DONE line anyway; fix the file. A retired orchestrator that gets an `impl settled` line does nothing with it.
 - **A stop order got lost.** If the user had stopped the loop, the first thing in `HANDOFF.md` is "STOPPED: send no task until the user says go", and the first message must not say "start the next task".
 
 ## Self-Healing
 
 - `start.sh` prints "start failed": run the driver's start by hand (`references/driver.md` in `running-the-loop`) and read the error.
-- The successor reads the file but does nothing: send "take over as HANDOFF.md says, first steps 1 to 5".
+- The successor reads the file but does nothing: send "take over as HANDOFF.md says, first steps 1 to 6".
 - You are the successor and the file is thin: read the dated older handoff, the ledger, and the implementer's screen before you send anything.

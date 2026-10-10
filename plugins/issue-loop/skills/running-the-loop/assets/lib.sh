@@ -1,5 +1,5 @@
 #!/bin/bash
-# Shared by next.sh, wait.sh, gate.sh and start.sh. Source it, do not run it.
+# Shared by next.sh, wait.sh, gate.sh, start.sh and notify.sh. Source it, do not run it.
 S=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 . "$S/loop.env"
 . "$S/$DRIVER"
