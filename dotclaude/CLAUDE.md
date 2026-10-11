@@ -70,6 +70,11 @@ The usual judgment still applies. Use one when the work fans out or needs fresh
 eyes, not for a lookup you could do in one grep, and say what you found rather
 than that you asked something.
 
+To drive other Claude sessions through a list of GitHub issues, use the
+issue-loop plugin (`issue-loop:running-the-loop`). One implementer session at a
+time. Start it in auto mode, never with `bypassPermissions` or
+`--dangerously-skip-permissions`.
+
 Machine-local and private instructions live in this file, which is not versioned:
 
 @~/.claude/CLAUDE.private.md
