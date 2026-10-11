@@ -8,3 +8,6 @@ plugins/databricks/references/research/
 plugins/presentations/evals/results/
 plugins/writing/evals/results/
 __pycache__/
+
+# Hosted deck editor secrets
+plugins/presentations/hosted/.env

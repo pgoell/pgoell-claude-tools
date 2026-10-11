@@ -5,6 +5,7 @@
   const stage = document.querySelector('deck-stage');
   if (!stage) return;
   let rev = document.currentScript.dataset.rev;
+  const canSend = 'send' in document.currentScript.dataset; // hosted editor: feedback goes out as a GitHub issue
 
   // Same slide model as the hard gates, so numbers match #N and the review tools.
   const slides = () => [...stage.children].filter(el => !['TEMPLATE', 'SCRIPT', 'STYLE'].includes(el.tagName));
@@ -58,8 +59,10 @@
       <button data-do="add" title="Keep this selection and note as a numbered comment">Add comment</button>
       <button data-do="draw" title="Draw on the slide">Draw</button>
       <button data-do="copy" title="Copy all comments, sources and screenshots as one prompt">Copy prompt</button>
+      ${canSend ? '<button data-do="send" title="File all comments, sources and screenshots as a GitHub issue">Send</button>' : ''}
       <button data-do="clear" title="Drop all comments and drawings">Clear</button>
       <button data-do="hide" title="Shrink or restore this panel">Hide</button>
+      ${canSend ? '<button data-do="decks" title="Back to the list of decks">Decks</button>' : ''}
     </div>
     <div class="list"></div>
     <div class="status"></div>
@@ -212,19 +215,24 @@
     sel = [];
     note.value = '';
   };
-  const copyPrompt = async () => {
+  const copyPrompt = async (send) => {
     addComment();
     changed();
     const used = slides().filter(s => comments.some(c => c.slide === s) || (ink.get(s) || []).length);
     if (!used.length) { $('.status').textContent = 'Nothing to copy yet: add a comment or draw on a slide.'; return; }
     $('.status').textContent = 'Building the prompt and its screenshots...';
-    const res = await post('prompt', { size: [used[0].offsetWidth, used[0].offsetHeight], slides: used.map(s => ({
+    const res = await post(send ? 'issue' : 'prompt', { size: [used[0].offsetWidth, used[0].offsetHeight], slides: used.map(s => ({
       n: slides().indexOf(s) + 1, pos: pos(s), label: s.dataset.screenLabel || '', strokes: ink.get(s) || [],
       comments: comments.map((c, i) => ({ n: i + 1, note: c.note, slide: c.slide,
         elements: c.els.filter(el => el.isConnected).map(el => ({ pos: pos(el), selector: selector(el), rect: canvasRect(el) })) }))
         .filter(c => c.slide === s).map(({ slide, ...c }) => c),
     })) });
     const text = await res.text();
+    if (send) {
+      if (res.ok) { comments = []; ink.clear(); changed(); }
+      $('.status').textContent = res.ok ? `Sent as ${text}` : text;
+      return;
+    }
     try {
       await navigator.clipboard.writeText(text);
       $('.status').textContent = `Copied ${comments.length} comments from ${used.length} slides. Paste the prompt into the session.`;
@@ -236,7 +244,8 @@
   };
   $('.row').addEventListener('click', (e) => {
     const act = e.target.dataset.do;
-    if (act === 'copy') return copyPrompt();
+    if (act === 'decks') return location.assign('/__decks/');
+    if (act === 'copy' || act === 'send') return copyPrompt(act === 'send');
     if (act === 'add') addComment();
     if (act === 'draw') drawing = !drawing;
     if (act === 'clear') { comments = []; ink.clear(); }

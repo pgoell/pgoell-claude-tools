@@ -3,6 +3,12 @@
 
 Usage: python3 server.py <deck.html> [port]
 
+Hosted mode, for a server behind a reverse proxy that does the sign-in: set
+DECK_EDITOR_HOST to the public host name. The server then listens on every
+interface and answers that name too. With DECK_EDITOR_REPO (owner/name) and
+GITHUB_TOKEN set as well, the overlay shows "Send", which files the feedback
+prompt as a GitHub issue.
+
 Serves the deck with a `data-de="<source offset>"` attribute on every element
 inside <deck-stage> and an overlay script. The file on disk never carries
 either: every edit is a splice of the source text at offsets, so the bytes
@@ -12,12 +18,14 @@ import hashlib
 import html
 import json
 import mimetypes
+import os
 import re
 import shutil
 import subprocess
 import sys
 import threading
 import time
+import urllib.request
 from html.parser import HTMLParser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -27,6 +35,8 @@ HERE = Path(__file__).resolve().parent
 DECK = Path(sys.argv[1]).resolve()
 PORT = int(sys.argv[2]) if len(sys.argv) > 2 else 4747
 STATE = DECK.parent / ".deck-editor"
+HOST = os.environ.get("DECK_EDITOR_HOST")
+REPO, TOKEN = os.environ.get("DECK_EDITOR_REPO"), os.environ.get("GITHUB_TOKEN")
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
 
 
@@ -114,7 +124,7 @@ def annotated(text, outline=(), marked=False):
         return html.replace("<deck-stage", "<deck-stage no-rail", 1) + (
             f"<style>{picked}{{outline:6px solid #ff2d95;outline-offset:6px}}</style>"
         )
-    return html + f'<script src="/__editor/overlay.js" data-rev="{rev_of(text)}"></script>'
+    return html + f'<script src="/__editor/overlay.js" data-rev="{rev_of(text)}"{" data-send" * bool(REPO and TOKEN)}></script>'
 
 
 # Serve from the highest directory the deck reaches with ../ so shared engines and assets resolve.
@@ -297,7 +307,7 @@ CHROME = next((p for p in map(shutil.which, ("google-chrome", "chromium", "chrom
 
 def snap(query, slide, out):
     """Screenshot one slide of the served deck in headless Chrome."""
-    subprocess.run([CHROME, "--headless", "--hide-scrollbars", "--window-size=1920,1167", "--virtual-time-budget=4000",
+    subprocess.run([CHROME, *os.environ.get("DECK_EDITOR_CHROME_ARGS", "").split(), "--headless", "--hide-scrollbars", "--window-size=1920,1167", "--virtual-time-budget=4000",
                     f"--screenshot={out}", f"http://127.0.0.1:{PORT}{DECK_URL}?{query}#{slide}"], capture_output=True, timeout=60)
     return out.exists()
 
@@ -347,6 +357,30 @@ def write_prompt(body):
     return prompt
 
 
+def git(*args):
+    return subprocess.run(["git", "-C", str(DECK.parent), *args], capture_output=True, text=True).stdout.strip()
+
+
+def send_issue(body):
+    """File the feedback prompt as a GitHub issue that names the branch, the worktree and the deck."""
+    prompt = write_prompt(body)
+    top, branch = Path(git("rev-parse", "--show-toplevel")), git("branch", "--show-current")
+    deck = DECK.relative_to(top).as_posix()
+    issue = {
+        "title": f"Deck feedback: {deck} ({branch})",
+        "labels": ["deck-feedback"],
+        "body": f"Branch: `{branch}`\nWorktree: `{top}`\nDeck: `{deck}`\n\n"
+                f"The screenshots are files on the machine that holds the worktree.\n\n{prompt}",
+    }
+    req = urllib.request.Request(f"https://api.github.com/repos/{REPO}/issues", json.dumps(issue).encode(),
+                                 {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github+json"})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as res:
+            return 200, json.load(res)["html_url"]
+    except OSError as e:  # the prompt stays in prompt.md either way
+        return 502, f"GitHub refused the issue: {e}"
+
+
 def screenshot():
     """Render the selected slide in headless Chrome with the selection outlined."""
     if not CHROME:
@@ -380,7 +414,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def local(self):
         """Refuse other sites: a rebound DNS name on GET, a cross-site form or fetch on POST."""
-        names = (f"127.0.0.1:{PORT}", f"localhost:{PORT}")
+        names = [f"127.0.0.1:{PORT}", f"localhost:{PORT}"] + [HOST] * bool(HOST)
         origin = self.headers.get("Origin")
         ok = self.headers.get("Host") in names and (origin is None or origin.split("//")[-1] in names)
         if not ok:
@@ -445,6 +479,8 @@ class Handler(BaseHTTPRequestHandler):
             self.send(200, "{}", "application/json")
         elif self.path == "/__editor/prompt":
             self.send(200, write_prompt(body))
+        elif self.path == "/__editor/issue" and REPO and TOKEN:
+            self.send(*send_issue(body))
         elif self.path == "/__editor/op":
             result = apply(body)
             self.send(200 if result else 409, json.dumps(result or {}), "application/json")
@@ -454,7 +490,7 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     threading.Thread(target=watch, daemon=True).start()
-    server = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+    server = ThreadingHTTPServer(("0.0.0.0" if HOST else "127.0.0.1", PORT), Handler)
     server.daemon_threads = True
     print(f"Deck editor: http://127.0.0.1:{PORT}{DECK_URL}\nSelection file: {STATE / 'selection.json'}", flush=True)
     server.serve_forever()
