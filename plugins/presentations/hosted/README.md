@@ -51,7 +51,10 @@ files the session reads from disk.
        }
        @root path /
        handle @root {
-           redir /__decks/
+           route {
+               import oauth2_auth
+               redir * /__decks/
+           }
        }
        handle {
            import oauth2_auth
