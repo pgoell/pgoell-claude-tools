@@ -24,16 +24,16 @@ files the session reads from disk.
 
 ## Parts
 
-| File                               | Role                                                                                                                                                          |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `picker.py`                        | Lists the decks of the checkout and of every worktree under `.worktrees/`, at `/__decks/`. A click opens that deck in the editor. One deck is open at a time. |
-| `Dockerfile`, `docker-compose.yml` | Python, Chromium for the screenshots, git for the branch name. No published port.                                                                             |
-| `bridge.py`                        | Reads worktree and deck from the issue and prompts a Claude session through herdr.                                                                            |
-| `deck-feedback.yml`                | The workflow that runs `bridge.py`.                                                                                                                           |
+| File                               | Role                                                                                                                                                                                                                                   |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `picker.py`                        | Lists the branches of the repo, local and on origin, and the decks of the one picked, at `/__decks/`. A click opens that deck in the editor; a branch with no worktree gets one under `.worktrees/` first. One deck is open at a time. |
+| `Dockerfile`, `docker-compose.yml` | Python, Chromium for the screenshots, git for the branch name. No published port.                                                                                                                                                      |
+| `bridge.py`                        | Reads worktree and deck from the issue and prompts a Claude session through herdr.                                                                                                                                                     |
+| `deck-feedback.yml`                | The workflow that runs `bridge.py`.                                                                                                                                                                                                    |
 
 ## Set up
 
-1. Copy `.env.example` to `.env` and fill in a fine-grained GitHub token for the deck repo with "Issues: read and write". Create the label `deck-feedback` in that repo.
+1. Copy `.env.example` to `.env` and fill in a fine-grained GitHub token for the deck repo with "Issues: read and write" and "Contents: read". Create the label `deck-feedback` in that repo.
 2. `docker compose -f hosted/docker-compose.yml up -d --build`, from `plugins/presentations`.
 3. Point the proxy at the container. `/__decks/*` goes to port 8001, the rest to port 8000, all of it behind the sign-in. Leave `/__editor/events` uncompressed: it is an event stream, and a proxy that compresses it holds it back whole. For Caddy:
 
@@ -68,7 +68,10 @@ files the session reads from disk.
 ## Limits
 
 - The editor has no sign-in of its own. Whoever passes the proxy can rewrite every deck in the mounted repo.
-- The picker shows worktrees that exist. A branch with no worktree needs one first (`git worktree add .worktrees/<name> <branch>`).
+- The picker makes a worktree for a branch on first open and never removes one. Remove it by hand when the branch is merged (`git worktree remove .worktrees/<name>`). Ignore `.worktrees/` in the deck repo.
+- "Fetch origin" runs `git fetch --prune` with the token, so branches deleted on origin leave the list. Without "Contents: read" the fetch fails and the list shows origin as the checkout last saw it.
+- A worktree is not updated when its branch moves on origin. Pull in it by hand.
+- A branch checked out in a worktree outside the repo folder is listed and cannot be opened: the container mounts the repo folder only.
 - The container renders screenshots with the fonts it has. A deck that relies on a font installed on the host shows a fallback there.
 - `bridge.py` starts Claude with no flags, so the session runs in your default permission mode.
 - A new session in a folder Claude does not trust yet stops at the trust question, and the prompt is lost. Trust the repo folder once by hand.
