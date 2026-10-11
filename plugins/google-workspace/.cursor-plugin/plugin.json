@@ -1,0 +1,20 @@
+{
+  "name": "google-workspace",
+  "displayName": "Google Workspace",
+  "version": "1.0.2",
+  "description": "Use Gmail and Calendar through gws.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "homepage": "https://github.com/pgoell/pgoell-claude-tools/tree/master/plugins/google-workspace",
+  "repository": "https://github.com/pgoell/pgoell-claude-tools",
+  "license": "MIT",
+  "keywords": [
+    "google",
+    "workspace",
+    "gmail",
+    "calendar",
+    "gws"
+  ],
+  "skills": "./skills/"
+}

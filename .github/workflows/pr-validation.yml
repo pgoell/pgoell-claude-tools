@@ -54,3 +54,17 @@ jobs:
           fetch-depth: 0
       - uses: jdx/mise-action@v2
       - run: mise run check-docs
+
+  validate-cursor-plugins:
+    name: Cursor plugin validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # Cursor's own validator and schemas, vendored from cursor/plugins
+      # (MIT); see .github/cursor-validate/NOTICE for the pinned commit.
+      - run: npm install --no-save --no-package-lock ajv@8.17.1 ajv-formats@3.0.1
+        working-directory: .github/cursor-validate
+      - run: node .github/cursor-validate/validate-plugins.mjs

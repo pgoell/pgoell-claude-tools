@@ -1,0 +1,24 @@
+{
+  "name": "learning",
+  "displayName": "Learning",
+  "version": "0.3.1",
+  "description": "Socratic teach-and-quiz skills that verify you deeply understand a session or a topic.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "homepage": "https://github.com/pgoell/pgoell-claude-tools/tree/master/plugins/learning",
+  "repository": "https://github.com/pgoell/pgoell-claude-tools",
+  "license": "MIT",
+  "keywords": [
+    "learning",
+    "teaching",
+    "tutoring",
+    "quiz",
+    "socratic",
+    "understanding",
+    "study",
+    "claude-code",
+    "codex"
+  ],
+  "skills": "./skills/"
+}

@@ -1,0 +1,27 @@
+{
+  "name": "writing",
+  "displayName": "Writing",
+  "version": "3.1.1",
+  "description": "Ghostwrite pieces from the owner's own facts, or get coached to write them yourself.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "homepage": "https://github.com/pgoell/pgoell-claude-tools/tree/master/plugins/writing",
+  "repository": "https://github.com/pgoell/pgoell-claude-tools",
+  "license": "MIT",
+  "keywords": [
+    "writing",
+    "ghostwriting",
+    "coaching",
+    "blog",
+    "essay",
+    "memo",
+    "briefing",
+    "email",
+    "readme",
+    "technical-documentation",
+    "pyramid",
+    "voice"
+  ],
+  "skills": "./skills/"
+}

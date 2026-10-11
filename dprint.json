@@ -4,6 +4,7 @@
   "toml": {},
   "excludes": [
     "mise.lock",
+    ".github/cursor-validate/**",
     "plugins/diagrams/skills/creating-diagrams/engine/**"
   ],
   "plugins": [

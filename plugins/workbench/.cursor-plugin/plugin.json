@@ -1,0 +1,21 @@
+{
+  "name": "workbench",
+  "displayName": "Workbench",
+  "version": "1.1.1",
+  "description": "Personal Workbench skills for design and autonomous feature work.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "homepage": "https://github.com/pgoell/pgoell-claude-tools/tree/master/plugins/workbench",
+  "repository": "https://github.com/pgoell/pgoell-claude-tools",
+  "license": "MIT",
+  "keywords": [
+    "personal",
+    "brainstorming",
+    "design",
+    "specs",
+    "workflow"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks-cursor.json"
+}

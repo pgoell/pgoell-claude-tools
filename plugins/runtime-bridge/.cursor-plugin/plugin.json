@@ -1,0 +1,24 @@
+{
+  "name": "runtime-bridge",
+  "displayName": "Runtime Bridge",
+  "version": "0.1.2",
+  "description": "Align Claude Code and Codex project configuration.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "homepage": "https://github.com/pgoell/pgoell-claude-tools/tree/master/plugins/runtime-bridge",
+  "repository": "https://github.com/pgoell/pgoell-claude-tools",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "codex",
+    "agents-md",
+    "claude-md",
+    "runtime",
+    "interop",
+    "porting",
+    "agents",
+    "skills"
+  ],
+  "skills": "./skills/"
+}

@@ -1,0 +1,24 @@
+{
+  "name": "critique",
+  "displayName": "Critique",
+  "version": "0.1.1",
+  "description": "Critique ideas, plans, and decisions through independent thinking frames, one fresh subagent each, to counter agreeable answers.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "homepage": "https://github.com/pgoell/pgoell-claude-tools/tree/master/plugins/critique",
+  "repository": "https://github.com/pgoell/pgoell-claude-tools",
+  "license": "MIT",
+  "keywords": [
+    "critique",
+    "pre-mortem",
+    "steelman",
+    "red-team",
+    "decision-making",
+    "sycophancy",
+    "subagents",
+    "claude-code",
+    "codex"
+  ],
+  "skills": "./skills/"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "databricks",
+  "displayName": "Databricks",
+  "version": "0.3.2",
+  "description": "Databricks skills: databricks-core (CLI, auth, profiles, ported from databricks/databricks-agent-skills) and databricks-docs (live docs.databricks.com lookups via WebFetch).",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "homepage": "https://github.com/pgoell/pgoell-claude-tools/tree/master/plugins/databricks",
+  "repository": "https://github.com/pgoell/pgoell-claude-tools",
+  "license": "MIT",
+  "keywords": [
+    "databricks",
+    "cli",
+    "docs",
+    "webfetch"
+  ],
+  "skills": "./skills/"
+}

@@ -1,0 +1,24 @@
+Vendored from cursor/plugins (https://github.com/cursor/plugins)
+Commit: 11713c683fe4add4fd403ea880580abbc9e0875f (2026-10-11)
+License: MIT, Copyright (c) 2026 Cursor (see LICENSE in this directory;
+the upstream README declares MIT for the repository, and LICENSE is copied
+from upstream create-plugin/LICENSE because the repository root has none).
+
+Files and changes:
+
+- schemas/plugin.schema.json      from schemas/plugin.schema.json
+- schemas/marketplace.schema.json from schemas/marketplace.schema.json
+  Change: the em-dash (U+2014) in three "description" strings is replaced
+  by ": " per this repo's em-dash rule. No schema keyword changed.
+- validate-plugins.mjs            from scripts/validate-plugins.mjs
+  Change: the repository root is resolved two levels up from the script
+  and the schemas are read from this directory. Validation logic is
+  unchanged.
+
+The CI job "validate-cursor-plugins" in .github/workflows/pr-validation.yml
+installs ajv and ajv-formats and runs:
+
+  node .github/cursor-validate/validate-plugins.mjs
+
+To refresh, copy the three files from a newer cursor/plugins commit,
+reapply the two changes above, and update the commit here.

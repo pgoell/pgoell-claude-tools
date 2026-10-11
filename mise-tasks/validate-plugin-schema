@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#MISE description="Validate plugin.json files (Claude + Codex) have the required structure"
+#MISE description="Validate plugin.json files (Claude + Codex), and that the generated Cursor manifests are in sync have the required structure"
 set -euo pipefail
 
 SEMVER_RE='^[0-9]+\.[0-9]+\.[0-9]+$'
@@ -72,6 +72,11 @@ for codex_manifest in plugins/*/.codex-plugin/plugin.json; do
     status=1
   fi
 done
+
+# The Cursor manifests are generated from the two above; fail on drift.
+if ! mise-tasks/sync-cursor-manifests --check; then
+  status=1
+fi
 
 if [ "$status" -eq 0 ]; then
   echo "All plugin manifests are valid."

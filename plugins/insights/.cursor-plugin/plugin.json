@@ -1,0 +1,23 @@
+{
+  "name": "insights",
+  "displayName": "Insights",
+  "version": "0.3.1",
+  "description": "Find what went wrong in yesterday's Claude Code sessions and newspaper runs, and propose one concrete fix per problem on a page in a kasten vault; kept fixes become pull requests, todos and feedback lines.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "homepage": "https://github.com/pgoell/pgoell-claude-tools/tree/master/plugins/insights",
+  "repository": "https://github.com/pgoell/pgoell-claude-tools",
+  "license": "MIT",
+  "keywords": [
+    "insights",
+    "session-review",
+    "transcripts",
+    "kasten",
+    "cron",
+    "activity",
+    "claude-code",
+    "codex"
+  ],
+  "skills": "./skills/"
+}

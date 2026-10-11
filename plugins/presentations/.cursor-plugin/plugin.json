@@ -1,0 +1,21 @@
+{
+  "name": "presentations",
+  "displayName": "Presentations",
+  "version": "0.4.2",
+  "description": "Design, build, review, export, and theme multi-slide HTML presentations with brand presets",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "homepage": "https://github.com/pgoell/pgoell-claude-tools/tree/master/plugins/presentations",
+  "repository": "https://github.com/pgoell/pgoell-claude-tools",
+  "license": "MIT",
+  "keywords": [
+    "presentations",
+    "slides",
+    "deck",
+    "pptx",
+    "presets",
+    "presenter"
+  ],
+  "skills": "./skills/"
+}

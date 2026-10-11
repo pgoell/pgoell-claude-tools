@@ -1,0 +1,19 @@
+{
+  "name": "terminal",
+  "displayName": "Terminal",
+  "version": "0.1.1",
+  "description": "Control interactive terminal programs through tmux.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "homepage": "https://github.com/pgoell/pgoell-claude-tools/tree/master/plugins/terminal",
+  "repository": "https://github.com/pgoell/pgoell-claude-tools",
+  "license": "Apache-2.0",
+  "keywords": [
+    "terminal",
+    "tmux",
+    "interactive",
+    "cli"
+  ],
+  "skills": "./skills/"
+}
