@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+#MISE description="Generate the Cursor manifests (.cursor-plugin/) from the Claude and Codex manifests; --check fails on drift"
+set -euo pipefail
+
+# The Cursor manifests are derived, never edited by hand. Sources:
+#   plugins/<name>/.claude-plugin/plugin.json  name, description, author,
+#                                              license, keywords, version
+#   plugins/<name>/.codex-plugin/plugin.json   interface.displayName, the
+#                                              version when Claude omits it,
+#                                              and whether "skills" is set
+#   .claude-plugin/marketplace.json            the plugin list and each
+#                                              entry's description
+# Cursor's plugin.schema.json rejects unknown fields, so only fields from
+# that schema are emitted.
+#
+# Usage: mise run sync-cursor-manifests            write the files
+#        mise run sync-cursor-manifests -- --check fail when a file drifts
+
+MODE="${1:-write}"
+CLAUDE_MARKET=".claude-plugin/marketplace.json"
+CURSOR_MARKET=".cursor-plugin/marketplace.json"
+REPO_URL="https://github.com/pgoell/pgoell-claude-tools"
+
+# Local plugins not offered in Cursor, with the reason. Upstream-URL entries
+# (ponytail, emil, vercel, taste-skill) are skipped because they have no
+# local directory to carry a manifest.
+#   deprecated    frozen archive of superseded skills
+#   prose-styles  Claude Code output styles; Cursor has no equivalent
+#   guards        Claude Code PreToolUse hook; needs a Cursor port first
+#   issue-loop    drives Claude Code sessions; Claude Code only
+EXCLUDE=" deprecated prose-styles guards issue-loop "
+
+# Cursor-only manifest fields per plugin.
+extra_for() {
+  case "$1" in
+    # Cursor reads hooks/hooks.json by default, which holds Claude Code's
+    # hook format; point Cursor at its own file instead.
+    workbench) echo '{"hooks": "./hooks/hooks-cursor.json"}' ;;
+    *) echo '{}' ;;
+  esac
+}
+
+status=0
+entries="[]"
+
+# Writes $2 (JSON) to $1 unless the file already holds the same JSON, so a
+# dprint-formatted file is not rewritten. In --check mode, reports drift.
+emit() {
+  local path="$1" json="$2"
+  if [ -f "$path" ] && [ "$(jq -S . "$path" 2>/dev/null)" = "$(jq -S . <<<"$json")" ]; then
+    return
+  fi
+  if [ "$MODE" = "--check" ]; then
+    echo "✗ $path is missing or out of date, run: mise run sync-cursor-manifests" >&2
+    status=1
+  else
+    mkdir -p "$(dirname "$path")"
+    printf '%s\n' "$json" >"$path"
+    echo "✓ wrote $path"
+  fi
+}
+
+for name in $(jq -r '.plugins[] | select(.source | type == "string") | .name' "$CLAUDE_MARKET"); do
+  dir="plugins/$name"
+  if [[ $EXCLUDE == *" $name "* ]]; then
+    if [ -e "$dir/.cursor-plugin" ]; then
+      echo "✗ $name is excluded from Cursor but $dir/.cursor-plugin exists, remove it" >&2
+      status=1
+    fi
+    continue
+  fi
+
+  market_entry="$(jq --arg n "$name" '.plugins[] | select(.name == $n)' "$CLAUDE_MARKET")"
+  manifest="$(jq -n \
+    --slurpfile c "$dir/.claude-plugin/plugin.json" \
+    --slurpfile x "$dir/.codex-plugin/plugin.json" \
+    --argjson m "$market_entry" \
+    --argjson extra "$(extra_for "$name")" \
+    --arg repo "$REPO_URL" --arg dir "$dir" '
+    $c[0] as $c | $x[0] as $x |
+    {
+      name: $c.name,
+      displayName: ($x.interface.displayName // null),
+      version: ($c.version // $x.version // $m.version),
+      description: $c.description,
+      author: $c.author,
+      homepage: ($repo + "/tree/master/" + $dir),
+      repository: $repo,
+      license: $c.license,
+      keywords: ($c.keywords // null),
+      skills: (if ($x.skills // null) then "./skills/" else null end)
+    } + $extra
+    | with_entries(select(.value != null))')"
+  emit "$dir/.cursor-plugin/plugin.json" "$manifest"
+
+  entries="$(jq --arg n "$name" --arg s "./$dir" --argjson m "$market_entry" \
+    '. + [{name: $n, source: $s, description: $m.description}]' <<<"$entries")"
+done
+
+market="$(jq -n --argjson p "$entries" '{
+  name: "pgoell-claude-tools",
+  owner: { name: "Pascal Göllner" },
+  metadata: { description: "Agent skills for research, writing, presentations, diagrams, design workflows, and more." },
+  plugins: $p
+}')"
+emit "$CURSOR_MARKET" "$market"
+
+if [ "$MODE" = "--check" ] && [ "$status" -eq 0 ]; then
+  echo "✓ Cursor manifests are in sync."
+fi
+exit "$status"

@@ -1,0 +1,22 @@
+{
+  "name": "news",
+  "displayName": "News",
+  "version": "0.2.1",
+  "description": "Build a personal daily newspaper as a self-contained HTML page in a kasten vault, linked from the daily note, shaped by your feedback.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "homepage": "https://github.com/pgoell/pgoell-claude-tools/tree/master/plugins/news",
+  "repository": "https://github.com/pgoell/pgoell-claude-tools",
+  "license": "MIT",
+  "keywords": [
+    "news",
+    "newspaper",
+    "daily-briefing",
+    "kasten",
+    "cron",
+    "claude-code",
+    "codex"
+  ],
+  "skills": "./skills/"
+}

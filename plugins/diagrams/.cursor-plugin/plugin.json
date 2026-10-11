@@ -1,0 +1,21 @@
+{
+  "name": "diagrams",
+  "displayName": "Diagrams",
+  "version": "0.1.1",
+  "description": "Draw validated, themeable architecture, workflow, sequence, data-flow, and lifecycle diagrams as interactive HTML",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "homepage": "https://github.com/pgoell/pgoell-claude-tools/tree/master/plugins/diagrams",
+  "repository": "https://github.com/pgoell/pgoell-claude-tools",
+  "license": "MIT",
+  "keywords": [
+    "diagrams",
+    "architecture",
+    "svg",
+    "sequence",
+    "workflow",
+    "themes"
+  ],
+  "skills": "./skills/"
+}

@@ -1,0 +1,91 @@
+{
+  "name": "pgoell-claude-tools",
+  "owner": {
+    "name": "Pascal Göllner"
+  },
+  "metadata": {
+    "description": "Agent skills for research, writing, presentations, diagrams, design workflows, and more."
+  },
+  "plugins": [
+    {
+      "name": "atlassian",
+      "source": "./plugins/atlassian",
+      "description": "Use Jira and Confluence from agent workflows."
+    },
+    {
+      "name": "google-workspace",
+      "source": "./plugins/google-workspace",
+      "description": "Use Gmail and Calendar through gws."
+    },
+    {
+      "name": "research",
+      "source": "./plugins/research",
+      "description": "Research complex topics and produce sourced reports."
+    },
+    {
+      "name": "writing",
+      "source": "./plugins/writing",
+      "description": "Ghostwrite pieces from the owner's own facts, or get coached to write them yourself."
+    },
+    {
+      "name": "runtime-bridge",
+      "source": "./plugins/runtime-bridge",
+      "description": "Align Claude Code and Codex project configuration."
+    },
+    {
+      "name": "agent-system-management",
+      "source": "./plugins/agent-system-management",
+      "description": "Audit AGENTS.md / CLAUDE.md, capture session learnings, and create Claude Code / Codex skills."
+    },
+    {
+      "name": "workbench",
+      "source": "./plugins/workbench",
+      "description": "Personal Workbench skills for design and autonomous feature work."
+    },
+    {
+      "name": "terminal",
+      "source": "./plugins/terminal",
+      "description": "Control interactive terminal programs through tmux."
+    },
+    {
+      "name": "playground",
+      "source": "./plugins/playground",
+      "description": "Generate interactive single-file HTML playgrounds with controls, live preview, and copy-out prompt for two-way feedback with the model."
+    },
+    {
+      "name": "databricks",
+      "source": "./plugins/databricks",
+      "description": "Databricks skills: databricks-core (CLI, auth, profiles, ported from databricks/databricks-agent-skills) and databricks-docs (live docs.databricks.com lookups via WebFetch)."
+    },
+    {
+      "name": "learning",
+      "source": "./plugins/learning",
+      "description": "Socratic teach-and-quiz skills plus a pre-work blind-spot survey, so you deeply understand a session, a topic, or an unfamiliar area."
+    },
+    {
+      "name": "critique",
+      "source": "./plugins/critique",
+      "description": "Critique ideas, plans, and decisions through independent thinking frames, one fresh subagent each, with verdicts shown word for word and one decision."
+    },
+    {
+      "name": "presentations",
+      "source": "./plugins/presentations",
+      "description": "Presentation lifecycle skills: content design, HTML deck building with brand presets and a perfecting loop, a local deck editor, native PPTX export, and preset extraction."
+    },
+    {
+      "name": "diagrams",
+      "source": "./plugins/diagrams",
+      "description": "Draw validated, themeable architecture and flow diagrams as interactive HTML."
+    },
+    {
+      "name": "news",
+      "source": "./plugins/news",
+      "description": "Build a personal daily newspaper in a kasten vault, linked from the daily note, shaped by your feedback."
+    },
+    {
+      "name": "insights",
+      "source": "./plugins/insights",
+      "description": "Find what went wrong in yesterday's Claude Code sessions and newspaper runs, with one concrete fix per problem on a page in a kasten vault."
+    }
+  ]
+}

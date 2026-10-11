@@ -1,0 +1,22 @@
+{
+  "name": "research",
+  "displayName": "Research",
+  "version": "2.1.5",
+  "description": "Research complex topics and produce sourced reports.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "homepage": "https://github.com/pgoell/pgoell-claude-tools/tree/master/plugins/research",
+  "repository": "https://github.com/pgoell/pgoell-claude-tools",
+  "license": "MIT",
+  "keywords": [
+    "research",
+    "deep-research",
+    "web-research",
+    "report",
+    "citations",
+    "multi-agent",
+    "orchestrator"
+  ],
+  "skills": "./skills/"
+}

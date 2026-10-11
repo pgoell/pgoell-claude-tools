@@ -1,6 +1,6 @@
 {
   "name": "terminal",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Control interactive terminal programs through tmux.",
   "author": {
     "name": "Pascal Göllner"

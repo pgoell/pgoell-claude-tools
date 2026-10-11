@@ -1,6 +1,6 @@
 {
   "name": "runtime-bridge",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Align Claude Code and Codex project configuration.",
   "author": {
     "name": "Pascal Göllner"
