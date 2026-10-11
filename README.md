@@ -1,6 +1,6 @@
 # pgoell-claude-tools
 
-Plugin marketplace for Claude Code and Codex.
+Plugin marketplace for Claude Code, Codex, and Cursor.
 
 Bundles 24 plugins across Atlassian, Google Workspace, Databricks, agent-system management, design workflows, research, writing, presentations, diagrams, a daily newspaper, daily session insights, terminal control, learning, idea critique, an unattended issue loop, prose output styles, shell guard hooks, code minimalism, frontend design taste, and more.
 
@@ -126,6 +126,16 @@ codex
 In the `/plugins` picker, install any combination of `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, `news`, `insights`, and `ponytail` (plus `deprecated` if an old workflow needs the archived skill names). `prose-styles` is absent from the Codex picker on purpose, because Codex has no output-style mechanism. `guards` is absent too, because its hooks use Claude Code's hook format. `issue-loop` is absent because it drives Claude Code sessions (`/clear`, `--permission-mode auto`) and was never run under Codex. `emil`, `taste-skill`, and `vercel` are absent too: their upstreams ship no Codex manifest.
 
 To pick up updates: `codex plugin marketplace upgrade pgoell-claude-tools` and re-install the affected plugins.
+
+### Cursor
+
+The repository is also a Cursor plugin marketplace: `.cursor-plugin/marketplace.json` at the root lists 16 plugins, each with its own `plugins/<name>/.cursor-plugin/plugin.json`. Install them in one of three ways:
+
+- From the Cursor Marketplace, once listed: open **Customize**, search for the plugin, and choose **Install**.
+- From a team marketplace (Cursor Teams and Enterprise plans): **Dashboard > Plugins & MCPs > Add Marketplace > Import from Repo** with `https://github.com/pgoell/pgoell-claude-tools`, then turn on **Auto Refresh** to pick up pushes to `master`.
+- Locally, for a single plugin: copy `plugins/<name>/` to `~/.cursor/plugins/local/<name>/` and run **Developer: Reload Window**. Cursor skips symlinks that point outside that folder, so copy rather than link.
+
+Cursor offers `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, `news`, and `insights`. `prose-styles` is absent because Cursor has no output-style mechanism. `guards` is absent because its hook uses Claude Code's `PreToolUse` format and has no Cursor port yet. `issue-loop` is absent because it drives Claude Code sessions. `deprecated` is absent because it is a frozen archive. `ponytail`, `emil`, `taste-skill`, and `vercel` are absent because they are upstream repositories with no local directory to carry a Cursor manifest.
 
 ## Plugins
 
