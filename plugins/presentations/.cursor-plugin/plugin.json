@@ -1,7 +1,7 @@
 {
   "name": "presentations",
   "displayName": "Presentations",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "Design, build, review, export, and theme multi-slide HTML presentations with brand presets",
   "author": {
     "name": "Pascal Göllner"

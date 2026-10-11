@@ -1,0 +1,28 @@
+# The hosted deck editor. No port is published: Caddy reaches it by name on
+# the `web` network, and the sign-in in front of it is the only gate. Anyone
+# who gets past that gate can rewrite the decks.
+#
+# The repo is mounted at its host path, so the paths in prompt.md and in a
+# worktree's .git file mean the same inside and outside the container. The
+# user is the repo's owner, so the files the editor writes stay theirs.
+services:
+  deck-editor:
+    build:
+      context: ..
+      dockerfile: hosted/Dockerfile
+    container_name: deck-editor
+    restart: unless-stopped
+    user: "${DECK_UID:-1000}:${DECK_GID:-1000}"
+    command: ["${DECK_REPO_PATH}"]
+    environment:
+      DECK_EDITOR_HOST: "${DECK_EDITOR_HOST}"
+      DECK_EDITOR_REPO: "${DECK_EDITOR_REPO}"
+      GITHUB_TOKEN: "${GITHUB_TOKEN}"
+    volumes:
+      - "${DECK_REPO_PATH}:${DECK_REPO_PATH}"
+    networks:
+      - web
+
+networks:
+  web:
+    external: true

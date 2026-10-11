@@ -102,6 +102,10 @@ When the user has edited by hand, read the file again before changing it: line n
 
 Edit the deck files with the usual tools, at the lines the selection names. Never copy `data-de` attributes or the overlay script into the file; they appear in the browser's view of the page only. The deck contract, the canvas rules, and the type floors from the `creating-presentations` skill apply to every edit. The browser reloads on save; the selection file then describes the new source, so read it again before a follow-up change.
 
+## Hosted mode
+
+The same editor also runs as a container behind a reverse proxy with a sign-in, for reviewing decks from any browser. A picker lists the decks of the checkout and of every worktree under `.worktrees/`, and "Send" files the feedback as a GitHub issue that a workflow hands to a Claude session in the deck's worktree. Setup and limits are in `hosted/README.md` at the plugin root.
+
 ## Self-healing
 
 - `Address already in use`: another editor holds the port. Pass a different port, or stop the old server.

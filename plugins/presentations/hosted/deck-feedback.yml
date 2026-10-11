@@ -1,0 +1,19 @@
+# Copy to .github/workflows/deck-feedback.yml on the default branch of the deck
+# repo. Needs a self-hosted runner on the machine that holds the worktrees and
+# runs herdr, as the same user.
+name: Deck feedback
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  hand-over:
+    if: contains(github.event.issue.labels.*.name, 'deck-feedback')
+    runs-on: self-hosted
+    steps:
+      - run: python3 "$HOME/Code/pgoell-claude-tools/plugins/presentations/hosted/bridge.py"
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          DECK_REPO_PATH: /home/pascal/Code/presentations
