@@ -36,7 +36,7 @@ has_grant() { grep -qsxF "## $GRANT_MARK" "$@"; }
 # question: leave it for the orchestrator.
 GO_VERB='(^|[^[:alpha:]])(reply|respond|answer|confirm|type|say|send)'
 GO_ASK="$GO_VERB[^[:alpha:]][^.]{0,60}[\"'\`*(]go[\"'\`*)]|$GO_VERB go([^[:alnum:]-]|\$)|(waiting for|awaiting|need) (your |a )?[\"'\`*]?go([^[:alnum:]]|\$)"
-GO_NOT='refus|hook|force|delet|remov|without|instead|anyway|skip|fail|stop'
+GO_NOT='refuse|refusal|hook|force|delete|remove|without|instead|anyway|skip|fail|stop'
 MENU_NOT="allow|permission|approve|proceed|do you want|don.t ask|bash command|edit file|write file"
 answer_go_ahead() {
   local name=$1 screen menu last=
