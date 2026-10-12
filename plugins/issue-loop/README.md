@@ -7,24 +7,27 @@ The plugin is the written-down form of a loop that ran for two days on one examp
 ## Skills
 
 - `/issue-loop:running-the-loop`: Makes this session the orchestrator. Checks what the repo needs, sets up a loop folder, then turns the loop: write the task line, send the brief, wait for the exact DONE line with a clock (the implementer also sends one line when it is done), run the gate, read "Not fixed", "Slips" and "Issues opened", pick what runs next, write a ledger line, report in a few lines, send the next task.
-- `/issue-loop:handing-over`: Passes the loop to a fresh orchestrator at about 150k tokens of context: rewrites the handoff file, starts the successor in auto mode, sends the exact first message, checks it took over.
+- `/issue-loop:handing-over`: Passes the loop to a fresh orchestrator at about 150k tokens of context: rewrites the handoff file with the successor's name, starts the successor in auto mode in the loop folder, sends a first message that points at your standing order, checks it took over.
 
 ## What is in the loop folder
 
 `scripts/init.sh <folder>` copies these templates into a folder outside every checkout:
 
-| File              | What it is                                                                                                                         |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `loop.env`        | The settings: implementer name, its checkout, base branch, deploy workflow, alive URL, driver                                      |
-| `rules.md`        | The brief every task gets: 19 rules, with `<FILL: ...>` marks for your test commands and your bar                                  |
-| `next.sh`         | Sends `/clear` and the brief, answers the go-ahead question, prints the implementer's state. Refuses while the implementer works   |
-| `wait.sh`         | Waits for `DONE <token>` or `BLOCKED <token>`; prints `settled`, `TIMEOUT` (once per task, then it watches on), `ASKING` or `GONE` |
-| `notify.sh`       | Run by the implementer as its last tool call: types `impl settled: DONE #N` into the orchestrator's session, through the driver    |
-| `gate.sh`         | Pass or fail from outside: issues closed, PRs merged with no open box, live commit, clean tree, app up                             |
-| `start.sh`        | Starts a session in auto mode, looks for a start dialog, then sends its first message                                              |
-| `driver-herdr.sh` | The only file that knows herdr. Five functions: send, wait, read, start, status                                                    |
-| `ledger.tsv`      | One line per task                                                                                                                  |
-| `HANDOFF.md`      | The orchestrator's memory, from the handoff template                                                                               |
+| File                                          | What it is                                                                                                                                                                                        |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `loop.env`                                    | The settings: implementer name, its checkout, base branch, deploy workflow, alive URL, driver                                                                                                     |
+| `rules.md`                                    | The brief every task gets: 19 rules, with `<FILL: ...>` marks for your test commands and your bar                                                                                                 |
+| `next.sh`                                     | Sends `/clear` and the brief, answers the go-ahead question, prints the implementer's state. Refuses while the implementer works, and without the standing order                                  |
+| `wait.sh`                                     | Waits for `DONE <token>` or `BLOCKED <token>`; prints `settled`, `TIMEOUT` (once per task, then it watches on), `ASKING` or `GONE`                                                                |
+| `notify.sh`                                   | Run by the implementer as its last tool call: types `impl settled: DONE #N` into the orchestrator's session, through the driver                                                                   |
+| `gate.sh`                                     | Pass or fail from outside: issues closed, PRs merged with no open box, live commit, clean tree, app up                                                                                            |
+| `start.sh`                                    | Starts a session in auto mode, looks for a start dialog, then sends its first message                                                                                                             |
+| `standing-order.md`, `standing-order-impl.md` | Your standing order as templates: what the loop's sessions may order each other to do without your go, and what stays yours                                                                       |
+| `grant.sh`                                    | Run by you, in a terminal, never by a session: prints the standing order, asks for a typed yes, writes it into `CLAUDE.md` in the loop folder and `CLAUDE.local.md` in the implementer's checkout |
+| `takeover-check.sh`                           | Run by a successor orchestrator before it takes over: standing order in place, named in `HANDOFF.md`, the sender's name is the one in `orch-name`                                                 |
+| `driver-herdr.sh`                             | The only file that knows herdr. Five functions: send, wait, read, start, status                                                                                                                   |
+| `ledger.tsv`                                  | One line per task                                                                                                                                                                                 |
+| `HANDOFF.md`                                  | The orchestrator's memory, from the handoff template                                                                                                                                              |
 
 The orchestrator adds one file by hand: `orch-name`, with its own session name, so that `notify.sh` knows whom to tell.
 
@@ -35,6 +38,23 @@ The orchestrator adds one file by hand: `orch-name`, with its own session name, 
 - In the repo: issues as the queue; labels `bug`, `regression`, `wish`, `test-debt` and one for "not now"; CI as a required check on the newest commit of a PR; a deploy that can be checked from outside; a way back. `skills/running-the-loop/references/setup.md` has the list with a check for each point.
 - A checkout for the implementer that no other session works in.
 - The loop folder trusted once by you: start `claude` in it and accept the folder trust question. The loop never accepts it for you.
+- Your standing order, once per loop (next section).
+
+## The standing order: what you do once
+
+The orchestrator types briefs into the implementer's tab, and an outgoing orchestrator tells its successor to take over. A session gives text from another session less weight than your own word, and it should. Through version 0.2.0 nothing you had written told the sessions that this loop's sessions may order each other, so an implementer asked for a "go" in about one brief of four, and a successor orchestrator waited for you before it took over.
+
+Now you say it once, in your own channel:
+
+1. The orchestrator asks you what the loop's sessions may do without your go and what stays yours, and fills `standing-order.md` in the loop folder with your words.
+2. You run `./grant.sh` in the loop folder, in a terminal of your own. It prints the order for orchestrators and the one for the implementer. Read them. Type `yes`.
+3. `grant.sh` writes the first into `CLAUDE.md` in the loop folder and the second into `CLAUDE.local.md` in the implementer's checkout (kept out of git through `.git/info/exclude`). Claude Code loads both as your instructions. Start the implementer anew once, so that it reads them.
+
+The order covers two things: a brief sent with `next.sh`, which the implementer checks against `task.md` in the loop folder, and a takeover that `takeover-check.sh` passes. Everything else that waited for you still does.
+
+`grant.sh` refuses without a terminal, and the skills forbid a session to write those files. That is a rule, not a lock: a session that can write to the folder could forge the file. The locks stay where they were: auto mode, branch protection, a fence hook.
+
+**After an update from 0.2.0 or earlier**, on a loop that runs: in this order: run `scripts/init.sh <loop folder>` again (it adds the new files and overwrites nothing), copy `lib.sh` anew from `skills/running-the-loop/assets/`, fill `standing-order.md`, run `./grant.sh`, and only then copy `next.sh` and `start.sh` anew. The new `next.sh` refuses to send a brief without the order; with the old one the loop works as before, with a go from you now and then. A hand-made loop folder needs a `loop.env` first.
 
 Sessions run in auto mode (`claude --permission-mode auto`). The loop never starts a session with skipped permissions.
 
@@ -44,13 +64,15 @@ Read `skills/running-the-loop/references/limits.md` before you rely on the loop.
 
 ## Tests
 
-`tests/run.sh` runs the script templates against a stub driver and fake `gh`, `git` and `curl`: no session, no network, about a second. It covers `init.sh`, the brief that `next.sh` builds (also with a URL that holds `&` and `|`), its refusal while the implementer works, both forms of the go-ahead question (and that a permission menu is left alone, also below a paste marker), every exit of `wait.sh` (also a DONE line above a tall pane's blank rows, and that it says `TIMEOUT` once per task and then watches on), `notify.sh` (one line to the name in `orch-name`, nothing but DONE or BLOCKED, the first line only, nothing into a session that sits on a question), each failure of `gate.sh`, and `start.sh` with a start dialog and with a session that quits.
+`tests/run.sh` runs the script templates against a stub driver and fake `gh`, `git` and `curl`: no session, no network, about a second. It needs `script` from util-linux, since `grant.sh` wants a terminal. It covers `init.sh`, `grant.sh` (no terminal, a `FILL:` mark left, no yes, a yes, a second run, the checkout stays clean, a tracked `CLAUDE.local.md`, an exclude file with no last newline, a checkout it cannot write to), the brief that `next.sh` builds (also with a URL that holds `&` and `|`), its refusal while the implementer works and without the standing order in either place, the go-ahead question as text in five wordings and as a menu (and that these are left alone: a working session, plain lines with "go" in them, among them the brief's own first line, a go asked for a refused push or a skipped review, a failed takeover check, a stopped loop, and Claude Code's own permission dialog with the word brief in its command), `takeover-check.sh` (pass, pass after the name was passed on, and each failed check), every exit of `wait.sh` (also a DONE line above a tall pane's blank rows, and that it says `TIMEOUT` once per task and then watches on), `notify.sh` (one line to the name in `orch-name`, nothing but DONE or BLOCKED, the first line only, nothing into a session that sits on a question), each failure of `gate.sh`, and `start.sh` with a start dialog, with a session that quits, and that it answers a go-ahead question only for a successor that `HANDOFF.md` names, in the loop folder.
 
-Last run, 2026-10-10: 103 of 103 checks pass.
+Last run, 2026-10-12: 180 of 180 checks pass.
 
 The herdr driver was tried live the same day on herdr 0.7.5, with throwaway sessions that ran no tools: `start.sh` in a trusted folder (prints the state, exit 0) and in a never-seen folder (stops on the folder trust question, sends nothing, exit 5); `wait.sh` to `settled` and, after the pane was closed, to `GONE`; `next.sh` with `/clear` and a brief, and its refusal while the session worked. Not tried live: `gate.sh` (it needs a repo with a deploy), `ASKING`, the go-ahead answers, and `notify.sh` (the example project's loop sent the same line with the driver's own command; the script came after).
 
-`evals/` holds five trigger fixtures (three that should fire a skill, two that should not). They have not been run yet.
+The standing order, tried on 2026-10-12: Claude Code 2.1.296 loads a `CLAUDE.md` in a folder outside every checkout, and a `CLAUDE.local.md` in a checkout, as the session's instructions (one throwaway session each, asked to repeat a word from the file). Not tried live: a handover and a brief under a granted order. Whether a session then stops asking is what the two evals below are for.
+
+`evals/` holds five trigger fixtures (three that should fire a skill, two that should not) and two for the takeover: `06-takeover-with-standing-order` (the successor takes over and asks nobody) and `07-takeover-without-standing-order` (told to take over "on the user's order" with no such order in its instructions, it does nothing to the loop and asks the user). None has been run yet, and nobody has checked that the eval runner loads the `CLAUDE.md` that fixture 06 puts into its workspace; if it does not, 06 proves nothing. Fixture 06 also cannot tell an order loaded as instructions from a file the session read because the message named it.
 
 ## Inspiration
 

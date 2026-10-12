@@ -1,6 +1,8 @@
 #!/bin/bash
-# Shared by next.sh, wait.sh, gate.sh, start.sh and notify.sh. Source it, do not run it.
-S=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+# Shared by the scripts in this folder. Source it, do not run it.
+# The physical path: the standing order names this folder, and the name must
+# not depend on the link by which the folder was reached.
+S=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 . "$S/loop.env"
 . "$S/$DRIVER"
 
@@ -11,22 +13,47 @@ nap() { sleep $(($1 * ${LOOP_SLEEP_SCALE:-1})); }
 # pads a short report with blank rows, so a plain read of N lines can miss it.
 screen_tail() { drv_read "$1" 200 2>/dev/null | grep -vE '^\s*$' | tail -n "$2"; }
 
-# A session that gets a pasted brief may ask for a typed go-ahead, as text
-# ('Reply "go"') or as a menu about the brief. Answer it, twice at most.
-# Only the six lines above the menu count: they must speak of a brief or a
-# paste, and must not speak of allowing or permission. Any other menu is some
-# other question (a tool permission, say): leave it for the orchestrator.
+# The user's standing order for this loop: the heading that grant.sh writes
+# into CLAUDE.md in this folder and into the implementer's instructions.
+# has_grant FILE...: true when one of the files holds it.
+GRANT_MARK="issue-loop standing order: $S"
+has_grant() { grep -qsxF "## $GRANT_MARK" "$@"; }
+
+# A session that gets a pasted brief may still ask for a typed go-ahead, as
+# text ('Reply "go"', 'Confirm with one word ("go")') or as a menu about the
+# brief. Answer it, twice at most, and never the same screen twice. The caller
+# must have checked that the standing order covers what was sent: "go" is the
+# user's word, and the scripts may say it only for a brief from next.sh and
+# for a takeover.
+# A working session asks nothing, so only a session that rests is read. A
+# screen that speaks of a failed takeover check or of a stopped loop is never
+# answered.
+# Text form: a line that asks for the word go (GO_ASK) and names nothing that
+# a go must not wave through (GO_NOT). Menu form: the lines above the menu
+# must speak of a brief or a paste, and the menu with its six lines above and
+# three below must not look like a tool permission (MENU_NOT). Claude Code
+# words that one "Do you want to proceed?". Any other menu is some other
+# question: leave it for the orchestrator.
+GO_VERB='(^|[^[:alpha:]])(reply|respond|answer|confirm|type|say|send)'
+GO_ASK="$GO_VERB[^[:alpha:]][^.]{0,60}[\"'\`*(]go[\"'\`*)]|$GO_VERB go([^[:alnum:]-]|\$)|(waiting for|awaiting|need) (your |a )?[\"'\`*]?go([^[:alnum:]]|\$)"
+GO_NOT='refuse|refusal|refusing|hook|force|delete|deleting|remove|removing|without|instead|anyway|skip|fail|stop'
+MENU_NOT="allow|permission|approve|proceed|do you want|don.t ask|bash command|edit file|write file"
 answer_go_ahead() {
-  local name=$1 screen
+  local name=$1 screen menu last=
   for _ in 1 2; do
+    [ "$(drv_status "$name")" = working ] && return 0
     screen=$(screen_tail "$name" 20)
-    if grep -q 'Reply "go"' <<<"$screen"; then
-      drv_send "$name" "go"
-      echo "sent go"
-    elif menu=$(grep -B6 -E '^\s*❯ 1\.' <<<"$screen") && grep -qiE 'brief|paste' <<<"$menu" &&
-      ! grep -qiE 'allow|permission|approve' <<<"$menu"; then
+    [ "$screen" != "$last" ] || return 0
+    last=$screen
+    grep -qE 'TAKEOVER FAIL|STOPPED' <<<"$screen" && return 0
+    if grep -qE '^\s*❯ 1\.' <<<"$screen"; then
+      menu=$(grep -B6 -A3 -E '^\s*❯ 1\.' <<<"$screen")
+      grep -B6 -E '^\s*❯ 1\.' <<<"$screen" | grep -qiE 'brief|paste' && ! grep -qiE "$MENU_NOT" <<<"$menu" || return 0
       drv_send "$name" "1"
       echo "picked 1"
+    elif grep -iE "$GO_ASK" <<<"$screen" | grep -qviE "$GO_NOT"; then
+      drv_send "$name" "go"
+      echo "sent go"
     else
       return 0
     fi

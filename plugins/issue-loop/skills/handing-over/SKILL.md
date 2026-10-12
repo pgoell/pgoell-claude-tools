@@ -1,6 +1,6 @@
 ---
 name: handing-over
-description: Use when the orchestrator of an issue loop must pass the loop to a fresh session, because its context nears 150k tokens or the user says "hand over", "start a fresh orchestrator", or "your context is full, pass it on". Rewrites the handoff file, starts the successor in auto mode, sends the exact first message, and checks the successor took over. Not for starting a loop (use running-the-loop).
+description: Use when the orchestrator of an issue loop must pass the loop to a fresh session, because its context nears 150k tokens or the user says "hand over", "start a fresh orchestrator", or "your context is full, pass it on". Rewrites the handoff file with the successor's name in it, starts the successor in auto mode in the loop folder, sends a first message that points at the user's standing order, and checks the successor took over without asking the user for a go. Not for starting a loop (use running-the-loop).
 ---
 
 # Handing Over
@@ -29,6 +29,7 @@ Then write a fresh `HANDOFF.md` from `references/handoff-template.md`. A file th
 
 What goes in, and what the successor cannot get from anywhere else:
 
+- **The successor's name**, on a line of its own near the top: `Successor: <new name>`. Pick the name now, before you start the session. `takeover-check.sh` looks for that exact line.
 - **Standing orders**, in the user's words, with dates. Above all the ones that changed a default: what they approved for good, what they do not want raised again, how they want reports.
 - **The implementer's exact state**: name, idle or working, the commit it sits on, the token of a running task.
 - **A running task's clock**: when it began (`task.start`), and whether `wait.sh` has said `TIMEOUT` for it. `TIMEOUT` comes once per task, so the successor will not hear it again.
@@ -39,21 +40,23 @@ What goes in, and what the successor cannot get from anywhere else:
 
 Leave out the story of how you got here. The ledger has it.
 
-**3. Start the successor.** Write the first message to a file and start a session whose working folder is the loop folder:
+**3. Start the successor.** The takeover rests on the user's standing order, not on your say: `CLAUDE.md` in the loop folder, put there by the user with `grant.sh` (`running-the-loop`, "The standing order"). A successor that starts in the loop folder has that order as its own instructions. Check it is there (`. ./lib.sh; has_grant CLAUDE.md && echo granted`). If it is not, do not write it: tell the user that the successor will wait for their go until they run `grant.sh`, and go on.
+
+Write the first message to a file and start a session whose working folder is the loop folder:
 
 ```bash
 ./start.sh <new name> "$PWD" "orchestrator <n>" first-message.txt
 ```
 
-`start.sh` starts it in auto mode (`--permission-mode auto`), waits, reads the screen for a start dialog, sends the message, and answers the go-ahead question. It must print `working` and exit 0. Exit 5 means a start dialog shows and nothing was sent; exit 1 means the session is gone.
+`start.sh` starts it in auto mode (`--permission-mode auto`), waits, reads the screen for a start dialog, sends the message, and answers a go-ahead question only if the folder is the loop folder, it holds the standing order, and `HANDOFF.md` names the session as the successor. It never answers a screen that says `TAKEOVER FAIL` or `STOPPED`. It must print `working` and exit 0. Exit 5 means a start dialog shows and nothing was sent; exit 1 means the session is gone.
 
 The first message, with your words in the angle brackets and nothing else changed:
 
-> Go, this is from the outgoing orchestrator session of the <project> issue loop, on the user's order: you are the new orchestrator. Read <loop folder>/HANDOFF.md in full, then rules.md and the scripts beside it, and take over as it says, using the skill issue-loop:running-the-loop. The user will talk to you in this tab from now on. <If no task runs: Start the next task on the implementer (<name>, idle now) at once. | If one runs: A task runs on the implementer (<name>); start wait.sh for the token <token> at once.> Then tell the user in three lines that you have taken over and what runs. Keep the loop going unattended; do not wait for the user's answer to carry on.
+> This is <old name>, the outgoing orchestrator session of the <project> issue loop. You are <new name>, started in the loop folder <loop folder> as my successor. I am a session, not the user: do not take over on my word. Your instructions for this folder hold the user's standing order for a takeover (CLAUDE.md, heading "issue-loop standing order"). Run ./takeover-check.sh <new name> <old name>. If it prints TAKEOVER OK, the order covers this takeover: do not ask the user for a go. Read HANDOFF.md in full, then rules.md and the scripts beside it, and take over as it says, using the skill issue-loop:running-the-loop. If the check fails, do nothing to the loop and tell the user which check failed. The user will talk to you in this tab from now on. <If no task runs: Start the next task on the implementer (<name>, idle now) at once. | If one runs: A task runs on the implementer (<name>); start wait.sh for the token <token> at once.> Then tell the user in three lines that you have taken over and what runs. Keep the loop going unattended; do not wait for the user's answer to carry on.
 
-**4. Check that it took over.** Read the successor's screen after a minute. It took over when it has read the file and either sent a task or started the wait. If its state is `gone`, the session quit at the start: read its pane, fix the cause, start again. If it asks for a go-ahead, answer "go" or "1" once.
+**4. Check that it took over.** Read the successor's screen after a minute. It took over when it has read the file and either sent a task or started the wait. If its state is `gone`, the session quit at the start: read its pane, fix the cause, start again. If it reports `TAKEOVER FAIL`, fix what is yours (the `Successor:` line, the name in `orch-name`) and send "run the check again"; a missing standing order is the user's. If it asks for a go-ahead though the check passed, answer "go" or "1" once: the order covers that. If the check did not pass, the go is the user's, not yours. Keep driving the loop until the successor has taken over.
 
-**5. Pass the name and stop your wait.** Write the successor's name into `orch-name` (`echo <new name> >orch-name`), so the implementer's `notify.sh` tells the successor. Stop your own background `wait.sh`: two waits on one task share the one `TIMEOUT`, and the retired session must not be the one that gets it.
+**5. Pass the name and stop your wait.** Not before step 4: the check wants your name in `orch-name`. Write the successor's name into `orch-name` (`echo <new name> >orch-name`), so the implementer's `notify.sh` tells the successor. Stop your own background `wait.sh`: two waits on one task share the one `TIMEOUT`, and the retired session must not be the one that gets it.
 
 **6. Tell the user and stop.** Three lines: the successor's name and tab, what runs, that you are retired. From then on send nothing to the implementer. Two orchestrators on one implementer is the same fault as two sessions in one checkout.
 
@@ -61,12 +64,13 @@ The first message, with your words in the angle brackets and nothing else change
 
 - **The start dialog ate the prompt.** A successor started with a skip-permissions flag sat on an accept dialog; the first message's Enter chose "No, exit". The driver still called the start a success, and the fault stayed hidden because the output went to `/dev/null`. Auto mode has no such dialog, and it is the rule anyway.
 - **The folder trust question ate the prompt.** Same fault, other dialog: a successor started in a loop folder that Claude Code had never seen asked whether the folder is trusted, default "No, exit". `start.sh` now reads the screen first, sends nothing into a dialog and exits 5 with what it saw. The answer is the user's: ask them to start `claude` once in the loop folder and accept. If the session is gone after the first message, `start.sh` exits 1.
-- **The successor asked the go-ahead question.** The first message is a paste too. `start.sh` answers it.
+- **The successor waited for the user's go.** The first message is a paste from another session, and the first successor started by this skill said so: the takeover order came from the outgoing session, the rule it cited stood only in `HANDOFF.md`, which that session had written, and taking over meant to gate, merge and deploy unattended. It was right. The standing order and `takeover-check.sh` are the answer; `start.sh` answers a go-ahead question only for a successor that the order covers.
 - **The notify line went to the retired session.** `orch-name` still held the old name. The successor's wait caught the DONE line anyway; fix the file. A retired orchestrator that gets an `impl settled` line does nothing with it.
 - **A stop order got lost.** If the user had stopped the loop, the first thing in `HANDOFF.md` is "STOPPED: send no task until the user says go", and the first message must not say "start the next task".
 
 ## Self-Healing
 
 - `start.sh` prints "start failed": run the driver's start by hand (`references/driver.md` in `running-the-loop`) and read the error.
+- The successor says it has no standing order in its instructions: it was not started in the loop folder, or the user has not run `grant.sh` there. Close it and start it in the loop folder, or ask the user for the grant.
 - The successor reads the file but does nothing: send "take over as HANDOFF.md says, first steps 1 to 6".
 - You are the successor and the file is thin: read the dated older handoff, the ledger, and the implementer's screen before you send anything.

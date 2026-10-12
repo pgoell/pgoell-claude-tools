@@ -3,6 +3,10 @@
 # Starts a Claude Code session in the permission mode from loop.env, checks it
 # is there, sends the first message, answers the go-ahead question, and prints
 # the session's state. Used for a successor orchestrator and for side sessions.
+# The go-ahead question is answered only for a takeover the user's standing
+# order covers: the working folder is this loop folder, the order is in its
+# CLAUDE.md, and HANDOFF.md names the session as the successor. For any other
+# session (the implementer's hello, a side session) the answer is the user's.
 # Exit 5: a start dialog shows, nothing was sent. Exit 1: the session is gone.
 . "$(dirname "$0")/lib.sh"
 [ $# = 4 ] || { echo "usage: start.sh <name> <cwd> <label> <message file>" >&2; exit 2; }
@@ -26,7 +30,11 @@ fi
 [ "$(drv_status "$1")" = gone ] && { echo "$1 gone before the first message: read $handle" >&2; exit 1; }
 drv_send "$1" "$(cat "$4")"
 nap 30
-answer_go_ahead "$1"
+if [ "$(cd "$2" && pwd -P)" = "$S" ] && has_grant "$S/CLAUDE.md" && grep -qsxF "Successor: $1" "$S/HANDOFF.md"; then
+  answer_go_ahead "$1"
+else
+  echo "$1 is no successor under the standing order: if it asks for a go-ahead, the answer is the user's" >&2
+fi
 st=$(drv_status "$1")
 echo "$1 $st"
 [ "$st" = gone ] && { echo "$1 quit after the first message: read $handle" >&2; exit 1; }
