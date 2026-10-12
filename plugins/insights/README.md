@@ -166,3 +166,7 @@ list, and a run with `gh` and `ccusage` down.
 Last run, 2026-10-10: 66 of 66 checks pass.
 
 The digest and apply skills have no test.
+
+`tests/digest.sh` runs `review.py` and `remember.py` against one problem
+proposed on two days: a verdict on the later id settles the earlier id's
+line, and a verdict for the earlier id never replaces it.
