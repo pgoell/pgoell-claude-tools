@@ -59,7 +59,9 @@ def handled_ids(folder: Path, day: str, problems: dict[str, dict]) -> dict[str, 
         if not m.get("verdict") or (m.get("verdict_date") or "") < day:
             continue
         # Memory written before verdict_id existed only knows the fingerprint's ids.
-        if m.get("verdict_id", pid) == pid and pid in m.get("ids", [pid]):
+        ids, vid = m.get("ids", [pid]), m.get("verdict_id", pid)
+        # A verdict settles its own id and every earlier id of the problem.
+        if pid in ids and (vid == pid or (vid in ids and ids.index(pid) < ids.index(vid))):
             done[pid] = m["verdict"]
     for a in read_jsonl(folder / "memory" / "applied.jsonl"):
         if a.get("id") in problems and a["date"] >= day:

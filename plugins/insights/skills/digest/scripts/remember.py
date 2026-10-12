@@ -71,6 +71,10 @@ def record(memory: dict[str, dict], folder: Path, verdicts: list[dict]) -> int:
         # Memory written before verdict_id existed counts as the same id.
         if m.get("verdict") == v["verdict"] and m.get("verdict_id", v["id"]) == v["id"]:
             continue
+        ids, held = m.get("ids", []), m.get("verdict_id")
+        # A verdict for an earlier id never replaces the one a later id holds.
+        if held in ids and v["id"] in ids and ids.index(v["id"]) < ids.index(held):
+            continue
         set_verdict(m, applied, v, stamp)
         n += 1
     write_jsonl(folder / "memory" / "applied.jsonl", applied)
