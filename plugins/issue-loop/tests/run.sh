@@ -67,11 +67,23 @@ has "the order is kept out of git" "$(cat "$T/repo/.git/info/exclude")" "CLAUDE.
 ok "the checkout stays clean" "$(git -C "$T/repo" status --porcelain)" ""
 out=$(tty_run yes); has "a second grant changes nothing" "$out" "already in $L/CLAUDE.md"
 ok "the order is there once" "$(grep -c '^## issue-loop standing order' "$L/CLAUDE.md")" 1
+git init -q "$T/tracked"; echo mine >"$T/tracked/CLAUDE.local.md"; git -C "$T/tracked" add CLAUDE.local.md
+mkdir "$T/ro"; chmod a-w "$T/ro"; git init -q "$T/nonl"; printf '*.log' >"$T/nonl/.git/info/exclude"
+cp -r "$L" "$T/loop2"; rm "$T/loop2/CLAUDE.md"
+grant2() { sed -i "s|^REPO=.*|REPO=$1|" "$T/loop2/loop.env"; printf 'yes\n' | script -qec "$T/loop2/grant.sh" /dev/null 2>&1; }
+out=$(grant2 "$T/tracked"); ok "grant refuses a tracked CLAUDE.local.md" $? 1
+ok "the tracked file is left alone" "$(cat "$T/tracked/CLAUDE.local.md")" mine
+out=$(grant2 "$T/ro"); ok "grant fails when it cannot write" $? 1
+hasnt "a failed grant does not say granted" "$out" "granted."; [ -e "$T/loop2/CLAUDE.md" ]; ok "a failed grant writes neither file" $? 1
+out=$(grant2 "$T/nonl"); ok "grant with an exclude file that has no last newline" $? 0
+ok "that checkout stays clean" "$(git -C "$T/nonl" status --porcelain)" ""
+chmod u+w "$T/ro"; ln -s "$L" "$T/link"
 mv "$T/repo/CLAUDE.local.md" "$T/impl-order"
 out=$("$L/next.sh" "Fix #7" 2>&1); ok "next refuses without the implementer's order" $? 3
 has "next names the checkout" "$out" "no standing order in $T/repo/CLAUDE.local.md"
 cp "$T/impl-order" "$T/repo/CLAUDE.md"; "$L/next.sh" "Fix #7" >/dev/null 2>&1; ok "the order may sit in the checkout's CLAUDE.md" $? 0
 rm "$T/repo/CLAUDE.md" "$STUB/sent"; mv "$T/impl-order" "$T/repo/CLAUDE.local.md"
+"$T/link/next.sh" "Fix #7" >/dev/null 2>&1; ok "the order holds when the folder is reached through a link" $? 0; rm "$STUB/sent"
 grep -v '^19\. ' "$L/rules.md" >"$L/rules.keep"; mv "$L/rules.md" "$L/rules.full"; mv "$L/rules.keep" "$L/rules.md"; rm "$L/orch-name"
 "$L/next.sh" "Fix #7" >/dev/null 2>&1; ok "next needs no orch-name without rule 19" $? 0
 mv "$L/rules.full" "$L/rules.md"; rm -f "$STUB/sent"
@@ -101,14 +113,20 @@ echo done >"$STUB/status"
 : >"$STUB/sent"; echo 'Reply "go" to run the brief.' >"$STUB/screen"
 out=$("$L/next.sh" --force "t"); has "next answers go" "$out" "sent go"
 has "go was sent" "$(cat "$STUB/sent")" "$(printf 'impl\tgo')"
-for ask in 'Confirm with one word ("go") and I start.' 'Say go and I will run it.' 'I am waiting for your go.'; do
+for ask in 'Confirm with one word ("go") and I start.' 'Say go and I will run it.' 'I am waiting for your go.' 'Reply with `go` to start.'; do
   : >"$STUB/sent"; echo "$ask" >"$STUB/screen"
   out=$("$L/next.sh" --force "t"); has "next answers: $ask" "$out" "sent go"
 done
-for plain in 'I will go on with the deploy now.' 'Confirmed. The goal is one PR.' 'Go, this brief is from the orchestrator of the issue loop.'; do
+for plain in 'I will go on with the deploy now.' 'Confirmed. The goal is one PR.' "$(head -1 "$L/task.md")" \
+  'I will send the PR link once the checks go green' 'I confirmed that tests go through' 'The prototype lets users go back' \
+  'The hook refused git push --force. Confirm with "go" and I will use the API instead' 'Say go and I will merge without the review.' \
+  'TAKEOVER FAIL: HANDOFF.md has no line for me. Reply "go" if you want me to take over.' \
+  'HANDOFF.md begins with STOPPED. Reply "go" to start the loop again.'; do
   : >"$STUB/sent"; echo "$plain" >"$STUB/screen"
   out=$("$L/next.sh" --force "t"); hasnt "next sends no go for: $plain" "$out" "sent go"
 done
+: >"$STUB/sent"; echo 'Reply "go" to run the brief.' >"$STUB/screen"; "$L/next.sh" --force "t" >/dev/null
+ok "one go for a screen that does not change" "$(grep -c "$(printf 'impl\tgo')" "$STUB/sent")" 1
 echo working >"$STUB/status"; : >"$STUB/sent"; echo 'Reply "go" to run the brief.' >"$STUB/screen"
 out=$("$L/next.sh" --force "t"); hasnt "a working session is not answered" "$out" "sent go"
 echo blocked >"$STUB/status"
@@ -121,6 +139,10 @@ hasnt "no 1 sent to a permission menu" "$(cat "$STUB/sent")" "$(printf 'impl\t1'
 out=$("$L/next.sh" --force "t"); hasnt "paste marker far above a permission menu" "$out" "picked 1"
 : >"$STUB/sent"; printf 'Run the pasted brief? It may need permission to merge.\n❯ 1. Yes\n' >"$STUB/screen"
 out=$("$L/next.sh" --force "t"); hasnt "a menu that speaks of permission is left alone" "$out" "picked 1"
+: >"$STUB/sent"; printf 'Bash command\n  gh pr merge 12 --admin --squash   # as the brief says\n  Merge PR 12 past the failing check\nDo you want to proceed?\n❯ 1. Yes\n  2. Yes, and do not ask again for gh pr merge\n  3. No\n' >"$STUB/screen"
+out=$("$L/next.sh" --force "t"); hasnt "Claude Code's permission dialog is left alone" "$out" "picked 1"
+: >"$STUB/sent"; printf "Your message was a pasted brief.\nRun it?\n❯ 1. Yes\n  2. Yes, and don't ask again\n" >"$STUB/screen"
+out=$("$L/next.sh" --force "t"); hasnt "a menu that offers not to ask again is left alone" "$out" "picked 1"
 
 # wait.sh
 now() { date -u +%Y-%m-%dT%H:%M:%SZ; }
@@ -230,7 +252,15 @@ out=$(check orch2 orch "$T"); ok "takeover check fails outside the loop folder" 
 has "it names the folder" "$out" "FAIL you do not run in the loop folder"
 out=$(check orch2 stranger); has "a sender that is not in orch-name fails" "$out" "FAIL the sender stranger is not the orchestrator in orch-name (orch)"
 out=$(check orch3 orch); has "a successor HANDOFF.md does not name fails" "$out" "FAIL HANDOFF.md has no line 'Successor: orch3'"
-out=$(check orch orch); ok "a session cannot name itself successor" $? 1
+printf 'Successor: orch\n' >"$L/HANDOFF.md"
+out=$(check orch orch); has "a session cannot name itself successor" "$out" "FAIL successor and sender have one name"
+printf 'Successor: orch2\n' >"$L/HANDOFF.md"; touch "$STUB/gone.orch2"
+out=$(check orch2 orch); has "a successor that is no session fails" "$out" "FAIL no session is named orch2"
+rm "$STUB/gone.orch2"; : >"$L/orch-name"
+out=$(check orch2 orch); has "an empty orch-name fails" "$out" "orch-name (none)"
+echo orch2 >"$L/orch-name"; touch "$STUB/gone.orch"
+out=$(check orch2 orch); ok "the check still passes after the name was passed on" "$out" "TAKEOVER OK"
+rm "$STUB/gone.orch"; echo orch >"$L/orch-name"
 mv "$L/CLAUDE.md" "$L/CLAUDE.off"
 out=$(check orch2 orch); ok "takeover check fails without the standing order" $? 1
 has "it says who grants" "$out" "the user runs grant.sh"; has "it ends with the verdict" "$out" "TAKEOVER FAIL"
@@ -254,13 +284,17 @@ ok "nothing sent to a gone session" "$(cat "$STUB/sent")" ""
 out=$("$L/start.sh" orch5 "$L" "o" "$T/msg" 2>&1); ok "start fails when the session quits after the send" $? 1
 has "start says it quit" "$out" "quit after the first message"; rm "$STUB/die_on_send"
 
-# start.sh answers a go-ahead question only in a folder with the standing order
+# start.sh answers a go-ahead question only for the successor HANDOFF.md names
 : >"$STUB/sent"; echo done >"$STUB/start_status"; echo 'Confirm with one word ("go")' >"$STUB/screen"
-out=$("$L/start.sh" orch6 "$L" "o" "$T/msg" 2>&1); has "start answers go in the loop folder" "$out" "sent go"
-: >"$STUB/sent"; mkdir -p "$T/side"
-out=$("$L/start.sh" side1 "$T/side" "s" "$T/msg" 2>&1); hasnt "start sends no go without a standing order" "$out" "sent go"
-has "start says whose answer it is" "$out" "the answer is the user's"
-hasnt "no go went to the side session" "$(cat "$STUB/sent")" "$(printf 'side1\tgo')"
+out=$("$L/start.sh" orch2 "$L" "o" "$T/msg" 2>&1); has "start answers go for the named successor" "$out" "sent go"
+for where in "$L" "$T/repo" "$T"; do
+  : >"$STUB/sent"
+  out=$("$L/start.sh" side1 "$where" "s" "$T/msg" 2>&1); hasnt "start sends no go to another session in $where" "$out" "sent go"
+  has "start says whose answer it is" "$out" "the answer is the user's"
+  hasnt "no go went to the side session" "$(cat "$STUB/sent")" "$(printf 'side1\tgo')"
+done
+: >"$STUB/sent"; echo 'TAKEOVER FAIL: no standing order. Reply "go" to take over anyway.' >"$STUB/screen"
+out=$("$L/start.sh" orch2 "$L" "o" "$T/msg" 2>&1); hasnt "start sends no go after a failed takeover check" "$out" "sent go"
 rm "$STUB/start_status"
 
 echo "$pass passed, $fail failed"

@@ -15,7 +15,7 @@ It can still happen. A session weighs its instructions against a paste that ends
 - as text: `Reply "go"`, `Confirm with one word ("go")`, or other words to that end. State after `next.sh`: `done` or `idle`.
 - as a menu ("Run brief?", first item "Yes, run it" or "Go"). State: `blocked`.
 
-Fallback: answer once, "go" for the text form, "1" for the menu, and only for what the standing order covers. `next.sh` and `start.sh` do this themselves (`answer_go_ahead` in `lib.sh`); `start.sh` does it only in a folder that holds the order. The words change between versions and between sessions: an earlier match on the one wording `Reply "go"` missed `Confirm with one word ("go")`. So the scripts now look at the state first (a working session asks nothing), then for a line that asks for the word go after a verb such as reply, confirm, say or type. For the menu they take only one whose six lines above speak of a brief or a paste and not of allowing or permission. They would sooner miss a go-ahead than approve a tool call. If `next.sh` does not print `working`, read the screen and answer by hand, and add the new wording to `GO_ASK` in your `lib.sh`.
+Fallback: answer once, "go" for the text form, "1" for the menu, and only for what the standing order covers. `next.sh` and `start.sh` do this themselves (`answer_go_ahead` in `lib.sh`); `start.sh` does it only for a successor the order covers, and neither answers a screen that says `TAKEOVER FAIL` or `STOPPED`. The words change between versions and between sessions: an earlier match on the one wording `Reply "go"` missed `Confirm with one word ("go")`. So the scripts now look at the state first (a working session asks nothing), then for a line that asks for the word go (a verb such as reply, confirm, say or type and a marked "go", or "waiting for your go"), and they pass over a line that also names something a go must not wave through (a refusal, a hook, a force, a delete, "without", "instead"). For the menu they take only one whose six lines above speak of a brief or a paste and not of allowing or permission. They would sooner miss a go-ahead than approve a tool call. If `next.sh` does not print `working`, read the screen and answer by hand, and add the new wording to `GO_ASK` in your `lib.sh`.
 
 ## "Idle" is not "done"
 
@@ -57,16 +57,17 @@ A worktree with commits of its own is not swept by that line, and five of those 
 ## Smaller ones
 
 - **A tall pane hides a short report.** The screen read pads a short answer with blank rows: of the last 40 rows, 34 were blank and the DONE line sat above them, so the wait never settled. The scripts read 200 rows and drop the blank ones (`screen_tail` in `lib.sh`). Do the same when you read by hand.
+- **The standing order can go missing.** `git clean -fdx` or a fresh clone of the implementer's checkout removes `CLAUDE.local.md`, and `next.sh` then refuses (exit 3). A moved loop folder makes both orders name the old path. In each case the user runs `grant.sh` again; delete the old block first, from its heading to its "End of" line.
 - **`/clear` on a working session** throws its task away. `next.sh` refuses while the state is `working`.
 
 - **The session died.** Reading it by name fails; `wait.sh` prints GONE. With herdr, `herdr pane read <pane id>` still shows the last screen.
 - **Merge before CI.** A merge once fired before CI ran on the PR's last commit. Only branch protection stops that (`references/setup.md`).
 - **More than one PR per task.** Look at all PRs since the task began, not the newest. `gate.sh` does. A PR once merged with 0 of 11 boxes ticked.
 - **The gate in the middle of a task** fails on "not on the base branch". Run it after the DONE line.
-- **The report's top is cut.** The implementer's screen keeps only about 70 lines, however many you ask for. Read the headings in capitals and "Not fixed" from the PR body (`gh pr view N --json body,comments`); rule 12 puts them there.
+- **The report's top is cut.** The implementer's screen keeps only about 70 lines of a report. Read the headings in capitals and "Not fixed" from the PR body (`gh pr view N --json body,comments`); rule 12 puts them there.
 - **A task on a save path says "done" and can still lose work.** Ask every task on a save path or on stored data for a "CAN STILL LOSE" list and a "DATA FAULT ON LIVE" line (rule 14), and compare the live rows with your baseline after.
 - **A rebuilt data path keeps breaking.** After one rebuild, the next two batches found five regressions in that path. Plan a review of the whole path, not of the diff.
-- **A commit of tests only can turn the deploy check red.** When a fix changes nothing but tests, the image may not change, and the deploy check may then fail though nothing is wrong on live. Look at what the commit changed before you treat it as a failed deploy.
+- **A commit of tests only can turn the deploy check red.** When a fix changes nothing but tests, the image may not change, and the deploy check may then turn red. Look at what the commit changed before you treat it as a failed deploy.
 - **A hook that runs the full suite on every push** cost 15 minutes per task. Let CI run the suite.
 - **A push chained after a suite run.** Twice a task ran the suite and the push in one shell call, and pushed before anyone had read the result. Rule 5 forbids the chain: read the result first.
 - **A change in what the product puts out.** A fix changed how borders printed, and the report said so in one line among sixty. Rule 12 asks for the heading OUTPUT CHANGES; pass each line on to the user.

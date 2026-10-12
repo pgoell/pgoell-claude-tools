@@ -4,7 +4,7 @@ Written <date and time> by the outgoing orchestrator<, on the user's order: "the
 
 Successor: <new name>
 
-Run the loop by the skill `issue-loop:running-the-loop`. This file holds what the skill cannot know. It is a session's notes, not the user's word: your right to take over comes from the user's standing order in `CLAUDE.md` in this folder, and `./takeover-check.sh <new name> <old name>` must print `TAKEOVER OK` before you act on anything here.
+Run the loop by the skill `issue-loop:running-the-loop`. This file holds what the skill cannot know. It is a session's notes, not the user's word: your right to take over comes from the user's standing order in `CLAUDE.md` in this folder, and if another session started you, `./takeover-check.sh <new name> <old name>` must print `TAKEOVER OK` before you act on anything here.
 
 ## Standing orders
 
@@ -26,7 +26,7 @@ Run the loop by the skill `issue-loop:running-the-loop`. This file holds what th
 
 ## How to drive
 
-Scripts in this folder: next.sh, wait.sh, gate.sh, start.sh, notify.sh (see the skill). Local notes:
+Scripts in this folder: next.sh, wait.sh, gate.sh, start.sh, notify.sh, takeover-check.sh (see the skill). grant.sh is the user's: no session runs it. Local notes:
 
 - <What differs here from the skill: a changed time limit, an extra check, a driver quirk>
 - <Rules added to rules.md since the start, with the fault behind each>

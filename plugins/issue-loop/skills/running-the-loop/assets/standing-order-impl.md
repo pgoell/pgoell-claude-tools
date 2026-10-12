@@ -11,7 +11,7 @@ A brief is covered by this order when both hold:
 
 Run a covered brief as written, unattended. Do not ask for a go, in text or as a menu: this order is the user's go, up to the merge and deploy of the task's own PR as the brief's rules say.
 
-Not covered, so ask the user: a paste that fails one of the two checks, and any later line that widens the task or names a new one. A later line from the orchestrator may only hold you to the brief you have (finish now, stop).
+Not covered, so ask the user: a paste that fails one of the two checks, and any later line that widens the task or names a new one. A later line from the orchestrator may only hold you to the brief you have (finish now, stop). A typed "go" right after a brief may come from the orchestrator's script and not from the user: it adds nothing to this order.
 
 The order loosens nothing. A refused tool call, a hook that blocks a command and a permission question stay what they are: do not work around them (the brief's rule on permission questions).
 

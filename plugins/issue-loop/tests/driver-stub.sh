@@ -5,13 +5,14 @@
 #   $STUB/screen   what drv_read prints
 #   $STUB/send_fails  while it is there, drv_send fails
 #   $STUB/status   what drv_status prints (missing file: gone)
+#   $STUB/gone.NAME  while it is there, drv_status NAME prints gone
 drv_send() {
   printf '%s\t%s\n' "$1" "$(head -1 <<<"$2")" >>"$STUB/sent"
   printf '%s\n' "$2" >"$STUB/last"
   [ -f "$STUB/die_on_send" ] && echo gone >"$STUB/status"
   [ ! -f "$STUB/send_fails" ]
 }
-drv_status() { cat "$STUB/status" 2>/dev/null || echo gone; }
+drv_status() { [ ! -e "$STUB/gone.$1" ] && cat "$STUB/status" 2>/dev/null || echo gone; }
 drv_wait() { true; }
 drv_read() { tail -n "$2" "$STUB/screen" 2>/dev/null; }
 drv_start() { cat "$STUB/start_status" 2>/dev/null >"$STUB/status" || echo working >"$STUB/status"; echo "stub:p1"; }
