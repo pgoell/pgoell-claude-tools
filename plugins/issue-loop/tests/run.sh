@@ -1,7 +1,8 @@
 #!/bin/bash
 # usage: tests/run.sh
 # Runs the loop's script templates against a stub driver and fake gh, git and
-# curl. No session, no network. Needs bash, jq, GNU date and timeout.
+# curl. No session, no network. Needs bash, jq, GNU date, timeout, and script
+# from util-linux (grant.sh wants a terminal).
 set -u
 here=$(cd "$(dirname "$0")" && pwd)
 skill="$here/../skills/running-the-loop"
@@ -16,7 +17,7 @@ hasnt() { if grep -qF -- "$3" <<<"$2"; then fail=$((fail + 1)); echo "FAIL $1: f
 L="$T/loop"
 out=$("$skill/scripts/init.sh" "$L" 2>&1); ok "init exit" $? 0
 hasnt "init prints no cp warning" "$out" "cp:"
-for f in loop.env lib.sh next.sh wait.sh gate.sh start.sh notify.sh rules.md ledger.tsv driver-herdr.sh HANDOFF.md; do
+for f in loop.env lib.sh next.sh wait.sh gate.sh start.sh notify.sh grant.sh takeover-check.sh standing-order.md standing-order-impl.md rules.md ledger.tsv driver-herdr.sh HANDOFF.md; do
   [ -f "$L/$f" ]; ok "init copies $f" $? 0
 done
 mkdir -p "$T/co" && git -C "$T/co" init -q
@@ -44,6 +45,33 @@ out=$("$L/next.sh" "Fix #7" 2>&1); ok "next refuses without orch-name" $? 3
 has "next names orch-name" "$out" "orch-name is missing"
 [ -f "$STUB/sent" ]; ok "next sent nothing without orch-name" $? 1
 echo '  ' >"$L/orch-name"; "$L/next.sh" "Fix #7" >/dev/null 2>&1; ok "next refuses a blank orch-name" $? 3
+
+# grant.sh: the user's standing order, only from a terminal and a typed yes
+echo orch >"$L/orch-name"; git -C "$T/repo" init -q
+out=$("$L/next.sh" "Fix #7" 2>&1); ok "next refuses without a standing order" $? 3
+has "next names the missing order" "$out" "no standing order in $L/CLAUDE.md"
+[ -f "$STUB/sent" ]; ok "next sent nothing without a standing order" $? 1
+tty_run() { printf '%s\n' "$1" | script -qec "$L/grant.sh" /dev/null 2>&1; }
+out=$("$L/grant.sh" </dev/null 2>&1); ok "grant refuses without a terminal" $? 2
+out=$(tty_run yes); ok "grant refuses FILL markers" $? 3
+sed -i 's/<FILL:[^>]*>/filled/g' "$L/standing-order.md"
+out=$(tty_run no); ok "grant without a yes" $? 1
+has "grant shows the order before it asks" "$out" "## issue-loop standing order: $L"
+[ -e "$L/CLAUDE.md" ] || [ -e "$T/repo/CLAUDE.local.md" ]; ok "nothing written without a yes" $? 1
+out=$(tty_run yes); ok "grant exit" $? 0
+has "the loop folder holds the order" "$(cat "$L/CLAUDE.md")" "## issue-loop standing order: $L"
+has "the order names the implementer" "$(cat "$L/CLAUDE.md")" 'the implementer `impl`'
+hasnt "the order has no placeholder left" "$(cat "$L/CLAUDE.md" "$T/repo/CLAUDE.local.md")" "{{"
+has "the checkout holds the order" "$(cat "$T/repo/CLAUDE.local.md")" "## issue-loop standing order: $L"
+has "the order is kept out of git" "$(cat "$T/repo/.git/info/exclude")" "CLAUDE.local.md"
+ok "the checkout stays clean" "$(git -C "$T/repo" status --porcelain)" ""
+out=$(tty_run yes); has "a second grant changes nothing" "$out" "already in $L/CLAUDE.md"
+ok "the order is there once" "$(grep -c '^## issue-loop standing order' "$L/CLAUDE.md")" 1
+mv "$T/repo/CLAUDE.local.md" "$T/impl-order"
+out=$("$L/next.sh" "Fix #7" 2>&1); ok "next refuses without the implementer's order" $? 3
+has "next names the checkout" "$out" "no standing order in $T/repo/CLAUDE.local.md"
+cp "$T/impl-order" "$T/repo/CLAUDE.md"; "$L/next.sh" "Fix #7" >/dev/null 2>&1; ok "the order may sit in the checkout's CLAUDE.md" $? 0
+rm "$T/repo/CLAUDE.md" "$STUB/sent"; mv "$T/impl-order" "$T/repo/CLAUDE.local.md"
 grep -v '^19\. ' "$L/rules.md" >"$L/rules.keep"; mv "$L/rules.md" "$L/rules.full"; mv "$L/rules.keep" "$L/rules.md"; rm "$L/orch-name"
 "$L/next.sh" "Fix #7" >/dev/null 2>&1; ok "next needs no orch-name without rule 19" $? 0
 mv "$L/rules.full" "$L/rules.md"; rm -f "$STUB/sent"
@@ -54,7 +82,8 @@ out=$("$L/next.sh" "Fix #7" 2>&1); ok "next refuses while the implementer works"
 out=$("$L/next.sh" --force "Fix #7. Last line exactly: DONE #7"); ok "next --force exit" $? 0
 has "next prints state" "$out" "impl working"
 ok "next sends /clear first" "$(sed -n 1p "$STUB/sent")" "$(printf 'impl\t/clear')"
-has "next sends the opener" "$(sed -n 2p "$STUB/sent")" "Go, this brief is mine"
+has "next sends the opener" "$(sed -n 2p "$STUB/sent")" "Go, this brief is from the orchestrator of the issue loop in $L."
+has "the opener points at the standing order" "$(sed -n 2p "$STUB/sent")" "issue-loop standing order: $L"
 has "task.md has the task line" "$(cat "$L/task.md")" "Task: Fix #7."
 has "task.md has the repo" "$(cat "$L/task.md")" "Repo: $T/repo"
 has "task.md names notify.sh in the loop folder" "$(cat "$L/task.md")" "run: \"$L/notify.sh\" \"DONE #N\""
@@ -65,12 +94,24 @@ echo "ALIVE_URL='https://app.example/alive?a=1&b=2|c/d'" >>"$L/loop.env"
 "$L/next.sh" --force "t" >/dev/null
 has "a URL with & and | survives" "$(cat "$L/task.md")" "curl -fsS https://app.example/alive?a=1&b=2|c/d answers"
 rm "$STUB/status"; "$L/next.sh" "t" >/dev/null 2>&1; ok "next refuses a gone implementer" $? 1
-echo working >"$STUB/status"
 
-# go-ahead: text form, menu about the brief, and a menu that is not about the brief
+# go-ahead: text forms, menu about the brief, and a menu that is not about the
+# brief. Only a session that rests is answered.
+echo done >"$STUB/status"
 : >"$STUB/sent"; echo 'Reply "go" to run the brief.' >"$STUB/screen"
 out=$("$L/next.sh" --force "t"); has "next answers go" "$out" "sent go"
 has "go was sent" "$(cat "$STUB/sent")" "$(printf 'impl\tgo')"
+for ask in 'Confirm with one word ("go") and I start.' 'Say go and I will run it.' 'I am waiting for your go.'; do
+  : >"$STUB/sent"; echo "$ask" >"$STUB/screen"
+  out=$("$L/next.sh" --force "t"); has "next answers: $ask" "$out" "sent go"
+done
+for plain in 'I will go on with the deploy now.' 'Confirmed. The goal is one PR.' 'Go, this brief is from the orchestrator of the issue loop.'; do
+  : >"$STUB/sent"; echo "$plain" >"$STUB/screen"
+  out=$("$L/next.sh" --force "t"); hasnt "next sends no go for: $plain" "$out" "sent go"
+done
+echo working >"$STUB/status"; : >"$STUB/sent"; echo 'Reply "go" to run the brief.' >"$STUB/screen"
+out=$("$L/next.sh" --force "t"); hasnt "a working session is not answered" "$out" "sent go"
+echo blocked >"$STUB/status"
 : >"$STUB/sent"; printf 'Your message was only a pasted brief.\n❯ 1. Yes, run it\n  2. No\n' >"$STUB/screen"
 out=$("$L/next.sh" --force "t"); has "next picks 1 on the brief menu" "$out" "picked 1"
 : >"$STUB/sent"; printf 'Allow this command?\n❯ 1. Yes\n  2. No\n' >"$STUB/screen"
@@ -181,6 +222,22 @@ good; touch "$FAKE/down"; out=$(gate); has "gate fails when the app is down" "$o
 good; printf '.github/workflows/deploy.yml\nsrc/a.py\n' >"$FAKE/files"; out=$(gate); ok "machine file does not fail the gate" $? 0
 has "gate tells the human" "$out" "TELL HUMAN: PR 5 touched .github/workflows/deploy.yml"
 
+# takeover-check.sh: the successor's checks before it takes over
+echo idle >"$STUB/status"; printf '# Handoff\n\nSuccessor: orch2\n' >"$L/HANDOFF.md"
+check() { (cd "${3:-$L}" && "$L/takeover-check.sh" "$1" "$2" 2>&1); }
+out=$(check orch2 orch); ok "takeover check passes" $? 0; ok "takeover check word" "$out" "TAKEOVER OK"
+out=$(check orch2 orch "$T"); ok "takeover check fails outside the loop folder" $? 1
+has "it names the folder" "$out" "FAIL you do not run in the loop folder"
+out=$(check orch2 stranger); has "a sender that is not in orch-name fails" "$out" "FAIL the sender stranger is not the orchestrator in orch-name (orch)"
+out=$(check orch3 orch); has "a successor HANDOFF.md does not name fails" "$out" "FAIL HANDOFF.md has no line 'Successor: orch3'"
+out=$(check orch orch); ok "a session cannot name itself successor" $? 1
+mv "$L/CLAUDE.md" "$L/CLAUDE.off"
+out=$(check orch2 orch); ok "takeover check fails without the standing order" $? 1
+has "it says who grants" "$out" "the user runs grant.sh"; has "it ends with the verdict" "$out" "TAKEOVER FAIL"
+mv "$L/CLAUDE.off" "$L/CLAUDE.md"; rm "$STUB/status"
+out=$(check orch2 orch); has "a gone sender fails" "$out" "FAIL no session is named orch"
+"$L/takeover-check.sh" orch2 >/dev/null 2>&1; ok "takeover check wants two names" $? 2
+
 # start.sh
 echo "take over" >"$T/msg"; : >"$STUB/sent"; : >"$STUB/screen"; rm -f "$STUB/start_status"
 out=$("$L/start.sh" orch2 "$L" "orchestrator 2" "$T/msg"); ok "start exit" $? 0
@@ -196,6 +253,15 @@ ok "nothing sent to a gone session" "$(cat "$STUB/sent")" ""
 : >"$STUB/sent"; rm -f "$STUB/start_status"; touch "$STUB/die_on_send"
 out=$("$L/start.sh" orch5 "$L" "o" "$T/msg" 2>&1); ok "start fails when the session quits after the send" $? 1
 has "start says it quit" "$out" "quit after the first message"; rm "$STUB/die_on_send"
+
+# start.sh answers a go-ahead question only in a folder with the standing order
+: >"$STUB/sent"; echo done >"$STUB/start_status"; echo 'Confirm with one word ("go")' >"$STUB/screen"
+out=$("$L/start.sh" orch6 "$L" "o" "$T/msg" 2>&1); has "start answers go in the loop folder" "$out" "sent go"
+: >"$STUB/sent"; mkdir -p "$T/side"
+out=$("$L/start.sh" side1 "$T/side" "s" "$T/msg" 2>&1); hasnt "start sends no go without a standing order" "$out" "sent go"
+has "start says whose answer it is" "$out" "the answer is the user's"
+hasnt "no go went to the side session" "$(cat "$STUB/sent")" "$(printf 'side1\tgo')"
+rm "$STUB/start_status"
 
 echo "$pass passed, $fail failed"
 [ $fail = 0 ]

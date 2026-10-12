@@ -3,7 +3,9 @@
 # Clears the implementer, sends it the task line plus rules.md, answers the
 # go-ahead question, and prints the implementer's state. It must say working.
 # Refuses (exit 4) while the implementer works: /clear would destroy the
-# running task. --force sends anyway.
+# running task. --force sends anyway. Refuses (exit 3) without the user's
+# standing order in this folder and in the implementer's instructions: with no
+# such order a brief is a stranger's paste, and "go" is not the script's to say.
 . "$(dirname "$0")/lib.sh"
 force=0
 [ "${1:-}" = --force ] && { force=1; shift; }
@@ -22,6 +24,14 @@ if grep -q 'notify\.sh' "$S/rules.md" && ! grep -q '[^[:space:]]' "$S/orch-name"
   echo "rules.md tells the implementer to run notify.sh but orch-name is missing: write your session name into $S/orch-name, or delete that rule" >&2
   exit 3
 fi
+if ! has_grant "$S/CLAUDE.md"; then
+  echo "no standing order in $S/CLAUDE.md: fill standing-order.md with the user, then the user runs $S/grant.sh in a terminal" >&2
+  exit 3
+fi
+if ! has_grant "$REPO/CLAUDE.local.md" "$REPO/CLAUDE.md"; then
+  echo "no standing order in $REPO/CLAUDE.local.md or CLAUDE.md: the user runs $S/grant.sh in a terminal" >&2
+  exit 3
+fi
 st=$(drv_status "$IMPL")
 if [ "$st" = working ] && [ $force = 0 ]; then
   echo "$IMPL is working: /clear would destroy its task. Wait for it, or pass --force" >&2
@@ -34,7 +44,7 @@ LOOP=$S
 for v in REPO BASE DEPLOY_WORKFLOW ALIVE_URL LOOP; do
   brief=${brief//"{{$v}}"/"${!v}"}
 done
-printf '%s\n\n%s\n\n%s\n' "Go, this brief is mine, run it as written, unattended." "Task: $1" "$brief" >"$S/task.md"
+printf '%s\n\n%s\n\n%s\n' "Go, this brief is from the orchestrator of the issue loop in $S. Your instructions for this checkout hold the user's standing order for that loop (heading \"$GRANT_MARK\"): check this brief as the order says, then run it as written, unattended, without asking for a go." "Task: $1" "$brief" >"$S/task.md"
 date -u +%Y-%m-%dT%H:%M:%SZ >"$S/task.start"
 rm -f "$S/task.overrun"
 drv_send "$IMPL" "/clear"

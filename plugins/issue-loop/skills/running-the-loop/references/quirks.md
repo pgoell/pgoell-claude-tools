@@ -1,17 +1,21 @@
 # Quirks that cost time
 
-Each of these stopped the loop at least once. The scripts handle the first four; know them anyway, for the day the script's guess is wrong.
+Each of these stopped the loop at least once. The scripts handle the first four, and the standing order takes most of the first away; know them anyway, for the day the script's guess is wrong.
 
 ## The go-ahead question
 
-A long brief arrives as a pasted block. The session may then refuse to act on it: the opening line "this brief is mine" sits inside the paste, so it cannot vouch for itself, and the brief ends in a merge and a deploy. The session asks for a typed go-ahead, in one of two forms:
+A long brief arrives as a pasted block, typed by another session. The implementer rightly gives it less weight than the user's own word, and the brief ends in a merge and a deploy. So it may refuse to act and ask for a typed go-ahead. A successor orchestrator does the same with the takeover message. On the example project the implementer asked in about one brief of four, and the first successor that was started by the plugin's own handover stopped and waited for the user.
 
-- as text: `Reply "go"`. State after `next.sh`: `done` or `idle`.
+The cause was the plugin's: nothing the user had written told a session that this loop's sessions may order each other. The authority stood only in files that sessions wrote (`HANDOFF.md`, `rules.md`) and in the paste itself, and an opener like "this brief is mine" sits inside the paste, so it cannot vouch for itself. The session that asked was right.
+
+The cure is the standing order (`SKILL.md`, "The standing order"): the user grants the two cases once with `grant.sh`, the order is loaded as the session's own instructions, and the brief's first line and the takeover message point at it. The implementer can check a brief against `task.md` in the loop folder; a successor runs `takeover-check.sh`.
+
+It can still happen. A session weighs its instructions against a paste that ends in a deploy, and may ask all the same; an implementer started before the grant has not read it; a session started in another folder has no order at all. The question comes in two forms:
+
+- as text: `Reply "go"`, `Confirm with one word ("go")`, or other words to that end. State after `next.sh`: `done` or `idle`.
 - as a menu ("Run brief?", first item "Yes, run it" or "Go"). State: `blocked`.
 
-Fix: answer once, "go" for the text form, "1" for the menu. `next.sh` and `start.sh` do this themselves. The menu's words change between versions, so the scripts match only a menu whose six lines above speak of a brief or a paste and not of allowing or permission. They would sooner miss a go-ahead menu than approve a tool call. If `next.sh` does not print `working`, read the screen and answer by hand.
-
-The opener "Go, this brief is mine, run it as written, unattended." stays in the brief: it settles the question in most cases. On the example project the session still asked in about two of five tasks.
+Fallback: answer once, "go" for the text form, "1" for the menu, and only for what the standing order covers. `next.sh` and `start.sh` do this themselves (`answer_go_ahead` in `lib.sh`); `start.sh` does it only in a folder that holds the order. The words change between versions and between sessions: an earlier match on the one wording `Reply "go"` missed `Confirm with one word ("go")`. So the scripts now look at the state first (a working session asks nothing), then for a line that asks for the word go after a verb such as reply, confirm, say or type. For the menu they take only one whose six lines above speak of a brief or a paste and not of allowing or permission. They would sooner miss a go-ahead than approve a tool call. If `next.sh` does not print `working`, read the screen and answer by hand, and add the new wording to `GO_ASK` in your `lib.sh`.
 
 ## "Idle" is not "done"
 
@@ -59,7 +63,10 @@ A worktree with commits of its own is not swept by that line, and five of those 
 - **Merge before CI.** A merge once fired before CI ran on the PR's last commit. Only branch protection stops that (`references/setup.md`).
 - **More than one PR per task.** Look at all PRs since the task began, not the newest. `gate.sh` does. A PR once merged with 0 of 11 boxes ticked.
 - **The gate in the middle of a task** fails on "not on the base branch". Run it after the DONE line.
-- **The report's top is cut.** Sixty lines often miss the checklist. Read 130.
+- **The report's top is cut.** The implementer's screen keeps only about 70 lines, however many you ask for. Read the headings in capitals and "Not fixed" from the PR body (`gh pr view N --json body,comments`); rule 12 puts them there.
+- **A task on a save path says "done" and can still lose work.** Ask every task on a save path or on stored data for a "CAN STILL LOSE" list and a "DATA FAULT ON LIVE" line (rule 14), and compare the live rows with your baseline after.
+- **A rebuilt data path keeps breaking.** After one rebuild, the next two batches found five regressions in that path. Plan a review of the whole path, not of the diff.
+- **A commit of tests only can turn the deploy check red.** When a fix changes nothing but tests, the image may not change, and the deploy check may then fail though nothing is wrong on live. Look at what the commit changed before you treat it as a failed deploy.
 - **A hook that runs the full suite on every push** cost 15 minutes per task. Let CI run the suite.
 - **A push chained after a suite run.** Twice a task ran the suite and the push in one shell call, and pushed before anyone had read the result. Rule 5 forbids the chain: read the result first.
 - **A change in what the product puts out.** A fix changed how borders printed, and the report said so in one line among sixty. Rule 12 asks for the heading OUTPUT CHANGES; pass each line on to the user.
