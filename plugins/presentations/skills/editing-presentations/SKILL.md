@@ -104,7 +104,7 @@ Edit the deck files with the usual tools, at the lines the selection names. Neve
 
 ## Hosted mode
 
-The same editor also runs as a container behind a reverse proxy with a sign-in, for reviewing decks from any browser. A picker lists the decks of the checkout and of every worktree under `.worktrees/`, and "Send" files the feedback as a GitHub issue that a workflow hands to a Claude session in the deck's worktree. Setup and limits are in `hosted/README.md` at the plugin root.
+The same editor also runs as a container behind a reverse proxy with a sign-in, for reviewing decks from any browser. A picker lists the branches of the repo, local and on origin, and the decks of the one picked, and "Send" files the feedback as a GitHub issue that a workflow hands to a Claude session in the deck's worktree. Setup and limits are in `hosted/README.md` at the plugin root.
 
 ## Self-healing
 
