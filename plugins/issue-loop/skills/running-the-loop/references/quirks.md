@@ -31,11 +31,11 @@ Run the wait in the background. A long sleep in the foreground gets blocked by t
 
 ## A start dialog swallows the first prompt
 
-A session started with a flag that shows an accept dialog (the skip-permissions flag did) sits on that dialog. The first prompt's Enter then picks the dialog's default, which was "No, exit", and the session quits. The driver still reported the start as a success.
+A session started with a flag that shows an accept dialog (the skip-permissions flag does, until the user has accepted it once on this machine) sits on that dialog. The first prompt's Enter then picks the dialog's default, which was "No, exit", and the session quits. The driver still reported the start as a success.
 
-Fix: auto mode shows no such dialog. `start.sh` waits, checks that the session is still there, and only then sends. After any start, read the screen once before you trust it.
+Fix: `start.sh` reads the screen and exits 5 on such a dialog. Ask the user to start `claude --permission-mode bypassPermissions` once and accept. `start.sh` waits, checks that the session is still there, and only then sends. After any start, read the screen once before you trust it.
 
-The folder trust question is the same trap, and auto mode does not remove it. A session started in a folder Claude Code has never seen asks "Is this a project you created or one you trust?", with "No, exit" as the default. A fresh loop folder is such a folder, so the first successor orchestrator started there hits it. `start.sh` reads the screen before it sends; when it sees a start dialog it sends nothing, prints the screen and exits 5. Do not accept the question for the user: ask them to start `claude` once in that folder and accept, or to name a folder they trust. Then close the pane and run `start.sh` again. During the dialog the session cannot be read by name, only by its pane.
+The folder trust question is the same trap. A session started in a folder Claude Code has never seen asks "Is this a project you created or one you trust?", with "No, exit" as the default. A fresh loop folder is such a folder, so the first successor orchestrator started there hits it. `start.sh` reads the screen before it sends; when it sees a start dialog it sends nothing, prints the screen and exits 5. Do not accept the question for the user: ask them to start `claude` once in that folder and accept, or to name a folder they trust. Then close the pane and run `start.sh` again. During the dialog the session cannot be read by name, only by its pane.
 
 After making a new tab, wait a few seconds before starting a session in it; `drv_start` does.
 

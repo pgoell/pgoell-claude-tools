@@ -35,6 +35,6 @@ drv_start() {
     jq -r '[.. | .pane_id? | strings][0] // empty')
   [ -n "$pane" ] || { echo "no pane id from herdr tab create" >&2; return 1; }
   nap 5
-  herdr agent start "$1" --kind claude --pane "$pane" -- --permission-mode "${PERMISSION_MODE:-auto}" >/dev/null || return 1
+  herdr agent start "$1" --kind claude --pane "$pane" -- --permission-mode "${PERMISSION_MODE:-bypassPermissions}" >/dev/null || return 1
   echo "$pane"
 }

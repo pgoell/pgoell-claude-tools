@@ -180,13 +180,13 @@ echo '{"needs":[],"shipped":{}}' >"$N"
 out=$(render); ok "render exit with sources down" $? 0
 has "page names the gaps" "$(cat "$V/01 Periodic/07 Activity/$D.html")" "Unavailable on this run: github, ci, usage, vault."
 
-# cron wrapper: three tools for the model, the periodic folder from kasten's variable, exit 1 with no page
+# cron wrapper: permissions skipped, the periodic folder from kasten's variable, exit 1 with no page
 mkdir -p "$T/home/.local/bin" "$V/P/07 Activity"
 printf '#!/bin/bash\nprintf "%%s\\n" "$@" >"$HOME/args"\n[ -n "${NO_PAGE:-}" ] || echo page >"%s/P/07 Activity/$(TZ=Europe/Berlin date -d yesterday +%%F).html"\n' "$V" >"$T/home/.local/bin/claude"
 chmod +x "$T/home/.local/bin/claude"
 cron() { HOME="$T/home" KASTEN_PERIODIC_PATH=P INSIGHTS_LOG_DIR="$T/log" "$here/../scripts/cron-activity.sh" "$V"; }
 cron; ok "cron exit" $? 0
-ok "cron allows three tools" "$(sed -n '/--allowedTools/,$p' "$T/home/args" | tr '\n' '|')" "--allowedTools|Read|Write|Bash(uv run:*)|"
+has "cron skips permissions" "$(cat "$T/home/args")" "--dangerously-skip-permissions"
 has "cron passes the periodic folder" "$(cat "$T/home/args")" '--periodic "P"'
 rm "$V/P/07 Activity/"*.html; NO_PAGE=1 cron; ok "cron exit with no page" $? 1
 

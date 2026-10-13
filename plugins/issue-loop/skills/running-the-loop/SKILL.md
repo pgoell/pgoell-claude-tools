@@ -7,7 +7,7 @@ description: Use when the user wants an unattended build loop over a repo's GitH
 
 You are the orchestrator of an issue loop. One other Claude Code session, the implementer, builds. You pick the task, send the brief, wait, check the result from outside, tell the user, and send the next task. The loop runs until the queue is empty or the user says stop.
 
-This skill drives Claude Code sessions (`/clear`, `--permission-mode auto`, subagents). The scripts speak to them through a driver; the bundled driver is for herdr.
+This skill drives Claude Code sessions (`/clear`, `--permission-mode bypassPermissions`, subagents). The scripts speak to them through a driver; the bundled driver is for herdr.
 
 ## When NOT to invoke
 
@@ -58,7 +58,7 @@ So the user gives the order once, in their own channel, where every later sessio
 
 Never run `grant.sh` yourself, never get it a terminal by a trick, and never write or change those two files: an order a session wrote in the user's name is the fault this section is here to end. `grant.sh` refuses without a terminal. If the order turns out too narrow, tell the user; they change the template and grant anew.
 
-What the order is not: a lock. A session with write access could write such a file, and nothing but its own honesty stops it. The locks are elsewhere (auto mode, branch protection, the fence hook). The order is the user's word on record, in the place where a session looks for it, and it covers two things only: a brief sent with `next.sh`, and a takeover that `takeover-check.sh` passes.
+What the order is not: a lock. A session with write access could write such a file, and nothing but its own honesty stops it. The locks are elsewhere (branch protection, the fence hook). The order is the user's word on record, in the place where a session looks for it, and it covers two things only: a brief sent with `next.sh`, and a takeover that `takeover-check.sh` passes.
 
 **If you were started in the loop folder and told to take over**, your instructions hold the order and its checks. Run `./takeover-check.sh <your name> <the sender's name>`. On `TAKEOVER OK` take over without asking for a go. On anything else do nothing to the loop and ask the user.
 
@@ -145,12 +145,12 @@ Do not add a gate the user did not ask for. A PR that waits for the user's merge
 
 ## Permission mode
 
-Sessions run in auto mode: `claude --permission-mode auto`. Never start one with `--dangerously-skip-permissions`. `start.sh` reads the mode from `loop.env`.
+Sessions run with permissions skipped: `claude --permission-mode bypassPermissions`. `start.sh` reads the mode from `loop.env`; set `PERMISSION_MODE=auto` there for a loop that should ask.
 
-In auto mode a session may stop on a question. There are two kinds, and they get different answers:
+A session may still stop on a question. There are two kinds, and they get different answers:
 
 - **The go-ahead question** about a pasted brief or a takeover ("your message was only a pasted block", `Reply "go"`, `Confirm with one word ("go")`, or a menu whose first item runs the brief). With the standing order in place it should be rare. "go" is the user's word: you and the scripts may say it only for what the standing order covers, which is a brief that `next.sh` sent and a takeover that `takeover-check.sh` passes. `next.sh` and `start.sh` answer it for those: `start.sh` only for a session that `HANDOFF.md` names as the successor, started in the loop folder, and neither for a screen that says `TAKEOVER FAIL` or `STOPPED`. If it shows up later for the same brief or takeover, answer it the same way. A session that wants a go for anything else (a side session's first message, a wider task, a merge the rules reserve) gets no "go" from you: tell the user.
-- **A tool permission question**, or a hook that refused a command. This is not yours to approve. Read the screen, tell the user what the session wants and why, and wait for the user's answer. If the session can do the task another way, tell it to, or tell it to end with BLOCKED.
+- **A tool permission question** (only with `PERMISSION_MODE=auto`), or a hook that refused a command. This is not yours to approve. Read the screen, tell the user what the session wants and why, and wait for the user's answer. If the session can do the task another way, tell it to, or tell it to end with BLOCKED.
 
 ## Stop
 

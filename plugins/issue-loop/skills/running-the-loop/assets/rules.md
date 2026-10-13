@@ -47,6 +47,6 @@ Rules for this job:
 
 17. Label every issue you open: regression (a PR of the last days brought it in; name the PR), bug ({{BASE}} had it), wish (a behaviour outside the list), test-debt. Open at most 2 wishes per task; the rest go as one line each into the PR body.
 
-18. Permission questions. You run in auto mode. If a tool call is refused or a hook blocks a command, do not work around it: pick an allowed way, or end with BLOCKED and the reason.
+18. Permission questions. If a tool call is refused or a hook blocks a command, do not work around it: pick an allowed way, or end with BLOCKED and the reason.
 
 19. Tell the orchestrator. As your last tool call, right before you write the final report, run: "{{LOOP}}/notify.sh" "DONE #N" (or "BLOCKED #N: reason"), with the same words as the last line of your report. Once, no more. If the call fails or is refused, go on to the report: do not try another way and do not end with BLOCKED over it, since the orchestrator's wait finds your last line anyway. The last line of the report stays as rule 12 says.

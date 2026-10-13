@@ -7,7 +7,7 @@ The plugin is the written-down form of a loop that ran for two days on one examp
 ## Skills
 
 - `/issue-loop:running-the-loop`: Makes this session the orchestrator. Checks what the repo needs, sets up a loop folder, then turns the loop: write the task line, send the brief, wait for the exact DONE line with a clock (the implementer also sends one line when it is done), run the gate, read "Not fixed", "Slips" and "Issues opened", pick what runs next, write a ledger line, report in a few lines, send the next task.
-- `/issue-loop:handing-over`: Passes the loop to a fresh orchestrator at about 150k tokens of context: rewrites the handoff file with the successor's name, starts the successor in auto mode in the loop folder, sends a first message that points at your standing order, checks it took over.
+- `/issue-loop:handing-over`: Passes the loop to a fresh orchestrator at about 150k tokens of context: rewrites the handoff file with the successor's name, starts the successor in the loop folder, sends a first message that points at your standing order, checks it took over.
 
 ## What is in the loop folder
 
@@ -21,7 +21,7 @@ The plugin is the written-down form of a loop that ran for two days on one examp
 | `wait.sh`                                     | Waits for `DONE <token>` or `BLOCKED <token>`; prints `settled`, `TIMEOUT` (once per task, then it watches on), `ASKING`, `STALLED` (no work for 20 minutes and no DONE line) or `GONE`           |
 | `notify.sh`                                   | Run by the implementer as its last tool call: types `impl settled: DONE #N` into the orchestrator's session, through the driver                                                                   |
 | `gate.sh`                                     | Pass or fail from outside: issues closed, PRs merged with no open box, live commit, clean tree, app up                                                                                            |
-| `start.sh`                                    | Starts a session in auto mode, looks for a start dialog, then sends its first message                                                                                                             |
+| `start.sh`                                    | Starts a session, looks for a start dialog, then sends its first message                                                                                                                          |
 | `standing-order.md`, `standing-order-impl.md` | Your standing order as templates: what the loop's sessions may order each other to do without your go, and what stays yours                                                                       |
 | `grant.sh`                                    | Run by you, in a terminal, never by a session: prints the standing order, asks for a typed yes, writes it into `CLAUDE.md` in the loop folder and `CLAUDE.local.md` in the implementer's checkout |
 | `takeover-check.sh`                           | Run by a successor orchestrator before it takes over: standing order in place, named in `HANDOFF.md`, the sender's name is the one in `orch-name`                                                 |
@@ -52,11 +52,11 @@ Now you say it once, in your own channel:
 
 The order covers two things: a brief sent with `next.sh`, which the implementer checks against `task.md` in the loop folder, and a takeover that `takeover-check.sh` passes. Everything else that waited for you still does.
 
-`grant.sh` refuses without a terminal, and the skills forbid a session to write those files. That is a rule, not a lock: a session that can write to the folder could forge the file. The locks stay where they were: auto mode, branch protection, a fence hook.
+`grant.sh` refuses without a terminal, and the skills forbid a session to write those files. That is a rule, not a lock: a session that can write to the folder could forge the file. The locks stay where they were: branch protection, a fence hook.
 
 **After an update from 0.2.0 or earlier**, on a loop that runs: in this order: run `scripts/init.sh <loop folder>` again (it adds the new files and overwrites nothing), copy `lib.sh` anew from `skills/running-the-loop/assets/`, fill `standing-order.md`, run `./grant.sh`, and only then copy `next.sh` and `start.sh` anew. The new `next.sh` refuses to send a brief without the order; with the old one the loop works as before, with a go from you now and then. A hand-made loop folder needs a `loop.env` first.
 
-Sessions run in auto mode (`claude --permission-mode auto`). The loop never starts a session with skipped permissions.
+Sessions run with permissions skipped (`claude --permission-mode bypassPermissions`). Set `PERMISSION_MODE=auto` in `loop.env` for a loop that should ask.
 
 ## Limits
 

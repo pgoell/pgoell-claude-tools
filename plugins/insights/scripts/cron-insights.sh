@@ -27,14 +27,10 @@ echo "== $(date -Is) insights for $DAY in $VAULT" >>"$LOG"
 PLUGIN=()
 [ -n "${INSIGHTS_PLUGIN_DIR:-}" ] && PLUGIN=(--plugin-dir "$INSIGHTS_PLUGIN_DIR")
 
-# -p prompts nobody, so every tool the digest and apply steps need is allowed
-# up front: uv for the scripts, rg and ps to check causes, git and gh for PRs.
+# -p prompts nobody, so the session runs with permissions skipped.
 # insights-self-run marks this session, so tomorrow's extract skips it.
 claude -p "/insights:digest --vault \"$VAULT\" --date $DAY insights-self-run" "${PLUGIN[@]}" \
-  --allowedTools "Read" "Write" "Edit" "Glob" "Grep" \
-  "Bash(uv run:*)" "Bash(rg:*)" "Bash(grep:*)" "Bash(ps:*)" "Bash(pgrep:*)" "Bash(ls:*)" "Bash(cat:*)" \
-  "Bash(head:*)" "Bash(wc:*)" "Bash(command -v:*)" "Bash(date:*)" "Bash(mkdir:*)" "Bash(jq:*)" \
-  "Bash(git:*)" "Bash(gh:*)" "Bash(dprint:*)" "Bash(mise:*)" \
+  --dangerously-skip-permissions \
   >>"$LOG" 2>&1
 status=$?
 

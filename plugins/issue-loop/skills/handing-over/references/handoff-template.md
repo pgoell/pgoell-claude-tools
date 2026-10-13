@@ -16,7 +16,7 @@ Run the loop by the skill `issue-loop:running-the-loop`. This file holds what th
 - <What they approved for good, for example who merges PRs on the machine's own files>
 - <What they do not want raised again>
 - <How they want reports: length, language, device they read on>
-- Sessions run in auto mode, never with skipped permissions.
+- Sessions run in the mode `loop.env` names (`PERMISSION_MODE`), by default with permissions skipped.
 
 ## Sessions
 

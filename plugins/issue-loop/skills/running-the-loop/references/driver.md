@@ -34,7 +34,7 @@ herdr agent prompt <name> "<text>"                                 # send
 herdr agent wait <name> --until idle --until done --until blocked  # wait, no clock of its own: wrap it in timeout
 herdr agent read <name> --source recent-unwrapped --lines <n>      # read
 herdr tab create --workspace <id> --cwd <dir> --label "<text>" --no-focus   # new tab, JSON with a pane id
-herdr agent start <name> --kind claude --pane <pane id> -- --permission-mode auto
+herdr agent start <name> --kind claude --pane <pane id> -- --permission-mode bypassPermissions
 herdr pane read <pane id>                                          # the screen of a pane whose agent is gone
 ```
 
@@ -51,7 +51,7 @@ drv_send()   { tmux send-keys -t "$1" -l "$2"; tmux send-keys -t "$1" Enter; }
 drv_read()   { tmux capture-pane -p -J -t "$1" -S "-$2"; }
 drv_status() { tmux has-session -t "$1" 2>/dev/null || { echo gone; return; }; echo unknown; }
 drv_wait()   { sleep "$2"; }
-drv_start()  { tmux new-session -d -s "$1" -c "$2" "claude --permission-mode ${PERMISSION_MODE:-auto}"; }
+drv_start()  { tmux new-session -d -s "$1" -c "$2" "claude --permission-mode ${PERMISSION_MODE:-bypassPermissions}"; }
 ```
 
 With that sketch `drv_status` cannot tell working from idle, so `wait.sh` settles as soon as the DONE line shows, and it never prints `ASKING`. A better tmux driver would read the screen for the session's own "working" mark.

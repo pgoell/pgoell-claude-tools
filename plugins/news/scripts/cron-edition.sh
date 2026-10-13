@@ -25,10 +25,9 @@ echo "== $(date -Is) edition $DAY for $VAULT" >>"$LOG"
 PLUGIN=()
 [ -n "${NEWS_PLUGIN_DIR:-}" ] && PLUGIN=(--plugin-dir "$NEWS_PLUGIN_DIR")
 
-# -p prompts nobody, so every tool the edition needs is allowed up front.
+# -p prompts nobody, so the session runs with permissions skipped.
 claude -p "/news:edition --vault \"$VAULT\" --date $DAY" "${PLUGIN[@]}" \
-  --allowedTools "Read" "Write" "Edit" "Glob" "Grep" "WebSearch" "WebFetch" "Agent" \
-  "Bash(uv run:*)" "Bash(curl:*)" "Bash(python3:*)" "Bash(date:*)" "Bash(ls:*)" "Bash(mkdir:*)" \
+  --dangerously-skip-permissions \
   >>"$LOG" 2>&1
 status=$?
 
