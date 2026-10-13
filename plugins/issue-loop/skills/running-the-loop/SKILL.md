@@ -74,12 +74,13 @@ Run every script from the loop folder (`cd <loop folder> && ...` in each call).
 
 **3. Wait in the background.** `./wait.sh "#41"` with the first issue of the DONE line as the token. Run it as a background shell call with the longest timeout the host allows. It prints one word:
 
-| Word      | Meaning                            | Do                                                                                                                                   |
-| --------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `settled` | the DONE or BLOCKED line is there  | go to step 4                                                                                                                         |
-| `TIMEOUT` | the task is older than 100 minutes | read the screen first. In merge or deploy: let it finish. Else send "finish by rule 10 now" once. Then start `wait.sh` again at once |
-| `ASKING`  | the session waits on a question    | read the screen. See "Permission mode" below                                                                                         |
-| `GONE`    | no session has that name           | the session died. Tell the user; start a new one with `start.sh` once the checkout is clean                                          |
+| Word      | Meaning                              | Do                                                                                                                                                  |
+| --------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `settled` | the DONE or BLOCKED line is there    | go to step 4                                                                                                                                        |
+| `TIMEOUT` | the task is older than 100 minutes   | read the screen first. In merge or deploy: let it finish. Else send "finish by rule 10 now" once. Then start `wait.sh` again at once                |
+| `ASKING`  | the session waits on a question      | read the screen. See "Permission mode" below                                                                                                        |
+| `STALLED` | no work for 20 minutes, no DONE line | read the screen. If the last line is an API error, send "carry on where you stopped" once. If a suite run or a CI wait shows, start `wait.sh` again |
+| `GONE`    | no session has that name             | the session died. Tell the user; start a new one with `start.sh` once the checkout is clean                                                         |
 
 If the shell call itself times out with no word, start `wait.sh` again. Never wait with a bare sleep, and never trust the state "idle" or "done" alone: a session pauses between steps. The DONE line is the signal.
 

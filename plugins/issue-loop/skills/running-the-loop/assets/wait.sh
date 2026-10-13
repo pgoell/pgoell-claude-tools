@@ -9,10 +9,16 @@
 #                next.sh removes the file with the next task.
 #   GONE     (3) no session has the implementer's name: it died
 #   ASKING   (4) the session waits on a question and has no DONE line
-# Needs GNU date (date -d).
+#   STALLED  (5) the session has not worked for STALL_MIN minutes (default 20)
+#                and has no DONE line: its turn may have died on an API error.
+#                The clock is the file task.alive; next.sh removes it with the
+#                next task.
+# Needs GNU date (date -d) and GNU stat (stat -c).
 . "$(dirname "$0")/lib.sh"
 tok=${1:?usage: wait.sh "<token>"}
 limit=$((${TASK_LIMIT_MIN:-100} * 60))
+alive="$S/task.alive"
+[ -e "$alive" ] || : >"$alive"
 has_token() { screen_tail "$IMPL" 40 | grep -E '^\s*(DONE|BLOCKED) ' | grep -qE " ${tok}([^0-9A-Za-z]|\$)"; }
 while true; do
   age=$(($(date +%s) - $(date -d "$(cat "$S/task.start")" +%s)))
@@ -20,6 +26,12 @@ while true; do
   drv_wait "$IMPL" 300
   st=$(drv_status "$IMPL")
   [ "$st" = gone ] && { echo GONE; exit 3; }
+  [ "$st" = working ] && : >"$alive"
+  if ! has_token && [ $(($(date +%s) - $(stat -c %Y "$alive"))) -gt $((${STALL_MIN:-20} * 60)) ]; then
+    : >"$alive"
+    echo STALLED
+    exit 5
+  fi
   if has_token; then
     nap 5
     [ "$(drv_status "$IMPL")" != working ] && break
