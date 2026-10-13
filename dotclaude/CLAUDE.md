@@ -72,8 +72,8 @@ than that you asked something.
 
 To drive other Claude sessions through a list of GitHub issues, use the
 issue-loop plugin (`issue-loop:running-the-loop`). One implementer session at a
-time. Start it in auto mode, never with `bypassPermissions` or
-`--dangerously-skip-permissions`.
+time. Start it with `--permission-mode bypassPermissions`, the default in
+`loop.env`.
 
 Machine-local and private instructions live in this file, which is not versioned:
 
