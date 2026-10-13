@@ -171,6 +171,15 @@ now >"$L/task.start"; rm "$STUB/status"; : >"$STUB/screen"
 out=$("$L/wait.sh" "#210"); ok "wait GONE exit" $? 3; ok "wait GONE word" "$out" GONE
 echo blocked >"$STUB/status"; printf 'Allow this command?\n' >"$STUB/screen"
 out=$("$L/wait.sh" "#210"); ok "wait ASKING exit" $? 4; ok "wait ASKING word" "$out" ASKING
+echo idle >"$STUB/status"; printf 'API Error: Connection lost mid-response.\n' >"$STUB/screen"
+out=$(timeout 2 "$L/wait.sh" "#210"); ok "wait: a short rest is no stall" $? 124
+touch -d '21 minutes ago' "$L/task.alive"
+out=$("$L/wait.sh" "#210"); ok "wait STALLED exit" $? 5; ok "wait STALLED word" "$out" STALLED
+out=$(timeout 2 "$L/wait.sh" "#210"); ok "wait: STALLED starts the clock anew" $? 124
+touch -d '21 minutes ago' "$L/task.alive"; echo working >"$STUB/status"
+out=$(timeout 2 "$L/wait.sh" "#210"); ok "wait: a working session is no stall" $? 124
+echo idle >"$STUB/status"; touch -d '21 minutes ago' "$L/task.alive"
+"$L/next.sh" "t" >/dev/null; [ -e "$L/task.alive" ]; ok "next clears the stall clock" $? 1
 
 # notify.sh: one line to the name in orch-name, DONE or BLOCKED only
 echo idle >"$STUB/status"; : >"$STUB/sent"
