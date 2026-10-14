@@ -59,6 +59,7 @@ same file.
 | `broadsheet`            | German print front page: Fraktur masthead, columns, hairline rules.     |
 | `magazine`              | Weekend supplement: full-bleed lead, big numerals, scale by importance. |
 | `swiss`                 | Strict 12-column grid in Inter with one signal red.                     |
+| `tabbed`                | The heimatblatt look with one tab per section instead of one scroll.    |
 
 <p>
 <img src="skills/edition/designs/heimatblatt/shot-mobile-light.png" alt="heimatblatt at phone width" width="180">
@@ -66,6 +67,7 @@ same file.
 <img src="skills/edition/designs/broadsheet/shot-mobile-light.png" alt="broadsheet at phone width" width="180">
 <img src="skills/edition/designs/magazine/shot-mobile-light.png" alt="magazine at phone width" width="180">
 <img src="skills/edition/designs/swiss/shot-mobile-light.png" alt="swiss at phone width" width="180">
+<img src="skills/edition/designs/tabbed/shot-mobile-light.png" alt="tabbed at phone width" width="180">
 </p>
 
 Each design lives in `skills/edition/designs/<name>/` as `template.html.j2`

@@ -13,6 +13,7 @@ overrides it for one render.
 | `broadsheet`  | A German print front page: Fraktur masthead, columns with hairline rules.             |
 | `magazine`    | A weekend supplement: full-bleed lead, big section numerals, scale set by importance. |
 | `swiss`       | A Swiss modernist 12-column grid in Inter, one signal red.                            |
+| `tabbed`      | The heimatblatt look, one tab per section; for editions too long to scroll.           |
 | `plain`       | Fallback. Used when the configured design is not installed.                           |
 
 Each design folder also holds `NOTES.md` (the idea, fonts, tokens, what its
