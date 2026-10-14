@@ -148,8 +148,10 @@ h1,h2,h3{font-family:var(--font-head);margin:0;font-weight:600;line-height:1.12;
   border-top:3px double var(--ink);border-bottom:1px solid var(--ink);padding:6px 2px;
   font-family:var(--font-head);font-size:14px;letter-spacing:.06em;text-transform:uppercase}
 /* ---------- tab strip: sticky, scrolls sideways on its own so the page never does ---------- */
-.tabs{position:sticky;top:0;z-index:5;background:var(--paper);margin:0 -32px;padding:0 32px;border-bottom:1px solid var(--ink);
-  box-shadow:0 1px 0 var(--rule)}
+.tabs{position:sticky;top:0;z-index:5;background:var(--paper);border-bottom:1px solid var(--ink);box-shadow:0 1px 0 var(--rule)}
+/* The strip covers the page's grain, so it carries its own. */
+.tabs::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:var(--grain-opacity);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .2 0 0 0 0 .15 0 0 0 0 .1 0 0 0 1.4 -.35'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
 .tabs ul{display:flex;flex-wrap:wrap;justify-content:center;gap:0 4px;list-style:none;margin:0;padding:8px 0 0}
 .tabs li{flex:none}
 .tabs a{display:block;padding:6px 12px 8px;font-family:var(--font-head);font-size:15px;white-space:nowrap;text-decoration:none;
