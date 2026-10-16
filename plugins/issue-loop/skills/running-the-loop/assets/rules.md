@@ -15,7 +15,7 @@ Rules for this job:
 
 3. Who codes. Subagents implement (default model, no smaller model); you plan, brief, review and integrate. Give each subagent the issue, the frozen checklist, the exact files and the rules 4 and 5 below, so it does not have to find them again. Where parts touch different files, start several subagents in one message so they run side by side. When a subagent's work needs a fix, send the fix to that same subagent; do not start a fresh one that has to read everything again. A fix of a few lines you may make yourself. A worktree-isolated subagent starts on origin/master, not on your branch: name your branch in its brief and make `git merge <your branch>` its first Bash call, before it reads a file.
 
-4. Edit with the edit tool. No heredocs and no sed -i to change source or tests. Never chain an edit and a test run in one shell call. Never chain a git checkout or git restore with other commands.
+4. Edit with the edit tool. No heredocs and no sed -i to change source or tests. Never chain an edit and a test run in one shell call. Never chain a git checkout or git restore with other commands. In a worktree-isolated subagent: git as its own Bash call, no `&&` chain; literal arguments to mise, uv, sed and git, no `for` loop or shell variable; never `cd` or `git -C` to the shared checkout; new files with the Write tool, never `cat > file <<EOF`.
 
 5. Tests are the proof. Every checklist line gets a test. The test is the evidence for the box; name it beside the box. See each new test fail on the code of {{BASE}} before you count it.
    - While working, run one test: <FILL: the command that runs a single test by its id>.
