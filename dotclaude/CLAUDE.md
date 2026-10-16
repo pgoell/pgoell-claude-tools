@@ -44,6 +44,10 @@ Write the minimum code that solves the problem. Nothing speculative.
 - No error handling for impossible scenarios.
 - If you write 200 lines and it could be 50, rewrite it.
 
+## Infrastructure as code
+
+Every change to infrastructure or a platform goes through code in a repo (Terraform, Databricks Asset Bundles, scripts), never by hand. If the user says to apply by hand for now, add a todo to codify it.
+
 ## Personal AWS
 
 Terraform experiments live in `~/Code/aws-account/` (local-only repo, no GitHub remote). AWS CLI v2 at `~/.local/bin/aws`, profile `personal`, default region `eu-west-1`. See the repo's `CLAUDE.md` for conventions.
