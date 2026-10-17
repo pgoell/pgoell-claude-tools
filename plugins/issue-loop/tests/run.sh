@@ -306,6 +306,7 @@ has "start says it quit" "$out" "quit after the first message"; rm "$STUB/die_on
 # start.sh answers a go-ahead question only for the successor HANDOFF.md names
 : >"$STUB/sent"; echo done >"$STUB/start_status"; echo 'Confirm with one word ("go")' >"$STUB/screen"
 out=$("$L/start.sh" orch2 "$L" "o" "$T/msg" 2>&1); has "start answers go for the named successor" "$out" "sent go"
+has "start marks its go as for the takeover only" "$(cat "$STUB/sent")" "$(printf 'orch2\tgo (typed by start.sh for the takeover only; not the user')"
 for where in "$L" "$T/repo" "$T"; do
   : >"$STUB/sent"
   out=$("$L/start.sh" side1 "$where" "s" "$T/msg" 2>&1); hasnt "start sends no go to another session in $where" "$out" "sent go"

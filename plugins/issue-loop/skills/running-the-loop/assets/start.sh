@@ -31,7 +31,7 @@ fi
 drv_send "$1" "$(cat "$4")"
 nap 30
 if [ "$(cd "$2" && pwd -P)" = "$S" ] && has_grant "$S/CLAUDE.md" && grep -qsxF "Successor: $1" "$S/HANDOFF.md"; then
-  answer_go_ahead "$1"
+  answer_go_ahead "$1" "go (typed by start.sh for the takeover only; not the user's word on any queue item)"
 else
   echo "$1 is no successor under the standing order: if it asks for a go-ahead, the answer is the user's" >&2
 fi
