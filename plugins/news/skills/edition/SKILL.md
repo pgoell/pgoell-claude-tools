@@ -117,9 +117,10 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
   stop and say so; do not hand-write the HTML, because memory and validation
   would drift.
 - **A source returns 401, 403, 429 or times out**: move on to the next source
-  or to secondary coverage. Do not retry more than once. If a source fails two
-  editions in a row, add its domain to `blocked_sources` and log it in the
-  changelog.
+  or to secondary coverage. Do not retry more than once. Append each failed
+  domain to `NP/memory/source-failures.md` as `- <date> <domain> <code>`. If the
+  file holds the domain from the previous edition, add it to `blocked_sources`
+  and log it in the changelog.
 - **A section comes up empty**: leave it out of this edition and say so. Never
   pad it with old stories.
 - **validate.py fails on a follow-up href**: the earlier story id is not in

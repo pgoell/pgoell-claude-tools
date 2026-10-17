@@ -14,6 +14,7 @@ All paths sit under `<vault>/<periodic>/05 Newspaper/`:
   `max_stories`, `freshness_days`, `exclude`, `interests`, `avoid`, `blocked_sources`.
 - `config/design.yaml`: `design`, `title`, `tagline`, `overrides`.
 - `memory/changelog.md`: one line per applied change.
+- `memory/source-failures.md`: one line per source that failed in an edition.
 - `memory/stories.jsonl`: what ran. Look up a story id here (`recent.py` or a
   plain search for `"id": "<id>"`) to see what "more like #id" points at.
 
