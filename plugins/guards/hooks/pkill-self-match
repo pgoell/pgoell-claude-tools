@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# PreToolUse guard for Bash: deny `pkill -f` with a plain pattern.
+# PreToolUse guard for Bash: deny `pkill -f` with a plain pattern, and
+# `pgrep -f` with a plain pattern in an `until` or `while` condition.
 #
 # Why: Claude Code runs each Bash call through a `bash -c '<command>'` whose
 # own command line contains the pattern, so `pkill -f 'uvicorn app'` matches
@@ -9,6 +10,10 @@
 # (`'[u]vicorn app'`) still matches the process but no longer matches its own
 # text, so it passes.
 #
+# The same self-match makes `until ! pgrep -f 'capture.sh'; do sleep 5; done`
+# wait forever: pgrep always finds the shell running the loop. A one-shot
+# `pgrep -f` only prints one extra PID, so it passes.
+#
 # Fails open: a command shlex cannot parse (stray quote, heredoc) passes.
 import json
 import shlex
@@ -16,17 +21,24 @@ import sys
 
 SEPARATORS = {";", "&&", "||", "|", "&", "(", ")"}
 # Options that take a value, so the token after them is not the pattern.
-SHORT_WITH_VALUE = set("gGPstuUF")
+SHORT_WITH_VALUE = set("dgGPstuUF")
 LONG_WITH_VALUE = {
     "--signal", "--euid", "--uid", "--group", "--pgroup", "--parent",
-    "--session", "--terminal", "--pidfile", "--ns", "--nslist",
+    "--session", "--terminal", "--pidfile", "--ns", "--nslist", "--delimiter",
 }
 
-REASON = (
+PKILL_REASON = (
     "Blocked: `pkill -f {pattern}` also matches the `bash -c` running this "
     "command, so it kills your own shell (exit 144). Instead, stop the process "
     "by port with `fuser -k <port>/tcp`, or bracket the first letter of the "
     "pattern so it cannot match itself: `pkill -f '[{first}]{rest}'`."
+)
+
+PGREP_REASON = (
+    "Blocked: `pgrep -f {pattern}` in a loop condition also matches the "
+    "`bash -c` running this loop, so it always finds a process and the loop "
+    "never ends. Bracket the first letter of the pattern so it cannot match "
+    "itself: `until ! pgrep -f '[{first}]{rest}'`."
 )
 
 
@@ -45,7 +57,7 @@ def segments(command):
 
 
 def self_matching_pattern(args):
-    """Return the pattern when these pkill args use -f with an unbracketed pattern."""
+    """Return the pattern when these pkill or pgrep args use -f with an unbracketed pattern."""
     full = False
     tokens = iter(args)
     for token in tokens:
@@ -70,7 +82,7 @@ def self_matching_pattern(args):
 
 def main():
     command = json.load(sys.stdin).get("tool_input", {}).get("command", "")
-    if "pkill" not in command:
+    if "pkill" not in command and "pgrep" not in command:
         return
     try:
         parts = list(segments(command))
@@ -78,11 +90,13 @@ def main():
         return
     for part in parts:
         for i, token in enumerate(part):
-            if token.rsplit("/", 1)[-1] != "pkill":
+            name = token.rsplit("/", 1)[-1]
+            in_loop = {"until", "while"} & set(part[:i])
+            if name != "pkill" and not (name == "pgrep" and in_loop):
                 continue
             pattern = self_matching_pattern(part[i + 1 :])
             if pattern:
-                reason = REASON.format(
+                reason = (PKILL_REASON if name == "pkill" else PGREP_REASON).format(
                     pattern=shlex.quote(pattern), first=pattern[0], rest=pattern[1:]
                 )
                 print(json.dumps({"hookSpecificOutput": {
