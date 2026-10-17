@@ -252,6 +252,16 @@ good; echo ' M x' >"$FAKE/dirty"; out=$(gate); has "gate fails on a dirty tree" 
 good; touch "$FAKE/down"; out=$(gate); has "gate fails when the app is down" "$out" "FAIL live app does not answer"
 good; printf '.github/workflows/deploy.yml\nsrc/a.py\n' >"$FAKE/files"; out=$(gate); ok "machine file does not fail the gate" $? 0
 has "gate tells the human" "$out" "TELL HUMAN: PR 5 touched .github/workflows/deploy.yml"
+hasnt "gate: no handover line without a transcript" "$out" "HAND OVER NOW"
+has "gate: unknown context without a transcript" "$out" "orchestrator context: unknown tokens"
+proj="$T/home/.claude/projects/$(printf %s "$(cd "$L" && pwd -P)" | sed 's/[^A-Za-z0-9]/-/g')"; mkdir -p "$proj"
+use() { printf '{"type":"assistant","message":{"usage":{"input_tokens":%s,"cache_read_input_tokens":%s,"cache_creation_input_tokens":0}}}\nnot json\n' "$1" "$2" >"$proj/a.jsonl"; }
+gateh() { HOME="$T/home" gate; }
+good; use 10 90000; out=$(gateh); ok "gate passes under 150k" $? 0; has "gate prints the context" "$out" "orchestrator context: 90010 tokens"
+hasnt "no handover under 150k" "$out" "HAND OVER NOW"
+good; use 10 200000; out=$(gateh); ok "context does not fail the gate" $? 0; has "gate says hand over past 150k" "$out" "HAND OVER NOW: past 150k"
+has "gate still passes past 150k" "$out" "GATE PASS"
+rm -rf "$T/home"
 
 # takeover-check.sh: the successor's checks before it takes over
 echo idle >"$STUB/status"; printf '# Handoff\n\nSuccessor: orch2\n' >"$L/HANDOFF.md"

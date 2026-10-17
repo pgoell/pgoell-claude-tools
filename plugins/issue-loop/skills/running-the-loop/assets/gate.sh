@@ -34,5 +34,11 @@ fi
 echo "issues opened since start:"
 gh issue list --state all --limit 50 --search "created:>=$start" --json number,title,labels -q '.[]|"  #\(.number) [\([.labels[].name]|join(","))] \(.title)"'
 echo "minutes: $((($(date +%s) - $(date -d "$start" +%s)) / 60))"
+# The orchestrator cannot see its own context size: read it from the newest
+# transcript of a session started in this folder. It never fails the gate.
+t=$(ls -t "$HOME/.claude/projects/$(printf %s "$S" | sed 's/[^A-Za-z0-9]/-/g')"/*.jsonl 2>/dev/null | head -1)
+ctx=$([ -n "$t" ] && tail -n 300 "$t" | jq -Rn '[inputs|fromjson?|select(.type=="assistant")|.message.usage|select(.)]|last|(.input_tokens+.cache_read_input_tokens+.cache_creation_input_tokens)//empty' 2>/dev/null)
+echo "orchestrator context: ${ctx:-unknown} tokens"
+[ "${ctx:-0}" -gt 150000 ] 2>/dev/null && echo "HAND OVER NOW: past 150k. Run issue-loop:handing-over before the next brief."
 [ $bad = 0 ] && echo "GATE PASS" || echo "GATE FAIL"
 exit $bad
