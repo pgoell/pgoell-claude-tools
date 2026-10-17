@@ -32,6 +32,8 @@ A design must:
   `--ink`, `--accent`, `--muted`, `--rule`, `--font-head`, `--font-body`) and
   end its CSS with the overrides hook:
   `{% if edition.design_overrides %}<style>:root{ {% for k,v in edition.design_overrides.items() %}--{{k}}:{{v}};{% endfor %} }</style>{% endif %}`;
+- draw a story's optional `bracket` (a tournament tree), or leave it out: only
+  `tabbed` draws one, and the other designs show the summary alone;
 - work in kasten's HTML pane: one self-contained file, inline CSS, no fetch,
   light and dark through `prefers-color-scheme`, no horizontal scroll at phone
   width with a 16px gutter.

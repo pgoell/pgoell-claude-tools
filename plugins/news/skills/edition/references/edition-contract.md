@@ -43,6 +43,16 @@ story:
   section: str # optional, lead only: the section id the lead came from
   entities: [str] # optional, memory only: people, organisations, places, products the story is about
   key_facts: [str] # optional, memory only: the two to four facts a later edition must not restate
+  bracket: bracket | null # optional: a tournament tree drawn under the summary; only `tabbed` draws it
+
+bracket:
+  rounds: [{ name: str, matches: [match] }] # 1 to 8 rounds, left to right, e.g. "Upper final", "Lower final", "Final"
+match:
+  a: str # team or player
+  b: str # team or player, or "TBD"
+  score: str | null # "3-2", null when not played
+  winner: "a" | "b" | null # null when not played
+  when: str | null # for a match not played: "17.10., 20:00", Berlin time
 ```
 
 ## Rules validate.py enforces
@@ -62,6 +72,8 @@ story:
 - A summary outside its importance's range (3: 90 to 150 words, 2: 50 to 90,
   1: 25 to 45) is a warning, not an error.
 - A section's `local`, when present, is true or false.
+- A `bracket`, when present, holds 1 to 8 rounds, each with a name and at least
+  one match; every match names `a` and `b`, and `winner` is "a", "b" or null.
 
 ## Changes from the first draft
 
@@ -73,6 +85,9 @@ story:
   `render.py`, because Jinja has no time zones and designs printed UTC.
 - Added optional `local` on sections, so a design can frame the home section
   without assuming it comes first.
+- Added optional `bracket` on a story, so a tournament tree (the LoL Worlds
+  Play-In and knockouts) can be drawn instead of told in the summary. A Swiss
+  stage is records, not a tree, and stays text.
 - Summary length now follows importance instead of one 60 to 180 word range,
   to keep the page short enough to read over breakfast.
 

@@ -30,6 +30,16 @@ carry over unchanged.
 - No storage: kasten's pane sandboxes the page without `allow-same-origin`, so
   `localStorage` throws. The open tab lives in the URL hash.
 
+## Bracket
+
+- A story with `bracket` gets a tournament tree under its text, across the
+  story's full width: one column per round, left to right, matches spaced so
+  each round sits between the matches that feed it, short rules between columns.
+- A finished match shows both scores, the winner bold with an accent score, the
+  loser muted. A match not played has a dashed frame and its `when` in accent.
+- At phone width the tree scrolls sideways inside its own box; the page never
+  does.
+
 ## What I would tune
 
 - With 14 or more sections the phone strip hides most tabs off screen; a fade
