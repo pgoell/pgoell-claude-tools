@@ -79,7 +79,8 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
    order (skip a section with no stories; keep 4 to 16) with `local: true` on
    a section whose topics.yaml entry has it, `weather: null` unless you have
    something better than a forecast, and `feedback_hint` as
-   `Feedback: <periodic>/05 Newspaper/feedback.md`. Then
+   `Feedback: <periodic>/05 Newspaper/feedback.md`. Keep a candidate's
+   `bracket` on its story. Then
    `uv run "${CLAUDE_SKILL_DIR}/scripts/weather.py" ARGS` fills a null
    `weather` from Open-Meteo for topics.yaml's `weather` place (one request,
    no key); a warning means the box stays empty, which is fine.

@@ -21,6 +21,7 @@ DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 STORY_ID = re.compile(r"^\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*-\d{2}$")
 EDITION_HREF = re.compile(r"^\d{4}-\d{2}-\d{2}\.html$")
 FOLLOWUP_HREF = re.compile(r"^(\d{4}-\d{2}-\d{2})\.html#(.+)$")
+SCORE = re.compile(r"^\d+-\d+$")
 
 SUMMARY_WORDS = {3: (90, 150), 2: (50, 90), 1: (25, 45)}
 """Summary length by importance; outside it is a warning, because a short story is no error."""
@@ -80,6 +81,24 @@ def story(s: object, where: str, day: str) -> None:
     for key in ("entities", "key_facts"):
         value = s.get(key, [])
         check(isinstance(value, list) and all(is_str(v) for v in value), where, f"{key} must be a list of strings")
+
+    bracket = s.get("bracket")
+    if bracket is not None and check(isinstance(bracket, dict), where, "bracket must be an object or null"):
+        rounds = bracket.get("rounds")
+        if check(isinstance(rounds, list) and 1 <= len(rounds) <= 8, where, "bracket.rounds must be a list of 1 to 8"):
+            for i, r in enumerate(rounds):
+                rw = f"{where}.bracket.rounds[{i}]"
+                if not check(isinstance(r, dict) and is_str(r.get("name")), rw, "must be an object with a name"):
+                    continue
+                matches = r.get("matches")
+                if check(isinstance(matches, list) and matches, rw, "matches must be a non-empty list"):
+                    for j, m in enumerate(matches):
+                        mw = f"{rw}.matches[{j}]"
+                        if check(isinstance(m, dict), mw, "must be an object"):
+                            check(is_str(m.get("a")) and is_str(m.get("b")), mw, "a and b must be non-empty strings")
+                            check(m.get("winner") in ("a", "b", None), mw, 'winner must be "a", "b" or null')
+                            check(m.get("score") is None or (is_str(m["score"]) and SCORE.match(m["score"])), mw, 'score must be like "3-2" or null')
+                            check(m.get("when") is None or is_str(m.get("when")), mw, "when must be a string or null")
 
     words = len(str(s.get("summary", "")).split())
     low, high = SUMMARY_WORDS.get(s.get("importance"), (25, 150))
