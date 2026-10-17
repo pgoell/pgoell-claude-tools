@@ -17,4 +17,6 @@ The deny message offers two fixes:
 - Stop the process by port: `fuser -k 8765/tcp`.
 - Bracket the first letter of the pattern: `pkill -f '[u]vicorn app:app'`. The class still matches the process, but the text `[u]vicorn` does not match itself.
 
-`pkill` without `-f`, bracketed patterns, `pgrep`, and every other command pass through untouched. A command the hook cannot parse also passes.
+The hook also blocks `pgrep -f <pattern>` with a plain pattern when it sits in an `until` or `while` condition, such as `until ! pgrep -f 'capture.sh'; do sleep 5; done`. The `bash -c` running the loop holds the pattern too, so `pgrep` always finds it and the loop never ends. One such loop ran on through a 3-hour capture. The fix is the same bracket: `until ! pgrep -f '[c]apture.sh'`.
+
+`pkill` or `pgrep` without `-f`, bracketed patterns, a one-shot `pgrep -f` outside a loop condition, and every other command pass through untouched. A command the hook cannot parse also passes.
