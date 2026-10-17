@@ -32,6 +32,7 @@ from `skills/edition/references/defaults/`:
   feedback.md            your feedback note: write under "## Open"
   memory/stories.jsonl   every story that ran, the record dedupe checks against
   memory/changelog.md    every config change made from feedback
+  memory/source-failures.md  sources that failed, so a second failure blocks them
   2026-10-07.html        an edition
   2026-10-07.json        the data it was rendered from; re-render any time
 ```
