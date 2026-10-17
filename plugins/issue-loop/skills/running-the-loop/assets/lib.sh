@@ -24,7 +24,9 @@ has_grant() { grep -qsxF "## $GRANT_MARK" "$@"; }
 # brief. Answer it, twice at most, and never the same screen twice. The caller
 # must have checked that the standing order covers what was sent: "go" is the
 # user's word, and the scripts may say it only for a brief from next.sh and
-# for a takeover.
+# for a takeover. The second argument, when given, is the text sent in place
+# of a bare "go": start.sh marks its go as one for the takeover only, so the
+# successor does not read it as the user's go on whatever its report asks.
 # A working session asks nothing, so only a session that rests is read. A
 # screen that speaks of a failed takeover check or of a stopped loop is never
 # answered.
@@ -39,7 +41,7 @@ GO_ASK="$GO_VERB[^[:alpha:]][^.]{0,60}[\"'\`*(]go[\"'\`*)]|$GO_VERB go([^[:alnum
 GO_NOT='refuse|refusal|refusing|hook|force|delete|deleting|remove|removing|without|instead|anyway|skip|fail|stop'
 MENU_NOT="allow|permission|approve|proceed|do you want|don.t ask|bash command|edit file|write file"
 answer_go_ahead() {
-  local name=$1 screen menu last=
+  local name=$1 go=${2:-go} screen menu last=
   for _ in 1 2; do
     [ "$(drv_status "$name")" = working ] && return 0
     screen=$(screen_tail "$name" 20)
@@ -52,7 +54,7 @@ answer_go_ahead() {
       drv_send "$name" "1"
       echo "picked 1"
     elif grep -iE "$GO_ASK" <<<"$screen" | grep -qviE "$GO_NOT"; then
-      drv_send "$name" "go"
+      drv_send "$name" "$go"
       echo "sent go"
     else
       return 0
