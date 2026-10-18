@@ -36,4 +36,26 @@ Two more gaps have other causes. Cursor leaves out `deprecated`, a frozen archiv
 
 A plugin left out of a marketplace still keeps its `.codex-plugin/plugin.json`, because the version check in CI needs one for every local plugin.
 
-The full rules, with their history, are in the design decisions of [AGENTS.md](../../AGENTS.md).
+[AGENTS.md](../../AGENTS.md) states the rules in short; the sections below keep their reasons and history for contributors.
+
+## Codex compatibility is metadata plus platform mapping
+
+Codex manifests sit beside the Claude Code manifests and point at the same `skills` folder. A tool that differs between runtimes goes into the shared skill body as a mapping, never into a second skill file. A copy for one runtime would drift from the other on the first fix.
+
+## A plugin with skills may be registered for Claude Code only when its skills drive Claude Code itself
+
+`issue-loop` (2026-10) was the first local plugin that ships skills and still stays out of `.agents/plugins/marketplace.json`. Its skills tell an orchestrator session to send `/clear` to another Claude Code session, to start sessions with `claude --permission-mode bypassPermissions` (the `loop.env` default; `PERMISSION_MODE=auto` there makes them ask), and to answer Claude Code's own dialogs. Nobody ran the loop under Codex, so offering it in the Codex picker would promise what nobody tried.
+
+Its `.codex-plugin/plugin.json` still exists and still sets `"skills": "./skills/"`, because the version check needs the manifest and the manifest rule needs the path; only the marketplace entry is left out, and [Runtimes](/reference/runtimes.md) says why. This shape is not for a skill that merely names Claude Code tools: there a platform mapping in the skill body is the rule. It is only for skills whose subject is Claude Code. The plugin's skills name the example project (Blattomat) for numbers and faults only; names of people, hosts, accounts and data paths from that run stay out of every file.
+
+## Cursor manifests are generated, not written
+
+Cursor reads `.cursor-plugin/marketplace.json` at the repo root and `plugins/<name>/.cursor-plugin/plugin.json` per plugin (format: https://cursor.com/docs/reference/plugins). `mise-tasks/sync-cursor-manifests` builds both from the Claude Code and Codex manifests: `name`, `description`, `author`, `license`, `keywords`, and `version` from `.claude-plugin/plugin.json` (the Codex version when Claude Code's omits it), `displayName` from the Codex `interface`, `skills` when the Codex manifest sets it, plus `homepage` and `repository`.
+
+Cursor's `plugin.schema.json` rejects unknown fields, so the generator gains a field only when that schema lists it. Cursor-only fields per plugin live in the task's `extra_for` function. Its one use is `workbench`, whose manifest sets `"hooks": "./hooks/hooks-cursor.json"`, because Cursor otherwise reads `hooks/hooks.json`, which holds Claude Code's format. The `session-start` script already emits Cursor's `additional_context` when `CURSOR_PLUGIN_ROOT` is set.
+
+The task's `EXCLUDE` list keeps five plugins out of Cursor: `deprecated` (a frozen archive), `prose-styles` (output styles have no Cursor equivalent), `guards` (its Claude Code `PreToolUse` hook needs a `beforeShellExecution` port), `session-title` (sets a Claude Code session title), and `issue-loop` (drives Claude Code sessions). Upstream-URL entries are skipped because they have no local folder.
+
+After any manifest change, run `mise run sync-cursor-manifests`. `validate-plugin-schema` runs it with `--check` and fails on drift, and the `validate-cursor-plugins` CI job runs Cursor's own validator from `.github/cursor-validate/`.
+
+An installed Cursor marketplace plugin was seen (2026-10) as a copy of the whole plugin folder at one commit, so files beside a skill (presets, themes, scripts, references) should ship with it and `../../presets/` style paths in skill text should keep working. Nobody has yet checked this for a plugin from this repo, and Cursor documents no way to leave out a folder such as `evals/`. Listing in the public Cursor Marketplace is a manual submission at https://cursor.com/marketplace/publish, and Cursor reviews every update before users get it.

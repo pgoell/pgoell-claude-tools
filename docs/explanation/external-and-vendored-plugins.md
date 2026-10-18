@@ -49,4 +49,25 @@ Ports also replace em-dashes and en-dashes with other punctuation, and each `NOT
 
 When a ported skill's upstream later becomes a permissive repository with its own plugin, the port gives way to an external entry. That happened with `emil`.
 
-The full rules are in the design decisions of [AGENTS.md](../../AGENTS.md).
+Which files each license shape needs, and why, is in [Ports and licenses](/explanation/ports-and-licenses.md). [AGENTS.md](../../AGENTS.md) states the rules in short.
+
+## External plugins are referenced by git URL, not vendored
+
+A marketplace entry may point at an upstream repo instead of a local `plugins/<name>/` folder. Both runtimes support this. Claude Code accepts `github`, `url`, `git-subdir`, and `npm` source objects; Codex accepts `url` (plugin at the repo root) and `git-subdir` (plugin in a subfolder); each takes optional `ref` and `sha` pins.
+
+`ponytail` (2026-08, `DietrichGebert/ponytail`, MIT) was the first: `{"source": "url", "url": "https://github.com/DietrichGebert/ponytail.git"}` in both marketplace files, unpinned on purpose so `/plugin marketplace update` tracks upstream `main`. Choose this shape over a port when the upstream is permissively licensed, ships a plugin manifest at its repo root for both runtimes, and you want its whole surface (skills, commands, hooks), not just the skill bodies.
+
+Four consequences:
+
+1. Both CI checks skip the entry. `check-plugin-versions` builds its work list from `git diff -- plugins/`, and `validate-plugin-schema` globs `plugins/*/.codex-plugin/plugin.json`. So no version lockstep applies, and the marketplace entry carries no `version` field (a pinned number would go stale on every upstream release).
+2. This repo's conventions do not govern upstream bytes. The dash lint, the shipped-code rule, and the frontmatter rules apply only to files vendored here.
+3. The port attribution files (`LICENSE`, `NOTICE`, README Credits) do not apply, because nothing is copied. The plugin's page under `docs/reference/plugins/` still names the upstream and its license.
+4. Unpinned means upstream code runs on refresh without review. That is a supply-chain choice to make on purpose; pinning with `sha` is the remedy when it matters.
+
+The docs sites for a new plugin still apply, minus any `plugins/<name>/README.md`, since there is no local folder.
+
+Two later entries (2026-10) break the both-runtimes condition and sit in `.claude-plugin/marketplace.json` only, with [Runtimes](/reference/runtimes.md) saying why, the same shape `prose-styles` uses. `taste-skill` (`Leonxlnx/taste-skill`, MIT, added for trial) shipped only `.claude-plugin/plugin.json`. `emil` (`emilkowalski/skill`, MIT) ships no manifest at all, so its entry sets `"strict": false`: the marketplace entry serves as the manifest and Claude Code finds `skills/` by convention. A third, `vercel` (`vercel-labs/agent-skills`), has the same no-manifest shape. Its license is MIT per the repo README and skill frontmatter, with no `LICENSE` file; that is fine for a linked plugin because nothing is vendored, but a port would need the LICENSE file read first.
+
+Claude Code names a plugin skill after its folder, not its frontmatter `name:`. This was checked at install: taste-skill's `skills/taste-skill/` with `name: design-taste-frontend` loads as `taste-skill:taste-skill`. So docs name external skills by folder. Upstream skills with `disable-model-invocation: true` (three in `emil`) run only as slash commands.
+
+`emil` replaced a vendored copy of `emil-design-eng` in the `frontend-design` plugin, which then retired; its Anthropic skill went to `deprecated` 0.4.0, superseded by `taste-skill:taste-skill`. Prefer this swap whenever a vendored port's upstream becomes a permissively licensed repo.

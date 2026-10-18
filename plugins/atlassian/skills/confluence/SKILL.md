@@ -15,7 +15,7 @@ Do NOT check authentication upfront. Just run the command. If it fails with an a
 
 ## Tool Preference
 
-**Prefer raw curl for all operations.** `acli` has limited Confluence coverage (page view by ID, space list/view only), so fall back to it only for those read operations if curl fails. All write operations require curl.
+**Use raw curl for every operation.** `acli` has no Confluence commands (its reference lists admin, feedback, jira and rovodev only), so use curl for everything.
 
 ### Curl base URLs
 
@@ -38,7 +38,7 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
 
 ### Search pages (CQL)
 
-**curl** (v1 API): acli does not support CQL search.
+**curl** (v1 API):
 
 ```bash
 curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
@@ -58,15 +58,9 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
   "https://$ATLASSIAN_DOMAIN.atlassian.net/wiki/api/v2/pages/{id}?body-format=storage"
 ```
 
-**acli (fallback):**
-
-```bash
-acli confluence page view --id {id} --body-format storage --json
-```
-
 ### List pages in space
 
-**curl only** (v2 API):
+**curl** (v2 API):
 
 ```bash
 curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
@@ -84,15 +78,9 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
   "https://$ATLASSIAN_DOMAIN.atlassian.net/wiki/api/v2/spaces"
 ```
 
-**acli (fallback):**
-
-```bash
-acli confluence space list --json
-```
-
 ### View space
 
-**curl** (v2 API):
+**curl** (v2 API), by ID:
 
 ```bash
 curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
@@ -100,15 +88,17 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
   "https://$ATLASSIAN_DOMAIN.atlassian.net/wiki/api/v2/spaces/{id}"
 ```
 
-**acli (fallback):**
+By key: look the space up first. The response holds `results[]`; take `results[0].id` and call `/spaces/{id}` as above. An empty `results` means the key is wrong or the user cannot see that space; say so and ask for the key.
 
 ```bash
-acli confluence space view --key KEY --json
+curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
+  -H "Accept: application/json" \
+  "https://$ATLASSIAN_DOMAIN.atlassian.net/wiki/api/v2/spaces?keys=KEY"
 ```
 
 ### Get page comments
 
-**curl only** (v2 API):
+**curl** (v2 API):
 
 ```bash
 curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
@@ -117,8 +107,6 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
 ```
 
 ## Operations: Write
-
-All write operations require curl. acli does not support Confluence page create, update, or comments.
 
 ### Create page
 
@@ -196,7 +184,6 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
 - **v2 API does not return page body by default.** You must add `?body-format=storage` to get the body content.
 - **Updating requires `version.number + 1`.** Always GET the page first to read the current version, then PUT with the next number. Skipping this will cause a 409 conflict error.
 - **CQL search is v1 only.** Use `/wiki/rest/api/search?cql=...` for search. All other operations use v2 at `/wiki/api/v2/`.
-- **acli Confluence support is limited.** Only use acli for page view (by ID) and space operations (list, view). Everything else requires curl.
 
 ## Common CQL Recipes
 
@@ -216,11 +203,11 @@ See `storage-format.md` for the Confluence XHTML storage format reference, neede
 
 ## Self-Healing
 
-If an API call or acli command fails:
+If an API call fails:
 
 ### Auth Errors (401, 403, or "not authenticated")
 
-Check which auth paths are available, but **never print token or credential values**:
+Check which variables are set, but **never print token or credential values**:
 
 ```bash
 # Check if env vars are set (NOT their values)
@@ -229,14 +216,7 @@ test -n "${ATLASSIAN_EMAIL:-}" && echo "ATLASSIAN_EMAIL is set" || echo "ATLASSI
 test -n "${ATLASSIAN_API_TOKEN:-}" && echo "ATLASSIAN_API_TOKEN is set" || echo "ATLASSIAN_API_TOKEN is NOT set"
 ```
 
-```bash
-# Check acli (optional)
-command -v acli && acli jira auth status
-```
-
-acli's command reference lists no Confluence login, only `acli jira auth`, so the Jira login is what acli checks.
-
-If neither auth path is available, tell the user:
+If any of the variables is not set, tell the user:
 
 > To use Confluence, set these environment variables:
 >
@@ -248,19 +228,17 @@ If neither auth path is available, tell the user:
 >
 > Generate an API token at: https://id.atlassian.com/manage/api-tokens
 
+If all three variables are set and curl returns 401, tell the user: "Confluence refused the email and token. Check `ATLASSIAN_EMAIL`, or make a new token at https://id.atlassian.com/manage/api-tokens and update `ATLASSIAN_API_TOKEN`." On 403, tell the user their account lacks permission for that space or page. Retry the curl call once the user has fixed it.
+
 ### Other Errors
 
 1. Check the error message for clues (permissions, bad request body, version conflict).
-2. For acli errors, run `acli confluence [command] --help` for current flags and syntax.
-3. If the API may have changed, check live docs via web search. Canonical URLs:
+2. If the API may have changed, check live docs via web search. Canonical URL:
    - Confluence v2 REST API: `https://developer.atlassian.com/cloud/confluence/rest/v2/`
-   - acli reference: `https://developer.atlassian.com/cloud/acli/reference/commands/`
-4. Retry with corrected parameters.
+3. Retry with corrected parameters.
 
 ## Behavioral Guidelines
 
 - **Infer intent from natural language.** "Find the onboarding doc" becomes a CQL search: `type = page AND title ~ "onboarding"`.
 - **Construct all CQL and storage format from user intent.** Never ask the user to write CQL or XHTML manually.
 - **For page updates: ALWAYS GET first, then PUT.** "Update the design page with our new architecture" means: search or get the page, read the current version number, construct updated content in storage format, PUT with incremented version.
-- **Use acli for quick page views by ID and space operations** when acli is available. Fall back to curl for everything else.
-- **Use `--json` flag with acli** when you need to parse structured output.

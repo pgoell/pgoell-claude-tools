@@ -1,0 +1,45 @@
+---
+type: Explanation
+title: Skill design patterns
+description: How skills are grouped into plugins, why workflow skills run as protocols, and the patterns for stubs, shared references and the unused agents slot.
+tags: [skills, plugins, patterns, contributors]
+status: stable
+---
+
+# Skill design patterns
+
+These rules shape how skills split into plugins and how they share files. [AGENTS.md](../../AGENTS.md) states them; this page keeps the reasons and the history.
+
+## One skill per service, one plugin per product family
+
+Gmail and Calendar both sit under `google-workspace`; Jira and Confluence both sit under `atlassian`. A user installs a product family once and gets one skill per service in it.
+
+Workbench is the exception. Its skills (`pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`) are peer workflow and session-control steps, not separate services. They ship together but stay split so the agent, or pilot, can call each phase on its own.
+
+The `presentations` plugin follows the product-family rule. Its five skills (`designing-presentations`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`) are life-cycle phases of one product, a presentation, split so each phase triggers on its own.
+
+Terminal skills that depend on local Unix tools belong in the `terminal` plugin, so Windows users can skip them unless they use WSL.
+
+## Workflow skills are execution protocols
+
+When a user calls a workflow skill such as `workbench:pilot`, the agent follows its sequence as a procedure: branch setup, brainstorm, spec, plan, pressure test, implementation, and verification where they apply. The body is not loose advice to pick from. A skipped step is the failure these skills exist to prevent.
+
+## Agents for long-running, context-heavy operations (forward-looking, currently unused)
+
+When a skill's run would eat a lot of context (dozens of web pages, say), the intended layout is an agent in the plugin's `agents/` folder that the skill dispatches through the host's subagent tool, so the work runs in its own context. No plugin uses an `agents/` folder yet. The `research` plugin runs its subagents from prompt templates inside `skills/research/` instead. Treat `agents/` as a reserved slot, not a convention in use, and use skills for everything else.
+
+## Unregistered plugin directories are a valid stub state
+
+A folder under `plugins/<plugin>/` may have `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json` but no entry in `.claude-plugin/marketplace.json` or `.agents/plugins/marketplace.json`. Use this shape for research notes, reference material, or future skill scaffolding that belongs in `plugins/` but cannot be installed yet. To bring a stub online, add a `skills/` folder with at least one `SKILL.md` and register it in both marketplaces. Going back (an installable plugin to a stub) means removing it from both marketplaces.
+
+No plugin holds this shape now. `databricks` held it from PR #53 until 0.3.0. Its `references/research/` folder (12 MB of Genie Code reverse-engineering notes, gitignored since 2026-05 to keep them off the public repo, so it exists only in local clones) survived the move to installable. It shows a second point: a plugin-level `references/` is a valid home for non-skill research even after the plugin ships skills, apart from per-skill `references/`. Never force-add that folder.
+
+## Sibling-skill reference sharing for thin variants (historical pattern, still valid)
+
+A skill that is a thin variant of another in the same plugin may share the original's `references/` instead of copying them, by pointing every path at `../<sibling-skill>/references/<file>.md`.
+
+The first case was `workbench:copilot`, the human-in-the-loop variant of `workbench:autopilot` (steps 2 brainstorm and 3 spec stayed human-driven; steps 1 and 4 to 9 stayed autonomous). It shipped only `SKILL.md` and read autopilot's six shared docs (`profile-schema`, `example-project-profile`, `invariants`, `required-skills`, `claude-code-adapter`, `codex-adapter`) and the same `.workbench/autopilot.md` profile. Both retired into `workbench:pilot` at workbench 1.0.0 (see [The deprecated archive](/explanation/the-deprecated-archive.md)), so this case no longer exists live.
+
+One constraint makes it work: every shared path in the variant's `SKILL.md` carries the `../<sibling>/references/` prefix, because a bare `references/...` resolves against the variant's own folder, which has none. The variant ships no `references/` of its own. Prefer a self-contained orchestration `SKILL.md` that runs on one read over a thin redirect to the sibling's `SKILL.md`: a redirect hides the content behind a cross-reference and breaks when the sibling renumbers its steps. Share only when the docs are truly the same infrastructure used the same way; copy into the variant only what must differ.
+
+A narrower live case: `writing:coach` reads one file from its sibling, `../ghostwrite/references/pyramid-audits.md`, because both skills use the same audits (ghostwrite reports them on outlines, coach teaches from them) and a second copy would drift. The coach keeps its own `references/` for everything else.
