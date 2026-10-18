@@ -39,7 +39,7 @@ cut this skill to its core
 
 ## Credits
 
-The `improving-instructions` and `capturing-session-learnings` skills are derived from Anthropic's [`claude-md-management`](https://github.com/anthropics/claude-plugins-official/tree/ea10b213686c90bb1984b2016937310e05336cf3/plugins/claude-md-management) plugin by Isabella He, licensed under Apache 2.0. The reference docs under `skills/improving-instructions/references/` are imported verbatim. See `NOTICE` for full attribution.
+The `improving-instructions` and `capturing-session-learnings` skills are derived from Anthropic's [`claude-md-management`](https://github.com/anthropics/claude-plugins-official/tree/ea10b213686c90bb1984b2016937310e05336cf3/plugins/claude-md-management) plugin by Isabella He, licensed under Apache 2.0. The reference docs under `skills/improving-instructions/references/` are imported verbatim, except for formatting and two local checks in `quality-criteria.md`. See `NOTICE` for full attribution.
 
 The `creating-skills` skill is derived from Anthropic's [`skill-creator`](https://github.com/anthropics/skills) skill (Apache 2.0), with writing guidance adapted from Matt Pocock's [`writing-great-skills`](https://github.com/mattpocock/skills) and Jesse Vincent's [`writing-skills`](https://github.com/obra/superpowers) and swyx's [`skill-cutter`](https://github.com/swyxio/skills/tree/main/skill-cutter) (all MIT). It was ported via the AIDE-claude-plugins marketplace. See `NOTICE` for full attribution and the port-time em-dash substitution rules.
 
