@@ -105,7 +105,7 @@ Every live skill, in marketplace order. Invoke a skill from the host agent with 
 
 ## Archived skills
 
-The [deprecated](/reference/plugins/deprecated.md) plugin keeps twelve superseded skills installable so old workflows still resolve: `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx` and `presentations` point at the presentations plugin; `autopilot`, `copilot` and `dispatching-parallel-agents` point at `/workbench:pilot` or `/workbench:subagent-driven-development`, and `terse-mode` retires without replacement; `writing`, `pyramid` and `tech-doc` point at `/writing:ghostwrite` and `/writing:coach`; `frontend-design` points at `/taste-skill:taste-skill`.
+The [deprecated](/reference/plugins/deprecated.md) plugin keeps twelve superseded skills installable so old workflows still resolve: `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx` and `presentations` point at the presentations plugin; `autopilot`, `copilot` and `dispatching-parallel-agents` point at `/workbench:pilot` or `/workbench:subagent-driven-development`, and `terse-mode` retires without replacement; `writing`, `pyramid` and `tech-doc` point at `/writing:ghostwrite` and `/writing:coach`; `frontend-design` points at `/taste-skill:taste-skill` (in Codex, `taste-skill:design-taste-frontend`).
 
 ## Plugins without skills
 
