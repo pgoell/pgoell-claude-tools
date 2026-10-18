@@ -8,8 +8,10 @@ A plugin marketplace for Claude Code, Codex and Cursor. Its plugins ship skills,
 
 ```
 /plugin marketplace add pgoell/pgoell-claude-tools
-/plugin install workbench@pgoell-claude-tools
+/plugin install <plugin>@pgoell-claude-tools
 ```
+
+For example, `/plugin install workbench@pgoell-claude-tools`.
 
 ### Codex
 

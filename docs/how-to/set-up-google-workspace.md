@@ -29,7 +29,7 @@ status: stable
    gws auth login -s gmail,calendar
    ```
 
-   Asking for these two services only keeps the scope list short. An OAuth app in Google's testing mode allows about 25 scopes, so the full preset fails there.
+   Asking for these two services only keeps the scope list short. An OAuth app in Google's testing mode allows about 25 scopes, so asking for every Google service at once fails there.
 
 ## Check it worked
 

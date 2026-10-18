@@ -40,7 +40,7 @@ Each runtime reads its own marketplace file: Claude Code reads `.claude-plugin/m
 
 ## Why some are absent from Codex
 
-- **issue-loop**: its skills drive Claude Code sessions themselves (`/clear`, permission modes, Claude Code's own dialogs), and the loop was never run under Codex. Its `.codex-plugin/plugin.json` exists only for the version check.
+- **issue-loop**: its skills drive Claude Code sessions themselves (`/clear`, permission modes, Claude Code's own dialogs), and the loop was never run under Codex. Its `.codex-plugin/plugin.json` exists for the version check and the manifest rule, not for the Codex marketplace.
 - **prose-styles**: Codex has no output-style mechanism.
 - **guards** and **session-title**: their hooks use Claude Code's hook format.
 - **emil** and **vercel**: the upstream repos ship no plugin manifest at all.

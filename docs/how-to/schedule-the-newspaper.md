@@ -8,7 +8,7 @@ status: stable
 
 # Schedule the newspaper
 
-`/news:edition` builds one HTML page per day under `<periodic>/05 Newspaper/` in a kasten vault (`01 Periodic` unless `KASTEN_PERIODIC_PATH` says otherwise). You can run it by hand; this page sets it up to run at 06:00 every morning.
+`/news:edition` builds one HTML page per day under `<periodic>/05 Newspaper/` in a kasten vault. This page assumes the default periodic folder, `01 Periodic`: the wrapper looks for the page there. You can run it by hand; this page sets it up to run at 06:00 every morning.
 
 ## Before you start
 

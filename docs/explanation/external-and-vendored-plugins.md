@@ -33,7 +33,7 @@ None of the entries pins a commit or a version. When you refresh the marketplace
 - Code you have not reviewed runs on your machine after a refresh. `ponytail`, for example, ships hooks that run in every session. If that matters to you, read the upstream change before you update.
 - This repository's rules (the dash lint, the version lockstep, the frontmatter checks) do not cover upstream files, because none are copied here.
 
-`emil`, `taste-skill` and `vercel` are Claude Code only because their upstreams ship no Codex manifest.
+`emil`, `taste-skill` and `vercel` are Claude Code only. `emil` and `vercel` ship no plugin manifest at all; `taste-skill` shipped none for Codex when it was added, and upstream has added one since without the marketplace registering it.
 
 ## Ports with attribution
 

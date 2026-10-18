@@ -276,6 +276,7 @@ User documentation lives in `docs/`, a Diátaxis tree in Open Knowledge Format v
 - Links between docs pages are bundle-relative (`/reference/plugins/workbench.md`); links that leave `docs/` are relative paths (`../../plugins/workbench/README.md`).
 - A new or changed page updates its directory's `index.md` and adds a dated entry to `docs/log.md`.
 - No AI attribution on any page.
+- The em-dash lint covers `docs/` like every other file: `grep -rnP '[\x{2014}\x{2013}]' docs/` must print nothing.
 - Docs describe the code as it is now. A PR that makes a page wrong fixes that page in the same PR.
 - `mise run check-docs` link-checks `docs/` rooted at `docs/`, and spell-checks it with the rest of the repo.
 

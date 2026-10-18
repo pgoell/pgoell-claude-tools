@@ -32,7 +32,7 @@ A plugin stays out of a runtime's marketplace when it would not work there. Four
 - **It ships output styles.** `prose-styles` has no skills, only Claude Code output styles. Codex and Cursor have no output-style mechanism.
 - **It ships Claude Code hooks.** `guards` and `session-title` use Claude Code's hook format. Neither has a port to another runtime's hooks.
 
-Two more gaps have other causes. Cursor leaves out `deprecated`, a frozen archive. The upstream plugins (`ponytail`, `emil`, `taste-skill`, `vercel`) have no local folder to hold a Cursor manifest, and only `ponytail` ships a Codex manifest upstream. [Runtimes](/reference/runtimes.md) lists every plugin against every runtime.
+Two more gaps have other causes. Cursor leaves out `deprecated`, a frozen archive. The upstream plugins (`ponytail`, `emil`, `taste-skill`, `vercel`) have no local folder to hold a Cursor manifest, and only `ponytail` is registered for Codex. [Runtimes](/reference/runtimes.md) lists every plugin against every runtime.
 
 A plugin left out of a marketplace still keeps its `.codex-plugin/plugin.json`, because the version check in CI needs one for every local plugin.
 

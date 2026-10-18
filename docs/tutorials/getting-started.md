@@ -26,7 +26,7 @@ Claude Code now knows the 25 plugins in this repository, but none is installed y
 /plugin install critique@pgoell-claude-tools
 ```
 
-The part after `@` names the marketplace. Restart Claude Code if it asks you to, so the skill loads.
+The part after `@` names the marketplace. If the skill does not show up yet, run `/reload-plugins` or start a new session.
 
 ## Run the skill
 
