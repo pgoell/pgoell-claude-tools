@@ -80,4 +80,4 @@ For human-readable status, `gh pr checks <pr>` works; do not pass `--json` to it
 
 - `SKILL.md`: the autopilot orchestration.
 - `codex-adapter.md`: the Codex-side mapping.
-- `../using-workbench/references/codex-tools.md`: broader Codex tool table.
+- `references/codex-tools.md` of `workbench:using-workbench`: broader Codex tool table.
