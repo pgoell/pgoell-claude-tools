@@ -39,6 +39,12 @@ echo "minutes: $((($(date +%s) - $(date -d "$start" +%s)) / 60))"
 t=$(ls -t "$HOME/.claude/projects/$(printf %s "$S" | sed 's/[^A-Za-z0-9]/-/g')"/*.jsonl 2>/dev/null | head -1)
 ctx=$([ -n "$t" ] && tail -n 300 "$t" | jq -Rn '[inputs|fromjson?|select(.type=="assistant")|.message.usage|select(.)]|last|(.input_tokens+.cache_read_input_tokens+.cache_creation_input_tokens)//empty' 2>/dev/null)
 echo "orchestrator context: ${ctx:-unknown} tokens"
-[ "${ctx:-0}" -gt 150000 ] 2>/dev/null && echo "HAND OVER NOW: past 150k. Run issue-loop:handing-over before the next brief."
+# 120k is the cheapest point measured (the plugin's tests/handover-cost.py); 150k is the
+# ceiling past which an orchestrator forgot standing orders.
+if [ "${ctx:-0}" -gt 150000 ] 2>/dev/null; then
+  echo "HAND OVER NOW: past 150k. Run issue-loop:handing-over before the next brief."
+elif [ "${ctx:-0}" -gt 120000 ] 2>/dev/null; then
+  echo "HAND OVER: past 120k, and this is a break between tasks. Run issue-loop:handing-over before the next brief."
+fi
 [ $bad = 0 ] && echo "GATE PASS" || echo "GATE FAIL"
 exit $bad
