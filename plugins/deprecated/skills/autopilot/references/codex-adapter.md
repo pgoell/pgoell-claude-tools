@@ -22,7 +22,7 @@ This doc maps the autopilot skill's tool references to Codex equivalents. The au
 4. After completing a task, write a one-line note: `--- completed task <n> ---`.
 5. Continue with the next task.
 
-Sequential fallback gives up the fanout from `workbench:dispatching-parallel-agents` but preserves the per-task discipline of subagent-driven-development.
+Sequential fallback gives up the fanout from `deprecated:dispatching-parallel-agents` but preserves the per-task discipline of subagent-driven-development.
 
 ## CI polling shape (step 8)
 

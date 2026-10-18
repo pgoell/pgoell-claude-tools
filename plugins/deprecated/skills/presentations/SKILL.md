@@ -28,7 +28,7 @@ Two entry modes:
 
 ## Tool Preference
 
-Filesystem operations only. The skill reads templates from its own `references/` directory, writes phase artifacts to the working directory, and (in Phase 5) dispatches three critic personas as parallel subagents using `workbench:dispatching-parallel-agents`. No external services, no APIs, no rendering. Use the host platform's read/write/edit primitives directly.
+Filesystem operations only. The skill reads templates from its own `references/` directory, writes phase artifacts to the working directory, and (in Phase 5) dispatches three critic personas as parallel subagents using `deprecated:dispatching-parallel-agents`. No external services, no APIs, no rendering. Use the host platform's read/write/edit primitives directly.
 
 ## Platform Adaptation
 
@@ -125,7 +125,7 @@ Apply the assertion-evidence pattern: the slide states (headline) and shows (vis
 
 1. **Heuristic audit** (inline, deterministic). Walk every slide in `deck.md` and check each item in `references/audit-checklist.md`. Slide types `SectionDivider` and `Appendix` are exempt from item (a) (sentence-headline requirement). Append a numbered violation list to `audit-report.md` with slide references.
 
-2. **Critic personas** (three subagents, parallel via `workbench:dispatching-parallel-agents`). Each persona reads its assigned upstream artifacts and `deck.md`, then returns CRITICAL, MAJOR, or MINOR findings. The three personas are documented in `references/critic-prompts.md`:
+2. **Critic personas** (three subagents, parallel via `deprecated:dispatching-parallel-agents`). Each persona reads its assigned upstream artifacts and `deck.md`, then returns CRITICAL, MAJOR, or MINOR findings. The three personas are documented in `references/critic-prompts.md`:
    - Audience critic: fit to the named audience.
    - Argument critic: logical force, evidence sufficiency, objection preemption, close landing.
    - Visual-and-Accessibility critic: one focal point per slide, one chart one point, accessibility plan adequacy.
