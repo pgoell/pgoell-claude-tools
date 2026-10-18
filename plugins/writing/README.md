@@ -26,7 +26,7 @@ Version 3.0.0 replaced the earlier `writing`, `pyramid`, and `tech-doc` skills, 
 The design follows the research report `writing-plugin-redesign-2026-09-30`. Several ideas are adapted, in this repository's own words, from these sources; no upstream text is vendored:
 
 - EveryInc's [compound-writing](https://github.com/EveryInc/compound-writing): the smallest-useful-workflow front door, the interview authorship boundary, marking model-added assumptions, and treating samples as evidence for voice rules. Added in 3.1.0: the tell check that compares the draft with its sources before looking at words, the voice check, the split of voice, standards, and reader notes, and sorting each confirmed lesson into one of them.
-- Anthropic's [doc-coauthoring skill](https://github.com/anthropics/skills/blob/main/skills/doc-coauthoring/SKILL.md): the fresh-reader test run by a subagent that sees only the document.
+- Anthropic's [doc-coauthoring skill](https://github.com/anthropics/skills/tree/8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4/skills/doc-coauthoring): the fresh-reader test run by a subagent that sees only the document.
 - Joseph M. Williams' _Style_: the sentence and cohesion principles behind the coach's drills 3 and 4.
 - Barbara Minto's Pyramid Principle: the structure audits, carried over from the retired `pyramid` skill.
 - The Diataxis framework: the four tech-doc quadrants, carried over from the retired `tech-doc` skill.

@@ -39,4 +39,4 @@ If the user's topic does not fit a template cleanly, the skill picks the closest
 
 ## Credits
 
-Derived from Anthropic's [`playground`](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/playground) plugin (commit `aecd4c852f10b466245f18383fa6aad8c0b10d57`), licensed under Apache 2.0. The skill body and template files are imported verbatim with em-dashes and en-dashes substituted to satisfy this marketplace's punctuation lint. See `NOTICE` for full attribution and the substitution rules.
+Derived from Anthropic's [`playground`](https://github.com/anthropics/claude-plugins-official/tree/aecd4c852f10b466245f18383fa6aad8c0b10d57/plugins/playground) plugin (commit `aecd4c852f10b466245f18383fa6aad8c0b10d57`), licensed under Apache 2.0. The skill body and template files are imported verbatim with em-dashes and en-dashes substituted to satisfy this marketplace's punctuation lint. See `NOTICE` for full attribution and the substitution rules.

@@ -125,4 +125,4 @@ Skills follow the Agent Skills open standard (agentskills.io), which works acros
 - Agent Skills open standard and evaluation guide: https://agentskills.io
 - Claude Code skills reference: https://code.claude.com/docs/en/skills
 - Anthropic skill authoring best practices: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
-- Example skills to use as templates: https://github.com/anthropics/skills
+- Example skills to use as templates: https://github.com/anthropics/skills/tree/b9e19e6f44773509fbdd7001d77ff41a49a486c1

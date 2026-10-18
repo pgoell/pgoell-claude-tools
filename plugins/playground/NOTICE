@@ -2,7 +2,7 @@ playground
 Copyright 2026 Pascal Göllner
 
 This plugin contains content derived from Anthropic's playground plugin
-(https://github.com/anthropics/claude-plugins-official/tree/main/plugins/playground,
+(https://github.com/anthropics/claude-plugins-official/tree/aecd4c852f10b466245f18383fa6aad8c0b10d57/plugins/playground,
 commit aecd4c852f10b466245f18383fa6aad8c0b10d57 at time of port),
 authored by Anthropic, licensed under the Apache License, Version 2.0:
 

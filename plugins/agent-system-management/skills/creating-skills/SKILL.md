@@ -59,7 +59,7 @@ Also check that a skill is the right vehicle. A skill suits a procedure: instruc
 
 Proactively ask questions about edge cases, input/output formats, example files, success criteria, and dependencies. Wait to write test prompts until you've got this part ironed out.
 
-Check available MCPs - if useful for research (searching docs, finding similar skills, looking up best practices), research in parallel via subagents if available, otherwise inline. Come prepared with context to reduce burden on the user. Canonical sources worth consulting: the Agent Skills open standard at agentskills.io, Anthropic's skill authoring best practices (platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices), and the example skills at github.com/anthropics/skills.
+Check available MCPs - if useful for research (searching docs, finding similar skills, looking up best practices), research in parallel via subagents if available, otherwise inline. Come prepared with context to reduce burden on the user. Canonical sources worth consulting: the Agent Skills open standard at agentskills.io, Anthropic's skill authoring best practices (platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices), and the example skills at github.com/anthropics/skills/tree/b9e19e6f44773509fbdd7001d77ff41a49a486c1.
 
 ### Write the SKILL.md
 
