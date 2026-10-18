@@ -79,10 +79,12 @@ with a `NOTES.md`; the contract they render is
 ## Network
 
 Gathering reads the web through `WebSearch`, `WebFetch` and `curl`, which is
-the job you ask for. The scripts make one request of their own:
+the job you ask for. The scripts make two requests of their own:
 `weather.py` asks Open-Meteo (free, no key) for the day's forecast at
 topics.yaml's `weather` point, and only while an edition is being built and
 its weather is still empty. Set `weather: null` in topics.yaml to turn it off.
+`tables.py` fetches the league tables a section lists under `tables:` from
+sportschau.de, also only while an edition is being built.
 
 ## Setup
 

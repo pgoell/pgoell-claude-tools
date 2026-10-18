@@ -48,6 +48,27 @@
   {%- endfor %}
 </div>
 {%- endmacro -%}
+{%- macro tables(s) -%}
+<div class="tables">
+  <h4>Tabellen</h4>
+  {%- for t in s.tables %}
+  <details{% if loop.first %} open{% endif %}>
+    <summary>{{ t.name }}{% if t.matchday %}<span class="md">{{ t.matchday }}</span>{% endif %}</summary>
+    <div class="tw">
+    <table>
+      <thead><tr><th class="r">#</th><th class="tm">Verein</th><th>Sp.</th><th class="x">S</th><th class="x">U</th><th class="x">N</th><th class="x">Tore</th><th>Diff.</th><th>Pkt.</th></tr></thead>
+      <tbody>
+      {%- for r in t.rows %}
+        <tr><td class="r">{{ r.rank }}{% if r.trend == 'up' %}<span class="up" title="aufgestiegen">&#9650;</span>{% elif r.trend == 'down' %}<span class="dn" title="abgerutscht">&#9660;</span>{% endif %}</td><td class="tm">{{ r.team }}</td><td>{{ r.played }}</td><td class="x">{{ r.won }}</td><td class="x">{{ r.drawn }}</td><td class="x">{{ r.lost }}</td><td class="x">{{ r.goals }}</td><td>{{ '%+d'|format(r.diff) if r.diff else 0 }}</td><td class="p">{{ r.points }}</td></tr>
+      {%- endfor %}
+      </tbody>
+    </table>
+    </div>
+    <p class="tsrc"><a href="{{ t.url }}" rel="noopener">sportschau.de</a></p>
+  </details>
+  {%- endfor %}
+</div>
+{%- endmacro -%}
 {%- macro story(st, kind) -%}
 <article id="{{ st.id }}" lang="{{ st.lang }}" class="story {{ kind }} {{ 'has-img' if st.image else 'no-img' }}">
   {%- if st.image %}{{ figure(st.image) }}{% endif %}
@@ -323,6 +344,24 @@ h1,h2,h3{font-family:var(--font-head);margin:0;font-weight:600;line-height:1.12;
 .also .bsrc{display:block;font-size:12.5px;color:var(--muted)}
 
 .section .also h4{color:var(--accent)}
+
+/* ---------- league tables: one fold per league, the first open ---------- */
+.tables{margin-top:30px;border-top:1px solid var(--rule);padding-top:14px}
+.tables h4{font-family:var(--font-head);font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:0 0 8px}
+.tables details{border-bottom:1px solid var(--rule)}
+.tables summary{cursor:pointer;padding:8px 0;font-family:var(--font-head);font-weight:600;font-size:18px}
+.tables summary .md{font-weight:500;font-size:13.5px;color:var(--muted);margin-left:10px}
+.tw{overflow-x:auto}
+.tables table{width:100%;max-width:720px;border-collapse:collapse;font-family:var(--font-head);font-size:14.5px;font-variant-numeric:tabular-nums}
+.tables th{font-size:12px;font-weight:600;color:var(--muted);text-align:right;padding:3px 6px;border-bottom:1px solid var(--ink)}
+.tables td{text-align:right;padding:3px 6px;border-bottom:1px solid var(--rule)}
+.tables .r{text-align:left;white-space:nowrap;width:3.2em}
+.tables .tm{text-align:left;width:100%}
+.tables .p{font-weight:700}
+.tables .up{color:var(--local);font-size:9px;margin-left:4px;vertical-align:1px}
+.tables .dn{color:var(--accent);font-size:9px;margin-left:4px;vertical-align:1px}
+.tables tbody tr:last-child td{border-bottom:0}
+.tsrc{font-family:var(--font-head);font-size:12px;color:var(--muted);text-align:right;margin:4px 0 10px}
 .section .also li::before{background:var(--accent)}
 
 /* ---------- footer ---------- */
@@ -355,6 +394,8 @@ h1,h2,h3{font-family:var(--font-head);margin:0;font-weight:600;line-height:1.12;
   .tabs a{padding:6px 9px 8px;font-size:14px}
   .lead .sum{font-size:17px}
   .grid{grid-template-columns:1fr}
+  .tables .x{display:none}
+  .tables th,.tables td{padding:3px 4px}
   .grid > .story + .story::before{display:none}
   .grid > .story{padding:0 0 22px;margin-bottom:22px;border-bottom:1px solid var(--rule)}
   .grid > .story:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0}
@@ -460,6 +501,7 @@ function hb_noimg(img){const a=img.closest('article');img.closest('figure').remo
     <ul>{% for b in sec_briefs %}<li><a href="{{ b.url }}" rel="noopener">{{ b.headline }}</a><span class="bsrc">{{ b.source }}</span></li>{% endfor %}</ul>
   </div>
   {%- endif %}
+  {%- if s.tables %}{{ tables(s) }}{% endif %}
 </section>
 {%- endif %}
 {%- endfor %}
@@ -510,6 +552,23 @@ function hb_noimg(img){const a=img.closest('article');img.closest('figure').remo
     show(a.getAttribute('href').slice(1),true);
   });
   window.addEventListener('hashchange',()=>show(location.hash.slice(1),true));
+  // A sideways swipe moves one tab left or right. A swipe that starts in something
+  // that scrolls sideways itself (the strip, a bracket, a table) stays with it.
+  let x0=null,y0=0;
+  document.addEventListener('touchstart',e=>{
+    const t=e.touches[0];
+    x0=(e.touches.length>1||e.target.closest('.tabs,.bracket,.tw'))?null:t.clientX;y0=t.clientY;
+  },{passive:true});
+  document.addEventListener('touchend',e=>{
+    if(x0===null)return;
+    const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;
+    x0=null;
+    if(Math.abs(dx)<60||Math.abs(dx)<2*Math.abs(dy))return;
+    const i=panels.findIndex(p=>p.classList.contains('on'))+(dx<0?1:-1);
+    if(i<0||i>=panels.length)return;
+    try{history.replaceState(null,'','#'+panels[i].id)}catch(_){}
+    show(panels[i].id,true);
+  },{passive:true});
   show(location.hash.slice(1),!!location.hash);
 })();
 </script>

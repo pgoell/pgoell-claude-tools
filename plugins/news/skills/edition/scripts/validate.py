@@ -144,6 +144,21 @@ def edition(e: object) -> list[dict]:
             check(sec.get("kicker") is None or is_str(sec.get("kicker")), where, "kicker must be a string or null")
             check(isinstance(sec.get("local", False), bool), where, "local must be true or false")
             section_ids.add(sec.get("id"))
+            tables = sec.get("tables", [])
+            if check(isinstance(tables, list), where, "tables must be a list"):
+                for k, t in enumerate(tables):
+                    tw = f"{where}.tables[{k}]"
+                    if not check(isinstance(t, dict) and is_str(t.get("name")) and is_str(t.get("url")), tw, "must be an object with a name and a url"):
+                        continue
+                    check(t.get("matchday") is None or is_str(t.get("matchday")), tw, "matchday must be a string or null")
+                    rows = t.get("rows")
+                    if check(isinstance(rows, list) and rows, tw, "rows must be a non-empty list"):
+                        for r, row in enumerate(rows):
+                            rw = f"{tw}.rows[{r}]"
+                            if check(isinstance(row, dict) and is_str(row.get("team")), rw, "must be an object with a team"):
+                                ints = ("rank", "played", "won", "drawn", "lost", "diff", "points")
+                                check(all(is_int(row.get(key)) for key in ints), rw, f"{', '.join(ints)} must be integers")
+                                check(row.get("trend") in ("up", "down", None), rw, 'trend must be "up", "down" or null')
             if check(isinstance(sec.get("stories"), list), where, "stories must be a list"):
                 for j, s in enumerate(sec["stories"]):
                     story(s, f"{where}.stories[{j}]", day)

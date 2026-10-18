@@ -341,7 +341,7 @@ A personal daily newspaper: one self-contained HTML page per day in a kasten vau
 - `/news:feedback`: Turns free-text feedback ("less like #2026-10-07-allianz-03", "GNZ is paywalled") into config changes now and shows the diff.
 - `/news:tune`: An interview over sections, depth, sources, interests, and design that rewrites the config, and re-renders today's edition in other designs to compare.
 
-**Setup:** needs `uv`, and the host's web search and fetch tools. The scripts' one request of their own is the day's forecast from Open-Meteo (free, no key). For a paper every morning at 06:00 Europe/Berlin, add this line to the host's crontab (`crontab -e`), with your own clone and vault paths:
+**Setup:** needs `uv`, and the host's web search and fetch tools. The scripts' own requests are the day's forecast from Open-Meteo (free, no key) and, for a section that lists `tables:`, the league tables from sportschau.de. For a paper every morning at 06:00 Europe/Berlin, add this line to the host's crontab (`crontab -e`), with your own clone and vault paths:
 
 ```
 0 6 * * * /home/pascal/Code/pgoell-claude-tools/plugins/news/scripts/cron-edition.sh /home/pascal/kasten-data/vault
