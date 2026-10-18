@@ -83,7 +83,10 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
    `bracket` on its story. Then
    `uv run "${CLAUDE_SKILL_DIR}/scripts/weather.py" ARGS` fills a null
    `weather` from Open-Meteo for topics.yaml's `weather` place (one request,
-   no key); a warning means the box stays empty, which is fine.
+   no key); a warning means the box stays empty, which is fine. Then
+   `uv run "${CLAUDE_SKILL_DIR}/scripts/tables.py" ARGS` fills `tables` on
+   every section whose topics.yaml entry lists `tables:`, from sportschau.de;
+   a warning means that league's table is left out.
 8. **Validate.** `uv run "${CLAUDE_SKILL_DIR}/scripts/validate.py" "NP/<date>.json" --memory "NP/memory/stories.jsonl"`.
    Fix every error and run it again until it reports 0 errors. A repeated URL
    means drop the story or make it a real follow-up. Length warnings do not

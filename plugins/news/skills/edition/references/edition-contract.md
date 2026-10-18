@@ -18,7 +18,7 @@ edition:
   weather: { place: str, summary: str, high_c: int, low_c: int } | null # weather.py fills it from Open-Meteo when null
   previous: str | null # relative href to the previous edition, e.g. "2026-10-06.html", from seed.py
   lead: story # the front-page lead; it does not repeat in a section
-  sections: [{ id: str, name: str, kicker: str | null, local: bool, stories: [story] }] # 4 to 16 sections, config order; local is optional, true on the home section from topics.yaml
+  sections: [{ id: str, name: str, kicker: str | null, local: bool, stories: [story], tables: [table] }] # 4 to 16 sections, config order; local is optional, true on the home section from topics.yaml; tables is optional, set by tables.py
   briefs: [{ headline: str, url: str, source: str, section: str }] # one-liners, "in brief"; section is a section id
   feedback_hint: str # how to give feedback, naming the feedback note's path
   recent_feedback: [str] # optional; the newest applied changes, "YYYY-MM-DD: what changed"
@@ -53,6 +53,12 @@ match:
   score: str | null # "3-2", null when not played
   winner: "a" | "b" | null # null when not played
   when: str | null # for a match not played: "17.10., 20:00", Berlin time
+
+table: # a league table, filled by tables.py from sportschau.de; only `tabbed` draws it
+  name: str # "Bundesliga", from topics.yaml
+  matchday: str | null # "7. Spieltag", from the page title
+  url: str # the table page
+  rows: [{ rank: int, team: str, played: int, won: int, drawn: int, lost: int, goals: str, diff: int, points: int, trend: "up" | "down" | null }]
 ```
 
 ## Rules validate.py enforces
@@ -74,6 +80,9 @@ match:
 - A section's `local`, when present, is true or false.
 - A `bracket`, when present, holds 1 to 8 rounds, each with a name and at least
   one match; every match names `a` and `b`, and `winner` is "a", "b" or null.
+- A section's `tables`, when present, is a list; every table has a name, a url
+  and at least one row; every row names its team, its counts are integers and
+  `trend` is "up", "down" or null.
 
 ## Changes from the first draft
 
@@ -88,6 +97,9 @@ match:
 - Added optional `bracket` on a story, so a tournament tree (the LoL Worlds
   Play-In and knockouts) can be drawn instead of told in the summary. A Swiss
   stage is records, not a tree, and stays text.
+- Added optional `tables` on a section, so league tables (Bundesliga, Premier
+  League and others) show in the football tab. `tables.py` fills them from
+  sportschau.de, because copying 150 table rows by hand invites errors.
 - Summary length now follows importance instead of one 60 to 180 word range,
   to keep the page short enough to read over breakfast.
 

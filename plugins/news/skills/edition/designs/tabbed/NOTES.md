@@ -27,6 +27,10 @@ carry over unchanged.
   right tab and scrolls to the story below the strip.
 - Panels hide only once the script has run (`.js` on `<html>`). Without script
   every panel shows and the page reads as one scroll.
+- A sideways swipe (60px or more, at least twice as wide as tall) opens the
+  next or the previous tab, without wrapping. A swipe that starts in the tab
+  strip, a bracket or a table stays with that element, which scrolls sideways
+  itself.
 - No storage: kasten's pane sandboxes the page without `allow-same-origin`, so
   `localStorage` throws. The open tab lives in the URL hash.
 
@@ -40,9 +44,16 @@ carry over unchanged.
 - At phone width the tree scrolls sideways inside its own box; the page never
   does.
 
+## Tables
+
+- A section with `tables` ends with "Tabellen": one fold per league, the first
+  open, each with its matchday and a link to sportschau.de. Columns are rank
+  with a rise or fall arrow, club, games, won, drawn, lost, goals, difference
+  and points.
+- At phone width won, drawn, lost and goals hide, so the table fits without
+  scrolling; the wrapper still scrolls sideways if a club name runs long.
+
 ## What I would tune
 
 - With 14 or more sections the phone strip hides most tabs off screen; a fade
   at the right edge would show that the strip scrolls.
-- Swiping between tabs on a phone would suit the format, at the cost of more
-  script.
