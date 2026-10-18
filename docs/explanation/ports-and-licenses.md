@@ -14,7 +14,7 @@ A port copies upstream files into this repository. The upstream license decides 
 
 When a plugin ports a skill from a non-MIT upstream (such as Anthropic's Apache 2.0 `playground`), the plugin folder ships three files: `LICENSE` (this repo's MIT license), `NOTICE` (per-file upstream attribution and the original license), and a plugin `README.md` with a Credits section that links the source. The SKILL.md frontmatter drops upstream-only fields such as `license:`.
 
-`NOTICE` records the upstream commit SHA. When the port fetches upstream content with `gh api`, it adds `?ref=<commit-sha>` so the fetch matches that SHA; without it the fetch reads the default branch, which may have moved. `plugins/playground/` is the model layout. `plugins/deprecated/` also ships `LICENSE`, `NOTICE` and a README Credits section for the archived `frontend-design` skill, but that `NOTICE` predates the SHA rule: it links the upstream `main` branch and pins no commit.
+`NOTICE` records the upstream commit SHA. When the port fetches upstream content with `gh api`, it adds `?ref=<commit-sha>` so the fetch matches that SHA; without it the fetch reads the default branch, which may have moved. `plugins/playground/` is the model layout. `plugins/deprecated/` also ships `LICENSE`, `NOTICE` and a README Credits section for the archived `frontend-design` skill, but that `NOTICE` carries attribution text written in #41, before the SHA rule: it links the upstream `main` branch and pins no commit.
 
 The manifest `license:` says MIT, because the plugin's own additions (the SKILL.md changes, NOTICE, README) are MIT. The Apache-2.0 files stay under their own license, as `NOTICE` records.
 
