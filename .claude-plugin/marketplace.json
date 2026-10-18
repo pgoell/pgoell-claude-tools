@@ -119,6 +119,12 @@
       "version": "0.1.2"
     },
     {
+      "name": "session-title",
+      "source": "./plugins/session-title",
+      "description": "Claude Code hook that names each new session after its folder, git branch and start time, so sessions stay apart in the Remote Control list.",
+      "version": "0.1.0"
+    },
+    {
       "name": "ponytail",
       "source": {
         "source": "url",

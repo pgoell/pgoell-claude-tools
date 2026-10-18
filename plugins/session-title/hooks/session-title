@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# SessionStart hook: title the session "<cwd basename> <branch> <MM-DD HH:MM>",
+# e.g. "server-infra main 10-18 11:09". Without a current branch (no git repo,
+# detached HEAD) the branch is left out.
+#
+# Why: with many sessions a day, the Remote Control list on the phone shows
+# near-identical names. Claude Code takes hookSpecificOutput.sessionTitle from
+# SessionStart and saves it as the session's custom title, as /rename does.
+cwd=$(jq -r '.cwd // empty')
+cwd=${cwd:-$PWD}
+branch=$(git -C "$cwd" branch --show-current 2>/dev/null)
+title="$(basename "$cwd")${branch:+ $branch} $(date '+%m-%d %H:%M')"
+jq -nc --arg t "$title" '{hookSpecificOutput:{hookEventName:"SessionStart",sessionTitle:$t}}'

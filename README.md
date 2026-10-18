@@ -76,7 +76,7 @@ Bundles 24 plugins across Atlassian, Google Workspace, Databricks, agent-system 
 
 The `deprecated` plugin additionally archives twelve superseded skills: `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations` point at their replacement in the `presentations` plugin; `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode` point at their replacement in the `workbench` plugin (`terse-mode` retires without replacement); `writing`, `pyramid`, `tech-doc` point at `ghostwrite` and `coach` in the `writing` plugin; `frontend-design` (from the retired plugin of that name) points at `taste-skill:taste-skill`.
 
-The `prose-styles` plugin ships no skills. It provides four Claude Code output styles instead, which govern how the agent writes prose for a whole session rather than for one task. See its section below. The `guards` plugin ships no skills either: it adds Claude Code hooks that block shell commands known to fail.
+The `prose-styles` plugin ships no skills. It provides four Claude Code output styles instead, which govern how the agent writes prose for a whole session rather than for one task. See its section below. The `guards` plugin ships no skills either: it adds Claude Code hooks that block shell commands known to fail. Nor does `session-title`: its one hook names each new session after its folder, branch and start time.
 
 Skills are invoked from the host agent (Claude Code or Codex) using the fully qualified form `/<plugin>:<skill>`, for example `/atlassian:jira` or `/workbench:pilot`.
 
@@ -105,6 +105,7 @@ Skills are invoked from the host agent (Claude Code or Codex) using the fully qu
 /plugin install issue-loop@pgoell-claude-tools
 /plugin install prose-styles@pgoell-claude-tools
 /plugin install guards@pgoell-claude-tools
+/plugin install session-title@pgoell-claude-tools
 /plugin install ponytail@pgoell-claude-tools
 /plugin install emil@pgoell-claude-tools
 /plugin install taste-skill@pgoell-claude-tools
@@ -123,7 +124,7 @@ codex
 /plugins
 ```
 
-In the `/plugins` picker, install any combination of `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, `news`, `insights`, and `ponytail` (plus `deprecated` if an old workflow needs the archived skill names). `prose-styles` is absent from the Codex picker on purpose, because Codex has no output-style mechanism. `guards` is absent too, because its hooks use Claude Code's hook format. `issue-loop` is absent because it drives Claude Code sessions (`/clear`, `--permission-mode auto`) and was never run under Codex. `emil`, `taste-skill`, and `vercel` are absent too: their upstreams ship no Codex manifest.
+In the `/plugins` picker, install any combination of `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, `news`, `insights`, and `ponytail` (plus `deprecated` if an old workflow needs the archived skill names). `prose-styles` is absent from the Codex picker on purpose, because Codex has no output-style mechanism. `guards` and `session-title` are absent too, because their hooks use Claude Code's hook format. `issue-loop` is absent because it drives Claude Code sessions (`/clear`, `--permission-mode auto`) and was never run under Codex. `emil`, `taste-skill`, and `vercel` are absent too: their upstreams ship no Codex manifest.
 
 To pick up updates: `codex plugin marketplace upgrade pgoell-claude-tools` and re-install the affected plugins.
 
@@ -135,7 +136,7 @@ The repository is also a Cursor plugin marketplace: `.cursor-plugin/marketplace.
 - From a team marketplace (Cursor Teams and Enterprise plans): **Dashboard > Plugins & MCPs > Add Marketplace > Import from Repo** with `https://github.com/pgoell/pgoell-claude-tools`, then turn on **Auto Refresh** to pick up pushes to `master`.
 - Locally, for a single plugin: copy `plugins/<name>/` to `~/.cursor/plugins/local/<name>/` and run **Developer: Reload Window**. Cursor skips symlinks that point outside that folder, so copy rather than link.
 
-Cursor offers `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, `news`, and `insights`. `prose-styles` is absent because Cursor has no output-style mechanism. `guards` is absent because its hook uses Claude Code's `PreToolUse` format and has no Cursor port yet. `issue-loop` is absent because it drives Claude Code sessions. `deprecated` is absent because it is a frozen archive. `ponytail`, `emil`, `taste-skill`, and `vercel` are absent because they are upstream repositories with no local directory to carry a Cursor manifest.
+Cursor offers `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, `news`, and `insights`. `prose-styles` is absent because Cursor has no output-style mechanism. `guards` is absent because its hook uses Claude Code's `PreToolUse` format and has no Cursor port yet. `session-title` is absent because it sets a Claude Code session title, which Cursor has no equivalent for. `issue-loop` is absent because it drives Claude Code sessions. `deprecated` is absent because it is a frozen archive. `ponytail`, `emil`, `taste-skill`, and `vercel` are absent because they are upstream repositories with no local directory to carry a Cursor manifest.
 
 ## Plugins
 
@@ -405,6 +406,12 @@ Claude Code hooks that block shell commands known to fail. Each hook denies the 
 - `pkill-self-match` (`PreToolUse` on `Bash`): denies `pkill -f` (also `--full`, `-9f`, `-fx`) with a plain pattern. Claude Code runs each command through a `bash -c` whose command line holds the pattern, so `pkill -f` kills the agent's own shell and the call ends in exit 144. Over 14 days on one host, 83 Bash calls ended that way, 44 of them from `pkill -f`. The deny message offers `fuser -k <port>/tcp` or a bracketed pattern such as `pkill -f '[u]vicorn app'`.
 
 Claude Code only; the plugin is not in the Codex marketplace. See `plugins/guards/README.md`.
+
+### session-title
+
+A Claude Code `SessionStart` hook that names each new session after the last part of its working directory, its git branch and its start time, such as `server-infra main 10-18 11:09`, so sessions stay apart in the Remote Control list. It runs on `startup` and `clear`; a resumed session keeps its title, and `/rename` overrides it.
+
+Claude Code only; the plugin is not in the Codex marketplace. See `plugins/session-title/README.md`.
 
 ### ponytail
 
