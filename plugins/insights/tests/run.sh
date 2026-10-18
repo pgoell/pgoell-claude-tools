@@ -43,6 +43,7 @@ rec() { printf '{"type":"user","sessionId":"%s","timestamp":"%sT10:00:00.000Z","
   printf '{"type":"bridge-session","sessionId":"s-app","bridgeSess'
 } >"$P/-app/s-app.jsonl"
 rec s-wt "$C/app/.worktrees/gone" "more" >"$P/-app--worktrees-x/s-wt.jsonl"
+rec s-wt2 "$C/.worktrees/app/gone" "more" >"$P/-app--worktrees-x/s-wt2.jsonl"
 rec s-vault "$V" "a private thought" >"$P/-vault/s-vault.jsonl"
 rec s-job "$C/app" "run it insights-self-run" >"$P/-job/s-job.jsonl"
 
@@ -86,7 +87,7 @@ q() { jq -r "$1" "$J"; }
 
 out=$(collect); ok "collect exit" $? 0
 ok "sources all ok but the vault" "$(q '.sources|to_entries|map(select(.value!="ok")|.key)|join(",")')" vault
-ok "worktree session folds into its repo" "$(q '.repos[]|select(.name=="app").sessions')" 2
+ok "worktree session folds into its repo" "$(q '.repos[]|select(.name=="app").sessions')" 3
 ok "private session counts under vault" "$(q '.repos[]|select(.name=="vault").sessions')" 1
 ok "the job's own session is left out" "$(q '.scope.own_runs_skipped')" 1
 hasnt "no typed text in the data" "$(cat "$J")" "private thought"
@@ -175,7 +176,7 @@ ok "the dump bullet is still there" "$(tail -1 "$note_file")" "- a dump bullet"
 # a missing gh and a failing ccusage degrade, they do not crash
 out=$(GH_DOWN=1 BUNX_DOWN=1 collect); ok "collect exit without gh and ccusage" $? 0
 ok "sources say unavailable" "$(q '[.sources.github,.sources.ci,.sources.usage]|join(",")')" unavailable,unavailable,unavailable
-ok "sessions still counted" "$(q '.repos[]|select(.name=="app").sessions')" 2
+ok "sessions still counted" "$(q '.repos[]|select(.name=="app").sessions')" 3
 echo '{"needs":[],"shipped":{}}' >"$N"
 out=$(render); ok "render exit with sources down" $? 0
 has "page names the gaps" "$(cat "$V/01 Periodic/07 Activity/$D.html")" "Unavailable on this run: github, ci, usage, vault."

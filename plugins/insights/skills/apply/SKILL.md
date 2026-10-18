@@ -69,18 +69,17 @@ no verdict, so the next run tries it again.
      first; an open PR for this id is linked, not opened twice. Then:
      ```sh
      git -C "<repo>" fetch origin
-     git -C "<repo>" worktree add "<repo>/.worktrees/fix/insights-<id>" -b "fix/insights-<id>" "origin/<default branch>"
+     git -C "<repo>" worktree add ~/Code/.worktrees/<repo name>/insights-<id> -b "fix/insights-<id>" "origin/<default branch>"
      ```
-     When the repo does not ignore `.worktrees/`, add it to
-     `<repo>/.git/info/exclude`. Make the change from the problem's `fix` in
-     that worktree. Run the repo's own format, lint and test commands: the
+     The worktree sits outside the repo, so the repo's `.gitignore` needs no
+     entry. Make the change from the problem's `fix` in that worktree. Run the repo's own format, lint and test commands: the
      `mise run` tasks where a `mise.toml` exists (`mise tasks` lists them),
      else what its instructions name. Commit (Conventional Commits, lowercase
      subject, no AI attribution of any kind), `git push -u origin fix/insights-<id>`,
      and `gh pr create` with a body that cites the problem: title, hits,
      evidence, and the page `<periodic>/06 Insights/<date>.html`. No
      attribution line in the body either. Never merge. Remove the worktree
-     afterwards (`git -C "<repo>" worktree remove "<repo>/.worktrees/fix/insights-<id>"`).
+     afterwards (`git -C "<repo>" worktree remove ~/Code/.worktrees/<repo name>/insights-<id>`).
      Never touch the repo's own working tree. Record `pending` with the PR
      URL; the digest turns it into `applied` when the PR merges.
    - **Adds a todo.** Append `- [ ] <the fix in a few words> #insights ➕ <today>`
