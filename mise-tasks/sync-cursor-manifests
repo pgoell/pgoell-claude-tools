@@ -27,8 +27,9 @@ REPO_URL="https://github.com/pgoell/pgoell-claude-tools"
 #   deprecated    frozen archive of superseded skills
 #   prose-styles  Claude Code output styles; Cursor has no equivalent
 #   guards        Claude Code PreToolUse hook; needs a Cursor port first
+#   session-title Claude Code SessionStart title; Cursor has no equivalent
 #   issue-loop    drives Claude Code sessions; Claude Code only
-EXCLUDE=" deprecated prose-styles guards issue-loop "
+EXCLUDE=" deprecated prose-styles guards session-title issue-loop "
 
 # Cursor-only manifest fields per plugin.
 extra_for() {

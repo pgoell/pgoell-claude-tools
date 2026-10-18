@@ -1,0 +1,15 @@
+{
+  "name": "session-title",
+  "version": "0.1.0",
+  "description": "Claude Code hook that names each new session after its folder, git branch and start time, so sessions stay apart in the Remote Control list.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "license": "MIT",
+  "keywords": [
+    "hooks",
+    "session",
+    "title",
+    "remote-control"
+  ]
+}
