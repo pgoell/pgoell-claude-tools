@@ -9,7 +9,7 @@ This doc maps the autopilot skill's tool references to Codex equivalents. The au
 | `Skill`                         | `skill`                                                                                                          |
 | `Agent` (subagent)              | Codex's task or subagent equivalent if installed; otherwise sequential execution in the main session (see below) |
 | `Monitor`                       | `run_in_background` plus a polling loop, or Codex's monitoring primitive if present                              |
-| `Bash`, `Read`, `Write`, `Edit` | Equivalent Codex tools (see `../using-workbench/references/codex-tools.md` for the broader table)                |
+| `Bash`, `Read`, `Write`, `Edit` | Equivalent Codex tools (see `references/codex-tools.md` of `workbench:using-workbench` for the broader table)    |
 | `gh`                            | Same; invoked via the shell tool                                                                                 |
 
 ## Subagent strategy on Codex
@@ -22,7 +22,7 @@ This doc maps the autopilot skill's tool references to Codex equivalents. The au
 4. After completing a task, write a one-line note: `--- completed task <n> ---`.
 5. Continue with the next task.
 
-Sequential fallback gives up the fanout from `workbench:dispatching-parallel-agents` but preserves the per-task discipline of subagent-driven-development.
+Sequential fallback gives up the fanout from `deprecated:dispatching-parallel-agents` but preserves the per-task discipline of subagent-driven-development.
 
 ## CI polling shape (step 8)
 
@@ -53,4 +53,4 @@ If Codex's subagent primitive errors, recover the same way as Claude Code: from 
 
 - `SKILL.md`: the autopilot orchestration.
 - `claude-code-adapter.md`: the Claude Code side.
-- `../using-workbench/references/codex-tools.md`: broader Codex tool table.
+- `references/codex-tools.md` of `workbench:using-workbench`: broader Codex tool table.

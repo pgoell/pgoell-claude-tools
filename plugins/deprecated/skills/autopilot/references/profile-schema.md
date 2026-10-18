@@ -1,6 +1,6 @@
 # Workbench Autopilot Profile Schema
 
-This document defines the convention for `.workbench/autopilot.md` files in projects that use the `workbench:autopilot` skill.
+This document defines the convention for `.workbench/autopilot.md` files in projects that use the `deprecated:autopilot` skill.
 
 ## What goes in the profile
 

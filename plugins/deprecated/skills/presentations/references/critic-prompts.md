@@ -1,6 +1,6 @@
 # Phase 5 Critic Persona Prompts
 
-Phase 5 dispatches three critic personas in parallel via `workbench:dispatching-parallel-agents`. Each persona receives a copy of one of the prompt blocks below, with the bracketed paths (`[DECK_PATH]`, `[AUDIENCE_BRIEF_PATH]`, `[MESSAGE_ARCHITECTURE_PATH]`, `[STORYBOARD_PATH]`) substituted to the actual files in this session. Each critic returns its findings as a single markdown fragment that the host agent appends to the `### Critic findings` section of `audit-report.md`.
+Phase 5 dispatches three critic personas in parallel via `deprecated:dispatching-parallel-agents`. Each persona receives a copy of one of the prompt blocks below, with the bracketed paths (`[DECK_PATH]`, `[AUDIENCE_BRIEF_PATH]`, `[MESSAGE_ARCHITECTURE_PATH]`, `[STORYBOARD_PATH]`) substituted to the actual files in this session. Each critic returns its findings as a single markdown fragment that the host agent appends to the `### Critic findings` section of `audit-report.md`.
 
 The prompt blocks are written to be self-contained: pasted verbatim into a dispatch, they tell the critic what to read, how to think, and how to format the response. Do not rewrite them for tone; the determinism is the point.
 
