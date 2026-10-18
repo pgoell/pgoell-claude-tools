@@ -97,7 +97,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `emil` upstream: `emil-design-eng`, `animate`, `review-animations`, `improve-animations`, `prototype`, and 10 more (Claude Code only)
 - `taste-skill` upstream: 14 skills, among them `taste-skill`, `redesign-skill`, `minimalist-skill`, `brutalist-skill`, `image-to-code-skill`, `brandkit` (Claude Code only)
 - `vercel` upstream: `react-best-practices`, `composition-patterns`, `react-view-transitions`, `react-native-skills`, `web-design-guidelines`, `writing-guidelines`, `deploy-to-vercel`, `vercel-cli-with-tokens`, `vercel-optimize` (Claude Code only)
-- `deprecated` 0.4.1: frozen archive of `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations`, `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode`, `writing`, `pyramid`, `tech-doc`, `frontend-design`
+- `deprecated` 0.4.2: frozen archive of `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations`, `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode`, `writing`, `pyramid`, `tech-doc`, `frontend-design`
 
 ## How to Develop a New Skill
 

@@ -14,7 +14,7 @@ An archive of superseded skills, kept installable so old workflows keep resolvin
 
 Not in Cursor: a frozen archive has no reason to reach a new runtime. See [Runtimes](/reference/runtimes.md).
 
-**Source:** vendored in `plugins/deprecated/`; see the [plugin README](../../../plugins/deprecated/README.md) for details and credits. `frontend-design` is a port of Anthropic's [frontend-design](https://github.com/anthropics/claude-plugins/tree/main/plugins/frontend-design) plugin (Apache 2.0); see `plugins/deprecated/NOTICE`.
+**Source:** vendored in `plugins/deprecated/`; see the [plugin README](../../../plugins/deprecated/README.md) for details and credits. `frontend-design` is a port of the [frontend-design](https://github.com/anthropics/skills/tree/ef740771ac901e03fbca3ce4e1c453a96010f30a/skills/frontend-design) skill in Anthropic's `anthropics/skills` repository (Apache 2.0); see `plugins/deprecated/NOTICE`.
 
 **Setup:** None beyond install.
 
