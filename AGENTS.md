@@ -76,12 +76,12 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `atlassian` 2.0.4: `jira`, `confluence`
 - `google-workspace` 1.0.2: `gmail`, `calendar`
 - `research` 2.1.5: `research`
-- `writing` 3.1.1: `ghostwrite`, `coach`
+- `writing` 3.1.2: `ghostwrite`, `coach`
 - `runtime-bridge` 0.1.2: `claude-codex-bridge`
-- `agent-system-management` 0.6.2: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
+- `agent-system-management` 0.6.3: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
 - `workbench` 1.1.2: `pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`
 - `terminal` 0.1.1: `tmux`
-- `playground` 0.1.2: `playground`
+- `playground` 0.1.3: `playground`
 - `databricks` 0.3.2: `databricks-core`, `databricks-docs`
 - `learning` 0.3.1: `quizzing-the-session`, `quizzing-a-topic`, `surveying-blind-spots`, `rebuilding-a-concept`
 - `critique` 0.1.1: `critiquing-ideas`

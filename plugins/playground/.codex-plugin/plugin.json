@@ -1,6 +1,6 @@
 {
   "name": "playground",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Generate interactive single-file HTML playgrounds with controls, live preview, and copy-out prompt for two-way feedback with the model.",
   "author": {
     "name": "Pascal Göllner"

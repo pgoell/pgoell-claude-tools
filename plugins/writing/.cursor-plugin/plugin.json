@@ -1,7 +1,7 @@
 {
   "name": "writing",
   "displayName": "Writing",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "Ghostwrite pieces from the owner's own facts, or get coached to write them yourself.",
   "author": {
     "name": "Pascal Göllner"

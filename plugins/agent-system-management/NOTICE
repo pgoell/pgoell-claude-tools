@@ -25,10 +25,16 @@ The skills/creating-skills skill is ported from a private plugin
 marketplace maintained by the same author (claude-setup plugin,
 commit b092d56), which is itself derived from:
 
-  - Anthropic's skill-creator skill (https://github.com/anthropics/skills),
-    Apache License 2.0. The bundled skills/creating-skills/LICENSE.txt is
-    that upstream license. The upstream commit was not recorded at the
-    original port; provenance is reproducible via the commit above.
+  - Anthropic's skill-creator skill
+    (https://github.com/anthropics/skills/tree/b9e19e6f44773509fbdd7001d77ff41a49a486c1/skills/skill-creator,
+    commit b9e19e6f44773509fbdd7001d77ff41a49a486c1), Apache License 2.0.
+    The bundled skills/creating-skills/LICENSE.txt is that upstream
+    license. The original port recorded no upstream commit; this one was
+    matched in 2026-10: it is the last upstream commit to touch
+    skills/skill-creator before the eval-pipeline port (this repo's
+    7c5a47d, 2026-07-10), and the only one at which LICENSE.txt,
+    assets/eval_review.html and scripts/{__init__,package_skill,run_eval,
+    run_loop,utils}.py are byte-identical to the port.
       - SKILL.md, agents/, scripts/, eval-viewer/, assets/,
         references/schemas.md (adapted)
   - Matt Pocock's writing-great-skills skill
