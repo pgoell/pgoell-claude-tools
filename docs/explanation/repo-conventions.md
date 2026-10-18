@@ -39,13 +39,13 @@ Claude Code resolves skill calls by `plugin:skill` (for example `/atlassian:jira
 
 The fully qualified form always works, whatever other marketplaces the user has installed. The short form `/<skill>` (such as `/jira`) works only when no other installed skill shares the name, which a doc cannot know, so docs never teach it. The 2026-05 README rewrite fixed 33 wrong `/pgoell-claude-tools:<skill>` examples that had piled up through copy and paste.
 
-The audit greps: `grep -rnE '/pgoell-claude-tools:[a-z]' README.md docs/` must print nothing, and `grep -rnE '/(atlassian|google-workspace|research|writing|runtime-bridge|agent-system-management|workbench|terminal|frontend-design|playground|databricks):' docs/` should match at least once per plugin whose skills the doc names.
+The audit greps: `grep -rnE '/pgoell-claude-tools:[a-z]' README.md docs/` must print nothing, and `grep -rnE '/(atlassian|google-workspace|research|writing|runtime-bridge|agent-system-management|workbench|terminal|playground|databricks|learning|critique|presentations|diagrams|news|insights|issue-loop|ponytail|emil|vercel|taste-skill|deprecated):' docs/` should match at least once per plugin whose skills the doc names.
 
 ## Em-dash lint and instruction text
 
 The ban on U+2014 and U+2013 covers every file in the repo: skill bodies, bundled `references/*.html` templates, vendored `references/**/*.css` and `references/**/*.js` (such as code comments in a ported runtime), and root-level docs. The check has been a manual grep since the shell test suite went away in 2026-07: `grep -rnP '[\x{2014}\x{2013}]' plugins/ README.md AGENTS.md`.
 
-That repo-wide grep does not come back empty. Sixteen tracked files that predate the rule (in atlassian, google-workspace, research, runtime-bridge, and workbench's visualizing-options, using-workbench references, and session-start hook) carry the characters as accepted debt, and the gitignored notes under `plugins/databricks/references/research/` add more hits in clones that keep them. So a change is gated on the files it touches: `git diff <base>..HEAD --name-only | xargs grep -nP '[\x{2014}\x{2013}]'` must print nothing, and `README.md` and `AGENTS.md` stay clean.
+That repo-wide grep does not come back empty. Fourteen tracked files that predate the rule (in atlassian, google-workspace, research, runtime-bridge, and workbench's visualizing-options, using-workbench references, and session-start hook) carry the characters as accepted debt, and the gitignored notes under `plugins/databricks/references/research/` add more hits in clones that keep them. So a change is gated on the files it touches: `git diff <base>..HEAD --name-only | xargs grep -nP '[\x{2014}\x{2013}]'` must print nothing, and `README.md` and `AGENTS.md` stay clean.
 
 A markdown file that needs to talk about the characters names them by codepoint (`U+2014`, `U+2013`), so the grep does not match the description. In HTML body copy the entities `&mdash;`, `&#8212;`, `&ndash;`, `&#8211;` are allowed, because the grep matches raw codepoints only. CSS and JS comments have no entity escape, so a port substitutes the character.
 
