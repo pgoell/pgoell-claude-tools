@@ -28,3 +28,17 @@ A hook is a script Claude Code runs at a fixed point, such as before a tool call
 Codex and Cursor use other hook formats, and neither plugin has a port yet, so both are Claude Code only.
 
 The plugins' own READMEs hold the details: [prose-styles](../../plugins/prose-styles/README.md), [guards](../../plugins/guards/README.md), [session-title](../../plugins/session-title/README.md).
+
+## Output styles are a plugin surface, and a skill-less plugin is a valid shape
+
+This section is for contributors; [AGENTS.md](../../AGENTS.md) states the rule in short.
+
+Claude Code loads `plugins/<plugin>/output-styles/*.md` on its own and names each one `<plugin>:<style>` in `/output-style` and the `/config` picker. Frontmatter takes `name` (defaults to the file name), `description` (shown in the picker), and `keep-coding-instructions`. Any style that only shapes prose sets `keep-coding-instructions: true`, for the reason above. A style body is injected alone, so each file must stand on its own: shared blocks (the punctuation bans) repeat in all four `prose-styles` files on purpose, and cross-references between styles are for the human reader.
+
+`prose-styles` (2026-08) is the first and only case, and ships no `skills/` at all. Three consequences follow.
+
+1. Codex has no output styles, so the plugin is registered in `.claude-plugin/marketplace.json` only. Its `.codex-plugin/plugin.json` exists only because `check-plugin-versions` fails hard on a missing Codex manifest; it declares no `skills` path and is left out of `.agents/plugins/marketplace.json`.
+2. The new-plugin docs sites change in two places: no rows in `docs/reference/skills.md` (there are no skills), and `docs/reference/runtimes.md` says why Codex lacks the plugin. The other sites still apply: the README plugin count and line, the reference page, a setup how-to (picking a style is setup), the `docs/log.md` entry, and the plugin's line in AGENTS.md "Current Plugins".
+3. Every other convention still binds, because the files live here: the dash lint covers `output-styles/*.md`, the version lockstep covers the three version sites, and the frontmatter must parse as strict YAML.
+
+Add a future output style to `prose-styles` rather than starting a second styles plugin, unless the new set governs something other than prose.

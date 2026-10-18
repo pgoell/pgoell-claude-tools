@@ -8,7 +8,7 @@ status: stable
 
 # atlassian
 
-Jira and Confluence skills for Atlassian Cloud. Both call the Atlassian REST API with `curl`, and fall back to the Atlassian CLI (`acli`) for the few jobs `curl` handles badly.
+Jira and Confluence skills for Atlassian Cloud. Both call the Atlassian REST API with `curl`. The Jira skill falls back to the Atlassian CLI (`acli`) for the few jobs `curl` handles badly; `acli` has no Confluence commands.
 
 **Runtimes:** Claude Code, Codex, Cursor
 

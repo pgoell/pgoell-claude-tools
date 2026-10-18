@@ -1,14 +1,14 @@
 ---
 type: How-to Guide
 title: Set up the atlassian plugin
-description: Give the jira and confluence skills access to your Atlassian Cloud site, with an API token and, if you want bulk and sprint commands, the Atlassian CLI.
+description: Give the jira and confluence skills access to your Atlassian Cloud site, with an API token and, if you want Jira bulk and sprint commands, the Atlassian CLI.
 tags: [atlassian, jira, confluence, setup]
 status: stable
 ---
 
 # Set up the atlassian plugin
 
-`/atlassian:jira` and `/atlassian:confluence` call the Atlassian Cloud REST API with `curl`. They need three environment variables. The Atlassian CLI (`acli`) is optional: the Jira skill falls back to it for bulk transitions and some sprint commands, and the Confluence skill for a few reads.
+`/atlassian:jira` and `/atlassian:confluence` call the Atlassian Cloud REST API with `curl`. They need three environment variables. The Atlassian CLI (`acli`) is optional and only the Jira skill uses it, for bulk transitions and some sprint commands. The Confluence skill uses `curl` only.
 
 ## Set the API token
 
@@ -23,7 +23,7 @@ status: stable
 
 3. Open a new shell, then start your agent from it so the session inherits the variables.
 
-## Add the Atlassian CLI (optional)
+## Add the Atlassian CLI (optional, Jira only)
 
 1. Install it. On macOS with Homebrew:
 

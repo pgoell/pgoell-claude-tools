@@ -41,3 +41,16 @@ The 2026-10 batch retired a whole plugin. The archived `frontend-design` skill i
 Install `deprecated` only when something you rely on still calls an old skill name. Otherwise use the replacement. Installing it beside `presentations`, `workbench` or `writing` puts two skills for the same job in front of the agent, and it may pick the frozen one.
 
 Claude Code and Codex list the plugin; Cursor does not. For moving from `autopilot` or `copilot`, see [Move to workbench pilot](/how-to/move-to-workbench-pilot.md). The plugin's page is [deprecated](/reference/plugins/deprecated.md).
+
+## The `deprecated` plugin is a registered, frozen archive
+
+This section is for contributors; [AGENTS.md](../../AGENTS.md) states the rule in short.
+
+When a restructure supersedes a skill, move it (SKILL.md plus references) into `plugins/deprecated/skills/<old-name>/` in the same pull request that removes it from its live plugin. Prefix its frontmatter description with "Deprecated, superseded by <replacement>." and add a one-line banner under the H1 that names the replacement. Rewrite its internal cross-references to the `deprecated:` namespace so the archive stays whole, and drop or de-brand any bundled asset that must not ship. Deprecated skills are never extended and are not listed one by one in `docs/reference/skills.md`. The plugin stays registered in both marketplaces so old workflows keep resolving. An archived port keeps its upstream attribution: move the `NOTICE` block with the file.
+
+How each batch went:
+
+- **2026-07:** `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx` (from workbench 0.22.0) and `presentations` (from writing 2.0.0), all superseded by the `presentations` plugin. The branded example deck did not move with `crafting-presentations`; its de-branded successor became the presentations plugin's `default` preset.
+- **2026-08:** `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode` (from workbench 0.22.0, superseded by workbench 1.0.0). `autopilot` and `copilot` gave way to `workbench:pilot`, whose `Gates:` profile row picks the old autopilot or copilot behavior. `dispatching-parallel-agents` gave way to the `## Parallel dispatch` section of `workbench:subagent-driven-development`. `terse-mode` retired without replacement.
+- **2026-09:** `writing`, `pyramid`, `tech-doc` (from writing 2.0.0, superseded by writing 3.0.0). `writing` gave way to `writing:ghostwrite` (drafting) and `writing:coach` (learning to write), `pyramid` to the pyramid audits in `ghostwrite` and the Socratic structure drill in `coach`, and `tech-doc` to `ghostwrite`'s tech-doc route. Their kept parts (interview rules, throughline gate, pyramid audits, Diátaxis quadrants, reference schemas, three argument critics) were rewritten into the new skills' `references/`, not moved.
+- **2026-10:** `frontend-design` (the Anthropic Apache-2.0 port), superseded by the external `taste-skill:taste-skill`. The whole `frontend-design` plugin retired and left both marketplaces, so its `LICENSE` and `NOTICE` moved into `plugins/deprecated/` with the skill. That made `deprecated` the first archive to carry port attribution.

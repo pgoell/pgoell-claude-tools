@@ -18,5 +18,5 @@ Each page carries a `type` in its frontmatter, and that type is the Diátaxis qu
 ## Elsewhere
 
 - [README](../README.md): what the marketplace is, and the install commands
-- [AGENTS.md](../AGENTS.md): repository layout, conventions, and the full design decisions for contributors
+- [AGENTS.md](../AGENTS.md): repository layout, conventions, and the rules contributors follow (the reasons behind them live under [Explanation](/explanation/index.md))
 - [log.md](/log.md): what changed in this bundle, by date
