@@ -47,7 +47,7 @@ three newest changes in its footer.
 
 ## Designs
 
-Five designs ship with the plugin, plus `plain`, the fallback used when the
+Six designs ship with the plugin, plus `plain`, the fallback used when the
 configured design is not installed. Pick one with `design:` in
 `config/design.yaml`, or run `/news:tune`, which can render today's edition in
 each design side by side. Colours and fonts change through `overrides:` in the
@@ -93,13 +93,28 @@ Needs `uv` (the scripts are Python with inline dependencies) and Claude Code's
 the wrapper at 06:00 Europe/Berlin with the vault path:
 
 ```text
-0 6 * * * /home/pascal/Code/pgoell-claude-tools/plugins/news/scripts/cron-edition.sh /home/pascal/kasten-data/vault
+0 6 * * * /path/to/plugins/news/scripts/cron-edition.sh /path/to/vault
 ```
 
-The wrapper runs `claude -p "/news:edition --vault <vault> --date <today>"`
-with the tools an edition needs allowed, logs to
-`~/.local/state/news/<date>.log` (`NEWS_LOG_DIR` changes that; `NEWS_PLUGIN_DIR`
-loads the plugin from a working tree to test a change), and exits
-non-zero when claude fails or no edition was written. Cron uses the host's
-time zone; on a host not set to Europe/Berlin, add `CRON_TZ=Europe/Berlin`
-above the line.
+The wrapper runs
+`claude -p "/news:edition --vault <vault> --periodic <periodic> --date <today>"`
+with `--dangerously-skip-permissions`, since nobody is there to answer a
+prompt. It logs to `~/.local/state/news/<date>.log` (`NEWS_LOG_DIR` changes
+that; `NEWS_PLUGIN_DIR` loads the plugin from a working tree to test a
+change), and exits non-zero when claude fails or no edition was written.
+`KASTEN_PERIODIC_PATH` names the periodic folder (`01 Periodic` when unset);
+the wrapper passes it to the skill and looks for the page there. Cron uses
+the host's time zone; on a host not set to Europe/Berlin, add
+`CRON_TZ=Europe/Berlin` above the line.
+
+## Tests
+
+`tests/run.sh` runs the cron wrapper with a fake `claude` in a temp home and
+a temp vault: no session, no network, under a second. It checks that the
+wrapper skips permissions, passes the folder from `KASTEN_PERIODIC_PATH` as
+`--periodic`, looks in `01 Periodic` when the variable is unset, and exits 1
+when no page was written.
+
+Last run, 2026-10-18: 6 of 6 checks pass.
+
+The skills have no test.

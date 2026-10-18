@@ -8,7 +8,7 @@ status: stable
 
 # Schedule the newspaper
 
-`/news:edition` builds one HTML page per day under `<periodic>/05 Newspaper/` in a kasten vault. This page assumes the default periodic folder, `01 Periodic`: the wrapper looks for the page there. You can run it by hand; this page sets it up to run at 06:00 every morning.
+`/news:edition` builds one HTML page per day under `<periodic>/05 Newspaper/` in a kasten vault. The periodic folder is `01 Periodic` unless `KASTEN_PERIODIC_PATH` names another; the wrapper passes it to the skill and looks for the page there. You can run it by hand; this page sets it up to run at 06:00 every morning.
 
 ## Before you start
 
@@ -35,11 +35,11 @@ The edition uses the host's web search and fetch tools. The scripts make two req
 
    Cron runs at the host's local time. On a host not set to Europe/Berlin, put `CRON_TZ=Europe/Berlin` on the line above.
 
-The wrapper runs `claude -p "/news:edition --vault <vault> --date <today>"` with permissions skipped (`--dangerously-skip-permissions`), since nobody is there to answer a prompt.
+The wrapper runs `claude -p "/news:edition --vault <vault> --periodic <periodic> --date <today>"` with permissions skipped (`--dangerously-skip-permissions`), since nobody is there to answer a prompt.
 
 ## Check it worked
 
-- The page `<vault>/01 Periodic/05 Newspaper/<date>.html` exists, and the day's daily note links it.
+- The page `<vault>/<periodic>/05 Newspaper/<date>.html` exists, and the day's daily note links it.
 - The log is `~/.local/state/news/<date>.log` (`NEWS_LOG_DIR` moves it). The wrapper exits non-zero when claude fails or wrote no edition.
 
 To change what the paper covers, use `/news:feedback` or `/news:tune`. See [the news reference page](/reference/plugins/news.md) and the [plugin README](../../plugins/news/README.md), which shows the six designs.

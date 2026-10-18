@@ -190,5 +190,23 @@ has "cron skips permissions" "$(cat "$T/home/args")" "--dangerously-skip-permiss
 has "cron passes the periodic folder" "$(cat "$T/home/args")" '--periodic "P"'
 rm "$V/P/07 Activity/"*.html; NO_PAGE=1 cron; ok "cron exit with no page" $? 1
 
+# digest cron wrapper: the same rules, yesterday's page under 06 Insights;
+# this fake writes the page at $PAGE unless NO_PAGE is set
+Y=$(TZ=Europe/Berlin date -d yesterday +%F)
+mkdir -p "$T/home2/.local/bin"
+printf '%s\n' '#!/bin/bash' 'printf "%s\n" "$@" >"$HOME/args"' \
+  '[ -n "${NO_PAGE:-}" ] || { mkdir -p "$(dirname "$PAGE")"; echo page >"$PAGE"; }' >"$T/home2/.local/bin/claude"
+chmod +x "$T/home2/.local/bin/claude"
+digest_cron() { env -u KASTEN_PERIODIC_PATH -u INSIGHTS_PLUGIN_DIR HOME="$T/home2" INSIGHTS_LOG_DIR="$T/log" "$@" "$here/../scripts/cron-insights.sh" "$V"; }
+digest_cron KASTEN_PERIODIC_PATH=P PAGE="$V/P/06 Insights/$Y.html"; ok "digest cron exit" $? 0
+has "digest cron skips permissions" "$(cat "$T/home2/args")" "--dangerously-skip-permissions"
+has "digest cron passes the periodic folder" "$(cat "$T/home2/args")" '--periodic "P"'
+rm "$V/P/06 Insights/$Y.html"
+digest_cron KASTEN_PERIODIC_PATH=P PAGE="$V/P/06 Insights/$Y.html" NO_PAGE=1; ok "digest cron exit with no page" $? 1
+# without the variable the wrapper looks in 01 Periodic
+rm -f "$V/01 Periodic/06 Insights/$Y.html"
+digest_cron PAGE="$V/01 Periodic/06 Insights/$Y.html"; ok "digest cron exit in the default folder" $? 0
+has "digest cron passes the default folder" "$(cat "$T/home2/args")" '--periodic "01 Periodic"'
+
 echo "$pass passed, $fail failed"
 [ "$fail" -eq 0 ]

@@ -14,7 +14,7 @@ Workbench skills for design dialogue, skill routing, and profile driven feature 
 - `test-driven-development`: Enforce test-first RED-GREEN-REFACTOR implementation discipline.
 - `subagent-driven-development`: Execute implementation plans with fresh agents and review gates; absorbs dispatching-parallel-agents' parallel dispatch rules.
 - `systematic-debugging`: Root-cause investigation before proposing bug fixes.
-- `crafting-html`: Reference gallery of 21 HTML artifact patterns for standalone HTML artifacts.
+- `crafting-html`: Reference gallery of 20 HTML artifact patterns, plus an index, for standalone HTML artifacts.
 - `crafting-design-systems`: Design systems (CSS variables, components, images) that theme HTML producers.
 
 Multi-slide presentation skills (building, perfecting, PPTX export) moved to the `presentations` plugin. `terse-mode` retires without replacement.
