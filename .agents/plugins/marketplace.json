@@ -277,6 +277,22 @@
       }
     },
     {
+      "name": "taste-skill",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/Leonxlnx/taste-skill.git"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Design",
+      "interface": {
+        "displayName": "Taste Skill",
+        "shortDescription": "Anti-slop frontend, image-to-code, and visual design skills"
+      }
+    },
+    {
       "name": "deprecated",
       "source": {
         "source": "local",

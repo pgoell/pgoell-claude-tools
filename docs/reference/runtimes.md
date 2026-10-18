@@ -34,7 +34,7 @@ Each runtime reads its own marketplace file: Claude Code reads `.claude-plugin/m
 | [session-title](/reference/plugins/session-title.md)                     | yes         | no    | no     |
 | [ponytail](/reference/plugins/ponytail.md)                               | yes         | yes   | no     |
 | [emil](/reference/plugins/emil.md)                                       | yes         | no    | no     |
-| [taste-skill](/reference/plugins/taste-skill.md)                         | yes         | no    | no     |
+| [taste-skill](/reference/plugins/taste-skill.md)                         | yes         | yes   | no     |
 | [vercel](/reference/plugins/vercel.md)                                   | yes         | no    | no     |
 | [deprecated](/reference/plugins/deprecated.md)                           | yes         | yes   | no     |
 
@@ -44,7 +44,6 @@ Each runtime reads its own marketplace file: Claude Code reads `.claude-plugin/m
 - **prose-styles**: Codex has no output-style mechanism.
 - **guards** and **session-title**: their hooks use Claude Code's hook format.
 - **emil** and **vercel**: the upstream repos ship no plugin manifest at all.
-- **taste-skill**: registered for Claude Code only. It was left out because the upstream had no Codex manifest; the upstream has since added one, so the plugin could be offered in Codex once someone tries it there.
 
 ## Why some are absent from Cursor
 

@@ -8,7 +8,7 @@ status: stable
 
 # Skills at a glance
 
-Every live skill, in marketplace order. Invoke a skill from the host agent with its full name, `/<plugin>:<skill>`, which works whatever else you have installed. Each plugin's page has more detail.
+Every live skill, in marketplace order. Invoke a skill from the host agent with its full name, `/<plugin>:<skill>`, which works whatever else you have installed. Each plugin's page has more detail. The names are Claude Code's; Codex names most taste-skill skills differently, and [taste-skill](/reference/plugins/taste-skill.md) lists both.
 
 | Skill                                                  | Plugin                                                                   | What it does                                                                                                             |
 | ------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
