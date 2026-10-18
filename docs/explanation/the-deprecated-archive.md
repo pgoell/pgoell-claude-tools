@@ -20,19 +20,19 @@ The skill is frozen. Nobody extends it or fixes it. Its references to its old si
 
 ## The four batches
 
-| Batch   | Skill                         | Formerly in       | Replaced by                                                   |
-| ------- | ----------------------------- | ----------------- | ------------------------------------------------------------- |
-| 2026-07 | `crafting-presentations`      | `workbench`       | `presentations:creating-presentations`                        |
-| 2026-07 | `perfecting-presentations`    | `workbench`       | `presentations:creating-presentations` (its perfecting phase) |
-| 2026-07 | `exporting-decks-to-pptx`     | `workbench`       | `presentations:exporting-presentations-to-pptx`               |
-| 2026-07 | `presentations`               | `writing`         | `presentations:designing-presentations`                       |
-| 2026-08 | `autopilot`, `copilot`        | `workbench`       | `workbench:pilot`                                             |
-| 2026-08 | `dispatching-parallel-agents` | `workbench`       | `workbench:subagent-driven-development`                       |
-| 2026-08 | `terse-mode`                  | `workbench`       | nothing, retired                                              |
-| 2026-09 | `writing`                     | `writing`         | `writing:ghostwrite` and `writing:coach`                      |
-| 2026-09 | `pyramid`                     | `writing`         | `writing:ghostwrite` and `writing:coach`                      |
-| 2026-09 | `tech-doc`                    | `writing`         | `writing:ghostwrite`                                          |
-| 2026-10 | `frontend-design`             | `frontend-design` | `taste-skill:taste-skill`                                     |
+| Batch   | Skill                         | Formerly in       | Replaced by                                                                            |
+| ------- | ----------------------------- | ----------------- | -------------------------------------------------------------------------------------- |
+| 2026-07 | `crafting-presentations`      | `workbench`       | `presentations:creating-presentations`                                                 |
+| 2026-07 | `perfecting-presentations`    | `workbench`       | `presentations:creating-presentations` (its perfecting phase)                          |
+| 2026-07 | `exporting-decks-to-pptx`     | `workbench`       | `presentations:exporting-presentations-to-pptx`                                        |
+| 2026-07 | `presentations`               | `writing`         | `presentations:designing-presentations`                                                |
+| 2026-08 | `autopilot`, `copilot`        | `workbench`       | `workbench:pilot`                                                                      |
+| 2026-08 | `dispatching-parallel-agents` | `workbench`       | `workbench:subagent-driven-development`                                                |
+| 2026-08 | `terse-mode`                  | `workbench`       | nothing, retired                                                                       |
+| 2026-09 | `writing`                     | `writing`         | `writing:ghostwrite` and `writing:coach`                                               |
+| 2026-09 | `pyramid`                     | `writing`         | `writing:ghostwrite` and `writing:coach`                                               |
+| 2026-09 | `tech-doc`                    | `writing`         | `writing:ghostwrite`                                                                   |
+| 2026-10 | `frontend-design`             | `frontend-design` | `taste-skill:taste-skill` in Claude Code, `taste-skill:design-taste-frontend` in Codex |
 
 The 2026-10 batch retired a whole plugin. The archived `frontend-design` skill is an Anthropic Apache 2.0 port, so its `LICENSE` moved into `deprecated` with it, and a new `deprecated` `NOTICE` carries over its block of the old plugin's `NOTICE`.
 
@@ -53,4 +53,4 @@ How each batch went:
 - **2026-07:** `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx` (from workbench 0.22.0) and `presentations` (from writing 2.0.0), all superseded by the `presentations` plugin. The branded example deck did not move with `crafting-presentations`; its de-branded successor became the presentations plugin's `default` preset.
 - **2026-08:** `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode` (from workbench 0.22.0, superseded by workbench 1.0.0). `autopilot` and `copilot` gave way to `workbench:pilot`, whose `Gates:` profile row picks the old autopilot or copilot behavior. `dispatching-parallel-agents` gave way to the `## Parallel dispatch` section of `workbench:subagent-driven-development`. `terse-mode` retired without replacement.
 - **2026-09:** `writing`, `pyramid`, `tech-doc` (from writing 2.0.0, superseded by writing 3.0.0). `writing` gave way to `writing:ghostwrite` (drafting) and `writing:coach` (learning to write), `pyramid` to the pyramid audits in `ghostwrite` and the Socratic structure drill in `coach`, and `tech-doc` to `ghostwrite`'s tech-doc route. Their kept parts (interview rules, throughline gate, pyramid audits, Diátaxis quadrants, reference schemas, three argument critics) were rewritten into the new skills' `references/`, not moved.
-- **2026-10:** `frontend-design` (the Anthropic Apache-2.0 port), superseded by the external `taste-skill:taste-skill`. The whole `frontend-design` plugin retired and left both marketplaces, so its `LICENSE` moved into `plugins/deprecated/` with the skill, and a new `plugins/deprecated/NOTICE` carries over the skill's block of the old `NOTICE` (the `emil-design-eng` block left with that port). That made `deprecated` the first archive to carry port attribution.
+- **2026-10:** `frontend-design` (the Anthropic Apache-2.0 port), superseded by the external `taste-skill:taste-skill` (in Codex, `taste-skill:design-taste-frontend`). The whole `frontend-design` plugin retired and left both marketplaces, so its `LICENSE` moved into `plugins/deprecated/` with the skill, and a new `plugins/deprecated/NOTICE` carries over the skill's block of the old `NOTICE` (the `emil-design-eng` block left with that port). That made `deprecated` the first archive to carry port attribution.
