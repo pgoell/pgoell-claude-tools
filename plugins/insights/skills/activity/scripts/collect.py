@@ -102,9 +102,10 @@ def repo_of(cwd: str, code: Path, known: dict, private: list[str]) -> str:
     top = run(["git", "-C", cwd, "rev-parse", "--path-format=absolute", "--git-common-dir"]) if Path(cwd).is_dir() else None
     if top and Path(top.strip()).parent.name in known and Path(top.strip()).parent.parent == code:
         return Path(top.strip()).parent.name
-    # A worktree that is gone: <repo>/.worktrees/x, <repo>/.claude/worktrees/x or <repo>-wt/x.
+    # A worktree that is gone: .worktrees/<repo>/x, <repo>/.worktrees/x, <repo>/.claude/worktrees/x or <repo>-wt/x.
     try:
-        first = Path(cwd).relative_to(code).parts[0]
+        parts = Path(cwd).relative_to(code).parts
+        first = parts[1] if parts[0] == ".worktrees" else parts[0]
     except (ValueError, IndexError):
         return "other"
     if first in known:

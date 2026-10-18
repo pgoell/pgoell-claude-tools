@@ -81,6 +81,7 @@ def kind_of(text: str) -> str:
 def project_of(cwd: str, folder: str, private: list[str]) -> str:
     if not cwd:
         return folder.replace("-home-pascal-Code-", "").replace("-home-pascal-", "")
+    cwd = re.sub(r"^(.*/Code)/\.worktrees/([^/]+).*", r"\1/\2", cwd)
     cwd = re.split(r"/\.(?:claude/)?worktrees/", cwd)[0]
     if any(cwd == p or cwd.startswith(p + "/") for p in private):
         return "vault"
