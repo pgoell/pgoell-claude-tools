@@ -23,4 +23,4 @@ Installing this plugin alongside `presentations` duplicates the triggering surfa
 
 ## Credits
 
-`skills/frontend-design/SKILL.md` comes from Anthropic's [`frontend-design`](https://github.com/anthropics/claude-plugins/tree/main/plugins/frontend-design) plugin by Prithvi Rajasekaran and Alexander Bricken, licensed under Apache 2.0. See `NOTICE`. Original additions in this plugin are MIT (`LICENSE`).
+`skills/frontend-design/SKILL.md` comes from the [`frontend-design`](https://github.com/anthropics/skills/tree/ef740771ac901e03fbca3ce4e1c453a96010f30a/skills/frontend-design) skill in Anthropic's `anthropics/skills` repository by Prithvi Rajasekaran and Alexander Bricken, licensed under Apache 2.0. See `NOTICE`, which pins the commit. Original additions in this plugin are MIT (`LICENSE`).
