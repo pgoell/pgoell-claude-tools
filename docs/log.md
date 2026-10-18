@@ -2,6 +2,7 @@
 
 ## 2026-10-18
 
+- **Update**: `reference/runtimes.md`, `reference/plugins/taste-skill.md`, `explanation/external-and-vendored-plugins.md` and `explanation/shared-skills.md`: the external `taste-skill` plugin is now in the Codex marketplace too, since upstream ships a Codex manifest. Cursor still leaves it out. The plugin page says Codex names its skills after the frontmatter `name:`.
 - **Update**: agent-system-management 0.6.3, playground 0.1.3, writing 3.1.2. Every `github.com/anthropics` link under `plugins/` now points at a commit SHA instead of `main` or the repo root; the agent-system-management `NOTICE` names the `skill-creator` commit its port matches. No page under `docs/` changed.
 - **Update**: agent-system-management 0.6.2. Its README Credits and `NOTICE` link `claude-md-management` in `anthropics/claude-plugins-official` at a pinned commit instead of the dead `anthropics/claude-plugins` repo. No page under `docs/` changed.
 - **Update**: `reference/plugins/deprecated.md` and `explanation/ports-and-licenses.md`: the archived `frontend-design` port now links `anthropics/skills` at a pinned commit instead of the dead `anthropics/claude-plugins` repo (deprecated 0.4.2).

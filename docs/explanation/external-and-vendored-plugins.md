@@ -22,7 +22,7 @@ A vendored plugin's files sit in this repository. Every change to it goes throug
 | ------------- | ----------------------------------------------------------------------- | --------------------- |
 | `ponytail`    | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail)   | Claude Code and Codex |
 | `emil`        | [emilkowalski/skill](https://github.com/emilkowalski/skill)             | Claude Code           |
-| `taste-skill` | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill)         | Claude Code           |
+| `taste-skill` | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill)         | Claude Code and Codex |
 | `vercel`      | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) | Claude Code           |
 
 All four are MIT licensed. This shape fits when an upstream is permissive and you want its whole surface (skills, commands, hooks) as its author ships it, not a copy of the skill text.
@@ -33,7 +33,7 @@ None of the entries pins a commit or a version. When you refresh the marketplace
 - Code you have not reviewed runs on your machine after a refresh. `ponytail`, for example, ships hooks that run in every session. If that matters to you, read the upstream change before you update.
 - This repository's rules (the dash lint, the version lockstep, the frontmatter checks) do not cover upstream files, because none are copied here.
 
-`emil`, `taste-skill` and `vercel` are Claude Code only. `emil` and `vercel` ship no plugin manifest at all; `taste-skill` shipped none for Codex when it was added, and upstream has added one since without the marketplace registering it.
+`emil` and `vercel` are Claude Code only: they ship no plugin manifest at all. `taste-skill` shipped no Codex manifest when it was added; upstream added one on 2026-10-13, and the Codex marketplace has listed it since 2026-10-18.
 
 ## Ports with attribution
 
@@ -66,7 +66,7 @@ Four consequences:
 
 The docs sites for a new plugin still apply, minus any `plugins/<name>/README.md`, since there is no local folder.
 
-Two later entries (2026-10) break the both-runtimes condition and sit in `.claude-plugin/marketplace.json` only, with [Runtimes](/reference/runtimes.md) saying why, the same shape `prose-styles` uses. `taste-skill` (`Leonxlnx/taste-skill`, MIT, added for trial) shipped only `.claude-plugin/plugin.json`. `emil` (`emilkowalski/skill`, MIT) ships no manifest at all, so its entry sets `"strict": false`: the marketplace entry serves as the manifest and Claude Code finds `skills/` by convention. A third, `vercel` (`vercel-labs/agent-skills`), has the same no-manifest shape. Its license is MIT per the repo README and skill frontmatter, with no `LICENSE` file; that is fine for a linked plugin because nothing is vendored, but a port would need the LICENSE file read first.
+Two later entries (2026-10) broke the both-runtimes condition and went into `.claude-plugin/marketplace.json` only, with [Runtimes](/reference/runtimes.md) saying why, the same shape `prose-styles` uses. `taste-skill` (`Leonxlnx/taste-skill`, MIT, added for trial) shipped only `.claude-plugin/plugin.json`. Upstream added `.codex-plugin/plugin.json` on 2026-10-13, so on 2026-10-18 it joined `.agents/plugins/marketplace.json` as well. `emil` (`emilkowalski/skill`, MIT) ships no manifest at all, so its entry sets `"strict": false`: the marketplace entry serves as the manifest and Claude Code finds `skills/` by convention. A third, `vercel` (`vercel-labs/agent-skills`), has the same no-manifest shape. Its license is MIT per the repo README and skill frontmatter, with no `LICENSE` file; that is fine for a linked plugin because nothing is vendored, but a port would need the LICENSE file read first.
 
 Claude Code names a plugin skill after its folder, not its frontmatter `name:`. This was checked at install: taste-skill's `skills/taste-skill/` with `name: design-taste-frontend` loads as `taste-skill:taste-skill`. So docs name external skills by folder. Upstream skills with `disable-model-invocation: true` (three in `emil`) run only as slash commands.
 
