@@ -65,4 +65,4 @@ Not for the loop: <issues that need the user, a real device, or a decision; say 
 3. List the sessions and the open issues. Confirm the implementer's state.
 4. <If a task runs: start wait.sh for token X; the task began at <time> and wait.sh has <not> said TIMEOUT for it, so watch its age yourself. If not: send queue item 1 with next.sh, then start wait.sh.>
 5. Tell the user in three lines that you have taken over and what runs.
-6. Keep the loop going unattended. Hand over on your own at about 150k tokens of context.
+6. Keep the loop going unattended. Hand over on your own at the first break between tasks past 120k tokens of context, or past 150k at any time.

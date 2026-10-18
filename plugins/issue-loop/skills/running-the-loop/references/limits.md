@@ -26,7 +26,8 @@ The review's line: the loop is fast and honest, and its checks hold for logic.
 
 - 45 to 100 minutes per task, about 69 on average over 19 tasks.
 - About 25 to 30 dollars per task at list prices (read from the session's own status line; a guess as a total).
-- The orchestrator's context filled to over 200k tokens before the first planned handover. Hand over at 150k.
+- The orchestrator's context filled to over 200k tokens before the first planned handover. Past about 150k it forgot standing orders, so 150k is the ceiling.
+- Over 14 orchestrator sessions (2,255 calls, 140 dollars at list prices), a call cost the least on average with a handover at about 120k; the curve is flat from 110k to 155k. Cache misses after a task that outlasted the 1-hour cache made up 27% of the cost. `tests/handover-cost.py` measures this again.
 
 ## Nobody uses the product
 

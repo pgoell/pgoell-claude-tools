@@ -1,6 +1,6 @@
 ---
 name: handing-over
-description: Use when the orchestrator of an issue loop must pass the loop to a fresh session, because its context nears 150k tokens or the user says "hand over", "start a fresh orchestrator", or "your context is full, pass it on". Rewrites the handoff file with the successor's name in it, starts the successor in auto mode in the loop folder, sends a first message that points at the user's standing order, and checks the successor took over without asking the user for a go. Not for starting a loop (use running-the-loop).
+description: Use when the orchestrator of an issue loop must pass the loop to a fresh session, because its context passed 120k tokens at a break between tasks, or 150k at any time, or the user says "hand over", "start a fresh orchestrator", or "your context is full, pass it on". Rewrites the handoff file with the successor's name in it, starts the successor in auto mode in the loop folder, sends a first message that points at the user's standing order, and checks the successor took over without asking the user for a go. Not for starting a loop (use running-the-loop).
 ---
 
 # Handing Over
@@ -9,9 +9,11 @@ An orchestrator's context fills up. Past about 150k tokens it forgets standing o
 
 ## When
 
-- On your own at about 150k tokens of context. Do not wait to be told: on the example project the first orchestrator reached over 200k, and the user had to order the handover.
+- On your own at the first break between tasks past 120k tokens of context: `gate.sh` prints `HAND OVER` then. Do not wait to be told: on the example project the first orchestrator reached over 200k, and the user had to order the handover.
+- On your own past 150k, also while a task runs (`gate.sh` prints `HAND OVER NOW`): the successor only has to start `wait.sh` with the right token. Say so in the file.
 - At once when the user says so.
-- Best between tasks. If a task runs, hand over anyway: the successor only has to start `wait.sh` with the right token. Say so in the file.
+
+Why 120k: it is the cheapest point per call, measured over 14 orchestrator sessions. Each call rereads the whole context from cache, so calls cost more as it grows; a handover costs the successor's first cache write of its start context (about 52k) plus the calls spent on it; and when a task outlasts the 1-hour cache, the next call writes the whole context again, which made up 27% of the cost. The curve is flat from about 110k to 155k. To check it again with newer transcripts, prices or models, run `uv run tests/handover-cost.py <transcripts>` from the plugin folder.
 
 ## How
 
