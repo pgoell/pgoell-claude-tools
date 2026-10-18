@@ -353,7 +353,7 @@ test -n "${ATLASSIAN_API_TOKEN:-}" && echo "ATLASSIAN_API_TOKEN is set" || echo 
 command -v acli && acli jira auth status
 ```
 
-If acli reports a login, you may run the task through acli's fallback commands meanwhile; otherwise ignore the acli check.
+If `acli jira auth status` exits 0, acli is logged in: a bulk transition or sprint command may still go through acli while curl fails. Every other task waits for curl to work. If it exits non-zero or acli is missing, ignore the acli check.
 
 If all three variables are set and curl returns 401, tell the user: "Jira refused the email and token. Check `ATLASSIAN_EMAIL`, or make a new token at https://id.atlassian.com/manage/api-tokens and update `ATLASSIAN_API_TOKEN`." On 403, tell the user their account lacks permission for that project or action. Retry the curl call once the user has fixed it. If any variable is missing, tell the user:
 
