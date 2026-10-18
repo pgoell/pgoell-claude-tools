@@ -136,20 +136,23 @@ for `ccusage`. To run both every morning, at 05:30 and 05:45 Europe/Berlin,
 before the 06:00 newspaper, add these lines to the crontab:
 
 ```text
-30 5 * * * /home/pascal/Code/pgoell-claude-tools/plugins/insights/scripts/cron-insights.sh /home/pascal/kasten-data/vault
-45 5 * * * /home/pascal/Code/pgoell-claude-tools/plugins/insights/scripts/cron-activity.sh /home/pascal/kasten-data/vault
+30 5 * * * /path/to/plugins/insights/scripts/cron-insights.sh /path/to/vault
+45 5 * * * /path/to/plugins/insights/scripts/cron-activity.sh /path/to/vault
 ```
 
-The first wrapper runs `claude -p "/insights:digest --vault <vault> --date <yesterday>"`
-with the tools the job needs allowed, logs to
-`~/.local/state/insights/<date>.log` (`INSIGHTS_LOG_DIR` changes that;
-`INSIGHTS_PLUGIN_DIR` loads the plugin from a working tree to test a change),
-and exits non-zero when claude fails or no page was written. Cron uses the
-host's time zone; on a host not set to Europe/Berlin, add
+The first wrapper runs
+`claude -p "/insights:digest --vault <vault> --periodic <periodic> --date <yesterday>"`
+with `--dangerously-skip-permissions`, since nobody is there to answer a
+prompt. It logs to `~/.local/state/insights/<date>.log` (`INSIGHTS_LOG_DIR`
+changes that; `INSIGHTS_PLUGIN_DIR` loads the plugin from a working tree to
+test a change), and exits non-zero when claude fails or no page was written.
+Cron uses the host's time zone; on a host not set to Europe/Berlin, add
 `CRON_TZ=Europe/Berlin` above the line.
-`cron-activity.sh` does the same for `/insights:activity`, allows the model
-only `Read`, `Write` and `uv run`, stops after 30 minutes, and logs to
-`~/.local/state/insights/<date>-activity.log`.
+`cron-activity.sh` does the same for `/insights:activity`, also with
+permissions skipped, stops after 30 minutes, and logs to
+`~/.local/state/insights/<date>-activity.log`. `KASTEN_PERIODIC_PATH` names
+the periodic folder for both wrappers (`01 Periodic` when unset); each passes
+it to its skill and looks for its page there.
 
 ## Tests
 
@@ -160,10 +163,14 @@ on the default branch only), the fold of a removed worktree into its repo,
 the private folder, the skipped own run, torn transcript lines, the CI rule,
 the ledger parsing and its repo mapping, every check `render.py` makes, the
 daily note block (a rerun changes only its own lines; frontmatter, todos, the
-user's bullets and a mention under a heading stay), the cron wrapper's tool
-list, and a run with `gh` and `ccusage` down.
+user's bullets and a mention under a heading stay), a run with `gh` and
+`ccusage` down, and both cron wrappers, `cron-activity.sh` and
+`cron-insights.sh`: each skips permissions, passes the folder from
+`KASTEN_PERIODIC_PATH` as `--periodic`, and exits 1 when no page was
+written; `cron-insights.sh` also looks in `01 Periodic` when the variable is
+unset.
 
-Last run, 2026-10-10: 66 of 66 checks pass.
+Last run, 2026-10-18: 72 of 72 checks pass.
 
 The digest and apply skills have no test.
 

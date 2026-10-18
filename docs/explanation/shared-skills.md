@@ -28,7 +28,7 @@ Nobody writes the Cursor files by hand. `mise run sync-cursor-manifests` builds 
 
 A plugin stays out of a runtime's marketplace when it would not work there. Four local plugins ship to Claude Code alone, for three reasons:
 
-- **It drives Claude Code itself.** `issue-loop` has one session type `/clear` into another Claude Code session, start sessions with `--permission-mode auto`, and answer Claude Code's own dialogs. Nobody has run it under Codex or Cursor, so neither lists it.
+- **It drives Claude Code itself.** `issue-loop` has one session type `/clear` into another Claude Code session, start sessions with `--permission-mode bypassPermissions` (or `auto` when `loop.env` sets `PERMISSION_MODE=auto`), and answer Claude Code's own dialogs. Nobody has run it under Codex or Cursor, so neither lists it.
 - **It ships output styles.** `prose-styles` has no skills, only Claude Code output styles. Codex and Cursor have no output-style mechanism.
 - **It ships Claude Code hooks.** `guards` and `session-title` use Claude Code's hook format. Neither has a port to another runtime's hooks.
 

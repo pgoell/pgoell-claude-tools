@@ -20,6 +20,7 @@ mkdir -p "$LOG_DIR"
 TODAY="$(TZ=Europe/Berlin date +%F)"
 DAY="$(TZ=Europe/Berlin date -d yesterday +%F)"
 LOG="$LOG_DIR/$TODAY.log"
+PERIODIC="${KASTEN_PERIODIC_PATH:-01 Periodic}"
 
 cd "$VAULT" || exit 1
 echo "== $(date -Is) insights for $DAY in $VAULT" >>"$LOG"
@@ -29,13 +30,13 @@ PLUGIN=()
 
 # -p prompts nobody, so the session runs with permissions skipped.
 # insights-self-run marks this session, so tomorrow's extract skips it.
-claude -p "/insights:digest --vault \"$VAULT\" --date $DAY insights-self-run" "${PLUGIN[@]}" \
+claude -p "/insights:digest --vault \"$VAULT\" --periodic \"$PERIODIC\" --date $DAY insights-self-run" "${PLUGIN[@]}" \
   --dangerously-skip-permissions \
   >>"$LOG" 2>&1
 status=$?
 
 # claude can exit 0 without having written the page; the file is the real check.
-PAGE="$VAULT/${INSIGHTS_PERIODIC:-01 Periodic}/06 Insights/$DAY.html"
+PAGE="$VAULT/$PERIODIC/06 Insights/$DAY.html"
 if [ "$status" -eq 0 ] && [ ! -s "$PAGE" ]; then
   echo "== no page at $PAGE" >>"$LOG"
   status=1

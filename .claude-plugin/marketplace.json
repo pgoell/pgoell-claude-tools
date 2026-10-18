@@ -8,7 +8,7 @@
       "name": "atlassian",
       "source": "./plugins/atlassian",
       "description": "Use Jira and Confluence from agent workflows.",
-      "version": "2.0.2"
+      "version": "2.0.3"
     },
     {
       "name": "google-workspace",
@@ -44,7 +44,7 @@
       "name": "workbench",
       "source": "./plugins/workbench",
       "description": "Personal Workbench skills for design and autonomous feature work.",
-      "version": "1.1.1"
+      "version": "1.1.2"
     },
     {
       "name": "terminal",
@@ -92,19 +92,19 @@
       "name": "news",
       "source": "./plugins/news",
       "description": "Build a personal daily newspaper in a kasten vault, linked from the daily note, shaped by your feedback.",
-      "version": "0.6.0"
+      "version": "0.6.1"
     },
     {
       "name": "insights",
       "source": "./plugins/insights",
       "description": "Find what went wrong in yesterday's Claude Code sessions and newspaper runs, with one concrete fix per problem on a page in a kasten vault.",
-      "version": "0.4.0"
+      "version": "0.4.1"
     },
     {
       "name": "issue-loop",
       "source": "./plugins/issue-loop",
       "description": "Run an unattended build loop: one orchestrator session drives one implementer session through a repo's GitHub issues, one merged and deployed PR per task, with a gate between tasks.",
-      "version": "0.5.0"
+      "version": "0.5.1"
     },
     {
       "name": "prose-styles",

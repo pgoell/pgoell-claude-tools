@@ -15,7 +15,7 @@ Do NOT check authentication upfront. Just run the command. If it fails with an a
 
 ## Tool Preference
 
-**Prefer raw curl for all operations.** `acli` has limited Confluence coverage (page view by ID, space list/view only) — fall back to it only for those read operations if curl fails. All write operations require curl.
+**Prefer raw curl for all operations.** `acli` has limited Confluence coverage (page view by ID, space list/view only), so fall back to it only for those read operations if curl fails. All write operations require curl.
 
 ### Curl base URLs
 
@@ -34,11 +34,11 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
   "https://$ATLASSIAN_DOMAIN.atlassian.net/wiki/api/v2/..."
 ```
 
-## Operations — Read
+## Operations: Read
 
 ### Search pages (CQL)
 
-**curl** (v1 API) — acli does not support CQL search.
+**curl** (v1 API): acli does not support CQL search.
 
 ```bash
 curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
@@ -116,7 +116,7 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
   "https://$ATLASSIAN_DOMAIN.atlassian.net/wiki/api/v2/pages/{id}/footer-comments"
 ```
 
-## Operations — Write
+## Operations: Write
 
 All write operations require curl. acli does not support Confluence page create, update, or comments.
 
@@ -145,7 +145,7 @@ See `storage-format.md` for how to construct the body value.
 
 ### Update page
 
-**curl** — You MUST GET the page first to obtain the current version number, then PUT with `version.number + 1`.
+**curl**: You MUST GET the page first to obtain the current version number, then PUT with `version.number + 1`.
 
 ```bash
 # Step 1: GET current page (note the version number in the response)
@@ -220,7 +220,7 @@ If an API call or acli command fails:
 
 ### Auth Errors (401, 403, or "not authenticated")
 
-Check which auth paths are available — **never print token or credential values**:
+Check which auth paths are available, but **never print token or credential values**:
 
 ```bash
 # Check if env vars are set (NOT their values)
@@ -231,8 +231,10 @@ test -n "${ATLASSIAN_API_TOKEN:-}" && echo "ATLASSIAN_API_TOKEN is set" || echo 
 
 ```bash
 # Check acli (optional)
-command -v acli && acli auth status
+command -v acli && acli jira auth status
 ```
+
+acli's command reference lists no Confluence login, only `acli jira auth`, so the Jira login is what acli checks.
 
 If neither auth path is available, tell the user:
 

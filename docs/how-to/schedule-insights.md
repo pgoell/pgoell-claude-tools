@@ -8,7 +8,7 @@ status: stable
 
 # Schedule insights
 
-`/insights:digest` writes the day's problems and proposed fixes under `<periodic>/06 Insights/`, and `/insights:activity` writes what the agents did under `<periodic>/07 Activity/`, both in a kasten vault. This page runs them at 05:30 and 05:45, before the 06:00 newspaper, so all three links land in the same daily note.
+`/insights:digest` writes the day's problems and proposed fixes under `<periodic>/06 Insights/`, and `/insights:activity` writes what the agents did under `<periodic>/07 Activity/`, both in a kasten vault. This page runs them at 05:30 and 05:45, before the 06:00 newspaper, so all three links land in the same daily note. The periodic folder is `01 Periodic` unless `KASTEN_PERIODIC_PATH` names another; each wrapper passes it to its skill and looks for its page there.
 
 ## Before you start
 
@@ -34,7 +34,7 @@ Each wrapper runs its skill for yesterday through `claude -p` with permissions s
 ## Check it worked
 
 - Run a wrapper by hand once: `<clone>/plugins/insights/scripts/cron-insights.sh <vault>`.
-- The pages `<vault>/01 Periodic/06 Insights/<yesterday>.html` and `.../07 Activity/<yesterday>.html` exist, linked from today's daily note.
+- The pages `<vault>/<periodic>/06 Insights/<yesterday>.html` and `.../07 Activity/<yesterday>.html` exist, linked from today's daily note.
 - Logs are in `~/.local/state/insights/`: `<date>.log` for the digest and `<date>-activity.log` for the activity page (`INSIGHTS_LOG_DIR` moves them). A wrapper exits non-zero when claude fails or wrote no page.
 
 After you review a digest, `/insights:apply` carries out the fixes you kept. See [the insights reference page](/reference/plugins/insights.md) and the [plugin README](../../plugins/insights/README.md).

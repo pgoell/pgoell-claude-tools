@@ -1,6 +1,6 @@
 ---
 name: handing-over
-description: Use when the orchestrator of an issue loop must pass the loop to a fresh session, because its context passed 120k tokens at a break between tasks, or 150k at any time, or the user says "hand over", "start a fresh orchestrator", or "your context is full, pass it on". Rewrites the handoff file with the successor's name in it, starts the successor in auto mode in the loop folder, sends a first message that points at the user's standing order, and checks the successor took over without asking the user for a go. Not for starting a loop (use running-the-loop).
+description: Use when the orchestrator of an issue loop must pass the loop to a fresh session, because its context passed 120k tokens at a break between tasks, or 150k at any time, or the user says "hand over", "start a fresh orchestrator", or "your context is full, pass it on". Rewrites the handoff file with the successor's name in it, starts the successor in the loop folder in the permission mode from loop.env (bypassPermissions by default), sends a first message that points at the user's standing order, and checks the successor took over without asking the user for a go. Not for starting a loop (use running-the-loop).
 ---
 
 # Handing Over
@@ -50,7 +50,7 @@ Write the first message to a file and start a session whose working folder is th
 ./start.sh <new name> "$PWD" "orchestrator <n>" first-message.txt
 ```
 
-`start.sh` starts it in the mode `loop.env` names (`PERMISSION_MODE`), waits, reads the screen for a start dialog, sends the message, and answers a go-ahead question only if the folder is the loop folder, it holds the standing order, and `HANDOFF.md` names the session as the successor. It never answers a screen that says `TAKEOVER FAIL` or `STOPPED`. It must print `working` and exit 0. Exit 5 means a start dialog shows and nothing was sent; exit 1 means the session is gone.
+`start.sh` starts it in the mode `loop.env` names (`PERMISSION_MODE`): `bypassPermissions` by default, `auto` when the user set it there. It waits, reads the screen for a start dialog, sends the message, and answers a go-ahead question only if the folder is the loop folder, it holds the standing order, and `HANDOFF.md` names the session as the successor. It never answers a screen that says `TAKEOVER FAIL` or `STOPPED`. It must print `working` and exit 0. Exit 5 means a start dialog shows and nothing was sent; exit 1 means the session is gone.
 
 The first message, with your words in the angle brackets and nothing else changed:
 

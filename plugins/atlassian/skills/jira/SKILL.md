@@ -19,7 +19,7 @@ Do NOT check authentication upfront. Just run the command. If it fails with an a
 
 ## Tool Preference
 
-**Prefer raw curl for all operations.** It has the fewest dependencies and the clearest behavior. Only fall back to `acli` for the handful of things curl can't do ergonomically — bulk transitions (`--jql` + `--yes`) and some sprint operations.
+**Prefer raw curl for all operations.** It has the fewest dependencies and the clearest behavior. Only fall back to `acli` for the handful of things curl can't do ergonomically: bulk transitions (`--jql` + `--yes`) and some sprint operations.
 
 Pattern for all curl requests:
 
@@ -37,7 +37,7 @@ For write operations, add:
 
 ---
 
-## Operations — Tier 1 (Read)
+## Operations: Tier 1 (Read)
 
 ### Search Issues
 
@@ -123,7 +123,7 @@ For sprint operations without acli, use the Jira Agile REST API (`/rest/agile/1.
 
 ---
 
-## Operations — Tier 2 (Write)
+## Operations: Tier 2 (Write)
 
 ### Create Issue
 
@@ -131,11 +131,11 @@ For sprint operations without acli, use the Jira Agile REST API (`/rest/agile/1.
 
 > Do you have a ticket template or writing guide you'd like me to follow (e.g., a team standard for Description + Acceptance Criteria)?
 >
-> If not, I can use the default template in `ticket-template.md` — it structures Context, Deliverable, Scope, Stakeholders, Timebox, References, and Acceptance Criteria checkboxes.
+> If not, I can use the default template in `ticket-template.md`. It structures Context, Deliverable, Scope, Stakeholders, Timebox, References, and Acceptance Criteria checkboxes.
 
 If the user has their own template, follow it. If they opt into the default (or don't have one), read `ticket-template.md` and structure the `--summary`, `--description`, and acceptance criteria fields according to it. For trivial bug reports or quick one-line tasks, skip the prompt unless the user explicitly asks for a structured ticket.
 
-**curl** (requires ADF body for description — see `adf-format.md`):
+**curl** (requires ADF body for description, see `adf-format.md`):
 
 ```bash
 curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
@@ -161,7 +161,7 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
 }'
 ```
 
-**acli (fallback, plain text — no ADF needed):**
+**acli (fallback, plain text, no ADF needed):**
 
 ```bash
 acli jira workitem create \
@@ -225,7 +225,7 @@ acli jira workitem edit --key KEY-123 --summary "Updated summary" --description 
 
 ---
 
-## Operations — Tier 3 (Workflow)
+## Operations: Tier 3 (Workflow)
 
 ### Transition Issue
 
@@ -329,7 +329,7 @@ See `ticket-template.md` for the default structure to use when creating user sto
 
 See `adf-format.md` for the Atlassian Document Format reference.
 
-ADF is required for curl write operations (create issue descriptions, add comments, update descriptions). When falling back to `acli`, pass plain text directly — no ADF required.
+ADF is required for curl write operations (create issue descriptions, add comments, update descriptions). When falling back to `acli`, pass plain text directly; no ADF required.
 
 ---
 
@@ -339,12 +339,7 @@ When an API call or acli command fails:
 
 ### Auth Errors (401, 403, or "not authenticated")
 
-Check which auth paths are available — **never print token or credential values**:
-
-```bash
-# Check if acli is available and authenticated
-command -v acli && acli auth status
-```
+Check which auth paths are available, but **never print token or credential values**:
 
 ```bash
 # Check if env vars are set (NOT their values)
@@ -353,21 +348,26 @@ test -n "${ATLASSIAN_EMAIL:-}" && echo "ATLASSIAN_EMAIL is set" || echo "ATLASSI
 test -n "${ATLASSIAN_API_TOKEN:-}" && echo "ATLASSIAN_API_TOKEN is set" || echo "ATLASSIAN_API_TOKEN is NOT set"
 ```
 
-If neither auth path is available, tell the user:
+```bash
+# Check acli (optional fallback)
+command -v acli && acli jira auth status
+```
 
-> I cannot connect to Jira. You need one of these:
+If `acli jira auth status` exits 0, acli is logged in: a bulk transition or sprint command may still go through acli while curl fails. Every other task waits for curl to work. If it exits non-zero or acli is missing, ignore the acli check.
+
+If all three variables are set and curl returns 401, tell the user: "Jira refused the email and token. Check `ATLASSIAN_EMAIL`, or make a new token at https://id.atlassian.com/manage/api-tokens and update `ATLASSIAN_API_TOKEN`." On 403, tell the user their account lacks permission for that project or action. Retry the curl call once the user has fixed it. If any variable is missing, tell the user:
+
+> I cannot connect to Jira. Set these environment variables:
 >
-> **Option A (recommended):** Install and authenticate the Atlassian CLI:
+> - `ATLASSIAN_DOMAIN`: your subdomain (e.g., `mycompany` for `mycompany.atlassian.net`)
+> - `ATLASSIAN_EMAIL`: your Atlassian account email
+> - `ATLASSIAN_API_TOKEN`: generate one at https://id.atlassian.com/manage/api-tokens
+>
+> Optional: for bulk transitions and sprint commands, also install the Atlassian CLI and log in:
 >
 > ```
-> acli auth login
+> acli jira auth login --web
 > ```
->
-> **Option B:** Set these environment variables:
->
-> - `ATLASSIAN_DOMAIN` — your subdomain (e.g., `mycompany` for `mycompany.atlassian.net`)
-> - `ATLASSIAN_EMAIL` — your Atlassian account email
-> - `ATLASSIAN_API_TOKEN` — generate one at https://id.atlassian.com/manage/api-tokens
 
 ### Other Errors
 

@@ -18,6 +18,7 @@ LOG_DIR="${NEWS_LOG_DIR:-$HOME/.local/state/news}"
 mkdir -p "$LOG_DIR"
 DAY="$(TZ=Europe/Berlin date +%F)"
 LOG="$LOG_DIR/$DAY.log"
+PERIODIC="${KASTEN_PERIODIC_PATH:-01 Periodic}"
 
 cd "$VAULT" || exit 1
 echo "== $(date -Is) edition $DAY for $VAULT" >>"$LOG"
@@ -26,13 +27,13 @@ PLUGIN=()
 [ -n "${NEWS_PLUGIN_DIR:-}" ] && PLUGIN=(--plugin-dir "$NEWS_PLUGIN_DIR")
 
 # -p prompts nobody, so the session runs with permissions skipped.
-claude -p "/news:edition --vault \"$VAULT\" --date $DAY" "${PLUGIN[@]}" \
+claude -p "/news:edition --vault \"$VAULT\" --periodic \"$PERIODIC\" --date $DAY" "${PLUGIN[@]}" \
   --dangerously-skip-permissions \
   >>"$LOG" 2>&1
 status=$?
 
 # claude can exit 0 without having written the paper; the file is the real check.
-EDITION="$VAULT/${NEWS_PERIODIC:-01 Periodic}/05 Newspaper/$DAY.html"
+EDITION="$VAULT/$PERIODIC/05 Newspaper/$DAY.html"
 if [ "$status" -eq 0 ] && [ ! -s "$EDITION" ]; then
   echo "== no edition at $EDITION" >>"$LOG"
   status=1

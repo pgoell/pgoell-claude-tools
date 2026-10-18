@@ -39,7 +39,7 @@ marked **checked** and refuses to render until they hold.
       "destination_note": "a PreToolUse hook",
       "action": "Opens a PR",
       "target": {
-        "repo": "/home/pascal/Code/pgoell-claude-tools",
+        "repo": "/path/to/repo",
         "path": "plugins/guards/hooks/"
       },
       "evidence": ["0c8b4522 19:47", "13b1f03f"]
