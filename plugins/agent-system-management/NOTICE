@@ -2,12 +2,18 @@ agent-system-management
 Copyright 2026 Pascal Göllner
 
 This plugin contains content derived from Anthropic's claude-md-management
-plugin (https://github.com/anthropics/claude-plugins), authored by Isabella He,
-licensed under the Apache License, Version 2.0:
+plugin, authored by Isabella He, licensed under the Apache License, Version 2.0.
+Upstream: https://github.com/anthropics/claude-plugins-official/tree/ea10b213686c90bb1984b2016937310e05336cf3/plugins/claude-md-management
+(commit ea10b213686c90bb1984b2016937310e05336cf3; its plugin LICENSE file is
+Apache 2.0). The original port linked the anthropics/claude-plugins repo, which no
+longer exists; the upstream text at this commit is what the port took.
+Since the port, the "verbatim" files below were reformatted by dprint, and
+quality-criteria.md gained two local checks (bare prohibitions, constraint
+accretion) that are original MIT work:
 
   - skills/improving-instructions/SKILL.md
       (workflow phases, quality rubric structure, report format)
-  - skills/improving-instructions/references/quality-criteria.md (verbatim)
+  - skills/improving-instructions/references/quality-criteria.md (verbatim, plus two local checks)
   - skills/improving-instructions/references/templates.md         (verbatim)
   - skills/improving-instructions/references/update-guidelines.md (verbatim)
   - skills/capturing-session-learnings/SKILL.md
