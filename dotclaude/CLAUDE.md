@@ -2,6 +2,7 @@
 
 - Never add AI attribution lines to commits, PRs, or code (no "Generated with", no "Co-Authored-By: Claude", etc.)
 - When reporting information to me, be extremely concise and sacrifice grammar for the sake of concision.
+- A todo for me says what to open (a link), what to decide, and what my answer should look like. Spell out every rule letter, file line or run id it names; I have not read your working notes.
 
 ## Writing style
 
