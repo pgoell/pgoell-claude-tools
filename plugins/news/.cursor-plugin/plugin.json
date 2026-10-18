@@ -1,7 +1,7 @@
 {
   "name": "news",
   "displayName": "News",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Build a personal daily newspaper as a self-contained HTML page in a kasten vault, linked from the daily note, shaped by your feedback.",
   "author": {
     "name": "Pascal Göllner"
