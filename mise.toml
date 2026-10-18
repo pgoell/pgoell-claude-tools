@@ -39,4 +39,10 @@ fi
 
 [tasks.check-docs]
 description = "Validate documentation links and spelling"
-run = ["lychee README.md AGENTS.md plugins/ --offline --root-dir .", "typos README.md AGENTS.md plugins/"]
+# docs/ links between its own pages bundle-relative (/reference/...), so it
+# gets its own lychee run rooted at docs/.
+run = [
+  "lychee README.md AGENTS.md plugins/ --offline --root-dir .",
+  "lychee docs/ --offline --root-dir docs",
+  "typos README.md AGENTS.md plugins/ docs/",
+]

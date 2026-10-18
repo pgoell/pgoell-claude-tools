@@ -1,122 +1,19 @@
 # pgoell-claude-tools
 
-Plugin marketplace for Claude Code, Codex, and Cursor.
+A plugin marketplace for Claude Code, Codex and Cursor. Its plugins ship skills, output styles and hooks. Each skill lives in one directory that all three runtimes share, so no skill is copied per runtime. The marketplace lists 25 plugins: 20 kept in this repository, 4 tracked from upstream repositories, and the `deprecated` archive of superseded skills, which the count includes.
 
-Bundles 24 plugins across Atlassian, Google Workspace, Databricks, agent-system management, design workflows, research, writing, presentations, diagrams, a daily newspaper, daily session insights, terminal control, learning, idea critique, an unattended issue loop, prose output styles, shell guard hooks, code minimalism, frontend design taste, and more.
-
-## Skills at a glance
-
-| Skill                                                                                           | Plugin                    | What it does                                                                                                                            |
-| ----------------------------------------------------------------------------------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `jira`                                                                                          | `atlassian`               | Search Jira issues, create and update tickets, transition workflows, comment, manage sprints, run bulk operations                       |
-| `confluence`                                                                                    | `atlassian`               | Search Confluence pages, read documentation, create and update pages, browse spaces                                                     |
-| `gmail`                                                                                         | `google-workspace`        | Triage inbox, search and read messages, send mail, manage drafts, labels, and filters via the `gws` CLI                                 |
-| `calendar`                                                                                      | `google-workspace`        | View agenda, manage events, check availability, manage calendars via the `gws` CLI                                                      |
-| `research`                                                                                      | `research`                | Research complex topics and produce sourced reports                                                                                     |
-| `ghostwrite`                                                                                    | `writing`                 | Draft blog posts, memos, emails, READMEs, and PR text from your own facts, then hand back for your final edit                           |
-| `coach`                                                                                         | `writing`                 | Teach you to write through your own drafts, one issue at a time; never writes the piece                                                 |
-| `claude-codex-bridge`                                                                           | `runtime-bridge`          | Align Claude Code and Codex project files                                                                                               |
-| `improving-instructions`                                                                        | `agent-system-management` | Audit and improve agent instruction files                                                                                               |
-| `capturing-session-learnings`                                                                   | `agent-system-management` | Capture session learnings into the right instruction file                                                                               |
-| `creating-skills`                                                                               | `agent-system-management` | Create, eval, benchmark, bulletproof, tune, and cut skills across the full lifecycle                                                    |
-| `brainstorming`                                                                                 | `workbench`               | Sequential Q&A to clarify design intent                                                                                                 |
-| `writing-spec`                                                                                  | `workbench`               | Synthesize a design discussion into a spec doc                                                                                          |
-| `writing-plans`                                                                                 | `workbench`               | Turn approved specs into concrete implementation plans                                                                                  |
-| `visualizing-options`                                                                           | `workbench`               | Browser-based visual companion for layout choices                                                                                       |
-| `using-workbench`                                                                               | `workbench`               | Load Workbench skill rules and routing                                                                                                  |
-| `pilot`                                                                                         | `workbench`               | Ship a feature end to end with configurable human gates; replaces autopilot and copilot                                                 |
-| `verification-before-completion`                                                                | `workbench`               | Require fresh verification evidence before completion claims                                                                            |
-| `test-driven-development`                                                                       | `workbench`               | Enforce test-first RED-GREEN-REFACTOR implementation discipline                                                                         |
-| `subagent-driven-development`                                                                   | `workbench`               | Execute implementation plans with fresh agents and review gates, including parallel dispatch                                            |
-| `systematic-debugging`                                                                          | `workbench`               | Root-cause investigation before proposing bug fixes                                                                                     |
-| `crafting-html`                                                                                 | `workbench`               | Reference gallery of 21 HTML artifact patterns                                                                                          |
-| `crafting-design-systems`                                                                       | `workbench`               | Design systems (CSS variables, components, images) that theme HTML producers                                                            |
-| `tmux`                                                                                          | `terminal`                | Control interactive terminal programs through isolated tmux sessions                                                                    |
-| `playground`                                                                                    | `playground`              | Interactive single-file HTML playgrounds with controls, live preview, and copy-out prompt                                               |
-| `databricks-core`                                                                               | `databricks`              | Databricks CLI, authentication, profile management, and data exploration                                                                |
-| `databricks-docs`                                                                               | `databricks`              | Live `docs.databricks.com` lookups for product-surface questions                                                                        |
-| `quizzing-the-session`                                                                          | `learning`                | Get taught and quizzed on the current session's work until you demonstrably understand the problem, solution, and impact                |
-| `quizzing-a-topic`                                                                              | `learning`                | Get taught and quizzed on any topic or theme you name until you demonstrably understand it                                              |
-| `surveying-blind-spots`                                                                         | `learning`                | Pre-work blind-spot pass over an unfamiliar codebase area or field, surfacing unknown unknowns, gotchas, and better prompts             |
-| `rebuilding-a-concept`                                                                          | `learning`                | Learn a concept by rebuilding it from the problem that forced it, then breaking it with counterexamples                                 |
-| `critiquing-ideas`                                                                              | `critique`                | Critique an idea, plan, or decision through independent thinking frames, one fresh subagent each, ending in one decision                |
-| `designing-presentations`                                                                       | `presentations`           | Design slide-deck content from audience brief through critiqued storyboard, producing a `deck.md`                                       |
-| `creating-presentations`                                                                        | `presentations`           | Build multi-slide HTML decks from brand presets, with a presenter view, default render checks, and a review-to-done loop                |
-| `editing-presentations`                                                                         | `presentations`           | Edit an HTML deck by hand in a local browser editor, and point Claude at selected slide elements                                        |
-| `exporting-presentations-to-pptx`                                                               | `presentations`           | Convert a finished HTML deck into a native, editable PowerPoint (.pptx) via python-pptx                                                 |
-| `extracting-presets`                                                                            | `presentations`           | Turn brand material (PPTX templates, PDF guidelines, decks) into reusable presentation presets                                          |
-| `creating-diagrams`                                                                             | `diagrams`                | Draw validated architecture, workflow, sequence, data-flow, and lifecycle diagrams as themeable interactive HTML                        |
-| `edition`                                                                                       | `news`                    | Build a daily newspaper as one HTML page in a kasten vault, deduped against earlier editions, linked from the daily note                |
-| `feedback`                                                                                      | `news`                    | Apply one piece of newspaper feedback to the config now and show the diff                                                               |
-| `tune`                                                                                          | `news`                    | Reconfigure the newspaper by interview and compare designs on today's edition                                                           |
-| `digest`                                                                                        | `insights`                | Find yesterday's recurring problems in Claude Code sessions and newspaper runs, with one concrete fix each, on a page in a kasten vault |
-| `apply`                                                                                         | `insights`                | Carry out the fixes kept in a reviewed insights note: PRs, todos, newspaper feedback lines                                              |
-| `activity`                                                                                      | `insights`                | What your agents did yesterday per repo and what waits for you, on a page in a kasten vault                                             |
-| `ponytail`                                                                                      | `ponytail`                | Force the laziest solution that works: YAGNI, stdlib first, one line over fifty                                                         |
-| `ponytail-review`                                                                               | `ponytail`                | Review a diff for over-engineering only: what to delete and what replaces it                                                            |
-| `ponytail-audit`                                                                                | `ponytail`                | Whole-repo over-engineering audit, ranked by what to delete, simplify, or replace                                                       |
-| `ponytail-debt`                                                                                 | `ponytail`                | Harvest `ponytail:` shortcut comments into a tracked debt ledger                                                                        |
-| `ponytail-gain`                                                                                 | `ponytail`                | Scoreboard of ponytail's measured benchmark impact                                                                                      |
-| `ponytail-help`                                                                                 | `ponytail`                | Quick-reference card for ponytail modes, skills, and commands                                                                           |
-| `emil-design-eng`                                                                               | `emil`                    | Emil Kowalski's design engineering philosophy: UI polish, component design, animation decisions                                         |
-| `animate`, `animate-expo`, `apple-design`, `animation-vocabulary`                               | `emil`                    | Build animations from scratch (web or React Native), Apple-style fluid motion, name the effect you mean                                 |
-| `review-animations`, `improve-animations`, `find-animation-opportunities`                       | `emil`                    | Review motion code, audit a codebase's animations into a plan, find where motion belongs                                                |
-| `prototype`, `break-ui`, `mobile-native`, `pick-ui-library`, `ask-sonner`, `write-swift`        | `emil`                    | Live multi-version prototypes, worst-case data tests, native feel on phones, library picks, Sonner, Swift                               |
-| `react-best-practices`, `composition-patterns`, `react-view-transitions`, `react-native-skills` | `vercel`                  | Vercel's React, Next.js, and React Native guidance: performance, component APIs, view transitions                                       |
-| `web-design-guidelines`, `writing-guidelines`                                                   | `vercel`                  | Review UI code or prose against Vercel's published guidelines                                                                           |
-| `deploy-to-vercel`, `vercel-cli-with-tokens`, `vercel-optimize`                                 | `vercel`                  | Deploy to Vercel, drive the CLI with tokens, tune cost and performance of deployed projects                                             |
-| `taste-skill`                                                                                   | `taste-skill`             | Anti-slop frontend design: infer a design direction from the brief and ship pages that do not look templated                            |
-| `redesign-skill`                                                                                | `taste-skill`             | Audit an existing site or app for generic AI patterns and upgrade it without breaking behavior                                          |
-| `output-skill`                                                                                  | `taste-skill`             | Ban placeholders and truncation; force complete code output                                                                             |
-| `minimalist-skill`, `soft-skill`, `brutalist-skill`                                             | `taste-skill`             | Style variants: editorial minimalist, soft premium agency, Swiss brutalist                                                              |
-| `image-to-code-skill`, `imagegen-frontend-web`, `imagegen-frontend-mobile`, `brandkit`          | `taste-skill`             | Generate design reference images first (web, mobile, brand kit), then build from them                                                   |
-| `stitch-skill`, `gpt-tasteskill`, `taste-skill-v1`                                              | `taste-skill`             | Google Stitch `DESIGN.md` export, GPT/Codex-tuned variant, frozen v1                                                                    |
-| `running-the-loop`                                                                              | `issue-loop`              | Run an unattended build loop as orchestrator: drive one implementer session through the GitHub issue queue, with a gate between tasks   |
-| `handing-over`                                                                                  | `issue-loop`              | Pass a running issue loop to a fresh orchestrator session through a rewritten handoff file                                              |
-
-The `deprecated` plugin additionally archives twelve superseded skills: `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations` point at their replacement in the `presentations` plugin; `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode` point at their replacement in the `workbench` plugin (`terse-mode` retires without replacement); `writing`, `pyramid`, `tech-doc` point at `ghostwrite` and `coach` in the `writing` plugin; `frontend-design` (from the retired plugin of that name) points at `taste-skill:taste-skill`.
-
-The `prose-styles` plugin ships no skills. It provides four Claude Code output styles instead, which govern how the agent writes prose for a whole session rather than for one task. See its section below. The `guards` plugin ships no skills either: it adds Claude Code hooks that block shell commands known to fail. Nor does `session-title`: its one hook names each new session after its folder, branch and start time.
-
-Skills are invoked from the host agent (Claude Code or Codex) using the fully qualified form `/<plugin>:<skill>`, for example `/atlassian:jira` or `/workbench:pilot`.
-
-## Installation
+## Install
 
 ### Claude Code
 
 ```
 /plugin marketplace add pgoell/pgoell-claude-tools
-/plugin install atlassian@pgoell-claude-tools
-/plugin install google-workspace@pgoell-claude-tools
-/plugin install research@pgoell-claude-tools
-/plugin install writing@pgoell-claude-tools
-/plugin install runtime-bridge@pgoell-claude-tools
-/plugin install agent-system-management@pgoell-claude-tools
-/plugin install workbench@pgoell-claude-tools
-/plugin install terminal@pgoell-claude-tools
-/plugin install playground@pgoell-claude-tools
-/plugin install databricks@pgoell-claude-tools
-/plugin install learning@pgoell-claude-tools
-/plugin install critique@pgoell-claude-tools
-/plugin install presentations@pgoell-claude-tools
-/plugin install diagrams@pgoell-claude-tools
-/plugin install news@pgoell-claude-tools
-/plugin install insights@pgoell-claude-tools
-/plugin install issue-loop@pgoell-claude-tools
-/plugin install prose-styles@pgoell-claude-tools
-/plugin install guards@pgoell-claude-tools
-/plugin install session-title@pgoell-claude-tools
-/plugin install ponytail@pgoell-claude-tools
-/plugin install emil@pgoell-claude-tools
-/plugin install taste-skill@pgoell-claude-tools
-/plugin install vercel@pgoell-claude-tools
+/plugin install <plugin>@pgoell-claude-tools
 ```
 
-The `deprecated` plugin (`/plugin install deprecated@pgoell-claude-tools`) is an archive of superseded skills; only install it if an old workflow still calls the old skill names.
+For example, `/plugin install workbench@pgoell-claude-tools`.
 
 ### Codex
-
-Add the marketplace from your shell, then install plugins from inside Codex:
 
 ```
 codex plugin marketplace add pgoell/pgoell-claude-tools
@@ -124,381 +21,63 @@ codex
 /plugins
 ```
 
-In the `/plugins` picker, install any combination of `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, `news`, `insights`, and `ponytail` (plus `deprecated` if an old workflow needs the archived skill names). `prose-styles` is absent from the Codex picker on purpose, because Codex has no output-style mechanism. `guards` and `session-title` are absent too, because their hooks use Claude Code's hook format. `issue-loop` is absent because it drives Claude Code sessions (`/clear`, `--permission-mode auto`) and was never run under Codex. `emil`, `taste-skill`, and `vercel` are absent too: their upstreams ship no Codex manifest.
-
-To pick up updates: `codex plugin marketplace upgrade pgoell-claude-tools` and re-install the affected plugins.
-
 ### Cursor
 
-The repository is also a Cursor plugin marketplace: `.cursor-plugin/marketplace.json` at the root lists 16 plugins, each with its own `plugins/<name>/.cursor-plugin/plugin.json`. Install them in one of three ways:
+Import the repository as a team marketplace or copy a plugin folder; see [Install in Cursor](docs/how-to/install-in-cursor.md).
 
-- From the Cursor Marketplace, once listed: open **Customize**, search for the plugin, and choose **Install**.
-- From a team marketplace (Cursor Teams and Enterprise plans): **Dashboard > Plugins & MCPs > Add Marketplace > Import from Repo** with `https://github.com/pgoell/pgoell-claude-tools`, then turn on **Auto Refresh** to pick up pushes to `master`.
-- Locally, for a single plugin: copy `plugins/<name>/` to `~/.cursor/plugins/local/<name>/` and run **Developer: Reload Window**. Cursor skips symlinks that point outside that folder, so copy rather than link.
-
-Cursor offers `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, `news`, and `insights`. `prose-styles` is absent because Cursor has no output-style mechanism. `guards` is absent because its hook uses Claude Code's `PreToolUse` format and has no Cursor port yet. `session-title` is absent because it sets a Claude Code session title, which Cursor has no equivalent for. `issue-loop` is absent because it drives Claude Code sessions. `deprecated` is absent because it is a frozen archive. `ponytail`, `emil`, `taste-skill`, and `vercel` are absent because they are upstream repositories with no local directory to carry a Cursor manifest.
+Skills run as `/<plugin>:<skill>`, for example `/workbench:pilot`. Start with the [getting started tutorial](docs/tutorials/getting-started.md). Not every plugin reaches every runtime; [runtimes](docs/reference/runtimes.md) lists which go where and why.
 
 ## Plugins
 
-### atlassian
+Work tools:
 
-Jira and Confluence skills for Atlassian Cloud.
+- [atlassian](docs/reference/plugins/atlassian.md): Jira and Confluence.
+- [google-workspace](docs/reference/plugins/google-workspace.md): Gmail and Calendar through the `gws` CLI.
+- [databricks](docs/reference/plugins/databricks.md): Databricks CLI work and live docs lookups.
+- [terminal](docs/reference/plugins/terminal.md): drive interactive terminal programs through tmux.
 
-**Skills:**
+Workflow:
 
-- `/atlassian:jira`: Search issues, update tickets, transition status, add comments, and manage sprints.
-- `/atlassian:confluence`: Search pages, read documentation, update pages, and browse spaces.
+- [workbench](docs/reference/plugins/workbench.md): brainstorm, spec, plan, test-driven build and verify, run end to end by `pilot`.
+- [agent-system-management](docs/reference/plugins/agent-system-management.md): audit agent instructions, capture session learnings, create skills.
+- [runtime-bridge](docs/reference/plugins/runtime-bridge.md): align Claude Code and Codex project setup.
+- [research](docs/reference/plugins/research.md): research a topic and write a sourced report.
+- [critique](docs/reference/plugins/critique.md): critique an idea from several independent angles.
+- [playground](docs/reference/plugins/playground.md): single-file HTML playgrounds with live preview.
 
-**Setup:**
+Writing and learning:
 
-The plugin supports two authentication paths.
+- [writing](docs/reference/plugins/writing.md): ghostwrite from your own facts, or get coached to write it yourself.
+- [learning](docs/reference/plugins/learning.md): Socratic quizzes and a blind-spot survey before new work.
 
-**Atlassian CLI (recommended).**
+Decks and diagrams:
 
-```bash
-brew install atlassian/tap/acli
-acli auth login
-```
+- [presentations](docs/reference/plugins/presentations.md): design, build, edit and export slide decks styled by brand presets.
+- [diagrams](docs/reference/plugins/diagrams.md): validated, themeable architecture and flow diagrams as HTML.
 
-**API token fallback.**
+Daily pages:
 
-Generate a token at https://id.atlassian.com/manage/api-tokens, then export:
+- [news](docs/reference/plugins/news.md): a personal daily newspaper in a kasten vault.
+- [insights](docs/reference/plugins/insights.md): what went wrong in yesterday's sessions, and what the agents did.
 
-```bash
-export ATLASSIAN_DOMAIN="your-domain"    # e.g. mycompany (for mycompany.atlassian.net)
-export ATLASSIAN_EMAIL="you@company.com"
-export ATLASSIAN_API_TOKEN="your-token"
-```
+Claude Code only:
 
-### google-workspace
+- [issue-loop](docs/reference/plugins/issue-loop.md): one session drives another through a repo's GitHub issues.
+- [prose-styles](docs/reference/plugins/prose-styles.md): output styles for prose (`orwell`, `concise`, `ste`, `house`).
+- [guards](docs/reference/plugins/guards.md): a hook that blocks shell commands known to fail.
+- [session-title](docs/reference/plugins/session-title.md): a hook that names each session after folder, branch and start time.
 
-Gmail and Calendar skills for Google Workspace, powered by the `gws` CLI.
+Tracked from upstream, not vendored:
 
-**Skills:**
+- [ponytail](docs/reference/plugins/ponytail.md): pushes for the simplest solution that works.
+- [emil](docs/reference/plugins/emil.md): Emil Kowalski's UI polish and animation skills.
+- [taste-skill](docs/reference/plugins/taste-skill.md): frontend design skills against generic output.
+- [vercel](docs/reference/plugins/vercel.md): Vercel's React, Next.js and deploy skills.
 
-- `/google-workspace:gmail`: Search, read, send, and manage Gmail messages, drafts, labels, and filters.
-- `/google-workspace:calendar`: View agendas, manage events, check availability, and manage calendars.
+Archive:
 
-**Setup:**
+- [deprecated](docs/reference/plugins/deprecated.md): superseded skills kept for old workflows, each pointing at its replacement.
 
-Install and authenticate the `gws` CLI:
+## Documentation
 
-```bash
-npm i -g @anthropic-ai/gws
-gws auth login -s gmail,calendar
-```
-
-Full setup instructions: https://github.com/googleworkspace/cli
-
-### research
-
-Research complex topics and produce sourced reports.
-
-**Skills:**
-
-- `/research:research`: Plan focused investigations, gather sources, synthesize findings, review conclusions, and write reports. Reports default to HTML at `reports/<topic-slug>-<YYYY-MM-DD>/report.html`; override per invocation with "give me a markdown research report".
-
-### writing
-
-Two skills with opposite rules about who writes the sentences.
-
-**Skills:**
-
-- `/writing:ghostwrite`: Draft a piece for you. It interviews you or takes dictation, uses only facts from you, documents you supply, or the repository (running the commands a README or how-to tells the reader to run), drafts section by section with check-ins, marks every assumption inline, runs one round of review that reports and never rewrites on its own, and hands back for your final edit. Covers blog posts, essays, talk scripts, memos, briefings, emails, decision docs, READMEs, how-to guides, design docs, and PR descriptions.
-- `/writing:coach`: Teach you to write. You write first; it picks one issue per round (point, then structure, then paragraphs, then sentences), explains the principle, shows a worked example on one of your own sentences, has you revise, and asks you to explain the change back. It never writes the piece, and it follows a five-drill sequence (point first, structure, clear sentences, cohesion, cutting).
-
-The voice note lives in one global place, `~/.pgoell/writing/voice-note.md` (your confirmed voice habits, the standards your pieces must meet, and a log of the edits you make to drafts), with optional samples in `~/.pgoell/writing/samples/`. Notes on readers you write for again and again live per project, at `.pgoell/writing/readers.md`. The coach log is per project, at `.pgoell/writing/coach-log.md` (intake, current drill, and recurring faults). The earlier `writing`, `pyramid`, and `tech-doc` skills moved to the `deprecated` plugin in 3.0.0; their pyramid audits, Socratic structure mode, Diataxis quadrants, reference schemas, interview rules, and three argument critics live on as reference files inside the two new skills.
-
-For slide decks, use `/presentations:designing-presentations`; a written talk script is a job for `/writing:ghostwrite`.
-
-### runtime-bridge
-
-Aligns Claude Code and Codex project configuration.
-
-**Skills:**
-
-- `/runtime-bridge:claude-codex-bridge`: Align project files, settings, hooks, agents, and plugin availability across the two runtimes.
-
-### agent-system-management
-
-Manage the host agent's instruction layer and skill layer: audit `AGENTS.md` / `CLAUDE.md`, capture session learnings, and scaffold or iterate on Claude Code / Codex skills.
-
-**Skills:**
-
-- `/agent-system-management:improving-instructions`: Audit and improve `AGENTS.md` and `CLAUDE.md` files.
-- `/agent-system-management:capturing-session-learnings`: Capture session learnings into the right instruction file.
-- `/agent-system-management:creating-skills`: Create a new skill, iterate on an existing one with eval loops and benchmarks, bulletproof discipline skills, optimize triggering, cut a skill to its core, or extract a skill from a conversation.
-
-### workbench
-
-Workbench skills for design dialogue, skill routing, and profile-driven feature shipping.
-
-**Skills:**
-
-- `/workbench:brainstorming`: Sequential question-and-answer loop to clarify design intent, scaled to the medium and large triage lanes. Hands off to `writing-spec` in the large lane, or to `writing-plans`' Design preamble mode in the medium lane.
-- `/workbench:writing-spec`: Synthesize a design discussion into a spec doc, run a fresh-eyes self-review subagent, gate on user approval, then hand off to `workbench:writing-plans`.
-- `/workbench:writing-plans`: Turn approved specs into concrete, slice-ordered implementation plans at program-design altitude.
-- `/workbench:visualizing-options`: Browser-based visual companion for mockups, layout comparisons, wireframes, and architecture diagrams.
-- `/workbench:using-workbench`: Load Workbench skill rules and routing; triages every task into the quick, medium, or large lane.
-- `/workbench:pilot`: Ship a feature end to end with configurable human gates, from design through PR. Replaces `autopilot` and `copilot`: `Gates: none` runs fully autonomous (the old autopilot behavior), `Gates: design` pauses for a human-driven brainstorm and spec approval (the old copilot behavior), and the default `Gates: design, slices` also pauses to review each slice's diff before the next one starts. Profile schema documented in `plugins/workbench/skills/pilot/references/profile-schema.md`.
-- `/workbench:verification-before-completion`: Require fresh verification evidence before completion claims.
-- `/workbench:test-driven-development`: Enforce test-first RED-GREEN-REFACTOR implementation discipline.
-- `/workbench:subagent-driven-development`: Execute implementation plans with fresh agents and review gates, including parallel dispatch across independent tasks.
-- `/workbench:systematic-debugging`: Enforce root-cause investigation before proposing bug fixes; bundles techniques for backward stack tracing, defense in depth, and condition-based waiting.
-- `/workbench:crafting-html`: Reference gallery of 21 HTML artifact patterns vendored from `ThariqS/html-effectiveness`. Activates for standalone HTML artifacts not covered by specs, plans, brainstorm summaries, debug reports, or research reports.
-- `/workbench:crafting-design-systems`: Create reusable design systems (CSS variables, components, images) at project (`.workbench/design-systems/<name>/`) or user (`~/.claude/workbench/design-systems/<name>/`) scope. HTML producers inline the active design system over their template defaults.
-
-Multi-slide presentation skills (deck building, review loop, PPTX export) moved to the `presentations` plugin.
-
-`writing-spec`, `writing-plans`, `brainstorming`, and `systematic-debugging` can emit either markdown or HTML; defaults are markdown for specs and plans, HTML for brainstorm summaries and debug reports. Override per invocation or via `.workbench/config.md` (schema in `plugins/workbench/skills/pilot/references/config-schema.md`).
-
-**Migration note:** 1.0.0 merged autopilot and copilot into pilot; rename `.workbench/autopilot.md` to `.workbench/pilot.md`, then add `Gates: none` to keep autopilot's fully autonomous behavior or `Gates: design` to keep copilot's behavior. Omitting the row gets the new default, `Gates: design, slices`, which adds a per-slice review pause.
-
-### terminal
-
-Terminal skills for interactive command-line programs.
-
-**Skills:**
-
-- `/terminal:tmux`: Drive interactive CLIs, REPLs, debuggers, and experimental nested agent sessions through isolated tmux sessions.
-
-**Setup:**
-
-Install `tmux` on Linux, macOS, or WSL. Native Windows terminals are not supported.
-
-### playground
-
-Interactive single-file HTML playgrounds: control panel, live preview, and copy-out prompt. Ports Anthropic's `playground` plugin (Apache 2.0; see `plugins/playground/NOTICE` for attribution).
-
-**Skills:**
-
-- `/playground:playground`: Build self-contained HTML playgrounds for design, data, concept maps, document critique, diff review, or code architecture.
-
-### databricks
-
-Two Databricks skills. `databricks-core` is a verbatim port from [databricks/databricks-agent-skills](https://github.com/databricks/databricks-agent-skills) at commit `bf6d932`, governed by the upstream Databricks License (use restricted to Databricks Services; see `plugins/databricks/LICENSE-upstream` and `plugins/databricks/NOTICE`). `databricks-docs` is original authorship: it points the host agent at `docs.databricks.com` via WebFetch using a curated URL index. The plugin also preserves `references/research/` with 12 MB of Genie Code reverse-engineering notes; see `plugins/databricks/README.md` for details.
-
-**Skills:**
-
-- `/databricks:databricks-core`: CLI, authentication, profile management, data exploration, and bundles.
-- `/databricks:databricks-docs`: Live `docs.databricks.com` lookups for product-surface questions (Apps, DABs, Jobs, Lakebase, Model Serving, Pipelines, Unity Catalog, SQL Warehouses, MLflow, serverless, secrets, workflows).
-
-**Setup:**
-
-`databricks-core` operates against your existing `databricks` CLI profiles; configure them with `databricks auth login` or by editing `~/.databrickscfg`. `databricks-docs` is read-only against `docs.databricks.com` and needs no auth.
-
-### learning
-
-Skills that teach the human: Socratic teach-and-quiz loops, a pre-work blind-spot survey, and a rebuild-then-break loop. The quiz and survey skills adapt Thariq Shihipar's "Learn Quiz" gist and his AI Engineer talk techniques (see `plugins/learning/README.md` for attribution).
-
-**Skills:**
-
-- `/learning:quizzing-the-session`: Build a problem/solution/impact checklist from the current session and recent git activity, then teach and quiz you item by item to mastery. Also fits right before a PR or merge, to confirm you can represent the work in review.
-- `/learning:quizzing-a-topic`: The same teaching engine pointed at any topic or theme you name, grounded in repo files when the topic is local code.
-- `/learning:surveying-blind-spots`: A pre-work blind-spot pass over a codebase area or field you do not know. Surfaces unknown unknowns, gotchas, and dead ends, then hands you rewritten prompts. A briefing, not a quiz.
-- `/learning:rebuilding-a-concept`: Learn a concept the way it was made. Start from the problem that forced it, sketch your own fix, break it with counterexamples, repair it, and only then compare with the textbook version. Joins Toeplitz's genetic method with Lakatos's proofs and refutations; works for maths and for designs such as data models or architecture patterns.
-
-### critique
-
-Critique ideas, plans, decisions, claims, and situations from several independent angles, to counter the agreeable answer a single session tends to give.
-
-**Skills:**
-
-- `/critique:critiquing-ideas`: Rewrites the input as a neutral brief, sends it to one fresh subagent per thinking frame (pre-mortem, steelman for and against, outside view, second-order effects, incentives, alternatives, assumption audit, plus conditional frames such as Chesterton's fence and a Fermi estimate), shows every frame's verdict word for word, and ends with one decision, kill conditions, and the cheapest next test. Say "quick" for a three-frame pass.
-
-### presentations
-
-The full presentation lifecycle in one plugin: content design, HTML deck building with an integrated perfecting loop, a local deck editor, native PowerPoint export, and brand preset extraction.
-
-**Skills:**
-
-- `/presentations:designing-presentations`: Design slide-deck content end to end (audience brief with sourced or assumed inputs, message architecture, competing storylines, per-slide drafts, critique panel with written storyline checks). Produces a markdown `deck.md`; also runs in audit mode against an existing `deck.md`.
-- `/presentations:creating-presentations`: Build multi-slide HTML decks styled from a brand preset, presented through a bundled deck-stage engine with a two-window presenter view (`BroadcastChannel` sync, live-editable speaker notes). Every build runs deterministic hard gates (type floors, copy lint, layout geometry) plus one fresh screenshot review; a per-deck visual direction step runs when no client preset is active. The full review-to-done loop with judge panels and adversarial verification stays opt-in.
-- `/presentations:editing-presentations`: Start a local editor on a deck (a standard-library Python server plus an overlay script, nothing to install). Click slide elements and type a note; the agent reads slide, selector, source lines, and source HTML from `.deck-editor/selection.json` and can take a screenshot with the selection outlined. For a review pass, add numbered comments and pen drawings across slides and copy them out as one prompt with sources and marked screenshots. The deck files stay the only source, and the browser reloads when the agent edits them.
-- `/presentations:exporting-presentations-to-pptx`: Convert a finished HTML deck into a native, editable PowerPoint file via a freshly written python-pptx generator, with a containerized LibreOffice render-verify loop and an optional per-slide adversarial verification panel.
-- `/presentations:extracting-presets`: Turn brand material (PPTX templates and slide masters, PDF guidelines, icon libraries, example decks) into reusable presets: layered CSS variables, guidance files, assets, and self-contained example slides.
-
-Styling flows through presets (contract in `plugins/presentations/presets/README.md`). The plugin bundles seven presets, each a layout grammar with its own gallery (141 example slides in all, many rebuilt from best-in-genre reference decks and tagged for search in `slides/index.tsv`), vendored open fonts, and a shared chart token group: a neutral `default`, plus six voices, `analytical` (decision-maker decks), `keynote` (dark stage talks), `product` (launches and all-hands), `editorial` (data stories and readouts), `workshop` (training and mixed audiences), and `technical` (architecture reviews, design docs, and incident reviews). With no project preset configured, the deck skill picks the bundled preset that fits the deck's use and says why; project-local presets and a preset choice live under `.pgoell/presentations/` (`config.md` plus `presets/<name>/`) at the repo root of the project you are working in. Runtime dependencies (checked lazily, per branch): a Chromium-based browser, `uv`, and a container engine for preset extraction render checks.
-
-### diagrams
-
-Diagrams as one self-contained HTML file, rendered by a bundled engine that validates layout geometry before delivery. The viewer has light and dark modes, pan and zoom, search, focus, guided views, presentation mode, and PNG, JPEG, WebP, SVG, and WebM export, with no network requests. The engine is a vendored copy of [tt-a1i/archify](https://github.com/tt-a1i/archify) (MIT); the hand-drawn fallback adapts [Cocoon-AI/architecture-diagram-generator](https://github.com/Cocoon-AI/architecture-diagram-generator) (MIT). See `plugins/diagrams/NOTICE`.
-
-**Skills:**
-
-- `/diagrams:creating-diagrams`: Draw an architecture, workflow, sequence, data-flow, or lifecycle diagram from a description, pasted Mermaid, or a repository scan. The agent writes a typed JSON spec; the engine lays it out, routes edges, runs nine geometry checks, delivers the HTML with SHA-256 receipts, and checks it in headless Chrome. It can also diff two architecture versions and verify cited source lines against the repo.
-
-Colors come only from themes (contract in `plugins/diagrams/themes/README.md`). The plugin bundles a `classic` theme; the skill can derive a brand theme from a `presentations` preset or straight from a PPTX template and saves it under `.pgoell/diagrams/` in the project you are working in.
-
-**Setup:** Node 18 or later runs the engine (no install step); without it, the skill falls back to hand-drawn SVG. A Chromium-based browser (Chrome, Chromium, or Edge) enables the browser check and visual review.
-
-### news
-
-A personal daily newspaper: one self-contained HTML page per day in a kasten vault, linked from that day's daily note. Each story stays in its source language; a story an earlier edition ran comes back only as a follow-up that says what is new and links the earlier coverage. Config, feedback note, and memory live in the vault under `<periodic>/05 Newspaper/`, so the paper is yours to edit from kasten. Five designs ship (`heimatblatt` by default, `briefing`, `broadsheet`, `magazine`, `swiss`), plus a `plain` fallback; `plugins/news/README.md` shows them.
-
-**Skills:**
-
-- `/news:edition`: Applies open feedback, gathers news per section (one subagent each where available), drops repeats, writes, renders with the configured design, records what ran, and links the page from the daily note. Takes `--vault`, `--date`, and `--periodic`.
-- `/news:feedback`: Turns free-text feedback ("less like #2026-10-07-allianz-03", "GNZ is paywalled") into config changes now and shows the diff.
-- `/news:tune`: An interview over sections, depth, sources, interests, and design that rewrites the config, and re-renders today's edition in other designs to compare.
-
-**Setup:** needs `uv`, and the host's web search and fetch tools. The scripts' own requests are the day's forecast from Open-Meteo (free, no key) and, for a section that lists `tables:`, the league tables from sportschau.de. For a paper every morning at 06:00 Europe/Berlin, add this line to the host's crontab (`crontab -e`), with your own clone and vault paths:
-
-```
-0 6 * * * /home/pascal/Code/pgoell-claude-tools/plugins/news/scripts/cron-edition.sh /home/pascal/kasten-data/vault
-```
-
-The wrapper runs `claude -p "/news:edition ..."` with the needed tools allowed, logs to `~/.local/state/news/`, and exits non-zero when no edition was written. Cron uses the host's time zone; elsewhere, put `CRON_TZ=Europe/Berlin` above the line.
-
-### insights
-
-A look back at yesterday's Claude Code sessions and the newspaper's runs, every morning: what went wrong more than once, why, and the exact change that would stop it. A script reads 14 days of transcripts (bucketed by record time in Europe/Berlin, files over 300 MB skipped) and boils them down to error shapes, guard refusals, typed corrections, and the newspaper's logs; the model groups them into problems, checks memory and the files a fix would go to, verifies causes where a check is cheap, and writes one page per day under `<periodic>/06 Insights/`, linked from the daily note beside the newspaper. Sessions run in the vault give no typed text unless they touched `02 Projects/`.
-
-**Skills:**
-
-- `/insights:digest`: Applies any finished review note, then analyses one day (yesterday by default) and writes the page, the review note, and memory. Takes `--vault`, `--date`, and `--periodic`.
-- `/insights:apply`: Acts on a finished review note (renamed `## Keep`, or any note when you run it by hand): opens a PR per kept fix where a repository exists (never merges), adds todos and newspaper feedback lines, and records a verdict per line (applied, pending PR, already done, deferred, rejected, watch). Deleted lines stay rejected until their hits triple; a partly applied note picks up where it stopped.
-- `/insights:activity`: Counts one day per repository through a script (your pull requests, issues, failed CI, commits, issue-loop ledger lines, sessions, tokens and cost from `ccusage`, cron job results, vault notes) and writes a second page under `<periodic>/07 Activity/`: what needs you (one link per item), what shipped (at most two sentences per repo, from PR titles and ledger lines only), and the counts. Links it from the daily note with up to five lines. Takes `--vault`, `--date`, and `--periodic`.
-
-**Setup:** needs `uv`, plus `git` and a logged-in `gh` for the PRs. To run the digest at 05:30 and the activity page at 05:45 Europe/Berlin, before the newspaper, add these lines to the host's crontab (`crontab -e`), with your own clone and vault paths:
-
-```
-30 5 * * * /home/pascal/Code/pgoell-claude-tools/plugins/insights/scripts/cron-insights.sh /home/pascal/kasten-data/vault
-45 5 * * * /home/pascal/Code/pgoell-claude-tools/plugins/insights/scripts/cron-activity.sh /home/pascal/kasten-data/vault
-```
-
-Each wrapper runs its skill through `claude -p` with the needed tools allowed, logs to `~/.local/state/insights/`, and exits non-zero when no page was written. The activity job also needs `bunx` for `ccusage`. Cron uses the host's time zone; elsewhere, put `CRON_TZ=Europe/Berlin` above the line. See `plugins/insights/README.md`.
-
-### issue-loop
-
-An unattended build loop over a repo's GitHub issues. One Claude Code session, the orchestrator, drives a second one, the implementer, task after task: `/clear`, a full brief, a wait for an exact DONE line, a gate from outside, a ledger line, a short report, the next task. The orchestrator never codes and never writes to the implementer's checkout; subagents implement and review; one task is one PR, merged and deployed. Written down from a two-day run on one example project, with the numbers and the limits an outside review found.
-
-**Skills:**
-
-- `/issue-loop:running-the-loop`: Makes this session the orchestrator: checks what the repo needs, sets up a loop folder from templates, and turns the loop. Covers queue order (regressions and gaps first, bug batches of about five, then a feature), what goes to the human (taste, money, real devices, anything that loosens a gate), and what to do when a session stops on a permission question.
-- `/issue-loop:handing-over`: Passes the loop to a fresh orchestrator at the first break between tasks past 120k tokens of context, or past 150k at any time: rewrites the handoff file, starts the successor, sends a first message that points at your standing order, checks it took over.
-
-**Setup:** needs Claude Code sessions in a terminal manager the orchestrator can drive (the bundled driver is for herdr; another manager needs five shell functions), plus a logged-in `gh`, `git`, `jq`, `curl`, `timeout` and GNU `date`. The repo needs issues as the queue, the labels `bug`, `regression`, `wish`, `test-debt` and one for "not now", CI as a required check on the newest commit of a PR, a deploy that can be checked from outside, and a way back. The implementer needs a checkout no other session works in, and the loop folder lives outside every checkout. Once per loop you run `grant.sh` in a terminal of your own and type yes: it puts your standing order into the instructions of the loop's sessions, so that a brief or a handover does not wait for your go. Sessions run in auto mode (`claude --permission-mode auto`), never with skipped permissions.
-
-Claude Code only; the plugin is not in the Codex marketplace. Read the limits before relying on it: tests prove logic and not taste, and no check in the loop is a person who uses the product. See `plugins/issue-loop/README.md`.
-
-### prose-styles
-
-Four Claude Code output styles that govern how the agent writes prose. An output style goes into the system prompt for the whole session, so it shapes every reply, commit message, PR body, and doc until you switch it. Unlike a skill, you do not invoke it per task. All four keep Claude Code's coding instructions intact and change only the writing.
-
-| Style                  | What it does                                                                                                                                                              |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `prose-styles:orwell`  | Orwell's six rules from "Politics and the English Language" (1946). Short word over long, no stock phrase, active voice, cut every word that can go.                      |
-| `prose-styles:concise` | Maximum density. Fragments legal, articles droppable, no preamble, no closing summary. Grammar yields to brevity, facts never do.                                         |
-| `prose-styles:ste`     | Simplified Technical English, condensed from ASD-STE100. One meaning per word, one instruction per step, condition before instruction. Built for procedures and runbooks. |
-| `prose-styles:house`   | All three combined. Concision sets the shape, Orwell governs word choice, STE contributes vocabulary and ambiguity discipline only.                                       |
-
-Every style governs prose only. Code, identifiers, API names, CLI flags, config keys, and quoted output are exempt in all four.
-
-`house` resolves the conflict between STE and concision in concision's favor: STE demands full sentences, articles, and "never omit a word to shorten", and all three are dropped. What survives from STE is its precision layer, one word per concept and no ambiguous pronouns. Use `ste` on its own when the reader must not misread, such as migration steps or an incident runbook.
-
-**Setup:** select a style after install with `/output-style prose-styles:house`, or pick it from the Output style list in `/config`. The choice persists for the project. Revert with `/output-style default`. Claude Code only; Codex has no output-style mechanism, so the plugin is not in the Codex marketplace.
-
-### guards
-
-Claude Code hooks that block shell commands known to fail. Each hook denies the call and tells the agent what to run instead. One hook so far:
-
-- `pkill-self-match` (`PreToolUse` on `Bash`): denies `pkill -f` (also `--full`, `-9f`, `-fx`) with a plain pattern. Claude Code runs each command through a `bash -c` whose command line holds the pattern, so `pkill -f` kills the agent's own shell and the call ends in exit 144. Over 14 days on one host, 83 Bash calls ended that way, 44 of them from `pkill -f`. The deny message offers `fuser -k <port>/tcp` or a bracketed pattern such as `pkill -f '[u]vicorn app'`.
-
-Claude Code only; the plugin is not in the Codex marketplace. See `plugins/guards/README.md`.
-
-### session-title
-
-A Claude Code `SessionStart` hook that names each new session after the last part of its working directory, its git branch and its start time, such as `server-infra main 10-18 11:09`, so sessions stay apart in the Remote Control list. It runs on `startup` and `clear`; a resumed session keeps its title, and `/rename` overrides it.
-
-Claude Code only; the plugin is not in the Codex marketplace. See `plugins/session-title/README.md`.
-
-### ponytail
-
-Lazy senior dev mode: a reflex ladder that questions whether code needs to exist at all, reaches for the standard library and native platform features before dependencies, and prefers one line over fifty. Three intensity levels (`lite`, `full`, `ultra`).
-
-Like `emil`, `taste-skill`, and `vercel`, this plugin is **not vendored here**. Its entry points at [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) (MIT) and tracks upstream `main`, so refreshing the marketplace picks up upstream changes directly. Versions and release cadence are the upstream author's, not this repo's.
-
-**Skills:**
-
-- `/ponytail:ponytail`: The core mode. Applies the reflex ladder to any coding task and marks deliberate shortcuts with `ponytail:` comments naming their ceiling and upgrade path.
-- `/ponytail:ponytail-review`: Review a diff for over-engineering only. One line per finding: location, what to cut, what replaces it. Complements correctness-focused review rather than replacing it.
-- `/ponytail:ponytail-audit`: The same lens over a whole repo instead of a diff, as a ranked list of what to delete, simplify, or replace with stdlib equivalents. Reports, does not apply fixes.
-- `/ponytail:ponytail-debt`: Harvest every `ponytail:` comment into a debt ledger so deferrals get tracked instead of rotting.
-- `/ponytail:ponytail-gain`: Scoreboard of ponytail's measured impact from its benchmark medians.
-- `/ponytail:ponytail-help`: Quick-reference card for the modes, skills, and commands.
-
-**Setup:** none beyond install, but note that ponytail ships hooks that run on `SessionStart`, `SubagentStart`, and `UserPromptSubmit`. They require `node` on `PATH`, write a mode flag to `$CLAUDE_CONFIG_DIR/.ponytail-active`, and inject the ruleset into every session automatically. Ponytail is therefore always-on once installed, not invoke-on-demand. Set the mode to `off` if you want it dormant.
-
-### emil
-
-Emil Kowalski's design engineering skills: UI polish, animation craft, motion reviews, prototyping, and opinionated library picks. See [emilkowal.ski/skill](https://emilkowal.ski/skill).
-
-**Not vendored here**, like `ponytail`. The entry points at [emilkowalski/skill](https://github.com/emilkowalski/skill) (MIT) and tracks upstream `main` unpinned. The upstream ships no plugin manifest, so the marketplace entry sets `strict: false` and supplies the manifest itself. Claude Code only. Replaces the `emil-design-eng` copy that the retired `frontend-design` plugin vendored.
-
-**Skills:**
-
-- `/emil:emil-design-eng`: Emil's design engineering philosophy: UI polish, component design, animation decisions, invisible details.
-- `/emil:animate`, `/emil:animate-expo`: Build an animation from scratch, on the web or in React Native and Expo.
-- `/emil:review-animations`: Review motion code against a high craft bar. Slash command only.
-- `/emil:improve-animations`: Audit a codebase's animation code into a prioritized plan.
-- `/emil:find-animation-opportunities`: Find places that should animate, and reject the ones that should not. Read-only.
-- `/emil:animation-vocabulary`: Turn a vague description of a motion effect into its exact term.
-- `/emil:apple-design`: Apple's interface and fluid-motion approach, translated for the web.
-- `/emil:prototype`: Build several versions of a UI piece behind a live picker. Slash command only.
-- `/emil:break-ui`: Feed UI worst-case data (long names, empty states, huge counts).
-- `/emil:mobile-native`: CSS and meta-tag fixes that make a web app feel native on a phone.
-- `/emil:pick-ui-library`: Pick a library for a frontend task from a curated list. Slash command only.
-- `/emil:ask-sonner`: Guide to the Sonner toast library.
-- `/emil:write-swift`: Modern Swift: value types, Swift 6 concurrency.
-
-### vercel
-
-Vercel's official agent skills: React and Next.js performance rules, composition patterns, React Native, view transitions, guideline reviews for UI code and prose, and Vercel deploy workflows.
-
-**Not vendored here**, like `ponytail`. The entry points at [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) and tracks upstream `main` unpinned. The repo README and four skills' frontmatter declare MIT; the repo has no `LICENSE` file. The upstream ships no plugin manifest, so the entry sets `strict: false`. Claude Code only.
-
-**Skills:**
-
-- `/vercel:react-best-practices`: React and Next.js performance rules for writing, reviewing, or refactoring code.
-- `/vercel:composition-patterns`: Component APIs that scale: compound components, render props, context providers.
-- `/vercel:react-view-transitions`: Animations with React's View Transition API.
-- `/vercel:react-native-skills`: React Native and Expo performance and native modules.
-- `/vercel:web-design-guidelines`: Review UI code against Vercel's Web Interface Guidelines.
-- `/vercel:writing-guidelines`: Review docs and prose against Vercel's Writing Guidelines.
-- `/vercel:deploy-to-vercel`: Deploy an app to Vercel.
-- `/vercel:vercel-cli-with-tokens`: Drive the Vercel CLI with access tokens.
-- `/vercel:vercel-optimize`: Cost and performance tuning for deployed Vercel projects.
-
-**Setup:** none beyond install. `web-design-guidelines` and `writing-guidelines` fetch the current guideline text from `raw.githubusercontent.com` at runtime, and the deploy skills need the Vercel CLI and an account.
-
-### taste-skill
-
-Frontend design skills against generic "AI slop" UI: taste-driven landing pages and portfolios, redesign audits, three style variants, and image-first workflows that generate a design reference before writing code.
-
-**Not vendored here**, like `ponytail` and `emil`. The entry points at [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) (MIT) and tracks upstream `main` unpinned. Added for trial. Claude Code only: the upstream ships a `.claude-plugin/plugin.json` but no Codex manifest.
-
-**Skills:**
-
-- `/taste-skill:taste-skill`: The main skill (v2). Reads the brief, infers a design direction, builds the page.
-- `/taste-skill:taste-skill-v1`: The original v1, frozen for projects that depend on its exact behavior.
-- `/taste-skill:gpt-tasteskill`: Variant tuned for GPT and Codex models.
-- `/taste-skill:redesign-skill`: Audit an existing project and upgrade its design without breaking behavior.
-- `/taste-skill:output-skill`: Force complete output; bans placeholders and truncation.
-- `/taste-skill:minimalist-skill`, `/taste-skill:soft-skill`, `/taste-skill:brutalist-skill`: Style variants (editorial minimalist, soft premium, Swiss brutalist).
-- `/taste-skill:image-to-code-skill`, `/taste-skill:imagegen-frontend-web`, `/taste-skill:imagegen-frontend-mobile`, `/taste-skill:brandkit`: Generate design or brand reference images, then build from them. Need an image-generation tool in the host.
-- `/taste-skill:stitch-skill`: Write a Google Stitch compatible `DESIGN.md`.
-
-Overlaps with `emil`; install both only to compare. Replaces the retired `frontend-design` plugin, whose skill is archived in `deprecated`.
-
-### deprecated
-
-Archive of superseded skills, kept installable so old workflows keep resolving. Each skill is frozen, carries a deprecation banner, and names its replacement: `crafting-presentations`, `perfecting-presentations`, and `exporting-decks-to-pptx` (formerly `workbench`) plus `presentations` (formerly `writing`) point at the `presentations` plugin; `autopilot`, `copilot`, and `dispatching-parallel-agents` (formerly `workbench`) point at their replacements in the `workbench` plugin (`pilot` and `subagent-driven-development`), `terse-mode` (formerly `workbench`) retires without replacement, and `writing`, `pyramid`, and `tech-doc` (formerly `writing`) point at `ghostwrite` and `coach` in the `writing` plugin; and `frontend-design` (from the retired `frontend-design` plugin, an Anthropic Apache 2.0 port; see `plugins/deprecated/NOTICE`) points at `taste-skill:taste-skill`. Do not install alongside `presentations`, `workbench`, or `writing` unless you need the old skill names.
-
-## Global instructions
-
-`dotclaude/` holds my global Claude Code instructions (`~/.claude/CLAUDE.md`) under version control. It is not a plugin. See `dotclaude/README.md` for the symlink and where private sections go.
-
----
-
-See `AGENTS.md` for repository structure, plugin layout, and contribution conventions.
+The [documentation](docs/index.md) holds tutorials, setup guides, reference pages and explanations. [`dotclaude/`](dotclaude/README.md) holds the maintainer's global Claude Code instructions and is not a plugin. [AGENTS.md](AGENTS.md) holds the conventions for contributors.
