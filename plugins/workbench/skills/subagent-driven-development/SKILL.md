@@ -145,7 +145,7 @@ Claude Code: use `Agent` with a focused prompt for implementation and review age
 
 Codex: use `spawn_agent` for independent sidecar tasks when useful. For urgent blocking work, implement locally and preserve the same task loop. For delegated code edits, assign a disjoint write set and tell the worker not to revert others' changes. To send work back to the same agent, use `send_input` with the id `spawn_agent` returned (`followup_task` under multi-agent v2), then `wait`.
 
-No tool to continue an agent (Cursor, Codex without multi-agent): start a fresh agent with the original brief, the agent's last report and the feedback (for a failed command: the command, its exit code and its output). Tell it its earlier work is already in the tree.
+No tool to continue an agent (Cursor, Codex without multi-agent): start a fresh agent with the original brief, the agent's last report and the feedback (for a failed command: the command, its exit code and its output). Tell it its earlier work is already in the tree. Its return counts as the same agent's return, also for the one fix round.
 
 ## Completion
 
