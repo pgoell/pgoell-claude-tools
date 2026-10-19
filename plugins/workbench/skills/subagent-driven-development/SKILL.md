@@ -14,7 +14,7 @@ Core rule: the main session coordinates. Agents implement or review bounded work
 Use this skill when:
 
 - An implementation plan already exists.
-- The plan has slices (`workbench:writing-plans` emits `### Slice N` sections) or similarly bounded tasks.
+- The plan has slices or similarly bounded tasks. `workbench:writing-plans` emits slices as `### Slice N` sections in an md plan, and as `<article class="task">` elements in `#tasks` labeled "Slice 01", "Slice 02" in an html plan. A task with an ordering note is not a slice, even when its label reads "Slice 02". In md that note is the one line under the task's heading that says why the task sits there and which slice it unblocks; in html it is a `p.order-note`. Such a task goes through the Task Loop at its place in plan order like a slice: its own agent, pasted the same way.
 - Slices can be assigned with clear ownership.
 - The current runtime has subagent support, or the main session can follow the same task discipline sequentially.
 
@@ -22,9 +22,9 @@ If there is no plan yet, use `workbench:writing-plans` first. If implementation 
 
 ## Task Loop
 
-For each plan slice (or bounded task, when the plan is not slice-shaped):
+For each plan slice or bounded task, in plan order (`## Parallel dispatch` says when independent ones may run at once):
 
-1. Paste the slice text into the agent prompt: its heading, files map, signatures, test commands, acceptance criteria, and checkbox steps. One agent per slice; the checkbox steps are the slice's internal TDD rhythm and are never split across agents.
+1. Paste the whole slice into the agent prompt: in an md plan its `###` section (`### Slice N`, or a bounded task's own heading) up to the next `###` or `##` heading, in an html plan the `<article class="task">` element. Either way it holds whichever of these the slice has: label and title, files map, signatures, call-stack sketch, test commands, acceptance criteria, and checkbox steps. One agent per slice; the checkbox steps are the slice's internal TDD rhythm and are never split across agents.
 2. Define ownership: files, directories, or behavior the agent may change.
 3. Include acceptance criteria and verification commands.
 4. Tell the agent it is not alone in the codebase and must not revert edits made by others.
@@ -58,7 +58,7 @@ Do not start the code quality reviewer until spec compliance passes.
 ```md
 Implement this plan slice:
 
-[paste one slice: heading, files map, signatures, test commands, acceptance criteria, checkbox steps]
+[paste one whole slice or bounded task: its `###` section (md) or its `<article class="task">` element (html)]
 
 Ownership:
 

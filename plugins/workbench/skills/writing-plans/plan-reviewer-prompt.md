@@ -21,7 +21,7 @@ Subagent (general-purpose):
 
     | Category | What to Look For |
     |----------|------------------|
-    | Spec-or-preamble coverage | Requirements in the source spec, or decisions in the plan's own `## Design` preamble, that have no slice. Cite the requirement or decision and the missing slice. |
+    | Spec-or-preamble coverage | Requirements in the source spec, or decisions in the plan's own design preamble (`## Design` in md, `#design` in html), that have no slice. Cite the requirement or decision and the missing slice. |
     | Placeholder scan | TBD, TODO, fill-in-later language, "similar to Slice N", references to names not introduced, or any instruction a fresh agent would have to guess at. Cite the line. |
     | Name consistency | File names, function names, types, or commands that drift between slices (one slice introduces `foo`, a later slice references `foo_v2`). Cite both slices. |
     | Testability | Slices with no exact test command, or with acceptance criteria that do not name a provable behavior. Cite the slice and the gap. |

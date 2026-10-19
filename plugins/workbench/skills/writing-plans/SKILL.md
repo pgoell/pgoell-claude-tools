@@ -178,7 +178,7 @@ Cursor: `Task` tool.
 
 The reviewer checks:
 
-1. Spec-or-preamble coverage: each requirement in the source spec, or each decision in the plan's own `## Design` preamble, maps to at least one slice.
+1. Spec-or-preamble coverage: each requirement in the source spec, or each decision in the plan's own design preamble (`## Design` in md, `#design` in html), maps to at least one slice.
 2. Placeholder scan: the plan contains none of the forbidden placeholder patterns.
 3. Name consistency: later slices use the same file names, function names, types, and command names introduced earlier.
 4. Testability: every slice has an exact test command and acceptance criteria naming the behavior the outer-loop test must prove.
