@@ -146,4 +146,4 @@ The loop was built and run with Claude Code sessions only. Under Codex the orche
 
 ## Self-Healing
 
-When a script exits with an error or a `FAIL`, a driver call fails, a loop folder is older than this skill, or the `impl settled` line does not come, read `references/self-healing.md`: each fault and its fix.
+When a script exits with an error or a `FAIL`, a driver call fails, a loop folder is older than this skill, the `impl settled` line does not come, or the implementer's state is `gone` while its tab is there, read `references/self-healing.md`: each fault and its fix.
