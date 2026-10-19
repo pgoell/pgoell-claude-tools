@@ -14,8 +14,8 @@ under the rules in `../edition/references/feedback-rules.md`; read it first.
 `/news:tune [topic] [--vault PATH] [--periodic FOLDER]`
 
 `topic` narrows the interview to one of `sections`, `sources`, `depth`,
-`interests`, `design`. Vault and periodic folder resolve as in the edition
-skill. Below, `NP` is `<vault>/<periodic>/05 Newspaper`.
+`interests`, `design`. Vault and periodic folder resolve as in
+`../edition/SKILL.md` `## Arguments`. Below, `NP` is `<vault>/<periodic>/05 Newspaper`.
 
 ## Protocol
 

@@ -92,13 +92,13 @@
       "name": "news",
       "source": "./plugins/news",
       "description": "Build a personal daily newspaper in a kasten vault, linked from the daily note, shaped by your feedback.",
-      "version": "0.7.0"
+      "version": "0.8.0"
     },
     {
       "name": "insights",
       "source": "./plugins/insights",
       "description": "Find what went wrong in yesterday's Claude Code sessions and newspaper runs, with one concrete fix per problem on a page in a kasten vault.",
-      "version": "0.5.0"
+      "version": "0.5.1"
     },
     {
       "name": "issue-loop",

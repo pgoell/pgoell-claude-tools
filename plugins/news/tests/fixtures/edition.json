@@ -1,0 +1,54 @@
+{
+  "title": "Test Morgen",
+  "tagline": "A test edition",
+  "date": "2026-10-19",
+  "date_display": "Montag, 19. Oktober 2026",
+  "number": 2,
+  "previous": null,
+  "weather": null,
+  "feedback_hint": "Feedback: 01 Periodic/05 Newspaper/feedback.md",
+  "lead": {
+    "id": "2026-10-19-bridge-01",
+    "headline": "Bridge opens",
+    "dek": null,
+    "summary": "The new bridge over the Kinzig opened on Sunday after two years of work and cost twelve million euros.",
+    "lang": "en",
+    "url": "LEAD_URL",
+    "source": "Test Echo",
+    "published": "LEAD_PUB",
+    "image": null,
+    "importance": 1,
+    "tags": ["local"],
+    "followups": [],
+    "update_note": null,
+    "key_facts": ["cost twelve million euros", "two years of work"]
+  },
+  "sections": [
+    { "id": "gelnhausen", "name": "Gelnhausen", "kicker": null, "stories": [] },
+    { "id": "welt", "name": "Welt", "kicker": null, "stories": [] },
+    { "id": "ki-tech", "name": "KI & Tech", "kicker": null, "stories": [] },
+    {
+      "id": "evals",
+      "name": "AI Evals",
+      "kicker": null,
+      "stories": [
+        {
+          "id": "2026-10-19-evals-01",
+          "headline": "New benchmark",
+          "dek": null,
+          "summary": "A new benchmark for long tasks came out this week and ranks ten models on work that takes a human hours.",
+          "lang": "en",
+          "url": "https://example.org/benchmark",
+          "source": "Test Lab",
+          "published": "STORY_PUB",
+          "image": null,
+          "importance": 1,
+          "tags": ["evals"],
+          "followups": [],
+          "update_note": null
+        }
+      ]
+    }
+  ],
+  "briefs": []
+}

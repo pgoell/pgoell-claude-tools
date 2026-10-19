@@ -12,7 +12,7 @@ earlier coverage.
 cron runs `/news:edition`); `/news:feedback` also starts when you give the
 agent feedback on the paper in plain words.
 
-- `/news:edition [--vault PATH] [--date YYYY-MM-DD]`: applies open feedback,
+- `/news:edition [--vault PATH] [--date YYYY-MM-DD] [--periodic FOLDER]`: applies open feedback,
   gathers news per section (one subagent each where the host has them), drops
   repeats, writes, renders with the configured design, records what ran, and
   links the page from the daily note. Runs by hand or headless from cron.
@@ -25,8 +25,8 @@ agent feedback on the paper in plain words.
 
 ## In the vault
 
-Everything lives under `<periodic>/05 Newspaper/` (`01 Periodic` unless kasten's
-`KASTEN_PERIODIC_PATH` says otherwise). The first run seeds what is missing
+Everything lives under `<periodic>/05 Newspaper/`, with the periodic folder
+resolved as `skills/edition/SKILL.md` (`## Arguments`) says. The first run seeds what is missing
 from `skills/edition/references/defaults/`:
 
 ```text
@@ -113,12 +113,23 @@ the host's time zone; on a host not set to Europe/Berlin, add
 
 ## Tests
 
-`tests/run.sh` runs the cron wrapper with a fake `claude` in a temp home and
-a temp vault: no session, no network, under a second. It checks that the
-wrapper skips permissions, passes the folder from `KASTEN_PERIODIC_PATH` as
-`--periodic`, looks in `01 Periodic` when the variable is unset, and exits 1
-when no page was written.
+`tests/run.sh` needs `uv` and `python3` and runs in about two seconds. The
+scripts under test open no outside connection; `uv` may fetch pyyaml once. It checks three things:
 
-Last run, 2026-10-18: 6 of 6 checks pass.
+- The cron wrapper, with a fake `claude` in a temp home and a temp vault: it
+  skips permissions, passes the folder from `KASTEN_PERIODIC_PATH` as
+  `--periodic`, looks in `01 Periodic` when the variable is unset, and exits 1
+  when no page was written.
+- `validate.py` on fixture editions in `tests/fixtures/`: it passes dates
+  inside the section's `freshness_days` (a bare day and a datetime with an
+  offset), fails a story older than the window and one dated after the
+  edition, reading `config/topics.yaml` beside the edition by default, and
+  only warns when there is no topics.yaml.
+- `refetch.py`, against a closed port and a local server
+  (`tests/fixtures/server.py`): a closed port and a 404 fail as dead (exit 1),
+  a 403 fails as a refusal (exit 2), a page prints its text without the
+  script, and a paywalled page prints its `og:description`.
 
-The skills have no test.
+Last run, 2026-10-19: 25 of 25 checks pass.
+
+The skills' judgement steps have no test.

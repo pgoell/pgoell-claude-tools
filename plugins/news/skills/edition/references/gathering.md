@@ -77,8 +77,16 @@ it) also carries "bracket": {"rounds": [{"name", "matches": [{"a", "b",
 "score" ("3-2" or null), "winner" ("a", "b" or null), "when" (Berlin time,
 "17.10., 20:00", for a match not played, else null)}]}]}, rounds left to
 right. Take every result from a page you fetched. A Swiss stage stays text.
-Write the summary from the article text you fetched, never from memory. If
-the window holds nothing worth reading, return [] and say why in one line.
+
+Known shortcuts; do not take them:
+- A summary written from memory or from the search snippet instead of the
+  article text you fetched.
+- A wrong or guessed "published": today's date, the crawl date, or any date
+  that is not on the page.
+Before you return, check each candidate: its "published" comes from the
+article's own meta or text and lies in the window, and each key fact appears
+in the body you fetched. If the window holds nothing worth reading, return []
+and say why in one line.
 ```
 
 At depth 2 ask for 50 to 90 word summaries; at depth 1 ask only for headline,
