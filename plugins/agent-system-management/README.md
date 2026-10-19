@@ -1,6 +1,6 @@
 # agent-system-management
 
-Manage the host agent's instruction layer and skill layer in any runtime: audit and update `AGENTS.md` / `CLAUDE.md` files (and their variants), capture session learnings, and scaffold or iterate on Claude Code / Codex skills.
+Manage the host agent's instruction layer and skill layer in any runtime: audit and update `AGENTS.md` / `CLAUDE.md` files (and their variants), capture session learnings, and scaffold or iterate on Claude Code, Codex and Cursor skills.
 
 Three skills:
 
@@ -10,7 +10,7 @@ Three skills:
 | `capturing-session-learnings` | End-of-session warm capture of learnings                                                                                         | "/revise-agents-md", "update AGENTS.md with what we learned this session", "save what we learned this session"                                            |
 | `creating-skills`             | Full skill lifecycle (create, eval-driven iteration, benchmarking, bulletproofing, description optimization, cutting, packaging) | "create a skill", "improve this skill", "run evals on my skill", "optimize the description", "turn this conversation into a skill", "cut this skill down" |
 
-Works in Claude Code and Codex CLI. Files are deduped via `realpath`, so `CLAUDE.md` symlinked to `AGENTS.md` counts as one logical file.
+Works in Claude Code, Codex and Cursor. Files are deduped via `realpath`, so `CLAUDE.md` symlinked to `AGENTS.md` counts as one logical file.
 
 ## Files in scope (instruction skills)
 
