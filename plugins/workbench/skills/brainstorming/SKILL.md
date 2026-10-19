@@ -27,7 +27,7 @@ The HARD-GATE above applies within both the medium and large lanes: no implement
 You MUST create a task for each of these items and complete them in order:
 
 1. **Explore project context**: dispatch a cost-efficient subagent to survey files, docs, and recent commits; use its summary as starting context.
-2. **Offer visualizing-options** (if the topic will involve visual questions): mention `workbench:visualizing-options` in its own message; the user opts in.
+2. **Visualizing-options**: if the user's request already asks to see visuals in the browser (mockups, layout options to click), that request is the opt-in: invoke `workbench:visualizing-options` in this same turn and render what they asked for, with no offer message. Otherwise, if the topic will involve visual questions, offer it: mention `workbench:visualizing-options` in its own message, pointer only; the user opts in.
 3. **Grill exhaustively until a shared design concept emerges**: walk the design tree depth-first, resolving each branch's dependencies before moving to the next.
 4. **Propose 2-3 approaches**: with trade-offs and your recommendation.
 5. **Present design**: in sections scaled to their complexity, get user approval after each section.
@@ -71,6 +71,8 @@ The lane-scaling carve-out still applies. A medium-lane question set might conve
 ```dot
 digraph brainstorming {
     "Explore project context" [shape=box];
+    "User asked for browser visuals?" [shape=diamond];
+    "Invoke workbench:visualizing-options now\n(render what was asked)" [shape=box];
     "Visual questions ahead?" [shape=diamond];
     "Mention workbench:visualizing-options\n(own message)" [shape=box];
     "Grill exhaustively (design-tree DFS)" [shape=box];
@@ -79,7 +81,10 @@ digraph brainstorming {
     "User approves design?" [shape=diamond];
     "Recommend next skill by lane\n(spec: large / plan preamble: medium)" [shape=doublecircle];
 
-    "Explore project context" -> "Visual questions ahead?";
+    "Explore project context" -> "User asked for browser visuals?";
+    "User asked for browser visuals?" -> "Invoke workbench:visualizing-options now\n(render what was asked)" [label="yes"];
+    "User asked for browser visuals?" -> "Visual questions ahead?" [label="no"];
+    "Invoke workbench:visualizing-options now\n(render what was asked)" -> "Grill exhaustively (design-tree DFS)";
     "Visual questions ahead?" -> "Mention workbench:visualizing-options\n(own message)" [label="yes"];
     "Visual questions ahead?" -> "Grill exhaustively (design-tree DFS)" [label="no"];
     "Mention workbench:visualizing-options\n(own message)" -> "Grill exhaustively (design-tree DFS)";
@@ -133,11 +138,13 @@ digraph brainstorming {
 
 ## Visual Questions
 
-If the conversation will involve visual content (mockups, layouts, diagrams), mention `workbench:visualizing-options` in its own message before asking the next question. The user opts in by acknowledging. That skill owns the browser companion; this skill stays in the terminal.
+If the user has already asked for browser visuals, that ask is the opt-in: invoke `workbench:visualizing-options` in this same turn and render what they asked for, with no offer message. "Asked" means the user explicitly asks to see, render or click options in the browser. A UI topic alone is not an ask, nor are mockups the user calls out of scope or does not want; then the offer below applies. Rendering options through visualizing-options is design conversation, not implementation, so the HARD-GATE does not block it. After the render, carry on grilling from the user's choice.
+
+Otherwise, if the conversation will involve visual content (mockups, layouts, diagrams), mention `workbench:visualizing-options` in its own message before asking the next question. The user opts in by acknowledging. That skill owns the browser companion; this skill stays in the terminal.
 
 The offer message should contain ONLY the pointer; do not combine it with clarifying questions.
 
-If the user stalls on a visual question ("I don't know", "whatever looks good"), stop rephrasing it in words. Use `workbench:visualizing-options` to render 3-4 deliberately divergent directions the user can react to instead of describe. If the companion is not yet running, make the offer at that moment (same rule: own message, pointer only) and render once the user opts in.
+If the user stalls on a visual question ("I don't know", "whatever looks good"), stop rephrasing it in words. Use `workbench:visualizing-options` to render 3-4 deliberately divergent directions the user can react to instead of describe. If the companion is not yet running and the user has already asked for browser visuals, render now with no offer. Otherwise make the offer at that moment (same rule: own message, pointer only) and render once the user opts in.
 
 ## Handoff
 

@@ -63,6 +63,7 @@ These apply in every lane, regardless of routing:
 - `workbench:systematic-debugging` for any bug.
 - `workbench:verification-before-completion` before claiming work is done, fixed, passing, ready, or safe to merge.
 - A skill the user names by name is always invoked, regardless of lane.
+- A user who asks to see options in the browser (mockups, layout options to click) has opted in to `workbench:visualizing-options`; invoke it without an offer and render in this same turn. Do not wait for lane confirmation first; propose the lane in the same message as the render, if at all. If design questions are still open, brainstorming runs too and goes straight to it (see `workbench:brainstorming`, Visual Questions).
 
 ## How to Access Skills
 
