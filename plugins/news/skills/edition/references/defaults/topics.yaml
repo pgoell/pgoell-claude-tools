@@ -8,6 +8,9 @@ edition:
   briefs: 8 # one-liners in the "in brief" block
   lead_from: [any] # section ids the lead may come from, or [any]
   style: normal # normal, or smart-brevity: one-sentence lede, "why it matters", then details
+  # Optional, smart-brevity only: free-text rule for the "why it matters"
+  # paragraph, read by the edition on top of its own rule. For example:
+  # why_it_matters: name a consequence or what it means for my work; never a new fact
 
 # weather.py asks Open-Meteo (free, no key) for this point when the edition
 # carries no weather. Set weather: null to drop the weather box.
