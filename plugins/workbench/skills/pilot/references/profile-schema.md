@@ -105,17 +105,17 @@ Improvement pass: <always | on_learnings | off>
 
 ## Defaults when a section is absent
 
-| Section                     | Default                                                                                                                                                                                              |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `## PR behavior`            | `Mode: stop_at_green`, `Base branch:` = default branch, `Squash: yes`, no hooks                                                                                                                      |
-| `## Gates`                  | `design, slices`                                                                                                                                                                                     |
-| `## Improvement pass`       | `on_learnings`                                                                                                                                                                                       |
-| `## Required skills`        | universal table only, no overrides, no additions                                                                                                                                                     |
-| `## Project name`           | repo dir basename                                                                                                                                                                                    |
-| `## Branching`              | default branch detected via `git symbolic-ref refs/remotes/origin/HEAD`, fallback `master`; standard Conventional Commits prefixes                                                                   |
-| `## Commands`               | task runner detected from `mise.toml` / `Makefile` / `package.json`; lint and test commands inferred from runner conventions                                                                         |
-| `## Documentation paths`    | `docs/superpowers/specs`, `docs/superpowers/plans`, `docs/superpowers/OPEN_THINGS.md`, `docs/adr`; each used only if it exists. Use `don't commit` to keep generated specs or plans out of the repo. |
-| `## Project-specific rules` | none beyond what `CLAUDE.md` or `AGENTS.md` provides                                                                                                                                                 |
+| Section                     | Default                                                                                                                                                                                                                  |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `## PR behavior`            | `Mode: stop_at_green`, `Base branch:` = default branch, `Squash: yes`, no hooks                                                                                                                                          |
+| `## Gates`                  | `design, slices`                                                                                                                                                                                                         |
+| `## Improvement pass`       | `on_learnings`                                                                                                                                                                                                           |
+| `## Required skills`        | universal table only, no overrides, no additions                                                                                                                                                                         |
+| `## Project name`           | repo dir basename                                                                                                                                                                                                        |
+| `## Branching`              | default branch detected via `git symbolic-ref refs/remotes/origin/HEAD`, fallback `master`; standard Conventional Commits prefixes                                                                                       |
+| `## Commands`               | task runner detected from `mise.toml` / `Makefile` / `package.json`; lint and test commands inferred from runner conventions                                                                                             |
+| `## Documentation paths`    | Specs and plans: the order in `config-schema.md` `## Resolution order`. `docs/superpowers/OPEN_THINGS.md`, `docs/adr`, each used only if it exists. Use `don't commit` to keep generated specs or plans out of the repo. |
+| `## Project-specific rules` | none beyond what `CLAUDE.md` or `AGENTS.md` provides                                                                                                                                                                     |
 
 ## Bootstrap precedence
 

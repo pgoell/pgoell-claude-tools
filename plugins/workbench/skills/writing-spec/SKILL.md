@@ -27,13 +27,7 @@ You MUST create a task for each of these items and complete them in order:
 
 ## Path Resolution
 
-`<paths.specs>` resolves in order:
-
-1. `.workbench/pilot.md` `Specs:` heading.
-2. Project `CLAUDE.md` or `AGENTS.md` spec-path convention.
-3. `.workbench/specs/` (default).
-
-Resolve the format first. If `<paths.specs>` is `don't commit`, write the spec to `/tmp/<project-name>-pilot/YYYY-MM-DD-<topic>-design.<ext>` and skip the commit step. Otherwise write to `<paths.specs>/YYYY-MM-DD-<topic>-design.<ext>`, where `<ext>` is `html` or `md` per the format resolved in `## Output Format`.
+Resolve the format first (see `## Output Format`). Then resolve the spec folder `<paths.specs>` by the one order in `../pilot/references/config-schema.md` `## Resolution order`, and write `<paths.specs>/YYYY-MM-DD-<topic>-design.<ext>`, where `<ext>` is `md` or `html` per the format. If `<paths.specs>` is `don't commit`, write that file name under `/tmp/<project-name>-pilot/` and skip the commit step, as that section says.
 
 ## Drafting
 
@@ -93,7 +87,7 @@ Override resolution order, highest precedence first:
 2. `.workbench/config.md` `## Output formats` entry for `Specs:`. Schema documented in `plugins/workbench/skills/pilot/references/config-schema.md`.
 3. Per-skill hard-coded default (md).
 
-Path resolution order: `.workbench/pilot.md` `## Documentation paths` `Specs:` first; then `.workbench/config.md` `## Output paths` `Specs:`; then `.workbench/specs/` default. Path and format resolve independently; the file name takes its extension from the format, as `## Path Resolution` says.
+The spec path resolves as `## Path Resolution` says; only the file name's extension comes from the format.
 
 When emitting HTML, follow the structural skeleton in `references/spec-template.html` in this skill's directory. Read the template lazily, only when actually producing the artifact. Do not introduce U+2014 or U+2013 codepoints in body copy; HTML entity forms (`&mdash;`, `&#8212;`, `&ndash;`, `&#8211;`) are permitted.
 

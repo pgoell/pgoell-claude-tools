@@ -40,14 +40,14 @@ All sections optional. All fields within a section optional.
 
 ## Defaults when a section or field is absent
 
-| Field                | Default format | Default path               |
-| -------------------- | -------------- | -------------------------- |
-| Specs                | md             | `.workbench/specs`         |
-| Plans                | md             | `.workbench/plans`         |
-| Brainstorm summaries | html           | `.workbench/brainstorms`   |
-| Debug reports        | html           | `.workbench/debug-reports` |
+| Field                | Default format | Default folder             | File name                             |
+| -------------------- | -------------- | -------------------------- | ------------------------------------- |
+| Specs                | md             | `.workbench/specs`         | `YYYY-MM-DD-<topic>-design.<ext>`     |
+| Plans                | md             | `.workbench/plans`         | `YYYY-MM-DD-<topic>.<ext>`            |
+| Brainstorm summaries | html           | `.workbench/brainstorms`   | `YYYY-MM-DD-<topic>-brainstorm.<ext>` |
+| Debug reports        | html           | `.workbench/debug-reports` | `YYYY-MM-DD-<topic>-debug.<ext>`      |
 
-Filenames within the directory follow `YYYY-MM-DD-<topic>-<artifact>.<ext>`, where `<ext>` is `md` or `html` per resolved format.
+The file name is the same whichever folder wins; `<ext>` is `md` or `html` per the resolved format.
 
 ## Design system resolution
 
@@ -70,13 +70,23 @@ For each artifact, format and path resolve independently.
 2. `.workbench/config.md` `## Output formats` entry for the artifact.
 3. Per-skill hard-coded default (table above).
 
-**Path resolution** (highest precedence first):
+**Path resolution** gives a folder. The skill appends the artifact's file name from the table above to it.
 
-1. `.workbench/pilot.md` `## Documentation paths` entry for the artifact (existing convention; specs and plans only today).
-2. `.workbench/config.md` `## Output paths` entry for the artifact.
-3. Per-skill hard-coded default (table above).
+For specs and plans, highest precedence first (the first rung that gives a folder wins, in and outside pilot):
 
-The two resolutions never interact. A user can set `Specs: html` in `config.md` while `pilot.md` already pins `Specs: docs/architecture/` for paths.
+1. `.workbench/pilot.md` `## Documentation paths` `Specs:` or `Plans:`.
+2. `.workbench/config.md` `## Output paths` `Specs:` or `Plans:`.
+3. A spec or plan folder named by the project's `CLAUDE.md` or `AGENTS.md`.
+4. `docs/superpowers/specs/` or `docs/superpowers/plans/`, if that folder exists.
+5. `.workbench/specs/` or `.workbench/plans/` (default).
+
+Explicit workbench config beats a prose convention, so both workbench files come before `CLAUDE.md` and `AGENTS.md`.
+
+For brainstorm summaries and debug reports: the `.workbench/config.md` `## Output paths` entry, else the default folder in the table above.
+
+If the resolved folder is `don't commit` (a `pilot.md` value only), write the same file name under `/tmp/<project-name>-pilot/` and do not commit it. `<project-name>` is `pilot.md` `## Project name`, else the repo folder name.
+
+Format and path resolve separately, and meet in one place: the file name's extension comes from the resolved format. With `Specs: html` in `config.md` and `Specs: docs/architecture/` in `pilot.md`, the spec goes to `docs/architecture/YYYY-MM-DD-<topic>-design.html`.
 
 ## Relationship to `.workbench/pilot.md`
 

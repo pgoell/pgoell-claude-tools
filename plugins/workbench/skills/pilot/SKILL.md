@@ -19,10 +19,10 @@ If the file exists:
 2. Read `## Gates` and apply the active gate set: `design`, `slices`, both, or the literal `none`. Absent row means `design, slices`. A per-invocation phrase overrides for this run only: "auto mode" or "no gates" resolves to `none`; "co mode" resolves to `design`.
 3. Read `## Improvement pass` and apply: `always`, `on_learnings` (default), or `off`.
 4. Read `## Required skills` if present; merge `replaces` and `additional` rows into the universal table from `references/required-skills.md`.
-5. For other project information (default branch, task runner, doc paths, project rules), resolve in this order, per field:
+5. For other project information (default branch, task runner, project rules), resolve in this order, per field (spec and plan paths: see `references/config-schema.md` `## Resolution order`):
    - Profile heading.
    - Session context (`CLAUDE.md`, `AGENTS.md`, both already loaded into the agent).
-   - Git or filesystem detection (`git symbolic-ref refs/remotes/origin/HEAD`, presence of `mise.toml` / `Makefile` / `package.json`, existence of `docs/superpowers/specs` etc.).
+   - Git or filesystem detection (`git symbolic-ref refs/remotes/origin/HEAD`, presence of `mise.toml` / `Makefile` / `package.json`).
    - Ask the user. Never guess.
 
 A field that no source provides and the active step needs stops the workflow with a question.
@@ -127,8 +127,7 @@ Skip this step in the quick and medium lanes; the medium lane's combined doc rep
 Then, following that skill's guidance:
 
 - Use the design converged on in step 2 (the human-driven brainstorm, or, without the `design` gate, the decision doc).
-- Path: `<paths.specs>/YYYY-MM-DD-<topic>-design.<ext>`; `<ext>` is the format writing-spec resolves (`md` or `html`). `<paths.specs>` resolves through the bootstrap precedence chain.
-- If `<paths.specs>` is `don't commit`, write the spec under `/tmp/<project-name>-pilot/` instead and do not commit it.
+- Path and format: as writing-spec resolves them, by `references/config-schema.md` `## Resolution order` (`don't commit` included).
 - The skill runs its self-review subagent and its user approval gate. **With the `design` gate active,** this is a real human gate: present the spec and WAIT for the user's approval; do not answer it yourself. If the user requests changes, apply them and re-run the self-review before proceeding. **Without the `design` gate,** self-answer the approval gate using the decision doc as the basis.
 - Commit: `docs: add <topic> design spec`, unless `<paths.specs>` is `don't commit`.
 
@@ -145,9 +144,8 @@ With the `design` gate active, once the user approves the spec, proceed autonomo
 
 Then:
 
-- Path: `<paths.plans>/YYYY-MM-DD-<topic>.<ext>`, `<ext>` as writing-plans resolves it.
-- If `<paths.plans>` is `don't commit`, write the plan under `/tmp/<project-name>-pilot/` instead and do not commit it.
-- Use slice-ordered tasks (checkbox syntax `- [ ]` per step within each slice) so progress is trackable.
+- Path and format: as writing-plans resolves them, by `references/config-schema.md` `## Resolution order` (`don't commit` included).
+- Use slice-ordered tasks with a checkbox per step so progress is trackable: `- [ ]` in md, the template's `<span class="checkbox">` step items in html (see writing-plans).
 - Commit: `docs: add <topic> implementation plan`, unless `<paths.plans>` is `don't commit`.
 
 If `Hooks.post_plan` is defined, run it now with `{{plan_path}}` substituted.
