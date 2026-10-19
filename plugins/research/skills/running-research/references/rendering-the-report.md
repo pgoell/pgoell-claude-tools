@@ -1,6 +1,6 @@
 # Rendering the report as HTML
 
-Step 10 sends you here when the resolved format is html. You, the orchestrator, render `{OUTPUT_PATH}/report.html` from `{OUTPUT_PATH}/report.md`. Never hand this to a subagent: Claude Code refuses report files from subagents, and the reviews passed `report.md`, so only a faithful copy of it may ship. `report.md` stays as the reviewed source; `report.html` is the deliverable.
+Step 10 sends you here when the resolved format is html. You, the orchestrator, render `{OUTPUT_PATH}/report.html` from `{OUTPUT_PATH}/report.md`. Never hand this to a subagent: Claude Code refuses `report*.md` files from subagents, and the reviews passed `report.md`, so only a faithful copy of it may ship. `report.md` stays as the reviewed source; `report.html` is the deliverable.
 
 ## 1. Read the inputs
 
@@ -49,7 +49,7 @@ echo "$md $html"
 `html` must be at least `md`. Fewer means a link or citation went missing.
 
 ```bash
-grep -nE 'Research report template|Topic of the research report|This template demonstrates|Replace this (paragraph|section)|example\.com/[a-e]"|Example [A-E]: |Version:</b>|Finding [1-3]<' {OUTPUT_PATH}/report.html.part
+grep -nE 'Research report template|Topic of the research report|This template demonstrates|Replace this (paragraph|section)|example\.com/[a-e]|Example [A-E]: |Version:</b>|Finding [1-3]<|Numbered entries match|Token-bucket|If the report consumed|Each finding is an' {OUTPUT_PATH}/report.html.part
 ```
 
 Must print nothing. A line means template sample text is left.
@@ -60,12 +60,12 @@ grep -nP '[\x{2014}\x{2013}]' {OUTPUT_PATH}/report.html.part
 
 Must print nothing.
 
-```bash
-grep -c '^## ' {OUTPUT_PATH}/report.md
+````bash
+awk '/^```/{f=!f} !f && /^## / && !/^## Table of Contents/{n++} END{print n+0}' {OUTPUT_PATH}/report.md
 grep -c '<h2' {OUTPUT_PATH}/report.html.part
-```
+````
 
-The two counts must match, less one when report.md has a `## Table of Contents` heading.
+The two counts must match. The first counts the `##` headings of report.md outside code fences, without a Table of Contents heading.
 
 When a check fails, fix the page and run every check again. When all pass, `mv {OUTPUT_PATH}/report.html.part {OUTPUT_PATH}/report.html`.
 

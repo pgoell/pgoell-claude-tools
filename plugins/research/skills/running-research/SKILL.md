@@ -256,7 +256,7 @@ Read `references/verdicts-and-markers.md` to parse a verdict (Steps 5, 8) or a r
 ## Behavioral Guidelines
 
 - Never pass session history to agents. Construct each dispatch fresh from the template + injected values.
-- Each prompt template has placeholders; the "Inject" item of its step (3, 4, 5, 7, 8) names every one.
+- Each prompt template has placeholders; the "Inject" item of its step (3, 4, 5, 6, 7, 8) names every one.
 - Credentials/secrets never appear in templates or injected values.
 - See `report-template.md` for report structure (use Deep Mode section) and `research-recipes.md` for search patterns.
 
