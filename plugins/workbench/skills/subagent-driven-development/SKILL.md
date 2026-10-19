@@ -22,7 +22,7 @@ If there is no plan yet, use `workbench:writing-plans` first. If implementation 
 
 ## Task Loop
 
-For each plan slice or bounded task, in plan order:
+For each plan slice or bounded task, in plan order (`## Parallel dispatch` says when independent ones may run at once):
 
 1. Paste the whole slice into the agent prompt: in an md plan its `###` section (`### Slice N`, or a bounded task's own heading) up to the next `###` or `##` heading, in an html plan the `<article class="task">` element. Either way it holds whichever of these the slice has: label and title, files map, signatures, call-stack sketch, test commands, acceptance criteria, and checkbox steps. One agent per slice; the checkbox steps are the slice's internal TDD rhythm and are never split across agents.
 2. Define ownership: files, directories, or behavior the agent may change.
@@ -58,7 +58,7 @@ Do not start the code quality reviewer until spec compliance passes.
 ```md
 Implement this plan slice:
 
-[paste one whole slice: the `### Slice N` section (md) or the `<article class="task">` element (html)]
+[paste one whole slice or bounded task: its `###` section (md) or its `<article class="task">` element (html)]
 
 Ownership:
 
