@@ -40,7 +40,7 @@ One skill that researches a complex topic and writes a sourced report. It plans 
 
 Cases 31 to 36 are near-misses. Cases 31 and 32 ask in the words of the anthropic-skills `deep-research` skill (a literature review; the history and trends of an industry): `research:research` must fire and `anthropic-skills:deep-research` must not. Cases 33 to 36 are plain web lookups (one fact, a current version, a docs page, a given URL): neither skill may fire, and an `llm` grader checks that the answer came straight back, with no plan, report or subagents. These four allow WebSearch and WebFetch, so a paid run of them needs network.
 
-No prompt uses the word "research", so the model must route on meaning. The graders match the full names `research:research` and `anthropic-skills:deep-research`, so a word in a call's args does not match. The `anthropic-skills:deep-research` graders pass on their own unless the eval run loads the anthropic-skills plugin.
+No prompt uses the word "research", so the model must route on meaning. The graders match the full names `research:research` and `anthropic-skills:deep-research`, so a word in a call's args does not match. The `anthropic-skills:deep-research` graders pass on their own unless the eval run loads the anthropic-skills plugin. With that plugin loaded, expect cases 31 and 32 to fail: a routing check picked `deep-research` for both, since its description names literature reviews and trends and the `research` description does not (#237).
 
 No one has run the suite yet; a run costs money, so the user decides when. Run from `plugins/research`:
 
