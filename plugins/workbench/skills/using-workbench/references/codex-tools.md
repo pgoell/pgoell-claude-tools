@@ -33,16 +33,24 @@ from built-in roles (`default`, `explorer`, `worker`).
 
 When a skill says to dispatch a named agent type:
 
-1. Find the agent's prompt file (e.g., `agents/code-reviewer.md` or the skill's
-   local prompt template like `code-quality-reviewer-prompt.md`)
+1. Find the prompt template the skill names, in that skill's own folder (e.g.,
+   `writing-plans/plan-reviewer-prompt.md` or
+   `writing-spec/spec-document-reviewer-prompt.md`)
 2. Read the prompt content
-3. Fill any template placeholders (`{BASE_SHA}`, `{WHAT_WAS_IMPLEMENTED}`, etc.)
+3. Fill any template placeholders (`[PLAN_FILE_PATH]`, `[SPEC_FILE_PATH]`, etc.)
 4. Spawn a `worker` agent with the filled content as the `message`
 
-| Skill instruction                              | Codex equivalent                                                                |
-| ---------------------------------------------- | ------------------------------------------------------------------------------- |
-| `Agent` (`superpowers:code-reviewer`)          | `spawn_agent(agent_type="worker", message=...)` with `code-reviewer.md` content |
-| `Agent` (`general-purpose`) with inline prompt | `spawn_agent(message=...)` with the same prompt                                 |
+Some named types, such as `superpowers:code-reviewer`, have no prompt file in
+workbench. For those, write the brief inline from the calling skill's own
+instructions: what to review, against what, and what to report. Spawn a `worker`
+agent with that brief as the `message`. Never send a fresh agent to look for a
+prompt file.
+
+| Skill instruction                              | Codex equivalent                                                                            |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `Agent` with a skill's prompt template         | `spawn_agent(agent_type="worker", message=...)` with the filled template content            |
+| `Agent` (`superpowers:code-reviewer`)          | `spawn_agent(agent_type="worker", message=...)` with an inline brief from the calling skill |
+| `Agent` (`general-purpose`) with inline prompt | `spawn_agent(message=...)` with the same prompt                                             |
 
 ### Message framing
 

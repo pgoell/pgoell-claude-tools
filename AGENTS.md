@@ -86,7 +86,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `writing` 3.1.4: `ghostwrite`, `coach`
 - `runtime-bridge` 0.1.3: `claude-codex-bridge`
 - `agent-system-management` 0.7.8: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
-- `workbench` 1.4.4: `pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`
+- `workbench` 1.4.5: `pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`
 - `terminal` 0.1.1: `tmux`
 - `playground` 0.1.3: `playground`
 - `databricks` 0.3.2: `databricks-core`, `databricks-docs`
@@ -126,7 +126,7 @@ User docs live in `docs/`, a Diátaxis tree in Open Knowledge Format v0.2. Read 
 
 ## CI Checks
 
-`.github/workflows/pr-validation.yml` runs six checks on every PR against `master` (backed by `mise`, `lefthook`, and `mise-tasks/*`, also run locally on commit and push): formatting, JSON lint and file size, Conventional Commits, plugin version-bump lockstep, manifest schema validation (also fails when generated Cursor manifests drift or a `SKILL.md` sets `disable-model-invocation: true`), docs links and spelling over `README.md`, `AGENTS.md`, `plugins/` and `docs/`, and Cursor plugin validation. At pilot "Step 8: CI loop", `gh pr view <pr> --json statusCheckRollup` returns these six jobs, not an empty array.
+`.github/workflows/pr-validation.yml` runs six checks on every PR against `master` (backed by `mise`, `lefthook`, and `mise-tasks/*`, also run locally on commit and push): formatting, JSON lint and file size, Conventional Commits, plugin version-bump lockstep, manifest schema validation (also fails when generated Cursor manifests drift or a `SKILL.md` sets `disable-model-invocation: true`), docs links and spelling over `README.md`, `AGENTS.md`, `plugins/` and `docs/` (also fails when a backticked prompt file name, `*-prompt.md` or `agents/*.md`, has no tracked file), and Cursor plugin validation. At pilot "Step 8: CI loop", `gh pr view <pr> --json statusCheckRollup` returns these six jobs, not an empty array.
 
 - **File size.** No authored file passes 5000 tokens (bytes/4). `mise-tasks/check-file-size` runs the file-size plugin's script on staged files on commit and on every tracked file in `mise run lint` (pre-push and the CI lint job). This repo's excludes (generated, ported, frozen) are in `.file-size-excludes`; the defaults (lockfiles, binaries, license texts) are in the script. Split an over-limit file along a deep module (Ousterhout: a small interface over much hidden work), never by line count or into pass-through wrappers.
 - Lefthook hooks run only where `lefthook install` ran (check `ls .git/hooks`; only sample files means nothing runs). So run `dprint fmt` on every markdown or JSON file you touched, plus the manual greps below, before committing.
