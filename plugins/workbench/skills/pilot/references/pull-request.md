@@ -5,7 +5,7 @@ Two parts of pilot's PR work that `SKILL.md` links to: the PR body pilot writes 
 ## PR body (step 7)
 
 - PR body structure: `## Summary` (1-3 bullets), then scope or non-goals if relevant, `## Reading guide`, `## Test plan` checklist, links to spec (or design preamble) + plan + ADR if present.
-- `## Reading guide` is always present, in every lane: one line per slice, in review order, naming what to look at and what verification already proved. In the quick lane (no slices), it degenerates to one line covering the whole change.
+- `## Reading guide` is always present, in every lane: one line per slice or bounded task, in review order, naming what to look at and what verification already proved. In the quick lane (no slices), it degenerates to one line covering the whole change.
 
 ## `automerge` (step 9)
 

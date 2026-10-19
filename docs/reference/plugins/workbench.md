@@ -47,7 +47,7 @@ The `Gates:` row in `.workbench/pilot.md` sets where pilot stops for you. A phra
 | ---------------- | ------------------------------------------------------------------------------------- | ----------------------- |
 | `none`           | Fully autonomous (the old autopilot).                                                 | "auto mode", "no gates" |
 | `design`         | You drive the brainstorm and approve the spec; the rest runs alone (the old copilot). | "co mode"               |
-| `slices`         | Pause after each slice to review its diff.                                            |                         |
+| `slices`         | Pause after each slice or bounded task to review its diff.                            |                         |
 | `design, slices` | Both. The default when the row is absent.                                             |                         |
 
 Profile schema: [profile-schema.md](../../../plugins/workbench/skills/pilot/references/profile-schema.md).

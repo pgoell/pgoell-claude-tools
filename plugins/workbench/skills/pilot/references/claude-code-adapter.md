@@ -60,7 +60,7 @@ If a subagent reports `DONE_WITH_CONCERNS` and the concern is in-scope (perf-bud
 
 ## Slice-gate pausing (the `slices` gate)
 
-When the `slices` gate is active, pause after each slice's review gates pass: present the diff summary and end the turn so the user can respond. Do not simulate the user's approve or resteer decision and continue in the same turn; a real pause means the assistant message ends and the next slice does not start until the user's next message arrives.
+When the `slices` gate is active, pause after each slice's or bounded task's review gates pass: present the diff summary and end the turn so the user can respond. Do not simulate the user's approve or resteer decision and continue in the same turn; a real pause means the assistant message ends and the next slice or bounded task does not start until the user's next message arrives.
 
 ## CI polling shape (step 8)
 

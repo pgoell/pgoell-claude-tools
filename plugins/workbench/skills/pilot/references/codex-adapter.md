@@ -14,19 +14,19 @@ This doc maps the pilot skill's tool references to Codex equivalents. The pilot 
 
 ## Subagent strategy on Codex
 
-`workbench:subagent-driven-development` is best-effort on Codex. The pilot skill expects a fresh subagent per slice. If Codex's runtime exposes such a primitive, use it. If it does not, fall back to **sequential execution in the main session with explicit context-reset discipline**:
+`workbench:subagent-driven-development` is best-effort on Codex. The pilot skill expects a fresh subagent per slice or bounded task (a plan task that is not itself a slice; see `SKILL.md` step 5). If Codex's runtime exposes such a primitive, use it. If it does not, fall back to **sequential execution in the main session with explicit context-reset discipline**:
 
-1. Treat each slice as its own logical scope.
-2. Before starting a slice, write a one-line context-reset note: `--- starting slice <n>: <title> ---`. This is for legibility, not behavior.
-3. Execute the slice end-to-end (write code, run tests, commit) before moving to the next.
-4. After completing a slice, write a one-line note: `--- completed slice <n> ---`.
-5. Continue with the next slice.
+1. Treat each slice or bounded task as its own logical scope.
+2. Before starting one, write a one-line context-reset note: `--- starting slice <n>: <title> ---` (a bounded task keeps its slice number). This is for legibility, not behavior.
+3. Execute it end-to-end (write code, run tests, commit) before moving to the next.
+4. After completing it, write a one-line note: `--- completed slice <n> ---`.
+5. Continue with the next slice or bounded task.
 
 Sequential fallback gives up parallel fanout but preserves the per-slice discipline of subagent-driven-development.
 
 ## Slice-gate pausing (the `slices` gate)
 
-When the `slices` gate is active, pause after each slice's review gates pass: present the diff summary and stop issuing further actions until the user responds, using whatever mechanism Codex uses to yield control back to the user (the Codex equivalent of Claude Code ending its turn). Do not simulate the user's approve or resteer decision.
+When the `slices` gate is active, pause after each slice's or bounded task's review gates pass: present the diff summary and stop issuing further actions until the user responds, using whatever mechanism Codex uses to yield control back to the user (the Codex equivalent of Claude Code ending its turn). Do not simulate the user's approve or resteer decision.
 
 ## CI polling shape (step 8)
 
