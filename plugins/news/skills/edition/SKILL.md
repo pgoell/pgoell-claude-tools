@@ -76,7 +76,7 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
 7. **Assemble** `NP/<date>.json` per `references/edition-contract.md`: `title`
    and `tagline` from design.yaml, `date_display` in German ("Mittwoch, 7.
    Oktober 2026"), `number` and `previous` from step 1, sections in config
-   order (skip a section with no stories; keep 4 to 16) with `local: true` on
+   order (skip a section with no stories; keep 4 to 20) with `local: true` on
    a section whose topics.yaml entry has it, `weather: null` unless you have
    something better than a forecast, and `feedback_hint` as
    `Feedback: <periodic>/05 Newspaper/feedback.md`. Keep a candidate's
