@@ -137,7 +137,41 @@ else
   bad "A5/I1 20000 and 20003 bytes pass, clean run is silent (rc=$RC)"
 fi
 
-# I2 arguments limit the check; missing paths are skipped.
+# I1 the staged copy is sized, not the worktree.
+fresh
+mkfile big.md 20004
+git add -A
+mkfile big.md 100
+run
+if [ "$RC" -eq 1 ] && grep -qxF "$(line big.md 5001)" <<<"$ERR"; then
+  ok "I1 staged big, worktree small fails"
+else
+  bad "I1 staged big, worktree small fails (rc=$RC)"
+fi
+fresh
+mkfile small.md 100
+git add -A
+mkfile small.md 20004
+run
+if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then
+  ok "I1 staged small, worktree big passes"
+else
+  bad "I1 staged small, worktree big passes (rc=$RC)"
+fi
+
+# I2 arguments match literally, not as globs.
+fresh
+mkfile abig.md 20004
+mkfile 'a*.md' 100
+git add -A
+run 'a*.md'
+if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then
+  ok "I2 literal: argument 'a*.md' does not match abig.md"
+else
+  bad "I2 literal: argument 'a*.md' does not match abig.md (rc=$RC)"
+fi
+
+# I2 arguments limit the check; a path removed from the worktree is still sized.
 fresh
 mkfile small.md 20000
 mkfile big.md 20004
@@ -149,7 +183,11 @@ if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then ok "I2 small.md argument passes"; else
 run big.md
 if [ "$RC" -eq 1 ] && grep -qxF "$(line big.md 5001)" <<<"$ERR"; then ok "I2 big.md argument fails"; else bad "I2 big.md argument fails (rc=$RC)"; fi
 run gone.md
-if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then ok "I2 missing path skipped silently"; else bad "I2 missing path skipped silently (rc=$RC)"; fi
+if [ "$RC" -eq 1 ] && grep -qxF "$(line gone.md 7500)" <<<"$ERR"; then
+  ok "I2 staged path removed from the worktree fails"
+else
+  bad "I2 staged path removed from the worktree fails (rc=$RC)"
+fi
 
 # I3 two failures, guidance once.
 fresh

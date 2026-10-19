@@ -122,6 +122,8 @@ Put query syntaxes, format references, recipes, or HTML templates in reference f
 - **Flat** (`<service>-<topic>.md` next to `SKILL.md`): legacy, used by `gmail`, `calendar`, `claude-codex-bridge`, `research`, `visualizing-options`, and `databricks-core`. Fine for one or two short files. Verbatim ports keep the upstream layout; never refactor a port into `references/`, because that breaks the per-file `NOTICE` mapping.
 - **`references/` subdirectory**: the modern convention and the choice for new skills. Required when a skill bundles HTML templates, several long references, or any non-markdown asset.
 
+No authored file may pass 5000 tokens (bytes/4); `mise-tasks/check-file-size` checks it on commit, on push and in CI. A new `SKILL.md` starts under the limit. When one grows past it, move step detail into `references/` and link each file from the step that needs it. Split along a deep module (a small interface over much hidden detail), never by line count or into files that only point onward.
+
 ### 5. Update docs and AGENTS.md
 
 The README is a front page; the docs live in `docs/`. A new plugin updates, in one commit:

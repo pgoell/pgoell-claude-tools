@@ -69,6 +69,8 @@ docs/                       # User docs: a Diátaxis tree in OKF v0.2 (see ## Do
   log/YYYY-MM-DD-<slug>.md  # One file per change to the docs bundle
   tutorials/  how-to/  reference/  explanation/   # One folder per Diátaxis type
   reference/plugins/<name>.md   # One page per marketplace entry, plus index.md
+mise-tasks/                 # Repo tasks, among them check-file-size
+tests/                      # check-file-size.sh, run by hand: bash tests/check-file-size.sh
 dotclaude/                  # Versioned global ~/.claude/CLAUDE.md (symlinked into place); not a plugin
 containers/dev/             # Podman-first dev container (run-dev, egress proxy, README checklist)
 ```
@@ -82,7 +84,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `research` 2.2.2: `research`
 - `writing` 3.1.3: `ghostwrite`, `coach`
 - `runtime-bridge` 0.1.2: `claude-codex-bridge`
-- `agent-system-management` 0.7.7: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
+- `agent-system-management` 0.7.8: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
 - `workbench` 1.4.2: `pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`
 - `terminal` 0.1.1: `tmux`
 - `playground` 0.1.3: `playground`
@@ -105,7 +107,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 
 ## How to Develop a New Skill
 
-Before you add a skill or plugin, read [docs/reference/conventions/developing-a-skill.md](docs/reference/conventions/developing-a-skill.md): the five steps, the manifest and SKILL.md templates, the docs sites a new plugin or skill updates, and "Skills may ship code".
+Before you add a skill or plugin, read [docs/reference/conventions/developing-a-skill.md](docs/reference/conventions/developing-a-skill.md): the five steps, the manifest and SKILL.md templates, the docs sites a new plugin or skill updates, and "Skills may ship code". A new `SKILL.md` starts under the file-size limit (see "CI Checks"); step detail goes to `references/`, linked from the step that needs it.
 
 ## Documentation
 
@@ -122,8 +124,9 @@ User docs live in `docs/`, a Diátaxis tree in Open Knowledge Format v0.2. Read 
 
 ## CI Checks
 
-`.github/workflows/pr-validation.yml` runs six checks on every PR against `master` (backed by `mise`, `lefthook`, and `mise-tasks/*`, also run locally on commit and push): formatting and JSON lint, Conventional Commits, plugin version-bump lockstep, manifest schema validation (also fails when generated Cursor manifests drift or a `SKILL.md` sets `disable-model-invocation: true`), docs links and spelling over `README.md`, `AGENTS.md`, `plugins/` and `docs/`, and Cursor plugin validation. At pilot "Step 8: CI loop", `gh pr view <pr> --json statusCheckRollup` returns these six jobs, not an empty array.
+`.github/workflows/pr-validation.yml` runs six checks on every PR against `master` (backed by `mise`, `lefthook`, and `mise-tasks/*`, also run locally on commit and push): formatting, JSON lint and file size, Conventional Commits, plugin version-bump lockstep, manifest schema validation (also fails when generated Cursor manifests drift or a `SKILL.md` sets `disable-model-invocation: true`), docs links and spelling over `README.md`, `AGENTS.md`, `plugins/` and `docs/`, and Cursor plugin validation. At pilot "Step 8: CI loop", `gh pr view <pr> --json statusCheckRollup` returns these six jobs, not an empty array.
 
+- **File size.** No authored file passes 5000 tokens (bytes/4). `mise-tasks/check-file-size` checks staged files on commit and every tracked file in `mise run lint` (pre-push and the CI lint job); its exclude list names generated, binary, ported and license files. Split an over-limit file along a deep module (Ousterhout: a small interface over much hidden work), never by line count or into pass-through wrappers.
 - Lefthook hooks run only where `lefthook install` ran (check `ls .git/hooks`; only sample files means nothing runs). So run `dprint fmt` on every markdown or JSON file you touched, plus the manual greps below, before committing.
 - Run `dprint check` bare from the repo root; a path argument makes it find no files.
 - `.workbench/` is gitignored but `.workbench/pilot.md` stays force-tracked: stage it with `git add -f .workbench/pilot.md`.

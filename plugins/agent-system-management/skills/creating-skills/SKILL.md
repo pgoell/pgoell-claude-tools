@@ -80,7 +80,7 @@ Before you lay out the skill's files and write its body, read `references/skill-
 
 #### Skills in plugin marketplace repos
 
-When the skill lives in a repo that distributes plugins (a marketplace manifest at the repo root, a directory of plugins), writing SKILL.md is only half the job: the skill must be registered in the marketplace manifest, the plugin version bumped, index docs updated, and the repo's checks passed. Discover the host repo's conventions (author, license, commit style, version-tracking files) from its existing plugins rather than inventing values. `references/marketplace-integration.md` has the discovery checklist, wiring steps, version discipline, and drop-in test scaffolds.
+When the skill lives in a repo that distributes plugins (a marketplace manifest at the repo root, a directory of plugins), writing SKILL.md is only half the job: the skill must be registered in the marketplace manifest, the plugin version bumped, index docs updated, and the repo's checks passed. Discover the host repo's conventions (author, license, commit style, version-tracking files) from its existing plugins rather than inventing values. `references/marketplace-integration.md` has the discovery checklist, wiring steps, version discipline, and drop-in test scaffolds. A repo may cap file size (pgoell-claude-tools: 5000 tokens, bytes/4). A SKILL.md over the cap moves step detail into `references/`, loaded by the step that needs it: a deep split, not a cut by line count.
 
 ### Test Cases
 

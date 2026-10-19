@@ -18,8 +18,8 @@ description = "Format JSON, Markdown, and TOML with dprint"
 run = "dprint fmt"
 
 [tasks.lint]
-description = "Check formatting and validate all tracked JSON files"
-run = ["dprint check", "git ls-files '*.json' | xargs jq empty"]
+description = "Check formatting, validate all tracked JSON files, and check file size"
+run = ["dprint check", "git ls-files '*.json' | xargs jq empty", "mise-tasks/check-file-size"]
 
 [tasks.check-commits]
 description = "Verify commits since origin/master are conventional"

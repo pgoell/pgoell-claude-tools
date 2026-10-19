@@ -1,0 +1,3 @@
+# 2026-10-19: Update
+
+agent-system-management 0.7.8 (part of #209). `mise-tasks/check-file-size` now runs on staged files at commit and on every tracked file in `mise run lint`, so pre-push and the CI lint job enforce the 5000-token limit (bytes/4). AGENTS.md states the limit and the deep-module split in "CI Checks" and "How to Develop a New Skill", and lists `mise-tasks/` and the root `tests/` in "Repository Structure". `creating-skills` says a repo may cap file size and that an over-limit `SKILL.md` moves step detail into `references/`. `reference/conventions/developing-a-skill.md` states the limit under "Add reference docs".
