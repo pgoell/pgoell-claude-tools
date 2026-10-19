@@ -164,7 +164,7 @@ If `Hooks.post_plan` is defined, run it now with `{{plan_path}}` substituted.
 
 Then:
 
-- Commit in logical chunks with Conventional Commits scopes matching the module, one commit per slice or bounded task.
+- Commit in logical chunks with Conventional Commits scopes matching the module, at least one commit per slice or bounded task (review fixes may add more).
 - Run `<task runner> <lint command>` and the relevant `<task runner> <test command>` before each commit.
 
 If `Hooks.post_implementation` is defined, run it now after the last implementation commit.

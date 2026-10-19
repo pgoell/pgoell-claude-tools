@@ -110,7 +110,7 @@ Order slices as vertical, end-to-end increments. The first slice is the tracer b
 <!-- Files, signatures, steps and acceptance criteria follow, as in the slice shape below. -->
 ```
 
-A bounded task keeps every slice part. For a pure refactor, the acceptance criteria name the existing tests that must still pass. Every rule in this skill about a slice holds for a bounded task too, unless a sentence says otherwise.
+A bounded task keeps every slice part. For a pure refactor, the acceptance criteria name the existing tests that must still pass. Every rule in this skill about a slice holds for a bounded task too, unless a sentence says otherwise. Three do not: a bounded task need not add a capability or leave a demo, and it is never the tracer bullet. The tracer bullet is the first slice that is not a bounded task, and a bounded task leaves the existing tests passing instead of a demo.
 
 Use this shape for each slice. This is the md form; the html form's slots are in `## Path Resolution`.
 
@@ -192,7 +192,7 @@ The reviewer checks:
 2. Placeholder scan: the plan contains none of the forbidden placeholder patterns.
 3. Name consistency: later slices use the same file names, function names, types, and command names introduced earlier.
 4. Testability: every slice and bounded task has an exact test command and acceptance criteria naming the behavior the outer-loop test must prove.
-5. Slice ordering: the first slice is a tracer bullet, and each slice leaves the software demoable. Each bounded task's ordering note comes first (in md the `**Ordering note:**` line right under the heading, in html `p.order-note` first in the article) and names the slice it unblocks.
+5. Slice ordering: the first slice that is not a bounded task is a tracer bullet, and each slice leaves the software demoable. Each bounded task's ordering note comes first (in md the `**Ordering note:**` line right under the heading, in html `p.order-note` right after the article's header, before Files) and names the slice it unblocks.
 6. Altitude: no full test or implementation code outside a `tricky-kernel` flag.
 
 Apply the reviewer's blocking findings inline. No re-review is required. Advisory recommendations do not block handoff unless they expose a real implementation risk.

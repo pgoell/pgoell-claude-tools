@@ -25,7 +25,7 @@ Subagent (general-purpose):
     | Placeholder scan | TBD, TODO, fill-in-later language, "similar to Slice N", references to names not introduced, or any instruction a fresh agent would have to guess at. Cite the line. |
     | Name consistency | File names, function names, types, or commands that drift between slices (one slice introduces `foo`, a later slice references `foo_v2`). Cite both slices. |
     | Testability | Slices or bounded tasks (plan tasks that are not themselves slices) with no exact test command, or with acceptance criteria that do not name a provable behavior. Cite the slice or task and the gap. |
-    | Slice ordering | The first slice is not a tracer bullet, or a later slice leaves the software non-demoable, or a bounded task's ordering note is missing, not first, or names no slice it unblocks (md: the `**Ordering note:**` line right under the `### Slice N` heading; html: `p.order-note` first in the article). Cite the slice or task. |
+    | Slice ordering | The first slice that is not a bounded task is not a tracer bullet, or a later slice leaves the software non-demoable, or a bounded task's ordering note is missing, not first, or names no slice it unblocks (md: the `**Ordering note:**` line right under the `### Slice N` heading; html: `p.order-note` right after the article's header, before Files). A bounded task need not add a capability or leave a demo; it must leave the existing tests passing. Cite the slice or task. |
     | Altitude | Complete test or implementation code outside a `tricky-kernel` flag, or a `tricky-kernel` flag with no one-line reason. Cite the slice. |
 
     ## Calibration
