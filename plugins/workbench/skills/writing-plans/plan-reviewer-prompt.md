@@ -6,8 +6,10 @@ Use this template when dispatching a plan reviewer subagent.
 
 **Dispatch after:** Plan document is written to the resolved path.
 
+**Dispatch with:** Claude Code: `Agent` tool, `general-purpose` subagent_type. Codex: `spawn_agent`. Cursor: `Task` tool.
+
 ```
-Task tool (general-purpose):
+Subagent (general-purpose):
   description: "Review implementation plan"
   prompt: |
     You are an adversarial reviewer. Your job is to demonstrate that this plan would lead to a failed implementation. Assume the plan is flawed in at least one material way and find the flaw. A fresh implementation agent will execute these slices without conversation history; look for the slice that will trip them up. You succeed when you can show a concrete execution failure the plan would cause; you also succeed when, after diligent adversarial search, you cannot demonstrate any real defect and approve.

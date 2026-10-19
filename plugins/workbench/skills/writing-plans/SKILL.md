@@ -162,6 +162,7 @@ After writing the plan, dispatch a fresh-eyes reviewer subagent before presentin
 
 Claude Code: `Agent` tool, `general-purpose` subagent_type, no model override.
 Codex: equivalent general-purpose subagent.
+Cursor: `Task` tool.
 
 The reviewer checks:
 

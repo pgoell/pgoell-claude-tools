@@ -72,7 +72,7 @@ These apply in every lane, regardless of routing:
 
 ## Platform Adaptation
 
-Skills use Claude Code tool names by default. Codex users: see `references/codex-tools.md` for tool equivalents.
+Skills use Claude Code tool names by default. Codex users: see `references/codex-tools.md` for tool equivalents. Cursor users: see `references/cursor-tools.md`.
 
 # Using Skills
 
@@ -105,4 +105,4 @@ Workbench coexists with the upstream `superpowers` plugin. If both are installed
 
 When a slug exists in both workbench and superpowers, prefer the workbench version. Today that includes `brainstorming`, `test-driven-development`, and `subagent-driven-development`. The host agent should resolve bare slugs such as `brainstorming`, `test-driven-development`, and `subagent-driven-development` to `workbench:brainstorming`, `workbench:test-driven-development`, and `workbench:subagent-driven-development`.
 
-For attribution and a frozen snapshot of upstream `using-superpowers/SKILL.md` at v5.0.7, see `references/using-superpowers-upstream.md`. Workbench-specific divergences from that snapshot are documented in this file's git history; the snapshot itself is intentionally not edited. The snapshot points at `references/copilot-tools.md`, an upstream file that workbench does not ship; for Codex tool names, read `references/codex-tools.md`.
+For attribution and a frozen snapshot of upstream `using-superpowers/SKILL.md` at v5.0.7, see `references/using-superpowers-upstream.md`. Workbench-specific divergences from that snapshot are documented in this file's git history; the snapshot itself is intentionally not edited. The snapshot points at `references/copilot-tools.md`, an upstream file that workbench does not ship; for Codex tool names, read `references/codex-tools.md`; for Cursor tool names, read `references/cursor-tools.md`.

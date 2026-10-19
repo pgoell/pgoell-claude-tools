@@ -15,7 +15,7 @@ The decks themselves are dependency-free: self-contained HTML that opens from `f
 
 - A Chromium-based browser (Edge, Chrome, Arc) presents the deck: `BroadcastChannel` sync and the presenter's "Save to deck" (File System Access API) are Chromium-only. The same binary, headless, screenshots slides for the render check and the review loop: `chrome --headless --screenshot=slide.png --window-size=1920,1080 --hide-scrollbars <url>` (on Windows the preinstalled `msedge.exe` accepts the same flags). Headless Chrome sizes the viewport, so this gives a 1920x1080 image of the whole slide.
 - `uv` serves the deck over HTTP for the hard gates (`uv run python -m http.server 8123 --directory <deck-dir>`); webfonts and `BroadcastChannel` behave differently on `file://` origins.
-- The default render check and the perfecting loop need subagent dispatch (the Workflow tool, or the Agent tool as fallback) for its judges and verifiers. Context isolation is what keeps the loop honest; without subagents, offer the user a single-pass review and say so, rather than simulating the loop inline.
+- The default render check and the perfecting loop need subagent dispatch (the Workflow tool, or the Agent tool as fallback) for its judges and verifiers. Cursor has no Workflow tool: it takes the fallback path in `references/review-loop.md` with its `Task` tool. Context isolation is what keeps the loop honest; without subagents, offer the user a single-pass review and say so, rather than simulating the loop inline.
 
 ## Resolve the preset first
 
@@ -105,7 +105,7 @@ To change a finished deck by hand, or to point at elements instead of describing
 
 ## Perfecting the deck
 
-A strict reviewer that does not stop at "looks good". The loop dispatches fresh judge and verifier subagents every round, so it is token intensive; it runs only on the user's go-ahead. A request to review, audit, polish, or perfect the deck is that go-ahead. After building a deck and running the render check, offer the loop instead of starting it: name the cost (several subagents per round, typically a few rounds) and wait for a yes. The deck is done when fresh reviewers can no longer find anything that survives adversarial scrutiny against an explicit standard. Never ask "is the deck perfect?": a self-graded loop collapses into early self-approval, and a "be very strict" reviewer never terminates. Ask "did this round find anything new that survives verification?" and stop only when:
+A strict reviewer that does not stop at "looks good". The loop dispatches fresh judge and verifier subagents every round (`Task` calls in Cursor), so it is token intensive; it runs only on the user's go-ahead. A request to review, audit, polish, or perfect the deck is that go-ahead. After building a deck and running the render check, offer the loop instead of starting it: name the cost (several subagents per round, typically a few rounds) and wait for a yes. The deck is done when fresh reviewers can no longer find anything that survives adversarial scrutiny against an explicit standard. Never ask "is the deck perfect?": a self-graded loop collapses into early self-approval, and a "be very strict" reviewer never terminates. Ask "did this round find anything new that survives verification?" and stop only when:
 
 1. every hard gate passes, and
 2. two consecutive review rounds produce zero verified findings at or above the severity threshold, and

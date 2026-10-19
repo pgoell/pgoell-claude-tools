@@ -42,6 +42,8 @@ Frame texts, triggers, the brief template, and the synthesis prompt are in `refe
 | Dispatch frames | `Agent` tool, `general-purpose` type, every frame in one message so they run in parallel | Its subagent tool, one per frame. With no subagent tool, run each frame inline in turn, and state in the report that the frames shared context and so lost their independence |
 | Synthesis       | One more `Agent` call after all frames return                                            | One more subagent; inline only under the same fallback and caveat                                                                                                             |
 
+Cursor: one `Task` call per frame, every frame in one message so they run in parallel, then one more `Task` call for the synthesis. With no `Task` tool, use the Codex fallback and caveat.
+
 ## Rules
 
 - Report exactly what came back. Do not soften, merge, or editorialize frame or synthesis output, and do not add your own verdict unless the user asks for it after the report.

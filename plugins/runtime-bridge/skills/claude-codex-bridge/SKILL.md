@@ -30,11 +30,13 @@ No authentication required. Operates on the local filesystem only. Never makes n
 | File reads             | Read                                                        | shell reads (`cat`, `sed`, etc.)   |
 | Shell                  | Bash                                                        | shell command tool                 |
 
-When subagent dispatch is unavailable for the current request, run each phase inline in the orchestrator. Tell the user runtime/context cost has changed.
+Cursor: dispatch subagents with the `Task` tool and the same prompt.
+
+When subagent dispatch is unavailable (no `Agent`, `spawn_agent` or `Task` tool) for the current request, run each phase inline in the orchestrator. Tell the user runtime/context cost has changed.
 
 ## Workflow
 
-**Prompt file location — MUST check before every phase dispatch:**
+**Prompt file location (MUST check before every phase dispatch):**
 
 Before reading any phase prompt file, run:
 

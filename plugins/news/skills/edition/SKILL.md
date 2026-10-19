@@ -146,6 +146,8 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
 | Web     | `WebSearch` to find, `curl` or `WebFetch` to read                         | Its web search tool, then `curl`                        |
 | Scripts | `uv run "${CLAUDE_SKILL_DIR}/scripts/<name>.py"`                          | `uv run <this skill's directory>/scripts/<name>.py`     |
 
+Cursor: gather with one `Task` call per section, several `Task` calls in one message; else inline in turn. Web and scripts as in the Codex column.
+
 ## Self-Healing
 
 - **`uv` missing**: the scripts need `uv` (Python 3.11 or later). Without it,

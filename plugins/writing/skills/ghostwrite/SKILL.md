@@ -27,6 +27,8 @@ Use the host's equivalent tools without changing the workflow:
 | File writes         | Write, Edit                         | `apply_patch` or file edit tools                                 |
 | Shell               | Bash                                | shell command tool                                               |
 
+Cursor: the optional subagent is the `Task` tool.
+
 All dialogue with the owner runs in the main thread. Subagents cannot ask the user questions, so never hand the interview, the outline sign-off, or a check-in to a subagent. Subagents only do work that needs no dialogue: the optional critics and the fresh-reader test in Step 7.
 
 ## Files this skill keeps

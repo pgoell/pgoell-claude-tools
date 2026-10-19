@@ -46,8 +46,9 @@ is fine; a wrong one is not.
 
 ## Section brief (one gatherer per section)
 
-Fan out: with the Agent tool (Claude Code) or `spawn_agent` (Codex), start one
-gatherer per section, all at once, and wait for every result. Without a
+Fan out: with the Agent tool (Claude Code), `spawn_agent` (Codex) or the `Task`
+tool (Cursor, several `Task` calls in one message), start one gatherer per
+section, all at once, and wait for every result. Without a
 subagent tool, run the brief yourself for each section in turn. Fill the
 brackets from topics.yaml and from `recent.py --section <id>`:
 

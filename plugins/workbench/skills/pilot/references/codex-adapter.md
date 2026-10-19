@@ -1,6 +1,6 @@
 # Codex Adapter for Workbench Pilot
 
-This doc maps the pilot skill's tool references to Codex equivalents. The pilot `SKILL.md` uses Claude Code tool names by default; this adapter is consulted when the runtime is Codex.
+This doc maps the pilot skill's tool references to Codex equivalents. The pilot `SKILL.md` uses Claude Code tool names by default; this adapter is consulted when the runtime is Codex. Cursor readers: see the Cursor paragraph in `subagent-dispatch.md`.
 
 ## Tool name mapping
 

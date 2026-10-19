@@ -86,7 +86,7 @@ If a listed skill is unavailable in the current runtime, say so explicitly in th
 
 ## Runtime adapters
 
-This skill uses Claude Code tool names by default. If running on Codex, see `references/codex-adapter.md` for the tool-name mapping and the sequential fallback note for subagent-driven-development. For Claude Code specifics (subagent dispatch patterns, CI polling shape, error recovery), see `references/claude-code-adapter.md`.
+This skill uses Claude Code tool names by default. If running on Codex, see `references/codex-adapter.md` for the tool-name mapping and the sequential fallback note for subagent-driven-development. On Cursor, see the Cursor paragraph in `references/subagent-dispatch.md`. For Claude Code specifics (subagent dispatch patterns, CI polling shape, error recovery), see `references/claude-code-adapter.md`.
 
 ---
 

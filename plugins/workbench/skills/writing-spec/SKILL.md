@@ -56,6 +56,7 @@ Dispatch a general-purpose subagent that has not seen the brainstorming conversa
 
 Claude Code: `Agent` tool, `general-purpose` subagent_type, no model override.
 Codex: equivalent general-purpose subagent.
+Cursor: `Task` tool.
 
 The full reviewer prompt template lives in `spec-document-reviewer-prompt.md` in this skill's directory; paste it into the dispatch with `[SPEC_FILE_PATH]` replaced.
 
