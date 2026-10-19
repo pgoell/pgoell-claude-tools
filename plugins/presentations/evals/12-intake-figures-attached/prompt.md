@@ -5,7 +5,7 @@ allowed_tools: [Skill, Read, Glob, Grep, Write]
 runs: 3
 ---
 
-I need a deck about our Q3 results for the leadership team. Here are the figures:
+I need a deck about our Q3 results for the leadership team. Help me plan its storyline first; no slides yet. Here are the figures:
 
 - Revenue: €8.4M in Q3, up 6% on Q2 (€7.9M).
 - Gross margin: 41%, down from 44% in Q2.
