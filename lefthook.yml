@@ -1,5 +1,5 @@
 pre-commit:
-  parallel: true
+  # Not parallel: file-size must size what format re-staged.
   skip: [merge, rebase]
   jobs:
     - name: format

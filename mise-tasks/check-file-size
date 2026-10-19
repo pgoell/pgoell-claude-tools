@@ -28,19 +28,30 @@ EXCLUDES=(
 pathspecs=()
 for glob in "${EXCLUDES[@]}"; do pathspecs+=(":(top,exclude,glob)$glob"); done
 
+# Files, not process substitutions, so a git failure stops the script.
+list=$(mktemp)
+sizes=$(mktemp)
+index=$(mktemp)
+trap 'rm -f "$list" "$sizes" "$index"' EXIT
+
 # "literal" makes a "*" or a leading ":" in a file name match only itself.
 args=()
 for arg in "$@"; do args+=(":(literal)$arg"); done
-if [ "${#args[@]}" -eq 0 ]; then args=(':(top)'); fi
+if [ "${#args[@]}" -eq 0 ]; then
+  args=(':(top)')
+  # A bare run (pre-push, CI) judges what is committed, not what is staged,
+  # so it reads HEAD's tree into a throwaway index. With arguments
+  # (pre-commit) or before the first commit, the real index is sized.
+  if git rev-parse -q --verify HEAD >/dev/null; then
+    export GIT_INDEX_FILE=$index
+    git read-tree HEAD
+  fi
+fi
 # git 2.43 drops a leading "**/" exclude when all arguments share a folder
 # prefix. ".git" at the root is never tracked, so this matches nothing and
 # only clears that prefix.
 args+=(':(top,literal).git')
 
-# Files, not process substitutions, so a git failure stops the script.
-list=$(mktemp)
-sizes=$(mktemp)
-trap 'rm -f "$list" "$sizes"' EXIT
 # Records "mode sha stage<TAB>path": the staged copy is what the commit carries.
 git ls-files -s -z --full-name -- "${args[@]}" "${pathspecs[@]}" >"$list"
 

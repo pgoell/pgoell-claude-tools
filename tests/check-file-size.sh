@@ -159,6 +159,32 @@ else
   bad "I1 staged small, worktree big passes (rc=$RC)"
 fi
 
+# I1 a bare run (pre-push) sizes HEAD, not the index.
+fresh
+mkfile big.md 20004
+git add -A
+git commit -qm init
+mkfile big.md 100
+git add -A
+run
+if [ "$RC" -eq 1 ] && grep -qxF "$(line big.md 5001)" <<<"$ERR"; then
+  ok "I1 bare run sizes HEAD: committed big, staged small fails"
+else
+  bad "I1 bare run sizes HEAD: committed big, staged small fails (rc=$RC)"
+fi
+fresh
+mkfile small.md 100
+git add -A
+git commit -qm init
+mkfile small.md 20004
+git add -A
+run
+if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then
+  ok "I1 bare run sizes HEAD: committed small, staged big passes"
+else
+  bad "I1 bare run sizes HEAD: committed small, staged big passes (rc=$RC)"
+fi
+
 # I2 arguments match literally, not as globs.
 fresh
 mkfile abig.md 20004
