@@ -114,6 +114,10 @@ Dispatched agent prompt:
     - Do NOT write prose summaries beyond what's needed to convey claim + source.
     - Each claim must carry an inline source.
     - One self-contained markdown. No separate sources.md or notes.md.
+    - No shortcuts. Three are forbidden: skipping a source (dropping a
+      sub-question or a planned fetch without a note inline), citing an
+      `[inaccessible]` source as if you read it, and reporting partial work
+      as done. If you took any of them, end with `ARTIFACT-MISSING <reason>`.
 
     ## Self-Healing
 
@@ -132,6 +136,17 @@ Dispatched agent prompt:
 
     ## Final Step
 
-    Write {OUTPUT_FILE} and report only the file path back. Do not summarize
-    findings in your response.
+    Write {OUTPUT_FILE}. After the final write, run:
+
+    ```bash
+    sha256sum {OUTPUT_FILE}
+    ```
+
+    Report the file path back. Do not summarize findings in your response.
+    The last line of your response must be exactly one of:
+
+    - `ARTIFACT-VERIFIED <sha256>`: the file is complete; `<sha256>` is the
+      first field `sha256sum` printed.
+    - `ARTIFACT-MISSING <reason>`: the file is absent, or the work is partial
+      (a sub-question not researched, a shortcut taken). Say what is missing.
 ````

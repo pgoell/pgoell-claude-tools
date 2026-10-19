@@ -1,8 +1,8 @@
 # Synthesis Reviewer Agent Prompt Template
 
-**Purpose:** Independently judge synthesis substance: logic, evidence completeness, source quality, structure, coverage. Emit a structured verdict with stable issue ids.
+**Purpose:** Independently judge synthesis substance: logic, evidence completeness, source quality, structure, coverage. Fetch up to 5 cited URLs again to check the page says what the claim says. Emit a structured verdict with stable issue ids.
 
-**Dispatch:** Spawned by the orchestrator after synthesis. Reads brief + plan + synthesis + all researcher outputs. Writes `research/synthesis-review-{N}.md`. Also re-dispatched for cross-loop validation when writer-reviewer flags `content-gap-suspected`.
+**Dispatch:** Spawned by the orchestrator after synthesis. Needs web fetch. Reads brief + plan + synthesis + all researcher outputs. Writes `research/synthesis-review-{N}.md`. Also re-dispatched for cross-loop validation when writer-reviewer flags `content-gap-suspected`.
 
 ````
 Dispatched agent prompt:
@@ -49,10 +49,11 @@ Dispatched agent prompt:
     4. If iteration > 1: `{OUTPUT_PATH}/research/synthesis-review-{ITERATION-1}.md`
        (prior review). Use the prior review to assign STABLE issue ids: same
        issue across iterations must keep the same id. New issues get new ids.
+       Its `REFETCH:` block sets the order for Check 6.
 
     ## Checks
 
-    Run all 5 checks. For each, identify specific issues with stable ids.
+    Run all 6 checks. For each, identify specific issues with stable ids.
 
     ### Check 1: Coverage (category: coverage)
 
@@ -98,6 +99,36 @@ Dispatched agent prompt:
     Issue per structural weakness. Severity: critical if structure prevents
     writing a coherent report, minor otherwise.
 
+    ### Check 6: Refetch (category: source-quality)
+
+    Checks 2 and 3 ask whether a claim has a source. This check asks whether
+    the source says what the claim says. Fetch again at most 5 URLs cited in
+    synthesis.md, fewer when fewer are cited. Pick them in this order:
+
+    1. If iteration > 1: the URLs marked `rejected` or `unresolved` in the
+       prior review's `REFETCH:` block.
+    2. URLs behind numeric claims.
+    3. URLs behind thesis-pillar claims.
+
+    For each URL, read the page and mark the claim as synthesis.md now states it:
+
+    - `confirmed`: the page says it. Quote the passage.
+    - `rejected`: the page says something else (another number, date or
+      finding). Quote what the page says.
+    - `unresolved`: you could not tell, or the page no longer covers the
+      claim. Give the reason.
+
+    Fetch each URL once. Never retry. A 404, timeout, paywall, moved or
+    changed page, a page that no longer has the passage, or a fetch-tool
+    refusal (reddit.com and web.archive.org are always refused) is
+    `unresolved` with that reason. Never stall the review on one URL; go on
+    to the next.
+
+    A `rejected` claim is a critical issue; an `unresolved` claim is minor.
+    Give both the id `refetch-<claim-slug>` and keep it while the claim stays
+    `rejected` or `unresolved`. A claim now `confirmed`, or gone from
+    synthesis.md, drops its id.
+
     ## Stable Issue IDs
 
     For each issue, choose a stable id that survives iterations: short,
@@ -132,6 +163,12 @@ Dispatched agent prompt:
 
     SUMMARY:
     <1-2 sentences on overall state>
+
+    REFETCH:
+      - url: <URL>
+        claim: <claim as synthesis.md states it>
+        mark: confirmed | rejected | unresolved
+        quote: "<short quote from the page>" (unresolved: the reason instead)
     ```
 
     Verdict rules:
@@ -139,6 +176,8 @@ Dispatched agent prompt:
     - ISSUES: at least one critical issue.
     - If verdict is PASS with no minor issues, omit the ISSUES list items but
       keep the section header for parser stability.
+    - Always write the `REFETCH:` block, on PASS too. It goes in the file only,
+      not in your response.
 
     ## Critical Constraints
 

@@ -79,7 +79,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 
 - `atlassian` 2.0.7: `jira`, `confluence`
 - `google-workspace` 1.0.3: `gmail`, `calendar`
-- `research` 2.1.6: `research`
+- `research` 2.2.0: `research`
 - `writing` 3.1.3: `ghostwrite`, `coach`
 - `runtime-bridge` 0.1.2: `claude-codex-bridge`
 - `agent-system-management` 0.7.5: `improving-instructions`, `capturing-session-learnings`, `creating-skills`

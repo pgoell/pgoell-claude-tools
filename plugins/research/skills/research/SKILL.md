@@ -17,9 +17,9 @@ No authentication required. Uses the host agent's web search and fetch or browse
 
 1. **Subagent dispatch when available and permitted**: dispatch researcher, synthesis, writer, and reviewer agents.
 2. **File read tools**: load prompt templates before dispatch.
-3. **Shell**: directory creation, date generation, simple file globbing for verification.
+3. **Shell**: directory creation, date generation, file globbing, and the `sha256sum` and `grep -c` checks of Step 4.
 4. **Progress list**: live loop bookkeeping.
-5. **Web search and fetch or browse tools**: fallback only if subagent dispatch fails.
+5. **Web search and fetch or browse tools**: researchers and the synthesis reviewer use them; the orchestrator uses them only if subagent dispatch fails.
 
 ## Platform Adaptation
 
@@ -95,9 +95,12 @@ Each researcher does iterative deep search on its cluster (round-by-round breadt
 1. Read `researcher-prompt.md` from this skill directory.
 2. Inject: BRIEF, OUTPUT_PATH, RECIPES_PATH (path to research-recipes.md), CLUSTER_SLUG, OUTPUT_FILE (`{OUTPUT_PATH}/research/{cluster-slug}.md`), TARGETED_GAP (empty).
 3. Dispatch via the host subagent tool. Send all clusters in parallel when supported.
-4. Wait for all to complete. Verify each cluster's output file exists and is non-empty.
+4. Wait for all to complete. Check each output file yourself; do not trust the report:
+   - The last line of the response must be `ARTIFACT-VERIFIED <sha256>`.
+   - Compare that hash with your own: `sha256sum {OUTPUT_FILE} | cut -d' ' -f1`
+   - Count source lines: `grep -c '\[source:' {OUTPUT_FILE}`. The floor is 2 per sub-question in the cluster's plan.md block, which `sed -n '/^### Cluster: {CLUSTER_SLUG}$/,/^### Cluster: /p' {OUTPUT_PATH}/plan.md | grep -c '^- SQ'` counts. A gap-fill file's floor is 2.
 
-If a researcher returns a near-empty file, treat as failed dispatch (re-dispatch once; if still thin, escalate to user as a likely cluster-boundary problem).
+A check fails on `ARTIFACT-MISSING`, a hash mismatch, a missing or unparseable last line, or a count under the floor. Re-dispatch that researcher once; if it fails again, surface it to the user (often a bad cluster boundary). When you ran the researcher inline, there is no marker to parse; the count still runs.
 
 ### Step 5: Synthesize (iteration N, starting at 1)
 
@@ -110,7 +113,7 @@ If a researcher returns a near-empty file, treat as failed dispatch (re-dispatch
 
 1. Read `synthesis-reviewer-prompt.md`.
 2. Inject: BRIEF, OUTPUT_PATH, ITERATION, REVIEWER_FEEDBACK (empty for normal flow; populated only when re-dispatched from cross-loop branch in Step 10).
-3. Dispatch via the host subagent tool. Wait for completion.
+3. Dispatch via the host subagent tool. Wait for completion. In its sixth check, the reviewer fetches again up to 5 cited URLs (numbers first, then thesis pillars, after any URL the prior round left `rejected` or `unresolved`) and records each mark in the file's `REFETCH:` block.
 4. Read the verdict from agent response, or from `{OUTPUT_PATH}/research/synthesis-review-{N}.md` if response is unparseable.
 
 If verdict is PASS: continue to Step 8.
@@ -127,11 +130,13 @@ Classify each critical issue:
 For each gap-fill issue:
 
 1. Read `researcher-prompt.md`. Inject: BRIEF, OUTPUT_PATH, RECIPES_PATH, CLUSTER_SLUG=<best-fit existing cluster>, OUTPUT_FILE=`{OUTPUT_PATH}/research/gap-{N}-{issue-slug}.md`, TARGETED_GAP=<full issue description with location pointer>.
-2. Dispatch in parallel for all gap-fill issues when supported. Wait for completion.
+2. Dispatch in parallel for all gap-fill issues when supported. Wait for completion. Run the Step 4 check on each gap-fill file (floor 2).
 
-For batched logic/structure issues:
+A `rejected` refetch claim (id `refetch-<claim-slug>`) takes both routes: a gap-fill researcher, then the re-synthesis below. Its REVIEWER_FEEDBACK entry holds the claim, the page quote from the `REFETCH:` block and the gap-fill file path, so the wrong claim leaves synthesis.md.
 
-3. Re-dispatch synthesis with REVIEWER_FEEDBACK populated with the critical issue list. Wait for completion.
+For batched logic/structure issues and rejected refetch claims:
+
+3. Re-dispatch synthesis with REVIEWER_FEEDBACK populated with the critical issue list. When it holds a rejected claim, dispatch it after that claim's gap-fill ends. Wait for completion.
 
 After all gap-fills and re-syntheses complete, return to Step 6 with iteration N+1.
 
@@ -226,12 +231,32 @@ SUMMARY: <text>
 
 A verdict of PASS with critical issues is malformed; re-dispatch the reviewer once with a format reminder. Stable ids enable stall detection: same id set in consecutive reviews means surface to user.
 
+Only the synthesis reviewer writes a `REFETCH:` block, after SUMMARY in `synthesis-review-{N}.md`. Its response stays the verdict line plus the issue id list.
+
+```
+REFETCH:
+  - url: <URL>
+    claim: <claim as synthesis.md states it>
+    mark: confirmed | rejected | unresolved
+    quote: "<short quote from the page>" (unresolved: the reason instead)
+```
+
+## Verification Markers
+
+These words are fixed. Every prompt that writes or reads them uses these spellings and no others.
+
+- `ARTIFACT-VERIFIED <sha256>`: last line of a researcher's response; the file is complete.
+- `ARTIFACT-MISSING <reason>`: last line of a researcher's response; the file is absent or partial.
+- `REFETCH:`: the block in `synthesis-review-{N}.md` that lists refetched URLs.
+- `confirmed`, `rejected`, `unresolved`: the mark per refetched URL. A `rejected` claim is a critical `source-quality` issue; an `unresolved` one is minor.
+
 ## Self-Healing
 
 - Agent dispatch fails: fall back to running that step inline. Warn user about context cost.
 - Artifact file missing: re-dispatch once. Surface if still missing.
 - Verdict unparseable: re-dispatch reviewer once with format reminder.
-- Researcher returns empty: re-dispatch once. Surface if still thin (likely bad cluster boundary).
+- Researcher fails the Step 4 check (`ARTIFACT-MISSING`, hash mismatch, missing or unparseable last line, source count under the floor): re-dispatch once. Surface if it fails again (likely bad cluster boundary).
+- Refetched URL dead, moved, paywalled or refused: the reviewer marks it `unresolved` and goes on. Never retry it yourself.
 - Stall detected: surface to user immediately. Don't auto-retry.
 - Check-in interval reached: pause, present status, await user choice.
 - Output dir not writable: suggest alternative path, ask user.
