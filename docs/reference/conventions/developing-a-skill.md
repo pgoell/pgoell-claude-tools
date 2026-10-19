@@ -130,12 +130,12 @@ The README is a front page; the docs live in `docs/`. A new plugin updates, in o
 2. `docs/reference/plugins/<name>.md`, plus entries in `docs/reference/plugins/index.md`, `docs/reference/skills.md` (`docs/reference/upstream-skills.md` for an external git-URL entry) and `docs/reference/runtimes.md`.
 3. A setup how-to under `docs/how-to/`, listed in `docs/how-to/index.md`, only if the plugin needs setup (no page means no setup).
 4. The `README.md` install notes, only if the install command differs from the usual one.
-5. A dated entry in `docs/log.md`.
+5. A new log file under `docs/log/`, named and written as [log.md](/log.md) says.
 6. A line in AGENTS.md "Current Plugins".
 
 Then run `mise run sync-cursor-manifests`, or add the plugin to that task's `EXCLUDE` list with a reason. These sites come on top of the version-bump sites (AGENTS.md "Every plugin change bumps version"), in the same commit.
 
-A new skill in an existing plugin updates `docs/reference/plugins/<plugin>.md`, `docs/reference/skills.md` (`docs/reference/upstream-skills.md` for an external git-URL entry), and `docs/log.md`, plus two sites nothing tests: the plugin's own `README.md` `## Skills` list (if it has one) and, for workbench, the skill list in the "One skill per service" Design Decision in [Skill design patterns](/reference/conventions/skill-design-patterns.md). Check those by hand.
+A new skill in an existing plugin updates `docs/reference/plugins/<plugin>.md`, `docs/reference/skills.md` (`docs/reference/upstream-skills.md` for an external git-URL entry), and adds a log file under `docs/log/`, plus two sites nothing tests: the plugin's own `README.md` `## Skills` list (if it has one) and, for workbench, the skill list in the "One skill per service" Design Decision in [Skill design patterns](/reference/conventions/skill-design-patterns.md). Check those by hand.
 
 ## Skills may ship code
 
