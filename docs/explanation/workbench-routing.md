@@ -8,7 +8,7 @@ status: stable
 
 # Workbench routing and configuration
 
-Workbench decides how much process a task gets and where its artifacts land. [AGENTS.md](../../AGENTS.md) states the rules; this page keeps the reasons and the history.
+Workbench decides how much process a task gets and where its artifacts land. [Workbench routing and configuration](/reference/conventions/workbench-routing.md) states the rules; this page keeps the reasons and the history.
 
 ## Lane triage defaults to the lighter lane, and a reflex ladder runs before routing
 

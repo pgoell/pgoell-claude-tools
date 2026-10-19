@@ -1,0 +1,15 @@
+---
+type: Reference
+title: Workbench routing and configuration
+description: How workbench skills resolve format, path and design system, how lane triage works, and optional required-skill rows.
+tags: [conventions, workbench, routing, configuration]
+status: stable
+---
+
+# Workbench routing and configuration
+
+Read this before you change workbench's lane triage, its `.workbench/config.md` resolution, or the pilot required-skills table. Reasons and history: [workbench-routing](/explanation/workbench-routing.md).
+
+- **Per-artifact format, path, and design-system resolution via `.workbench/config.md`.** `writing-spec`, `writing-plans`, `brainstorming`, and `systematic-debugging` resolve each independently. Format: prompt, then `## Output formats`, then skill default. Path: `.workbench/pilot.md` `## Documentation paths` (specs and plans only), then `## Output paths`, then default. Design system: prompt, then `## Design system` `Name:`, then none. Defaults: specs `md` in `.workbench/specs`, plans `md` in `.workbench/plans`, brainstorms `html` in `.workbench/brainstorms`, debug reports `html` in `.workbench/debug-reports`. `research:research` ignores config for format and path (HTML at `reports/<topic-slug>-<YYYY-MM-DD>/report.html`) but honors `## Design system`; `crafting-html` reads only `## Design system`. Schema: `plugins/workbench/skills/pilot/references/config-schema.md`.
+- **Lane triage defaults to the lighter lane, and a reflex ladder runs before routing.** When unsure between lanes, pick the lighter one; escalate only for a named reason (expensive-to-reverse decision, blast radius beyond the files at hand, real disagreement about intent, a requirement not statable in one sentence without guessing). Two exceptions route heavy: a user who names a spec, plan, or brainstorm is never downgraded, and destructive or hard-to-reverse work (migrations, deletions, auth, public API breaks, money, credentials) always routes heavy. Step 0 runs the reflex ladder (YAGNI, reuse, stdlib, native platform, installed dependency, one-liner); if a rung holds, no lane. State the ladder inline, not by reference. Never edit `using-workbench/references/using-superpowers-upstream.md`. Any new lane rule is lighter-by-default.
+- **Optional required-skill rows.** A pilot required-skills row for a plugin the user may lack (`ponytail:ponytail`) is optional: never reported as skipped when absent, may need no call when its hooks inject content, and never overrides a mandatory row (TDD and verification win; precedence in `references/required-skills.md`). Use this shape, never a hard dependency, for cross-plugin rows.

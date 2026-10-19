@@ -8,7 +8,7 @@ status: stable
 
 # Skill design patterns
 
-These rules shape how skills split into plugins and how they share files. [AGENTS.md](../../AGENTS.md) states them; this page keeps the reasons and the history.
+These rules shape how skills split into plugins and how they share files. [Skill design patterns](/reference/conventions/skill-design-patterns.md) states them (AGENTS.md keeps "Every skill is model-invocable"); this page keeps the reasons and the history.
 
 ## One skill per service, one plugin per product family
 

@@ -31,7 +31,7 @@ The plugins' own READMEs hold the details: [prose-styles](../../plugins/prose-st
 
 ## Output styles are a plugin surface, and a skill-less plugin is a valid shape
 
-This section is for contributors; [AGENTS.md](../../AGENTS.md) states the rule in short.
+This section is for contributors; [Plugins without skills](/reference/conventions/plugins-without-skills.md) states the rule in short.
 
 Claude Code loads `plugins/<plugin>/output-styles/*.md` on its own and names each one `<plugin>:<style>` in `/output-style` and the `/config` picker. Frontmatter takes `name` (defaults to the file name), `description` (shown in the picker), and `keep-coding-instructions`. Any style that only shapes prose sets `keep-coding-instructions: true`, for the reason above. A style body is injected alone, so each file must stand on its own: shared blocks (the punctuation bans) repeat in all four `prose-styles` files on purpose, and cross-references between styles are for the human reader.
 

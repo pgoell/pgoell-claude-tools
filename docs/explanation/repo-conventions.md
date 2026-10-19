@@ -8,7 +8,7 @@ status: stable
 
 # Repository conventions
 
-These rules cover every skill and doc in the repository. [AGENTS.md](../../AGENTS.md) states each one in a few lines; this page keeps the reasons and the history.
+These rules cover every skill and doc in the repository. [AGENTS.md](../../AGENTS.md) states each one in a few lines ("Skills may ship code" sits in [Developing a skill](/reference/conventions/developing-a-skill.md)); this page keeps the reasons and the history.
 
 ## Skills may ship code; wrappers around an existing CLI stay banned
 

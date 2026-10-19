@@ -1,6 +1,6 @@
 # Other Surfaces: Claude.ai, Cowork, Packaging
 
-Read this before running test cases when you have no subagents (Claude.ai), no browser or display (Cowork, a remote box), or a `present_files` tool: it says which steps of SKILL.md change.
+Read this before running test cases when you have no subagents (Claude.ai), no browser or display (Cowork, a remote box), or a `present_files` tool: it says which steps of SKILL.md and `references/running-evals.md` change.
 
 ## Claude.ai
 
@@ -8,7 +8,7 @@ In Claude.ai, the core workflow is the same (draft → test → review → impro
 
 **Running test cases**: No subagents means no parallel execution. For each test case, read the skill's SKILL.md, then follow its instructions to accomplish the test prompt yourself. Do them one at a time. This is less rigorous than independent subagents (you wrote the skill and you're also running it, so you have full context), but it's a useful sanity check, and the human review step compensates. Skip the baseline runs, just use the skill to complete the task as requested.
 
-To check the leading words (SKILL.md Step 4) without subagents, write your plan and reasoning to `<workspace>/iteration-<N>/eval-<id>-<name>/with_skill/outputs/transcript.md` for each run as you work (keep the `with_skill/` level even without baselines, so Step 4's grep finds it), then grep those files for each leading word as Step 4 shows. You wrote the skill, so its words are already on your mind and the check fails less often than it should; treat a pass as weak evidence.
+To check the leading words (Step 4 in `references/running-evals.md`) without subagents, write your plan and reasoning to `<workspace>/iteration-<N>/eval-<id>-<name>/with_skill/outputs/transcript.md` for each run as you work (keep the `with_skill/` level even without baselines, so Step 4's grep finds it), then grep those files for each leading word as Step 4 shows. You wrote the skill, so its words are already on your mind and the check fails less often than it should; treat a pass as weak evidence.
 
 **Reviewing results**: If you can't open a browser (e.g., Claude.ai's VM has no display, or you're on a remote server), skip the browser reviewer entirely. Instead, present results directly in the conversation. For each test case, show the prompt and the output. If the output is a file the user needs to see (like a .docx or .xlsx), save it to the filesystem and tell them where it is so they can download and inspect it. Ask for feedback inline: "How does this look? Anything you'd change?"
 
@@ -35,7 +35,7 @@ If you're in Cowork, the main things to know are:
 
 - You have subagents, so the main workflow (spawn test cases in parallel, run baselines, grade, etc.) all works. (However, if you run into severe problems with timeouts, it's OK to run the test prompts in series rather than parallel.)
 - You don't have a browser or display, so when generating the eval viewer, use `--static <output_path>` to write a standalone HTML file instead of starting a server. Then proffer a link that the user can click to open the HTML in their browser.
-- Cowork tends to skip the eval viewer after the test runs. Build it with `generate_review.py` anyway, as SKILL.md Step 4 says, and show it to the user before you judge the outputs yourself.
+- Cowork tends to skip the eval viewer after the test runs. Build it with `generate_review.py` anyway, as Step 4 in `references/running-evals.md` says, and show it to the user before you judge the outputs yourself.
 - Feedback works differently: since there's no running server, the viewer's "Submit All Reviews" button will download `feedback.json` as a file. You can then read it from there (you may have to request access first). Copy `feedback.json` to `<workspace>/iteration-<N>/feedback.json` so the next iteration picks it up. The same holds on any headless box where you used `--static`.
 - Packaging works: `package_skill.py` just needs Python and a filesystem.
 - Description optimization (`run_loop.py` / `run_eval.py`) should work in Cowork just fine since it uses `claude -p` via subprocess, not a browser, but please save it until you've fully finished making the skill and the user agrees it's in good shape.

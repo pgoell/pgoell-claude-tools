@@ -8,7 +8,7 @@ status: stable
 
 # HTML producers, presets and themes
 
-Several skills write HTML. They come in three shapes (single-file producers, multi-file producers, and exporters that consume another skill's artifact) and take their look from three layers (design systems, presentations presets, diagram themes). [AGENTS.md](../../AGENTS.md) states the rules; this page keeps the reasons and the history. How a skill picks its format and path is in [Workbench routing and configuration](/explanation/workbench-routing.md).
+Several skills write HTML. They come in three shapes (single-file producers, multi-file producers, and exporters that consume another skill's artifact) and take their look from three layers (design systems, presentations presets, diagram themes). [HTML producers, presets and themes](/reference/conventions/html-producers-presets-and-themes.md) states the rules; this page keeps the reasons and the history. How a skill picks its format and path is in [Workbench routing and configuration](/explanation/workbench-routing.md).
 
 ## HTML artifact output is a first-class skill mode
 

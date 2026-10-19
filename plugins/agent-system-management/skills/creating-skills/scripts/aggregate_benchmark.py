@@ -54,10 +54,10 @@ from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
-# A repeat run folder: run-<n>. Same constant in eval-viewer/generate_review.py.
+# A repeat run folder: run-<n>. Same constant in eval-viewer/workspace.py.
 RUN_DIR_RE = re.compile(r"^run-(\d+)$")
 
-# An eval folder: eval-<n>-<name>. Same constant in eval-viewer/generate_review.py.
+# An eval folder: eval-<n>-<name>. Same constant in eval-viewer/workspace.py.
 EVAL_DIR_RE = re.compile(r"^eval-(\d+)(-|$)")
 
 # Shown for a missing delta. A name, since Python before 3.12 rejects a
@@ -70,7 +70,7 @@ PRIMARY_CONFIGS = ("with_skill", "new_skill")
 
 # JSON readers. A missing value takes its default quietly; a wrong-typed one
 # (bool is never a number) takes it with one warning. Same helpers in
-# eval-viewer/generate_review.py.
+# eval-viewer/workspace.py.
 NUM = (int, float)
 KIND_NAMES = {dict: "an object", list: "a list", str: "a string", int: "an int", NUM: "a number"}
 
@@ -121,7 +121,7 @@ def assign_eval_ids(evals: list[tuple]) -> list[int]:
     """Unique ids for evals given as (folder, metadata id, folder id) in
     folder order: the int metadata id (the first eval keeps a duplicate),
     else the folder id if no eval holds it, else one past the largest id in
-    use. Same function in eval-viewer/generate_review.py."""
+    use. Same function in eval-viewer/workspace.py."""
     ids = [None] * len(evals)
     used = set()
     for i, (folder, meta_id, _) in enumerate(evals):

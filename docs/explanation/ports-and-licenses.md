@@ -8,7 +8,7 @@ status: stable
 
 # Ports and licenses
 
-A port copies upstream files into this repository. The upstream license decides the paperwork the plugin ships with, so the first step of any port is to read the upstream `LICENSE` file itself. Secondary signals (a CONTRIBUTING.md, DCO mentions, a README badge, an agent's summary) can make a restricted or source-available license look permissive, and the wrong license shape spreads through every file the port adds. [AGENTS.md](../../AGENTS.md) states the rules; this page keeps the reasons and the examples. For the plugins this applies to today, see [External and vendored plugins](/explanation/external-and-vendored-plugins.md).
+A port copies upstream files into this repository. The upstream license decides the paperwork the plugin ships with, so the first step of any port is to read the upstream `LICENSE` file itself. Secondary signals (a CONTRIBUTING.md, DCO mentions, a README badge, an agent's summary) can make a restricted or source-available license look permissive, and the wrong license shape spreads through every file the port adds. [Ports and licenses](/reference/conventions/ports-and-licenses.md) states the rules; this page keeps the reasons and the examples. For the plugins this applies to today, see [External and vendored plugins](/explanation/external-and-vendored-plugins.md).
 
 ## Upstream-port attribution
 

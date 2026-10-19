@@ -44,7 +44,7 @@ Claude Code and Codex list the plugin; Cursor does not. For moving from `autopil
 
 ## The `deprecated` plugin is a registered, frozen archive
 
-This section is for contributors; [AGENTS.md](../../AGENTS.md) states the rule in short.
+This section is for contributors; [External and deprecated plugins](/reference/conventions/external-and-deprecated-plugins.md) states the rule in short.
 
 When a restructure supersedes a skill, move it (SKILL.md plus references) into `plugins/deprecated/skills/<old-name>/` in the same pull request that removes it from its live plugin. Prefix its frontmatter description with "Deprecated, superseded by <replacement>." and add a one-line banner under the H1 that names the replacement. Rewrite its internal cross-references to the `deprecated:` namespace so the archive stays whole, and drop or de-brand any bundled asset that must not ship. Deprecated skills are never extended and are not listed one by one in `docs/reference/skills.md`. The plugin stays registered in both marketplaces so old workflows keep resolving. An archived port keeps its upstream attribution: move the `NOTICE` block with the file.
 

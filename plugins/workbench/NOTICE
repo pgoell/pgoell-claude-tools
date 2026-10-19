@@ -47,15 +47,27 @@ of port), authored by Thariq Shihipar:
       U+2014 and U+2013 replaced with project-lint-compliant
       punctuation; no semantic content changed)
 
-The upstream repository declares no license at time of port (GitHub
-API reports license: null, no LICENSE file in the repo). Content is
-included under the upstream author's public publishing intent (the
+At commit 5d64f68 the upstream repository declared no license (GitHub
+API reported license: null, and the repo had no LICENSE file). Content
+is included under the upstream author's public publishing intent (the
 repository is the published gallery referenced from Thariq Shihipar's
 blog post on HTML effectiveness, with the explicit invitation
 "you can see a bunch here: https://thariqs.github.io/html-effectiveness").
-All rights to the original text remain with Thariq Shihipar. If the
-upstream license posture changes, this NOTICE should be updated and
-files may need to be removed or relicensed accordingly.
+All rights to the original text remain with Thariq Shihipar.
+
+Upstream licensed the repository after the port. Commit cbc9cfc
+(2026-05-15) added an MIT LICENSE, "Copyright (c) 2026 Anthropic PBC".
+Commit 67ed672 (2026-05-18) switched it to Apache-2.0; it merged as
+0e8d447 (PR #5, "Switch to Apache-2.0"). The appendix of the Apache
+LICENSE names "Copyright 2026 Anthropic PBC". Upstream HTML files
+since then carry the line "Copyright 2026 Anthropic PBC,
+SPDX-License-Identifier: Apache-2.0".
+
+The files shipped here come from 5d64f68, before both changes, so the
+no-license shape above still fits them. A refresh of these files
+re-ports them at a licensed upstream commit and switches to the
+Apache-2.0 attribution shape in AGENTS.md ("Upstream-port
+attribution").
 
 Adaptations to the crafting-html references (the punctuation
 substitution) are mechanical and add no original authorship.

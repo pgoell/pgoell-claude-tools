@@ -284,7 +284,7 @@ Output from `scripts/aggregate_benchmark.py`. Located at `<skill>-workspace/iter
 - `run_summary`: Statistical aggregates per configuration, `with_skill` or `new_skill` first
   - one key per configuration: Each contains `pass_rate`, `time_seconds`, `tokens` objects with `mean` and `stddev` fields
   - `delta`: The first configuration minus the second, as strings like `"+0.50"`, `"+13.0"`, `"+1700"`
-- `notes`: Freeform observations from the analyzer. The script writes `[]`; the analyst pass (SKILL.md Step 4) fills it
+- `notes`: Freeform observations from the analyzer. The script writes `[]`; the analyst pass (Step 4 in `references/running-evals.md`) fills it
 
 **Important:** The viewer reads these field names exactly. Using `config` instead of `configuration`, or putting `pass_rate` at the top level of a run instead of nested under `result`, will cause the viewer to show empty/zero values. Always reference this schema when generating benchmark.json manually.
 

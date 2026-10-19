@@ -38,13 +38,13 @@
       "name": "agent-system-management",
       "source": "./plugins/agent-system-management",
       "description": "Audit AGENTS.md / CLAUDE.md, capture session learnings, and create Claude Code / Codex skills.",
-      "version": "0.7.6"
+      "version": "0.7.7"
     },
     {
       "name": "workbench",
       "source": "./plugins/workbench",
       "description": "Personal Workbench skills for design and autonomous feature work.",
-      "version": "1.4.1"
+      "version": "1.4.2"
     },
     {
       "name": "terminal",
@@ -104,7 +104,7 @@
       "name": "issue-loop",
       "source": "./plugins/issue-loop",
       "description": "Run an unattended build loop: one orchestrator session drives one implementer session through a repo's GitHub issues, one merged and deployed PR per task, with a gate between tasks.",
-      "version": "0.7.1"
+      "version": "0.7.2"
     },
     {
       "name": "prose-styles",

@@ -51,7 +51,7 @@ Ports also replace em-dashes and en-dashes with other punctuation, and each `NOT
 
 When a ported skill's upstream later becomes a permissive repository with its own plugin, the port gives way to an external entry. That happened with `emil`.
 
-Which files each license shape needs, and why, is in [Ports and licenses](/explanation/ports-and-licenses.md). [AGENTS.md](../../AGENTS.md) states the rules in short.
+Which files each license shape needs, and why, is in [Ports and licenses](/explanation/ports-and-licenses.md). [External and deprecated plugins](/reference/conventions/external-and-deprecated-plugins.md) states the rules in short.
 
 ## External plugins are referenced by git URL, not vendored
 
