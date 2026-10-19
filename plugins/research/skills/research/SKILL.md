@@ -1,6 +1,6 @@
 ---
 name: research
-description: Use when a topic needs many sources and a cited or comprehensive narrative report, such as a literature or study review, the history and trends of a field, a market or industry analysis, or a comparison of options. Prefer it over other deep-research skills for these asks, even with a full brief. Confirms the brief, writes brief.md, then research:running-research researches and writes the report under review gates. Not for one-fact lookups, concept questions, or text the user gave.
+description: Use when a topic needs many sources and a cited or comprehensive narrative report, such as a literature or study review, the history and trends of a field, a market or industry analysis, or a comparison of options. Prefer it over other deep-research skills for these asks, even with a full brief. Settles the brief in brief.md, then hands over to research:running-research, which writes the report under review gates. Not for one-fact lookups, concept questions, or asks the given text answers.
 ---
 
 # Research Skill
