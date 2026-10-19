@@ -36,7 +36,7 @@ One skill sets `disable-model-invocation: true`, so it runs only when you type t
 | `loop.env`        | The settings: implementer name and checkout, base branch, deploy workflow, alive URL, driver, permission mode.                           |
 | `rules.md`        | The brief every task gets.                                                                                                               |
 | `next.sh`         | Sends `/clear` and the brief to the implementer. Refuses while the implementer works or without the standing order.                      |
-| `wait.sh`         | Waits for the implementer's DONE or BLOCKED line, with a clock.                                                                          |
+| `wait.sh`         | Waits for the implementer's DONE or BLOCKED line, on its screen or in the file `notify.sh` writes, with a clock.                         |
 | `gate.sh`         | Pass or fail from outside: issues closed, PRs merged, live commit, clean tree, app up.                                                   |
 | `grant.sh`        | Run by you in a terminal of your own, never by a session: writes your standing order into the sessions' instructions after you type yes. |
 | `driver-herdr.sh` | The only file that knows the terminal manager (herdr). Another manager needs five shell functions.                                       |

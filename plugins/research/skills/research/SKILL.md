@@ -124,21 +124,23 @@ If verdict is ISSUES with critical issues: classify and proceed to Step 7.
 
 Classify each critical issue:
 
-- `evidence-gap`, `coverage`, `source-quality` → spawn gap-fill researcher per issue (or per coherent group of related issues).
-- `logic`, `structure` → batch into a single re-synthesis with all such issues as feedback.
+- `evidence-gap`, `coverage`, `source-quality` → spawn gap-fill researcher per issue (or per coherent group of related issues). A `rejected` refetch claim (id `refetch-<claim-slug>`) is a `source-quality` issue.
+- `logic`, `structure` → no researcher; step 3 takes them.
 
 For each gap-fill issue:
 
 1. Read `researcher-prompt.md`. Inject: BRIEF, OUTPUT_PATH, RECIPES_PATH, CLUSTER_SLUG=<best-fit existing cluster>, OUTPUT_FILE=`{OUTPUT_PATH}/research/gap-{N}-{issue-slug}.md`, TARGETED_GAP=<full issue description with location pointer>.
 2. Dispatch in parallel for all gap-fill issues when supported. Wait for completion. Run the Step 4 check on each gap-fill file (floor 2).
 
-A `rejected` refetch claim (id `refetch-<claim-slug>`) takes both routes: a gap-fill researcher, then the re-synthesis below. Its REVIEWER_FEEDBACK entry holds the claim, the page quote from the `REFETCH:` block and the gap-fill file path, so the wrong claim leaves synthesis.md.
+Then, once per round, not once per gap-fill: every round with a critical issue writes the synthesis again, whatever the mix of issues. A gap-fill file reaches the review only through synthesis.md, so never skip step 3:
 
-For batched logic/structure issues and rejected refetch claims:
+3. When every gap-fill file has passed its Step 4 check (or the user, asked after a second failure, said to go on without it), re-dispatch synthesis (Step 5 with ITERATION=N+1) once, with REVIEWER_FEEDBACK holding every critical issue of this round:
+   - each gap-fill issue, with its gap-fill file path;
+   - each rejected refetch claim, with the claim, the page quote from the `REFETCH:` block and the gap-fill file path, so the wrong claim leaves synthesis.md;
+   - each `logic` or `structure` issue.
 
-3. Re-dispatch synthesis with REVIEWER_FEEDBACK populated with the critical issue list. When it holds a rejected claim, dispatch it after that claim's gap-fill ends. Wait for completion.
-
-After all gap-fills and re-syntheses complete, return to Step 6 with iteration N+1.
+   Wait for completion.
+4. Return to Step 6 with iteration N+1.
 
 ### Loop safeguards (Steps 6-7)
 
