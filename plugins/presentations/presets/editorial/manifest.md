@@ -36,7 +36,7 @@ Data stories, research readouts, and reports presented as decks. A newsroom char
   - KeyFindingsSlide: after the State of AI Report 2025 executive summary (slide 9) and a16z's takeaways; three part names hanging in column one, two one-line findings each across columns two to six, parted by hairlines.
   - PredictionScorecardSlide: after the State of AI Report 2025 scorecard (slide 11); forecast in columns one to three, verdict in column four, outcome in columns five and six, hairline rows.
   - DivergingBarsSlide: after Evans 2023 slide 54; quarterly change on a year earlier around a heavy zero line, bike trips gained in gray above, car trips lost in the accent below, series named at the right end, one bracketed note.
-- Each slide embeds a synced copy of the variable files and makes no network request. The example numbers form one consistent fictional dataset (six protected corridors summing to 4k, 5k, 9k, 12k winter trips a day; four painted corridors at about 3k).
+- Each slide links the variable files and makes no network request. The example numbers form one consistent fictional dataset (six protected corridors summing to 4k, 5k, 9k, 12k winter trips a day; four painted corridors at about 3k).
 - `assets/fonts/`: the vendored font files with their licenses.
 
 ## What this direction avoids

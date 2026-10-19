@@ -1,7 +1,7 @@
 /* ============================================================
    Default preset, design tokens ("quiet" direction)
    ============================================================
-   Source of truth for every slide's embedded variable block.
+   Every slide links this file.
    Raw brand layer first, semantic layer second; slides read
    only the semantic names unless a specific raw value is the
    point (charts, swatches).

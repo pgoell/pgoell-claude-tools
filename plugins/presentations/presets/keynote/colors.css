@@ -1,7 +1,7 @@
 /* ============================================================
    Keynote preset, design tokens ("one idea per slide" direction)
    ============================================================
-   Source of truth for every slide's embedded variable block.
+   Every slide links this file.
    Semantic layer only: this preset serves a context, not a
    brand, so it carries no raw brand layer. Slides read these
    names and nothing else.
