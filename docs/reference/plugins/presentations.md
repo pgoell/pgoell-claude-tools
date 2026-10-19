@@ -16,6 +16,8 @@ The whole life of a slide deck in one plugin: content design, an HTML deck with 
 
 **Setup:** [Set up the presentations plugin](/how-to/set-up-presentations.md)
 
+**Tests:** `bash plugins/presentations/tests/run.sh` loads a three-slide deck in headless Chrome, removes and re-adds its `<deck-stage>`, and checks the shadow DOM, slot, rail thumbnails, keys and rail state, with no network. Last run 2026-10-19: 6 passed, 0 failed.
+
 ## Skills
 
 | Invocation                                       | What it does                                                                                                                                                                                                                |

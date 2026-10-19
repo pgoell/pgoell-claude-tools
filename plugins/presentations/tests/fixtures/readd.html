@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>deck-stage re-add test</title>
+<style>deck-stage:not(:defined){visibility:hidden}</style>
+</head>
+<body>
+<div id="host">
+  <deck-stage width="1920" height="1080">
+    <section data-label="Alpha"><h1>Alpha</h1></section>
+    <section data-label="Bravo"><h1>Bravo</h1></section>
+    <section data-label="Charlie"><h1>Charlie</h1></section>
+  </deck-stage>
+</div>
+<pre id="result">running</pre>
+<script>
+  // Cases for removing and re-adding <deck-stage> (issue #222). Results go
+  // to #result in light DOM, since --dump-dom prints only light DOM.
+  // ?assets=<dir url> picks the engine; the default is this plugin's own.
+  //
+  // --dump-dom dumps at the load event. A child frame with an open
+  // document keeps that event pending, so the dump waits until every case
+  // has reported and run() closes it. (Virtual time does not work here:
+  // it runs timers ahead of frames, and the thumbnails come from an
+  // IntersectionObserver, which reports only at a frame.)
+  const hold = document.createElement('iframe');
+  document.body.appendChild(hold);
+  hold.contentDocument.open();
+  hold.contentDocument.write('hold');
+
+  const ASSETS = new URLSearchParams(location.search).get('assets') ||
+    '../../skills/creating-presentations/assets/';
+  const out = [];
+  const report = (name, ok, detail) => {
+    out.push(name + ': ' + (ok ? 'PASS' : 'FAIL') + ' ' + detail);
+    document.getElementById('result').textContent = '\n' + out.join('\n') + '\n';
+  };
+  // Runs one case; a throw fails that case only.
+  const test = async (name, fn) => {
+    try { await fn(); } catch (e) { report(name, false, 'threw ' + e); }
+  };
+
+  // Polls a condition once per frame; gives up after 180 frames (about 3s).
+  const waitFor = (cond) => new Promise((resolve) => {
+    let frames = 0;
+    const tick = () => {
+      let v = false;
+      try { v = cond(); } catch (e) {}
+      if (v || ++frames > 180) resolve(!!v);
+      else requestAnimationFrame(tick);
+    };
+    tick();
+  });
+
+  const stage = () => document.querySelector('deck-stage');
+  const slides = () => Array.from(stage().children);
+  const isActive = (el) => el.hasAttribute('data-deck-active');
+  const counts = () => {
+    const sr = stage().shadowRoot;
+    return {
+      slot: sr.querySelectorAll('slot').length,
+      rail: sr.querySelectorAll('.rail').length,
+      style: Array.from(sr.children).filter((e) => e.localName === 'style').length,
+    };
+  };
+  const one = (c) => c.slot === 1 && c.rail === 1 && c.style === 1;
+  const fmt = (c) => 'slot=' + c.slot + ' rail=' + c.rail + ' style=' + c.style;
+  const rail = () => stage().shadowRoot.querySelector('.rail');
+  const thumbs = () => Array.from(stage().shadowRoot.querySelectorAll('.rail .thumb'));
+  // Text of a thumbnail's clone, which sits in a nested shadow root.
+  const thumbText = (t) => {
+    const f = t.querySelector('.frame');
+    const h = f && f.firstElementChild;
+    return h ? (h.shadowRoot ? h.shadowRoot.textContent : h.textContent) : '';
+  };
+  const readd = () => {
+    const s = stage();
+    const p = s.parentNode;
+    s.remove();
+    p.appendChild(s);
+  };
+
+  async function run() {
+    const s = stage();
+
+    await test('first-mount', async () => {
+      await waitFor(() => isActive(slides()[0]) && thumbs().length === 3);
+      const c = counts();
+      report('first-mount', one(c) && isActive(slides()[0]) && s.index === 0,
+        fmt(c) + ' index=' + s.index + ' thumbs=' + thumbs().length);
+    });
+
+    // Thumb 2 is built with its old text before the re-add, so the live
+    // update check below cannot pass by a late first build.
+    await waitFor(() => thumbText(thumbs()[1]).includes('Bravo'));
+    readd();
+
+    await test('readd-shadow', async () => {
+      const c = counts();
+      report('readd-shadow', one(c), fmt(c));
+    });
+
+    await test('readd-slot', async () => {
+      await waitFor(() => slides().some(isActive));
+      const slots = Array.from(s.shadowRoot.querySelectorAll('slot'));
+      const assigned = slots.map((sl) => sl.assignedElements().length);
+      const active = slides().filter(isActive);
+      report('readd-slot', slots.length === 1 && assigned[0] === 3 && active.length === 1 &&
+        active[0] === slides()[s.index], 'assigned=' + assigned.join(',') + ' active=' + active.length);
+    });
+
+    await test('readd-thumbs', async () => {
+      const built = await waitFor(() => thumbs().length === 3 && thumbText(thumbs()[1]).includes('Bravo'));
+      const n = thumbs().length;
+      slides()[1].querySelector('h1').textContent = 'Bravo changed';
+      const live = await waitFor(() => thumbs().some((t) => thumbText(t).includes('Bravo changed')));
+      report('readd-thumbs', n === 3 && built && live, 'thumbs=' + n + ' built=' + built + ' live=' + live);
+    });
+
+    await test('readd-keys', async () => {
+      s.goTo(0);
+      document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+      report('readd-keys', s.index === 1, 'index=' + s.index);
+    });
+
+    // A second re-add, with a width that is set but not stored and the
+    // rail hidden by the viewer's toggle message.
+    await test('readd-rail-state', async () => {
+      s._rail._setWidth(250);
+      window.postMessage({ type: '__deck_rail_visible', on: false }, '*');
+      await waitFor(() => rail().hasAttribute('data-user-hidden'));
+      readd();
+      await waitFor(() => slides().some(isActive));
+      const c = counts();
+      const w = s.style.getPropertyValue('--deck-rail-w');
+      const hidden = rail().hasAttribute('data-user-hidden');
+      window.postMessage({ type: '__deck_rail_visible', on: true }, '*');
+      const shown = await waitFor(() => !rail().hasAttribute('data-user-hidden') &&
+        s.shadowRoot.querySelector('.stage').style.left === '250px');
+      report('readd-rail-state', one(c) && w === '250px' && hidden && shown,
+        fmt(c) + ' width=' + w + ' hidden=' + hidden + ' shown=' + shown);
+    });
+  }
+
+  try { localStorage.clear(); } catch (e) {}
+  // In order, as the deck's script tags; a missing part file (an engine
+  // older than the split) just fails to load.
+  for (const f of ['deck-print.js', 'deck-controls.js', 'deck-thumbs.js', 'deck-edit.js',
+    'deck-rail.js', 'deck-stage.js']) {
+    const el = document.createElement('script');
+    el.src = ASSETS + f;
+    el.async = false;
+    document.head.appendChild(el);
+  }
+  customElements.whenDefined('deck-stage').then(run)
+    .catch((e) => report('error', false, String(e)))
+    .finally(() => hold.contentDocument.close());
+</script>
+</body>
+</html>

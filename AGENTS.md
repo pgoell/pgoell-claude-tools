@@ -59,6 +59,7 @@ plugins/
     tests/                  # Optional self-contained check of shipped scripts, run by hand
                             #   (issue-loop, insights, news, agent-system-management, file-size:
                             #   tests/run.sh with fakes or fixtures, no network;
+                            #   presentations: tests/run.sh drives deck fixtures in headless Chrome;
                             #   atlassian: tests/run.sh parses the JSON bodies of its examples)
     LICENSE                 # Required for ported plugins (see port attribution rules)
     NOTICE                  # Required for ported plugins: per-file upstream attribution
@@ -85,13 +86,13 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `writing` 3.1.3: `ghostwrite`, `coach`
 - `runtime-bridge` 0.1.2: `claude-codex-bridge`
 - `agent-system-management` 0.7.8: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
-- `workbench` 1.4.2: `pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`
+- `workbench` 1.4.3: `pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`
 - `terminal` 0.1.1: `tmux`
 - `playground` 0.1.3: `playground`
 - `databricks` 0.3.2: `databricks-core`, `databricks-docs`
 - `learning` 0.3.1: `quizzing-the-session`, `quizzing-a-topic`, `surveying-blind-spots`, `rebuilding-a-concept`
 - `critique` 0.1.2: `critiquing-ideas`
-- `presentations` 0.7.2: `designing-presentations`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
+- `presentations` 0.7.3: `designing-presentations`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
 - `diagrams` 0.1.1: `creating-diagrams`
 - `news` 0.9.1: `edition`, `feedback`, `tune`
 - `insights` 0.6.0: `digest`, `apply`, `activity`
