@@ -120,7 +120,7 @@ Say bad news as plainly as good news: over the time box, an unreviewed commit, a
 2. What the last task left of its own issues.
 3. Open bugs, in batches of about five related ones per PR. Group by file area so subagents can run side by side.
 4. Then one feature. Then the bugs that feature filed, before the next feature.
-5. Wishes wait until the user marks them (a `go` label works). The "not now" label never runs.
+5. Then wishes and every other open issue, whoever filed it. Only the "not now" label never runs; do not ask the user for a go on queue items.
 
 A feature task opens more issues than it closes; a bug batch about breaks even. So bugs first, or the queue only grows.
 
