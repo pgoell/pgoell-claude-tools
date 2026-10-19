@@ -27,6 +27,22 @@ Skills that teach the human rather than do the work: two teach-and-quiz loops, a
 
 The quizzing skills ask multiple-choice questions through the host's question tool, with the right answer shuffled and hidden until you submit. They do not finish until you have shown you understand every item.
 
+## Evals
+
+`plugins/learning/evals/` holds 14 `claude plugin eval` cases that test when the four skills fire. Cases 01 to 04 are triggers, one per skill: the skill must fire and the other three must not. Case 01 pastes a diff and asks for a quiz before the PR (`quizzing-the-session`); 02 asks for `quizzing-a-topic`, 03 for `surveying-blind-spots` and 04 for `rebuilding-a-concept`. Cases 21 to 23 are negatives (a one-paragraph concept answer, a translation, a fix to a pasted snippet): no learning skill may fire.
+
+Cases 31 to 34 are near-misses between sibling skills, the pairs the skill descriptions name as easy to confuse. In each, one skill must fire and the other three must not. Case 31 wants a quiz on a part of the repo the session never touched, so `quizzing-a-topic` fires, not `quizzing-the-session`. Case 32 pastes today's change and asks to be checked on it, point by point, before merge, and never says "quiz", so `quizzing-the-session` fires, not `quizzing-a-topic`. Case 33 wants the user's unknown unknowns, not a lesson, so `surveying-blind-spots` fires, not `quizzing-a-topic`. Case 34 wants to build the design themselves and then poke holes in it, so `rebuilding-a-concept` fires, not `quizzing-a-topic`.
+
+Cases 35 to 37 are near-misses outside the plugin: no learning skill may fire, and an `llm` grader checks the reply. Case 35 asks for a lesson line from the session to add to `CLAUDE.md`. Case 36 asks for a printable SQL joins quiz with an answer key for students. Case 37 asks for a PR description from a pasted diff.
+
+Every case allows only Skill, Read, Glob and Grep, so no case needs network or a shell. The graders match full names such as `learning:quizzing-a-topic`, so a word in a call's args does not match.
+
+No one has run the suite yet; a run costs money, so the user decides when. Run from `plugins/learning`:
+
+```bash
+claude plugin eval . --trust-plugin --tag core --runs 1 -j 4 --max-cost-usd 5 --no-publish
+```
+
 ## Licence
 
 Original MIT work. The quiz and survey skills adapt ideas from Thariq Shihipar; `rebuilding-a-concept` joins Toeplitz's genetic method with Lakatos's proofs and refutations. No upstream text is vendored; the README credits the sources.
