@@ -2,16 +2,17 @@
 
 Skills use Claude Code tool names. When you encounter these in a skill, use your platform equivalent:
 
-| Skill references                 | Codex equivalent                                                  |
-| -------------------------------- | ----------------------------------------------------------------- |
-| `Task` tool (dispatch subagent)  | `spawn_agent` (see [Named agent dispatch](#named-agent-dispatch)) |
-| Multiple `Task` calls (parallel) | Multiple `spawn_agent` calls                                      |
-| Task returns result              | `wait`                                                            |
-| Task completes automatically     | `close_agent` to free slot                                        |
-| `TodoWrite` (task tracking)      | `update_plan`                                                     |
-| `Skill` tool (invoke a skill)    | Skills load natively; just follow the instructions                |
-| `Read`, `Write`, `Edit` (files)  | Use your native file tools                                        |
-| `Bash` (run commands)            | Use your native shell tools                                       |
+| Skill references                  | Codex equivalent                                                  |
+| --------------------------------- | ----------------------------------------------------------------- |
+| `Task` tool (dispatch subagent)   | `spawn_agent` (see [Named agent dispatch](#named-agent-dispatch)) |
+| Multiple `Task` calls (parallel)  | Multiple `spawn_agent` calls                                      |
+| Task returns result               | `wait`                                                            |
+| `SendMessage` (continue an agent) | `send_input` with the `spawn_agent` id, then `wait`               |
+| Task completes automatically      | `close_agent` to free slot                                        |
+| `TodoWrite` (task tracking)       | `update_plan`                                                     |
+| `Skill` tool (invoke a skill)     | Skills load natively; just follow the instructions                |
+| `Read`, `Write`, `Edit` (files)   | Use your native file tools                                        |
+| `Bash` (run commands)             | Use your native shell tools                                       |
 
 ## Subagent dispatch requires multi-agent support
 
@@ -22,7 +23,7 @@ Add to your Codex config (`~/.codex/config.toml`):
 multi_agent = true
 ```
 
-This enables `spawn_agent`, `wait`, and `close_agent` for skills like `subagent-driven-development`.
+This enables `spawn_agent`, `send_input`, `wait`, and `close_agent` for skills like `subagent-driven-development`.
 
 ## Named agent dispatch
 

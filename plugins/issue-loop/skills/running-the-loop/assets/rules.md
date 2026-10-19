@@ -17,7 +17,7 @@ Rules for this job:
 
 4. Edit with the edit tool. No heredocs and no sed -i to change source or tests. Never chain an edit and a test run in one shell call. Never chain a git checkout or git restore with other commands. In a worktree-isolated subagent: git as its own Bash call, no `&&` chain; literal arguments to mise, uv, sed and git, no `for` loop or shell variable; never `cd` or `git -C` to the shared checkout; new files with the Write tool, never `cat > file <<EOF`.
 
-5. Tests are the proof. Every checklist line gets a test. The test is the evidence for the box; name it beside the box. See each new test fail on the code of {{BASE}} before you count it.
+5. Tests are the proof. Every checklist line gets a test. The test is the evidence for the box; name it on the box's own line after `Test:` (`Proof:` for a proof subagent). `gate.sh` fails a ticked box without one. See each new test fail on the code of {{BASE}} before you count it.
    - While working, run one test: <FILL: the command that runs a single test by its id>.
    - Run the full suite (<FILL: the command that runs the full suite>) at three points only: before the first push, after the review fixes, and when a change touches shared code. Not after each edit.
    - A test that fails now and then: find the cause in the product or the fixture. Do not add sleeps. Stop after 15 minutes on one flake: mark the test as an expected failure with the reason, open an issue, go on.
