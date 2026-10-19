@@ -127,7 +127,9 @@ Dispatched agent prompt:
     A `rejected` claim is a critical issue; an `unresolved` claim is minor.
     Give both the id `refetch-<claim-slug>` and keep it while the claim stays
     `rejected` or `unresolved`. A claim now `confirmed`, or gone from
-    synthesis.md, drops its id.
+    synthesis.md, drops its id. Mark each URL on its own line; when one
+    claim's URLs disagree, its one issue takes the worst mark (`rejected`,
+    then `unresolved`).
 
     ## Stable Issue IDs
 
