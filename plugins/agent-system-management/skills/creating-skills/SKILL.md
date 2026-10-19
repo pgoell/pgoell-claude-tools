@@ -1,6 +1,6 @@
 ---
 name: creating-skills
-description: Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, edit, or optimize an existing skill, run evals to test a skill, benchmark skill performance with variance analysis, or optimize a skill's description for better triggering accuracy. Also use when the user asks to cut, trim, shorten, or de-slop a skill, or to make it trigger less eagerly.
+description: Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, edit, or optimize an existing skill, run evals to test a skill, benchmark skill performance with variance analysis, or optimize a skill's description for better triggering accuracy. Also use when the user asks to cut, trim, shorten, or de-slop a skill (a SKILL.md and its references, not an AGENTS.md or CLAUDE.md), or to make it trigger less eagerly.
 ---
 
 # Skill Creator

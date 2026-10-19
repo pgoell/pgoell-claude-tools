@@ -1,6 +1,6 @@
 ---
 name: capturing-session-learnings
-description: Capture session learnings into AGENTS.md or CLAUDE.md. Triggers on /revise-agents-md and /revise-claude-md.
+description: Save what we learned this session into AGENTS.md or CLAUDE.md. Use when the user wants today's lessons, gotchas or commands written into an instruction file, also when worded as improving CLAUDE.md with what we learned. Triggers on /revise-agents-md and /revise-claude-md.
 tools: Read, Glob, Grep, Bash, Edit
 ---
 
