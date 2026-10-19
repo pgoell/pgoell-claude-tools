@@ -35,7 +35,7 @@ Use this shape for any future cross-plugin row instead of a hard dependency, whi
 Four workbench skills (`writing-spec`, `writing-plans`, `brainstorming`, `systematic-debugging`) read an optional `.workbench/config.md` at the repo root for each artifact's output format (`md` or `html`), output folder, and active design system. The three resolve independently.
 
 - **Format:** the prompt, then `.workbench/config.md` `## Output formats`, then the skill's default.
-- **Path:** `.workbench/pilot.md` `## Documentation paths` (specs and plans only), then `.workbench/config.md` `## Output paths`, then the skill's default.
+- **Path:** for specs and plans, `.workbench/pilot.md` `## Documentation paths`, then `.workbench/config.md` `## Output paths`, then the project's `CLAUDE.md` or `AGENTS.md` convention, then an existing `docs/superpowers/specs` or `docs/superpowers/plans` folder, then the skill's default. Brainstorm summaries and debug reports use `## Output paths`, then the default. Each rung names a folder; the skill always appends the file name. `writing-spec`, `writing-plans` and `pilot` once each carried their own order, and they disagreed, so the order now lives in `config-schema.md` alone and the three skills point there. The HTML plan template has a Design section for the medium lane's `## Design` preamble, which had no place in it before; the large lane removes it, because its spec holds the design.
 - **Design system:** the prompt, then `.workbench/config.md` `## Design system` `Name:`, then none (templates render with their defaults).
 
 Defaults: specs `md` in `.workbench/specs`, plans `md` in `.workbench/plans`, brainstorm summaries `html` in `.workbench/brainstorms`, debug reports `html` in `.workbench/debug-reports`.

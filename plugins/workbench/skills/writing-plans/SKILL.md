@@ -15,15 +15,14 @@ Assume the implementer is a capable engineer with little project context. Give t
 
 ## Path Resolution
 
-Resolve the output format first (see `## Output Format`), then the plan path in this order:
+Resolve the output format first (see `## Output Format`). Then resolve the plan folder `<paths.plans>` by the one order in `../pilot/references/config-schema.md` `## Resolution order`, and write `<paths.plans>/YYYY-MM-DD-<topic>.<ext>`, where `<ext>` is `md` or `html` per the format. If `<paths.plans>` is `don't commit`, write that file name under `/tmp/<project-name>-pilot/` and skip committing it, as that section says.
 
-1. `.workbench/pilot.md` `Plans:` heading.
-2. Project `CLAUDE.md` or `AGENTS.md` plan-path convention.
-3. `.workbench/plans/YYYY-MM-DD-<feature-name>.<ext>`.
+For html, write the skeleton of `references/plan-template.html` into the `.html` file and replace all its sample content; for md, write markdown. In html, these parts have a slot in the template (acceptance criteria, signatures and call-stack sketches have none yet, #248; put them as `<p>` or `<pre>` in the slice's `<article>`, around its `<ol class="steps">`):
 
-If the resolved plan path is `don't commit`, write the plan to `/tmp/<project-name>-pilot/YYYY-MM-DD-<feature-name>.<ext>` and skip committing it. In every path, `<ext>` is `html` or `md` per the format resolved in `## Output Format`.
-
-For html, write the skeleton of `references/plan-template.html` into the `.html` file and replace all its sample content; for md, write markdown. In html, the `## Plan Document Header` goes in the template's slots: the title in the `<h1>` of `header.page-head`, the "For agentic workers" line as a `<p>` right after that `<h1>`, and Goal, Architecture and Tech Stack in `#summary`.
+- `## Plan Document Header`: the title in the `<h1>` of `header.page-head`, the "For agentic workers" line as a `<p>` right after that `<h1>`, and Goal, Architecture and Tech Stack in `#summary`.
+- Medium lane: the `## Design` preamble goes in `<section id="design">`, right after `#summary`, as its `<dl>` entries Problem, Chosen approach, Key decisions and Out of scope. Remove the "Source spec" link from `header .meta`; there is no spec.
+- Large lane: delete `<section id="design">`. The `Spec: <path>` line becomes the "Source spec" link in `header .meta`, its `href` the spec's path relative to the plan file (e.g. `../specs/<file>`).
+- Slices: each slice is one `<article class="task">` in `#tasks`. Each step is one `<li>` in that article's `<ol class="steps">`, starting with `<span class="checkbox" aria-hidden="true"></span>` and then the step text in `<div class="step-body">` without a "Step N:" label (the template's CSS numbers the steps). This is the html form of `- [ ]`.
 
 ## Scope Check
 
@@ -62,7 +61,7 @@ Every plan MUST start with this header:
 ```markdown
 # [Feature Name] Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use `workbench:test-driven-development` for implementation chunks. Use `workbench:subagent-driven-development` for delegated plan execution, including safe parallel fan-out across independent slices, or execute sequentially in the main session when subagents are unavailable. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use `workbench:test-driven-development` for implementation chunks. Use `workbench:subagent-driven-development` for delegated plan execution, including safe parallel fan-out across independent slices, or execute sequentially in the main session when subagents are unavailable. Steps use checkbox (`- [ ]` in md, `<span class="checkbox">` in html) syntax for tracking.
 
 **Goal:** [One sentence describing what this builds]
 
@@ -75,7 +74,7 @@ Every plan MUST start with this header:
 
 ## Design preamble (medium lane)
 
-When invoked for the medium lane, open the plan with a `## Design` section immediately after the header, before the first slice. It replaces the separate spec: pilot's `design` gate applies to this combined document (or, when invoked outside pilot, present the combined document for the user's direct approval); there is no separate approval round.
+When invoked for the medium lane, open the plan with a `## Design` section immediately after the header, before the first slice (in html, `<section id="design">`; see `## Path Resolution`). It replaces the separate spec: pilot's `design` gate applies to this combined document (or, when invoked outside pilot, present the combined document for the user's direct approval); there is no separate approval round.
 
 Cover:
 
@@ -86,7 +85,7 @@ Cover:
 
 Keep it to the length the decisions warrant. This is not the exhaustive spec: it carries only what a slice-by-slice reader needs before the file map and signatures start doing the rest of the explaining.
 
-In the large lane, skip this section. The plan instead opens with a one-line link to the approved spec: `Spec: <path>`.
+In the large lane, skip this section. The plan instead opens with a one-line link to the approved spec: `Spec: <path>` (in html, the "Source spec" link in `header .meta`).
 
 ## Slice Structure
 
@@ -199,7 +198,7 @@ Override resolution order, highest precedence first:
 2. `.workbench/config.md` `## Output formats` entry for `Plans:`. Schema documented in `plugins/workbench/skills/pilot/references/config-schema.md`.
 3. Per-skill hard-coded default (md).
 
-Path resolution order: `.workbench/pilot.md` `## Documentation paths` `Plans:` first; then `.workbench/config.md` `## Output paths` `Plans:`; then `.workbench/plans/` default. Path and format resolve independently; the file name takes its extension from the format, as `## Path Resolution` says.
+The plan path resolves as `## Path Resolution` says; only the file name's extension comes from the format.
 
 When emitting HTML, follow the structural skeleton in `references/plan-template.html` in this skill's directory. Read the template lazily, only when actually producing the artifact. Do not introduce U+2014 or U+2013 codepoints in body copy; HTML entity forms (`&mdash;`, `&#8212;`, `&ndash;`, `&#8211;`) are permitted.
 

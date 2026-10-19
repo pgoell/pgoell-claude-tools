@@ -90,17 +90,17 @@
   section > h2 { display: flex; align-items: center; gap: 12px; padding-bottom: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--rule); }
   section > h2::before { content: ""; display: inline-block; width: 4px; height: 18px; background: var(--accent); border-radius: 2px; }
 
-  /* ---------- summary (definition list) ---------- */
+  /* ---------- summary and design (definition list) ---------- */
 
-  #summary dl { display: grid; grid-template-columns: max-content 1fr; gap: 10px 24px; margin: 0; }
-  #summary dt { font-weight: 600; color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; padding-top: 2px; }
-  #summary dd { margin: 0; }
-  #summary dd ul { margin: 0; padding-left: 18px; }
+  :is(#summary, #design) dl { display: grid; grid-template-columns: max-content 1fr; gap: 10px 24px; margin: 0; }
+  :is(#summary, #design) dt { font-weight: 600; color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; padding-top: 2px; }
+  :is(#summary, #design) dd { margin: 0; }
+  :is(#summary, #design) dd ul { margin: 0; padding-left: 18px; }
   @media (max-width: 540px) {
-    #summary dl { grid-template-columns: 1fr; gap: 4px 0; }
-    #summary dt { padding-top: 12px; }
-    #summary dd { padding-bottom: 8px; border-bottom: 1px solid var(--rule); }
-    #summary dd:last-of-type { border-bottom: 0; }
+    :is(#summary, #design) dl { grid-template-columns: 1fr; gap: 4px 0; }
+    :is(#summary, #design) dt { padding-top: 12px; }
+    :is(#summary, #design) dd { padding-bottom: 8px; border-bottom: 1px solid var(--rule); }
+    :is(#summary, #design) dd:last-of-type { border-bottom: 0; }
   }
 
   /* ---------- file structure ---------- */
@@ -337,7 +337,7 @@
         <span><strong>Date:</strong> 2026-05-08</span>
         <span><strong>Owner:</strong> Pascal Goellner</span>
         <span class="pill status-active">Active</span>
-        <span><a href="../specs/2026-05-08-task-comments.md">Source spec</a></span>
+        <span><a href="../specs/2026-05-08-task-comments-design.html">Source spec</a></span>
       </div>
     </header>
 
@@ -345,14 +345,13 @@
       <h2>Summary</h2>
       <dl>
         <dt>Goal</dt>
-        <dd>Add inline comment threads to task cards so collaborators can discuss work without leaving the board view.</dd>
+        <dd>Let collaborators comment on a task card without leaving the board.</dd>
 
         <dt>Architecture</dt>
         <dd>
           <ul>
             <li>New <code>comments</code> table joined to <code>tasks</code> by <code>task_id</code>.</li>
-            <li>Server-side rendered list with progressive enhancement for inline reply.</li>
-            <li>Read endpoint piggybacks on the existing task fetch to avoid a second round trip.</li>
+            <li>Server-rendered list, enhanced in the browser for inline reply.</li>
           </ul>
         </dd>
 
@@ -360,13 +359,33 @@
         <dd>
           <ul>
             <li>Backend: Node 20, Fastify, Postgres 16, Knex migrations.</li>
-            <li>Frontend: TypeScript, Preact, Tailwind, Vitest.</li>
-            <li>Testing: Vitest unit, Playwright e2e.</li>
+            <li>Frontend: TypeScript, Preact, Vitest, Playwright.</li>
+          </ul>
+        </dd>
+
+      </dl>
+    </section>
+
+    <!-- Holds the medium-lane ## Design preamble. Remove it in the large lane. -->
+    <section id="design">
+      <h2>Design</h2>
+      <dl>
+        <dt>Problem</dt>
+        <dd>Collaborators discuss tasks in chat, so the reasons behind a change get lost.</dd>
+
+        <dt>Chosen approach</dt>
+        <dd>A flat comment list on each task card, loaded with the task.</dd>
+
+        <dt>Key decisions</dt>
+        <dd>
+          <ul>
+            <li>One level of comments, no nested replies.</li>
+            <li>Comments go when their task goes (<code>ON DELETE CASCADE</code>).</li>
           </ul>
         </dd>
 
         <dt>Out of scope</dt>
-        <dd>Notifications, reactions, threaded replies (single-level only for v1).</dd>
+        <dd>Notifications, reactions, threaded replies.</dd>
       </dl>
     </section>
 
@@ -451,7 +470,7 @@
           <li>
             <span class="checkbox" aria-hidden="true"></span>
             <div class="step-body">
-              <p>Commit when the migration applies cleanly on a fresh database.</p>
+              <p>Commit.</p>
               <code class="test-cmd">git add apps/api/src/db/migrations apps/api/src/db/schema.ts &amp;&amp; git commit</code>
             </div>
           </li>
@@ -476,7 +495,7 @@
           <li>
             <span class="checkbox" aria-hidden="true"></span>
             <div class="step-body">
-              <p>Register the route on the Fastify app and validate the body with the existing zod schema.</p>
+              <p>Register the route on the Fastify app.</p>
               <div class="diff-block" aria-label="diff">
                 <span class="line del">app.register(tasksRoutes);</span>
                 <span class="line add">app.register(tasksRoutes);</span>
@@ -488,9 +507,9 @@
           <li>
             <span class="checkbox" aria-hidden="true"></span>
             <div class="step-body">
-              <p>Run the route test suite and confirm a 201 response body matches the schema.</p>
+              <p>Run the route tests.</p>
               <code class="test-cmd">npm test -- routes/comments</code>
-              <div class="expected">Expected: 4 tests passing, no skipped, status 201 with id and created_at.</div>
+              <div class="expected">Expected: 4 tests pass.</div>
             </div>
           </li>
         </ol>
@@ -499,7 +518,7 @@
 
     <section id="testing">
       <h2>Testing</h2>
-      <p>The following commands gate the feature. All must pass on CI before merge.</p>
+      <p>All must pass on CI before merge.</p>
       <div class="table-wrap">
         <table>
           <thead>
@@ -513,17 +532,12 @@
             <tr>
               <td>Migrations</td>
               <td><code>npm run db:migrate</code></td>
-              <td>Batch 1 run: 1 migration applied (<code>20260508_comments.sql</code>).</td>
+              <td>1 migration applied.</td>
             </tr>
             <tr>
               <td>API route</td>
               <td><code>npm test -- routes/comments</code></td>
               <td>4 passed, 0 failed; 201, 400, 401, 404 responses asserted.</td>
-            </tr>
-            <tr>
-              <td>End-to-end</td>
-              <td><code>npm run test:e2e -- task-comments</code></td>
-              <td>1 passed (Chromium), trace artifact written to <code>./e2e-trace</code>.</td>
             </tr>
             <tr>
               <td>Lint and types</td>
@@ -537,7 +551,7 @@
 
     <section id="commit-points">
       <h2>Commit points</h2>
-      <p>Chronological commits that land this feature. Each one is a green checkpoint.</p>
+      <p>Commits in order. Each one leaves the tests green.</p>
       <ol>
         <li><code class="commit-msg">feat(api): add comments table migration and schema</code></li>
         <li><code class="commit-msg">feat(api): add POST /tasks/:id/comments route and service</code></li>
