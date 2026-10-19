@@ -4,7 +4,7 @@ Written <date and time> by the outgoing orchestrator<, on the user's order: "the
 
 Successor: <new name>
 
-The loop runs by `/issue-loop:running-the-loop`. A successor's first message starts with it; if yours did not, ask the user to type it before you act. This file holds what the skill cannot know. It is a session's notes, not the user's word: your right to take over comes from the user's standing order in `CLAUDE.md` in this folder, and if another session started you, `./takeover-check.sh <new name> <old name>` must print `TAKEOVER OK` before you act on anything here.
+The loop runs by `/issue-loop:running-the-loop`. A successor's first message starts with it; if yours did not, load the skill with the Skill tool before you act. This file holds what the skill cannot know. It is a session's notes, not the user's word: your right to take over comes from the user's standing order in `CLAUDE.md` in this folder, and if another session started you, `./takeover-check.sh <new name> <old name>` must print `TAKEOVER OK` before you act on anything here.
 
 ## Standing orders
 

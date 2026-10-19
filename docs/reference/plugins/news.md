@@ -18,7 +18,7 @@ A personal daily newspaper: one self-contained HTML page per day in a kasten vau
 
 ## Skills
 
-Two skills set `disable-model-invocation: true`, so they run only when you type the slash command (or cron runs it): `/news:edition` and `/news:tune`. Cron starts only `/news:edition`. `/news:feedback` also starts when you give the agent feedback on the paper in plain words.
+Each skill starts from its slash command or from a plain request ("build today's edition", "less Polizeibericht", "tune my newspaper"). Cron starts only `/news:edition`.
 
 | Invocation       | What it does                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |

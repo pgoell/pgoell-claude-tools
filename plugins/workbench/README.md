@@ -9,7 +9,7 @@ Workbench skills for design dialogue, skill routing, and profile driven feature 
 - `writing-plans`: Turn approved specs into concrete implementation plans.
 - `visualizing-options`: Browser-based visual companion for mockups, layout comparisons, wireframes, and architecture diagrams.
 - `using-workbench`: Load Workbench skill rules and routing.
-- `pilot`: Ship a feature end to end with configurable human gates; replaces autopilot and copilot. Starts only when you type `/workbench:pilot` (`disable-model-invocation: true`).
+- `pilot`: Ship a feature end to end with configurable human gates; replaces autopilot and copilot.
 - `verification-before-completion`: Require fresh verification evidence before completion claims.
 - `test-driven-development`: Enforce test-first RED-GREEN-REFACTOR implementation discipline.
 - `subagent-driven-development`: Execute implementation plans with fresh agents and review gates; absorbs dispatching-parallel-agents' parallel dispatch rules.

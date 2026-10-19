@@ -20,7 +20,7 @@ Not in Codex or Cursor: its skills drive Claude Code sessions themselves (`/clea
 
 ## Skills
 
-One skill sets `disable-model-invocation: true`, so it runs only when you type the slash command: `/issue-loop:running-the-loop`. A handover's first message starts with that command, so the successor starts it the same way.
+Both skills start from their slash command or from a plain request ("run the issue loop on this repo"). A handover's first message starts with `/issue-loop:running-the-loop`; a successor that missed it loads the skill with the Skill tool.
 
 | Invocation                     | What it does                                                                                                                                                                                                                                                   |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

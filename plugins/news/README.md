@@ -8,9 +8,8 @@ earlier coverage.
 
 ## Skills
 
-`/news:edition` and `/news:tune` run only when you type the slash command (or
-cron runs `/news:edition`); `/news:feedback` also starts when you give the
-agent feedback on the paper in plain words.
+Each skill starts from its slash command or from a plain request ("build
+today's edition", "less Polizeibericht"); cron runs `/news:edition`.
 
 - `/news:edition [--vault PATH] [--date YYYY-MM-DD] [--periodic FOLDER]`: applies open feedback,
   gathers news per section (one subagent each where the host has them), drops

@@ -8,8 +8,9 @@ happens: kept fixes become pull requests, todos or newspaper feedback lines.
 
 ## Skills
 
-All three skills run only when you type the slash command (or cron runs
-`/insights:digest` and `/insights:activity`).
+Each skill starts from its slash command or from a plain request ("what went
+wrong in my sessions yesterday"); cron runs `/insights:digest` and
+`/insights:activity`.
 
 - `/insights:digest [--vault PATH] [--date YYYY-MM-DD] [--periodic FOLDER]`:
   reads 14 days of transcripts through `extract.py`, groups recurring errors,
@@ -175,7 +176,7 @@ user's bullets and a mention under a heading stay), a run with `gh` and
 written; `cron-insights.sh` also looks in `01 Periodic` when the variable is
 unset.
 
-Last run, 2026-10-18: 72 of 72 checks pass.
+Last run, 2026-10-19: 72 of 72 checks pass.
 
 The digest and apply skills have no test.
 
