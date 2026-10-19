@@ -93,7 +93,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `learning` 0.3.3: `quizzing-the-session`, `quizzing-a-topic`, `surveying-blind-spots`, `rebuilding-a-concept`
 - `critique` 0.1.3: `critiquing-ideas`
 - `presentations` 0.7.7: `designing-presentations`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
-- `diagrams` 0.1.1: `creating-diagrams`
+- `diagrams` 0.1.2: `creating-diagrams`
 - `news` 0.9.3: `edition`, `feedback`, `tune`
 - `insights` 0.6.1: `digest`, `apply`, `activity`
 - `file-size` 0.1.0: `setting-up-the-check`

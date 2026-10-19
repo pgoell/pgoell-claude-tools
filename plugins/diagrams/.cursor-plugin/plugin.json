@@ -1,7 +1,7 @@
 {
   "name": "diagrams",
   "displayName": "Diagrams",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Draw validated, themeable architecture, workflow, sequence, data-flow, and lifecycle diagrams as interactive HTML",
   "author": {
     "name": "Pascal Göllner"
