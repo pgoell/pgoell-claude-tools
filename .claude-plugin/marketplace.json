@@ -8,7 +8,7 @@
       "name": "atlassian",
       "source": "./plugins/atlassian",
       "description": "Use Jira and Confluence from agent workflows.",
-      "version": "2.0.7"
+      "version": "2.0.8"
     },
     {
       "name": "google-workspace",

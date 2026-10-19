@@ -11,6 +11,7 @@ plugins/workbench/evals/results/
 plugins/insights/evals/results/
 plugins/news/evals/results/
 plugins/research/evals/results/
+plugins/atlassian/evals/results/
 __pycache__/
 
 # Hosted deck editor secrets
