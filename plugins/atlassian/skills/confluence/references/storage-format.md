@@ -9,9 +9,9 @@ Confluence stores page content in an XHTML-based format called "storage format."
 Example API call context:
 
 ```bash
-curl -s -X PUT \
-  "https://${DOMAIN}.atlassian.net/wiki/rest/api/content/${PAGE_ID}" \
-  -H "Authorization: Bearer ${CONFLUENCE_TOKEN}" \
+curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" -X PUT \
+  "https://$ATLASSIAN_DOMAIN.atlassian.net/wiki/rest/api/content/${PAGE_ID}" \
+  -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -d '{
     "version": { "number": NEW_VERSION },

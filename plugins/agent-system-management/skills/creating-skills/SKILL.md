@@ -235,6 +235,8 @@ Execute this task:
 - **Improving an existing skill**: the old version. Before editing, snapshot the skill (`cp -r <skill-path> <workspace>/skill-snapshot/`), then point the baseline subagent at the snapshot. Save to `old_skill/outputs/`.
 - **Discipline-enforcing skill whose baselines already ran before the skill was written** (the inverted path in Test Cases): reuse those captured runs as the baseline arm and spawn only the with-skill runs.
 
+The run directory is `<eval-dir>/with_skill/` (or the baseline config dir, such as `without_skill/`) for one run, or `<eval-dir>/with_skill/run-<n>/` when you repeat a config; `outputs/`, `timing.json` and `grading.json` sit in the run directory.
+
 Write an `eval_metadata.json` for each test case (assertions can be empty for now). Set `eval_id` to the test case's `id` in `evals/evals.json`, and give each eval a descriptive name (`eval_name`) based on what it's testing. The directory is `eval-<id>-<descriptive-name>`. If this iteration uses new or modified eval prompts, create these files for each new eval directory; don't assume they carry over from previous iterations.
 
 ```json
@@ -256,7 +258,7 @@ Update the `eval_metadata.json` files and `evals/evals.json` with the assertions
 
 ### Step 3: As runs complete, capture timing data
 
-When each subagent task completes, you receive a notification containing `total_tokens` and `duration_ms`. Save this data immediately to `timing.json` in the run directory:
+When each subagent task completes, you receive a notification containing `total_tokens` and `duration_ms`. Save this data immediately to `timing.json` in the run directory, beside `outputs/`:
 
 ```json
 {
@@ -272,7 +274,7 @@ This is the only opportunity to capture this data: it comes through the task not
 
 Once all runs are done:
 
-1. **Grade each run**: spawn a grader subagent (or grade inline) that reads `agents/grader.md` and evaluates each assertion against the outputs. Save results to `grading.json` in each run directory. The grading.json expectations array must use the fields `text`, `passed`, and `evidence` (not `name`/`met`/`details` or other variants); the viewer depends on these exact field names. For assertions that can be checked programmatically, write and run a script rather than eyeballing it: scripts are faster, more reliable, and can be reused across iterations.
+1. **Grade each run**: spawn a grader subagent (or grade inline) that reads `agents/grader.md` and evaluates each assertion against the outputs. Save results to `grading.json` in each run directory, beside `outputs/`. The grading.json expectations array must use the fields `text`, `passed`, and `evidence` (not `name`/`met`/`details` or other variants); the viewer depends on these exact field names. For assertions that can be checked programmatically, write and run a script rather than eyeballing it: scripts are faster, more reliable, and can be reused across iterations.
 
 2. **Aggregate into benchmark**: run the aggregation script from the skill-creator directory:
    ```bash
