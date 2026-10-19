@@ -82,7 +82,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `research` 2.1.5: `research`
 - `writing` 3.1.3: `ghostwrite`, `coach`
 - `runtime-bridge` 0.1.2: `claude-codex-bridge`
-- `agent-system-management` 0.7.4: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
+- `agent-system-management` 0.7.5: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
 - `workbench` 1.2.1: `pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`
 - `terminal` 0.1.1: `tmux`
 - `playground` 0.1.3: `playground`
