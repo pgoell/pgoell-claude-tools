@@ -132,3 +132,15 @@ scripts under test open no outside connection; `uv` may fetch pyyaml once. It ch
 Last run, 2026-10-19: 25 of 25 checks pass.
 
 The skills' judgement steps have no test.
+
+## Evals
+
+`evals/` holds 12 cases that test which skill a prompt triggers. Cases 01 to 03 give one trigger case per skill: `edition`, `feedback` and `tune`. Cases 21 to 23 are negatives: each checks that none of the three skills fires. Cases 31 to 36 are near-misses, one per ordered pair of skills: each prompt borrows the words of one skill and belongs to another. Between `feedback` and `tune` the prompt's scope decides: one stated change goes to `feedback`; a walk through the settings, a list of designs or a comparison of designs goes to `tune`.
+
+No news skill calls another through the Skill tool. `tune` re-renders through `../edition/scripts/render.py` with Bash, `feedback` tells the user to run the build themselves, and `edition` applies open items from the vault's feedback note itself. The runner allows no Bash either, so no chain can trip a not-fired grader.
+
+No one has run the suite yet; a run costs money, so the user decides when. Run from `plugins/news`:
+
+```bash
+claude plugin eval . --trust-plugin --tag core --runs 1 -j 4 --max-cost-usd 10 --no-publish
+```
