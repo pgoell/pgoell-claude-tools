@@ -1,6 +1,6 @@
 {
   "name": "issue-loop",
-  "version": "0.5.4",
+  "version": "0.6.0",
   "description": "Run an unattended build loop: one orchestrator session drives one implementer session through a repo's GitHub issues, one merged and deployed PR per task, with a gate between tasks.",
   "author": {
     "name": "Pascal Göllner"
@@ -27,7 +27,7 @@
       "Write"
     ],
     "defaultPrompt": [
-      "Run the issue loop on this repo",
+      "Use $running-the-loop to run the issue loop on this repo",
       "Hand the loop over to a fresh orchestrator"
     ],
     "screenshots": []

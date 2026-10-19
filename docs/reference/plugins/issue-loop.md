@@ -20,6 +20,8 @@ Not in Codex or Cursor: its skills drive Claude Code sessions themselves (`/clea
 
 ## Skills
 
+One skill sets `disable-model-invocation: true`, so it runs only when you type the slash command: `/issue-loop:running-the-loop`. A handover's first message starts with that command, so the successor starts it the same way.
+
 | Invocation                     | What it does                                                                                                                                                                                                                                                   |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `/issue-loop:running-the-loop` | Makes this session the orchestrator: checks what the repo needs, sets up a loop folder from templates, and turns the loop. Covers the standing order, the brief, the wait, the gate, queue order, what goes to the human, and the limits of such a loop.       |

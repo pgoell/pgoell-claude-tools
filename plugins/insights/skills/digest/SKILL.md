@@ -1,6 +1,7 @@
 ---
 name: digest
-description: "Use when the user wants yesterday's (or a given day's) Claude Code sessions and newspaper runs checked for problems, for example \"run the session insights\", \"what went wrong in my sessions yesterday\", \"/insights:digest --vault ~/kasten-data/vault\", or when cron runs it headless at 05:30. Reads 14 days of transcripts through a script, groups recurring errors, guard refusals and typed corrections into problems, checks memory and the destination files, verifies causes where cheap, and proposes one concrete fix per problem on an HTML page in the kasten vault with a review note, linked from today's daily note. Not for acting on a reviewed note (use insights:apply)."
+description: "Check a day's Claude Code sessions and newspaper runs for recurring problems and propose one fix each on an HTML page in the kasten vault. Started by /insights:digest or by cron."
+disable-model-invocation: true
 ---
 
 # Digest

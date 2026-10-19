@@ -10,6 +10,8 @@ status: stable
 
 Every live skill, in marketplace order. Invoke a skill from the host agent with its full name, `/<plugin>:<skill>`, which works whatever else you have installed. Each plugin's page has more detail. The names are Claude Code's; Codex names most taste-skill skills differently, and [taste-skill](/reference/plugins/taste-skill.md) lists both.
 
+Seven skills start only when you type the slash command (or cron types it for you): `/insights:activity`, `/insights:apply`, `/insights:digest`, `/news:edition`, `/news:tune`, `/issue-loop:running-the-loop` and `/workbench:pilot`. The agent does not start them on its own from a plain request.
+
 | Skill                                                  | Plugin                                                                   | What it does                                                                                                             |
 | ------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
 | `/atlassian:jira`                                      | [atlassian](/reference/plugins/atlassian.md)                             | Search Jira, manage issues, add comments, transition work, and inspect sprints.                                          |

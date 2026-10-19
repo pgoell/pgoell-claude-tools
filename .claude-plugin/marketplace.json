@@ -26,7 +26,7 @@
       "name": "writing",
       "source": "./plugins/writing",
       "description": "Ghostwrite pieces from the owner's own facts, or get coached to write them yourself.",
-      "version": "3.1.2"
+      "version": "3.1.3"
     },
     {
       "name": "runtime-bridge",
@@ -44,7 +44,7 @@
       "name": "workbench",
       "source": "./plugins/workbench",
       "description": "Personal Workbench skills for design and autonomous feature work.",
-      "version": "1.1.2"
+      "version": "1.2.0"
     },
     {
       "name": "terminal",
@@ -74,13 +74,13 @@
       "name": "critique",
       "source": "./plugins/critique",
       "description": "Critique ideas, plans, and decisions through independent thinking frames, one fresh subagent each, with verdicts shown word for word and one decision.",
-      "version": "0.1.1"
+      "version": "0.1.2"
     },
     {
       "name": "presentations",
       "source": "./plugins/presentations",
       "description": "Presentation lifecycle skills: content design, HTML deck building with brand presets and a perfecting loop, a local deck editor, native PPTX export, and preset extraction.",
-      "version": "0.6.0"
+      "version": "0.6.1"
     },
     {
       "name": "diagrams",
@@ -92,19 +92,19 @@
       "name": "news",
       "source": "./plugins/news",
       "description": "Build a personal daily newspaper in a kasten vault, linked from the daily note, shaped by your feedback.",
-      "version": "0.6.3"
+      "version": "0.7.0"
     },
     {
       "name": "insights",
       "source": "./plugins/insights",
       "description": "Find what went wrong in yesterday's Claude Code sessions and newspaper runs, with one concrete fix per problem on a page in a kasten vault.",
-      "version": "0.4.2"
+      "version": "0.5.0"
     },
     {
       "name": "issue-loop",
       "source": "./plugins/issue-loop",
       "description": "Run an unattended build loop: one orchestrator session drives one implementer session through a repo's GitHub issues, one merged and deployed PR per task, with a gate between tasks.",
-      "version": "0.5.4"
+      "version": "0.6.0"
     },
     {
       "name": "prose-styles",

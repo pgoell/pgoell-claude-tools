@@ -1,6 +1,6 @@
 ---
 name: feedback
-description: "Use when the user gives feedback on their personal newspaper and wants it applied now, for example \"less Polizeibericht\", \"more like #2026-10-07-evals-02\", \"GNZ is paywalled, drop it\", \"add Bruchköbel to the local section\", or \"/news:feedback shorter Deloitte stories\". Turns the free text into config changes in the vault, records them in the feedback note and changelog, and shows the config diff. Not for building an edition (use news:edition) or for a full reconfiguration interview (use news:tune)."
+description: "Use when the user gives feedback on their personal newspaper and wants it applied now, for example \"less Polizeibericht\", \"GNZ is paywalled, drop it\", or \"/news:feedback shorter Deloitte stories\". Turns the free text into config changes in the vault and shows the diff. Not for building an edition (the user runs /news:edition) or for a full reconfiguration interview (the user runs /news:tune)."
 ---
 
 # Feedback

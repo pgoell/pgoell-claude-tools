@@ -1,6 +1,6 @@
 ---
 name: ghostwrite
-description: Use when the user wants a piece of writing drafted for them, such as a blog post, essay, talk script, client memo, briefing, email, decision doc, README, how-to guide, design doc, or pull request description. Interviews the owner or takes dictation, uses only facts from the owner, documents the owner supplies, or the repository, and hands back a plain draft for the owner's final edit. For feedback that teaches the owner to write the piece themselves, see the coach skill. For slide decks, see the presentations plugin.
+description: Use when the user wants a piece of writing drafted for them, such as a blog post, essay, memo, email, decision doc, README, design doc, or pull request description. Interviews the owner, uses only facts from the owner, their documents, or the repository, and hands back a plain draft. For feedback that teaches the owner to write it themselves, see the coach skill. For slide decks, see the presentations plugin.
 ---
 
 # Ghostwrite Skill

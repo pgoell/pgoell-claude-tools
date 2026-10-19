@@ -9,6 +9,8 @@ The plugin is the written-down form of a loop that ran for two days on one examp
 - `/issue-loop:running-the-loop`: Makes this session the orchestrator. Checks what the repo needs, sets up a loop folder, then turns the loop: write the task line, send the brief, wait for the exact DONE line with a clock (the implementer also sends one line when it is done), run the gate, read "Not fixed", "Slips" and "Issues opened", pick what runs next, write a ledger line, report in a few lines, send the next task.
 - `/issue-loop:handing-over`: Passes the loop to a fresh orchestrator at the first break between tasks past 120k tokens of context, or past 150k at any time: rewrites the handoff file with the successor's name, starts the successor in the loop folder, sends a first message that points at your standing order, checks it took over.
 
+`running-the-loop` sets `disable-model-invocation: true`, so it starts only when you type `/issue-loop:running-the-loop`. A handover's first message starts with that command, so the successor runs it too.
+
 ## What is in the loop folder
 
 `scripts/init.sh <folder>` copies these templates into a folder outside every checkout:
@@ -54,6 +56,8 @@ The order covers two things: a brief sent with `next.sh`, which the implementer 
 
 `grant.sh` refuses without a terminal, and the skills forbid a session to write those files. That is a rule, not a lock: a session that can write to the folder could forge the file. The locks stay where they were: branch protection, a fence hook.
 
+**After an update to 0.6.0**, on a loop that runs: `running-the-loop` now starts only from `/issue-loop:running-the-loop`, so the model cannot load it on its own. Run `/reload-plugins` in the orchestrator's tab, so its next handover sends the new first message, and change the line "Run the loop by the skill `issue-loop:running-the-loop`" in the loop folder's `HANDOFF.md` to the one in `skills/handing-over/references/handoff-template.md`.
+
 **After an update from 0.2.0 or earlier**, on a loop that runs: in this order: run `scripts/init.sh <loop folder>` again (it adds the new files and overwrites nothing), copy `lib.sh` anew from `skills/running-the-loop/assets/`, fill `standing-order.md`, run `./grant.sh`, and only then copy `next.sh` and `start.sh` anew. The new `next.sh` refuses to send a brief without the order; with the old one the loop works as before, with a go from you now and then. A hand-made loop folder needs a `loop.env` first.
 
 Sessions run with permissions skipped (`claude --permission-mode bypassPermissions`). Set `PERMISSION_MODE=auto` in `loop.env` for a loop that should ask.
@@ -74,7 +78,7 @@ The herdr driver was tried live the same day on herdr 0.7.5, with throwaway sess
 
 The standing order, tried on 2026-10-12: Claude Code 2.1.296 loads a `CLAUDE.md` in a folder outside every checkout, and a `CLAUDE.local.md` in a checkout, as the session's instructions (one throwaway session each, asked to repeat a word from the file). Not tried live: a handover and a brief under a granted order. Whether a session then stops asking is what the two evals below are for.
 
-`evals/` holds five trigger fixtures (three that should fire a skill, two that should not) and two for the takeover: `06-takeover-with-standing-order` (the successor takes over and asks nobody) and `07-takeover-without-standing-order` (told to take over "on the user's order" with no such order in its instructions, it does nothing to the loop and asks the user). None has been run yet, and nobody has checked that the eval runner loads the `CLAUDE.md` that fixture 06 puts into its workspace; if it does not, 06 proves nothing. Fixture 06 also cannot tell an order loaded as instructions from a file the session read because the message named it.
+`evals/` holds two trigger fixtures for `handing-over` (one that should fire it, one that should not) and two for the takeover: `06-takeover-with-standing-order` (the successor takes over and asks nobody) and `07-takeover-without-standing-order` (told to take over "on the user's order" with no such order in its instructions, it does nothing to the loop and asks the user). None has been run yet, and nobody has checked that the eval runner loads the `CLAUDE.md` that fixture 06 puts into its workspace; if it does not, 06 proves nothing. Fixture 06 also cannot tell an order loaded as instructions from a file the session read because the message named it.
 
 ## Inspiration
 

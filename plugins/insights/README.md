@@ -8,6 +8,9 @@ happens: kept fixes become pull requests, todos or newspaper feedback lines.
 
 ## Skills
 
+All three skills run only when you type the slash command (or cron runs
+`/insights:digest` and `/insights:activity`).
+
 - `/insights:digest [--vault PATH] [--date YYYY-MM-DD]`: reads 14 days of
   transcripts through `extract.py`, groups recurring errors, guard refusals
   and typed corrections into problems, checks memory and the files a fix would

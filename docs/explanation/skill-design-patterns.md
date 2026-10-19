@@ -20,6 +20,14 @@ The `presentations` plugin follows the product-family rule. Its five skills (`de
 
 Terminal skills that depend on local Unix tools belong in the `terminal` plugin, so Windows users can skip them unless they use WSL.
 
+## Skills only the user starts, and short descriptions
+
+Every model-invoked skill's description loads into every request. A skill audit on 2026-10-19 (against Matt Pocock's talk "Building Great Agent Skills: The Missing Manual") counted 46 live descriptions at 15,143 characters, none of them user-only, and 13 over 500 characters. Seven skills only ever start from the user or from cron, so their descriptions paid that cost for nothing: `insights:activity`, `insights:apply`, `insights:digest`, `news:edition`, `news:tune`, `issue-loop:running-the-loop` and `workbench:pilot` (issues #158 and #159). They now set `disable-model-invocation: true` and carry one plain sentence for the human. The rule itself lives in `creating-skills` (`references/writing-great-skills.md`).
+
+The flag also stops the model from loading such a skill through the Skill tool. So no other skill may tell the model to start one: `insights:digest` reads `../apply/SKILL.md` by path, and an issue-loop handover sends a first message that starts with `/issue-loop:running-the-loop`, which Claude Code expands as a typed command. Cron is unaffected: the wrappers send the slash command as the `-p` prompt, a user turn. The trigger evals that asserted the model fired `running-the-loop` on its own were dropped with the flag.
+
+`learning:*` and `news:feedback` stay model-invoked: people reach them with plain requests ("quiz me on this", "less Polizeibericht").
+
 ## Workflow skills are execution protocols
 
 When a user calls a workflow skill such as `workbench:pilot`, the agent follows its sequence as a procedure: branch setup, brainstorm, spec, plan, pressure test, implementation, and verification where they apply. The body is not loose advice to pick from. A skipped step is the failure these skills exist to prevent.
