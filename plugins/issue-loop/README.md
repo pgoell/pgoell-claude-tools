@@ -9,6 +9,8 @@ The plugin is the written-down form of a loop that ran for two days on one examp
 - `/issue-loop:running-the-loop`: Makes this session the orchestrator. Checks what the repo needs, sets up a loop folder, then turns the loop: write the task line, send the brief, wait for the exact DONE line with a clock (the implementer also sends one line when it is done), run the gate, read "Not fixed", "Slips" and "Issues opened", pick what runs next, write a ledger line, report in a few lines, send the next task.
 - `/issue-loop:handing-over`: Passes the loop to a fresh orchestrator at the first break between tasks past 120k tokens of context, or past 150k at any time: rewrites the handoff file with the successor's name, starts the successor in the loop folder, sends a first message that points at your standing order, checks it took over.
 
+`running-the-loop` sets `disable-model-invocation: true`, so it starts only when you type `/issue-loop:running-the-loop`. A handover's first message starts with that command, so the successor runs it too.
+
 ## What is in the loop folder
 
 `scripts/init.sh <folder>` copies these templates into a folder outside every checkout:
@@ -74,7 +76,7 @@ The herdr driver was tried live the same day on herdr 0.7.5, with throwaway sess
 
 The standing order, tried on 2026-10-12: Claude Code 2.1.296 loads a `CLAUDE.md` in a folder outside every checkout, and a `CLAUDE.local.md` in a checkout, as the session's instructions (one throwaway session each, asked to repeat a word from the file). Not tried live: a handover and a brief under a granted order. Whether a session then stops asking is what the two evals below are for.
 
-`evals/` holds five trigger fixtures (three that should fire a skill, two that should not) and two for the takeover: `06-takeover-with-standing-order` (the successor takes over and asks nobody) and `07-takeover-without-standing-order` (told to take over "on the user's order" with no such order in its instructions, it does nothing to the loop and asks the user). None has been run yet, and nobody has checked that the eval runner loads the `CLAUDE.md` that fixture 06 puts into its workspace; if it does not, 06 proves nothing. Fixture 06 also cannot tell an order loaded as instructions from a file the session read because the message named it.
+`evals/` holds two trigger fixtures for `handing-over` (one that should fire it, one that should not) and two for the takeover: `06-takeover-with-standing-order` (the successor takes over and asks nobody) and `07-takeover-without-standing-order` (told to take over "on the user's order" with no such order in its instructions, it does nothing to the loop and asks the user). None has been run yet, and nobody has checked that the eval runner loads the `CLAUDE.md` that fixture 06 puts into its workspace; if it does not, 06 proves nothing. Fixture 06 also cannot tell an order loaded as instructions from a file the session read because the message named it.
 
 ## Inspiration
 

@@ -1,6 +1,7 @@
 ---
 name: running-the-loop
-description: Use when the user wants an unattended build loop over a repo's GitHub issues, with this session as the orchestrator that drives one implementer session task after task, for example "run the issue loop on this repo", "work through the open issues unattended", "drive the implementer session through the queue", or "set up the issue loop here". Covers setup, the standing order by which the user lets the loop's sessions order each other, the task brief, the wait, the gate after each task, queue order, what goes to the human, and the limits of such a loop. Not for building one feature in this session, and not for passing the loop to a new session (use handing-over).
+description: Run an unattended loop over a repo's GitHub issues, with this session as the orchestrator that drives one implementer session task after task. Started by /issue-loop:running-the-loop.
+disable-model-invocation: true
 ---
 
 # Running the Loop

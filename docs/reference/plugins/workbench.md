@@ -20,6 +20,8 @@ Workflow skills for taking a change from idea to pull request: triage, design di
 
 ## Skills
 
+One skill sets `disable-model-invocation: true`, so it runs only when you type the slash command: `/workbench:pilot`.
+
 | Invocation                                  | What it does                                                                                                                                                                                                     |
 | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `/workbench:using-workbench`                | Load the workbench rules and pick the right skill. Triages every task into the quick, medium or large lane, lighter lane when unsure.                                                                            |

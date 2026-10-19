@@ -8,6 +8,10 @@ earlier coverage.
 
 ## Skills
 
+`/news:edition` and `/news:tune` run only when you type the slash command (or
+cron runs `/news:edition`); `/news:feedback` also starts when you give the
+agent feedback on the paper in plain words.
+
 - `/news:edition [--vault PATH] [--date YYYY-MM-DD]`: applies open feedback,
   gathers news per section (one subagent each where the host has them), drops
   repeats, writes, renders with the configured design, records what ran, and

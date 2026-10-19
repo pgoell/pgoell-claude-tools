@@ -18,6 +18,8 @@ A daily look back at your Claude Code sessions and the newspaper's runs: what we
 
 ## Skills
 
+All three skills set `disable-model-invocation: true`, so they run only when you type the slash command (or cron runs it): `/insights:digest`, `/insights:apply`, `/insights:activity`. Cron starts digest and activity; digest's run also carries out any review note you renamed to `## Keep`.
+
 | Invocation           | What it does                                                                                                                                                                                                                                                                                                                                                  |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `/insights:digest`   | Reads 14 days of transcripts through a script, groups recurring errors, guard refusals and typed corrections into problems, verifies causes where a check is cheap, and proposes one fix per problem on a page with a review note. Analyses yesterday by default, and first applies any review note you finished. Takes `--vault`, `--date` and `--periodic`. |

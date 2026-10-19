@@ -1,6 +1,6 @@
 ---
 name: critiquing-ideas
-description: Use when the user wants an idea, plan, decision, claim, or situation critiqued from several independent angles instead of one agreeable answer, for example "critique this", "poke holes in my plan", "pre-mortem this decision", "red-team this idea", or "quick critique". Sends one fresh subagent per thinking frame (pre-mortem, steelman for and against, outside view, and more), shows every frame's verdict word for word, and ends with one decision. Not for code review or for feedback on a prose draft.
+description: Use when the user wants an idea, plan, decision, claim, or situation critiqued from several independent angles instead of one agreeable answer, for example "critique this", "poke holes in my plan", "pre-mortem this decision", or "quick critique". Sends one fresh subagent per thinking frame and ends with one decision. Not for code review or for feedback on a prose draft.
 ---
 
 # Critiquing Ideas

@@ -1,6 +1,6 @@
 ---
 name: editing-presentations
-description: Use when the user wants to change an existing HTML deck by hand in the browser, or wants to point at slide elements instead of describing them. Starts a local editor on a deck from the creating-presentations skill, and reads what the user selected there. Triggers on requests like "open the deck editor", "let me edit this deck myself", "I selected something, fix it", "change this" while the editor runs, or a pasted block of deck editor feedback. For building a deck or reviewing it to done, see the creating-presentations skill.
+description: Use when the user wants to change an existing HTML deck by hand in the browser, or point at slide elements instead of describing them. Starts a local deck editor and reads what the user selected there. Triggers on "open the deck editor", "I selected something, fix it", or pasted deck editor feedback. For building a deck or reviewing it to done, see the creating-presentations skill.
 ---
 
 # Editing Presentations

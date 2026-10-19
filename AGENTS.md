@@ -48,6 +48,7 @@ plugins/
     skills/
       <service>/
         SKILL.md            # Shared skill definition, used by Claude Code, Codex and Cursor
+        agents/openai.yaml  # Codex only, for a user-started skill: `allow_implicit_invocation: false`
         engine/             # Optional shipped code driven by exact commands (diagrams only)
         <reference>.md      # Flat reference doc (legacy layout)
         references/         # Subdirectory layout (preferred for new skills)
@@ -76,20 +77,20 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `atlassian` 2.0.4: `jira`, `confluence`
 - `google-workspace` 1.0.2: `gmail`, `calendar`
 - `research` 2.1.5: `research`
-- `writing` 3.1.2: `ghostwrite`, `coach`
+- `writing` 3.1.3: `ghostwrite`, `coach`
 - `runtime-bridge` 0.1.2: `claude-codex-bridge`
 - `agent-system-management` 0.6.3: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
-- `workbench` 1.1.2: `pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`
+- `workbench` 1.2.0: `pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`
 - `terminal` 0.1.1: `tmux`
 - `playground` 0.1.3: `playground`
 - `databricks` 0.3.2: `databricks-core`, `databricks-docs`
 - `learning` 0.3.1: `quizzing-the-session`, `quizzing-a-topic`, `surveying-blind-spots`, `rebuilding-a-concept`
-- `critique` 0.1.1: `critiquing-ideas`
-- `presentations` 0.6.0: `designing-presentations`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
+- `critique` 0.1.2: `critiquing-ideas`
+- `presentations` 0.6.1: `designing-presentations`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
 - `diagrams` 0.1.1: `creating-diagrams`
-- `news` 0.6.3: `edition`, `feedback`, `tune`
-- `insights` 0.4.2: `digest`, `apply`, `activity`
-- `issue-loop` 0.5.4: `running-the-loop`, `handing-over` (Claude Code only)
+- `news` 0.7.0: `edition`, `feedback`, `tune`
+- `insights` 0.5.0: `digest`, `apply`, `activity`
+- `issue-loop` 0.6.0: `running-the-loop`, `handing-over` (Claude Code only)
 - `prose-styles` 0.1.0: no skills; output styles `orwell`, `concise`, `ste`, `house` (Claude Code only)
 - `guards` 0.1.2: no skills; `PreToolUse` hook `pkill-self-match` (Claude Code only)
 - `session-title` 0.1.0: no skills; `SessionStart` hook `session-title` (Claude Code only)
@@ -287,6 +288,7 @@ Read the upstream `LICENSE` file itself before any port. Never infer the license
 ### Skill design patterns ([skill-design-patterns](docs/explanation/skill-design-patterns.md))
 
 - **One skill per service, one plugin per product family.** Gmail and Calendar sit in `google-workspace`; Jira and Confluence in `atlassian`. Exception: workbench ships its peer workflow skills together but split, so each phase runs alone (`pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`). `presentations` splits its five life-cycle skills the same way. Skills that need local Unix tools go in `terminal`.
+- **A skill only the user or cron starts sets `disable-model-invocation: true`.** Its description is then one plain sentence for the human that names the slash command; it stops loading into every request. Beside it, `agents/openai.yaml` holds `policy:` / `allow_implicit_invocation: false` for Codex; Cursor reads the same frontmatter. Live set: `insights:activity`, `insights:apply`, `insights:digest`, `news:edition`, `news:tune`, `issue-loop:running-the-loop`, `workbench:pilot`. No skill text tells the model to start one of them: it names the slash command, or reads the sibling `SKILL.md` by path (`insights:digest` step 2). Every other description stays under about 100 words (500 characters).
 - **Workflow skills are execution protocols.** When a user calls a workflow skill such as `workbench:pilot`, follow its sequence as a procedure (branch setup, brainstorm, spec, plan, pressure test, implementation, verification where they apply), not as loose advice.
 - **Agents for long-running, context-heavy operations (forward-looking, currently unused).** The `agents/` slot is reserved for agents a skill would dispatch for context-heavy work. No plugin uses it (`research` runs subagents from prompt templates in `skills/research/`); use skills for everything else.
 - **Unregistered plugin directories are a valid stub state.** A `plugins/<plugin>/` folder with both manifests but no marketplace entry is a stub (research notes, scaffolding). To bring it online, add `skills/` with at least one `SKILL.md` and register it in both marketplaces; to retract a plugin, remove it from both. Plugin-level `references/` stays valid after skills ship. Never force-add the gitignored `plugins/databricks/references/research/`.

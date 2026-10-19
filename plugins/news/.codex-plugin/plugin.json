@@ -1,6 +1,6 @@
 {
   "name": "news",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "description": "Build a personal daily newspaper as a self-contained HTML page in a kasten vault, linked from the daily note, shaped by your feedback.",
   "author": {
     "name": "Pascal Göllner"
@@ -27,9 +27,9 @@
       "Write"
     ],
     "defaultPrompt": [
-      "Build today's newspaper edition",
+      "Use $edition to build today's newspaper",
       "Less Polizeibericht, more Hanau in the local section",
-      "Re-render today's edition with the magazine design"
+      "Use $tune to re-render today's edition with the magazine design"
     ],
     "screenshots": []
   }

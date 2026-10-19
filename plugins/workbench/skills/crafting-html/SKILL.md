@@ -1,6 +1,6 @@
 ---
 name: crafting-html
-description: Use when producing a standalone HTML artifact that is not already covered by another workbench skill (writing-spec, writing-plans, brainstorming, systematic-debugging) or by research:research. Covers PR walkthroughs, code explainers, slide decks, status and incident reports, design prototypes, SVG illustrations, custom editing interfaces, and similar single-file HTML outputs. Bundles 20 reference examples plus an index file (21 files total) for inspiration; read individual files lazily, not all at once.
+description: Use when producing a standalone HTML artifact that no other workbench skill (writing-spec, writing-plans, brainstorming, systematic-debugging) or research:research covers, such as a PR walkthrough, code explainer, slide deck, status or incident report, design prototype, SVG illustration, or custom editing tool.
 ---
 
 # Crafting HTML Artifacts

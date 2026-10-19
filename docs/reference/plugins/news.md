@@ -18,6 +18,8 @@ A personal daily newspaper: one self-contained HTML page per day in a kasten vau
 
 ## Skills
 
+Two skills set `disable-model-invocation: true`, so they run only when you type the slash command (or cron runs it): `/news:edition` and `/news:tune`. Cron starts only `/news:edition`. `/news:feedback` also starts when you give the agent feedback on the paper in plain words.
+
 | Invocation       | What it does                                                                                                                                                                                                                                                                                                                                   |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `/news:edition`  | Applies open feedback, gathers news per configured section (one subagent each where the host has them), drops repeats, writes each story in its source language, renders the page with the configured design, records what ran, and links the page from the daily note. Takes `--vault`, `--date` and `--periodic`; runs by hand or from cron. |

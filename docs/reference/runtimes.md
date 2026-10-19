@@ -56,4 +56,12 @@ The generator skips the plugins on its `EXCLUDE` list and every upstream entry.
 - **deprecated**: a frozen archive.
 - **ponytail**, **emil**, **taste-skill** and **vercel**: upstream repos, with no local directory to carry a generated Cursor manifest.
 
+## Skills only the user starts
+
+Seven skills run only when the user types the slash command: `insights:activity`, `insights:apply`, `insights:digest`, `news:edition`, `news:tune`, `issue-loop:running-the-loop` and `workbench:pilot`. Each runtime reads this from a different place:
+
+- **Claude Code**: `disable-model-invocation: true` in the `SKILL.md` frontmatter. A cron job that runs `claude -p "/news:edition ..."` types the command, so it still works.
+- **Codex**: `agents/openai.yaml` beside the `SKILL.md`, with `policy:` / `allow_implicit_invocation: false`. An explicit `$skill` mention still works.
+- **Cursor**: the same `disable-model-invocation: true` frontmatter; the skill loads only through `/skill-name`.
+
 Why one skill directory serves all three runtimes: [Shared skills](/explanation/shared-skills.md).

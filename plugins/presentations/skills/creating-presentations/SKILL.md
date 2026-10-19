@@ -1,6 +1,6 @@
 ---
 name: creating-presentations
-description: Use when the user wants to build a multi-slide HTML presentation styled from a brand preset with a bundled default, or wants an existing deck reviewed, audited, or polished until it is genuinely done. Triggers on requests to create a deck, build slides, turn content into a presentation, or to audit, polish, or make a deck crisp. Includes a two-window presenter view for live sharing in Teams, Zoom, or Meet. For converting a finished HTML deck into editable PowerPoint, see the exporting-presentations-to-pptx skill.
+description: Use when the user wants to build a multi-slide HTML presentation styled from a brand preset, or wants an existing deck reviewed, audited, or polished until it is done. Triggers on requests to create a deck, build slides, or turn content into a presentation. Includes a presenter view for live sharing. For hand edits in the browser, see the editing-presentations skill; for editable PowerPoint, see the exporting-presentations-to-pptx skill.
 ---
 
 # Creating Presentations

@@ -1,6 +1,7 @@
 ---
 name: apply
-description: "Use when the user has reviewed a day's session-insights note in their kasten vault and wants the kept fixes carried out, for example \"apply the insights\", \"I kept 1 and 3, go\", or \"/insights:apply --date 2026-10-08\". Acts on a note whose \"## Proposed\" was renamed \"## Keep\", or on any reviewed note when the user runs it by hand, and picks up a partly applied note where it stopped. Opens a pull request per kept fix where a repository exists (never merges), adds todos to the daily note, adds newspaper feedback lines, and records each line's verdict (applied, pending PR, already done, deferred, rejected, watch). Not for finding problems (use insights:digest)."
+description: "Carry out the fixes kept in a reviewed session-insights note as pull requests, daily-note todos and newspaper feedback. Started by /insights:apply, or by the cron run of /insights:digest."
+disable-model-invocation: true
 ---
 
 # Apply
