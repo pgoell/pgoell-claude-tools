@@ -17,12 +17,21 @@ Assume the implementer is a capable engineer with little project context. Give t
 
 Resolve the output format first (see `## Output Format`). Then resolve the plan folder `<paths.plans>` by the one order in `../pilot/references/config-schema.md` `## Resolution order`, and write `<paths.plans>/YYYY-MM-DD-<topic>.<ext>`, where `<ext>` is `md` or `html` per the format. If `<paths.plans>` is `don't commit`, write that file name under `/tmp/<project-name>-pilot/` and skip committing it, as that section says.
 
-For html, write the skeleton of `references/plan-template.html` into the `.html` file and replace all its sample content; for md, write markdown. In html, these parts have a slot in the template (acceptance criteria, signatures and call-stack sketches have none yet, #248; put them as `<p>` or `<pre>` in the slice's `<article>`, around its `<ol class="steps">`):
+For html, write the skeleton of `references/plan-template.html` into the `.html` file and replace all its sample content; for md, write markdown. In html, each part of the plan has a slot in the template:
 
 - `## Plan Document Header`: the title in the `<h1>` of `header.page-head`, the "For agentic workers" line as a `<p>` right after that `<h1>`, and Goal, Architecture and Tech Stack in `#summary`.
 - Medium lane: the `## Design` preamble goes in `<section id="design">`, right after `#summary`, as its `<dl>` entries Problem, Chosen approach, Key decisions and Out of scope. Remove the "Source spec" link from `header .meta`; there is no spec.
 - Large lane: delete `<section id="design">`. The `Spec: <path>` line becomes the "Source spec" link in `header .meta`, its `href` the spec's path relative to the plan file (e.g. `../specs/<file>`).
-- Slices: each slice is one `<article class="task">` in `#tasks`. Each step is one `<li>` in that article's `<ol class="steps">`, starting with `<span class="checkbox" aria-hidden="true"></span>` and then the step text in `<div class="step-body">` without a "Step N:" label (the template's CSS numbers the steps). This is the html form of `- [ ]`.
+- Slices: each slice is one `<article class="task">` in `#tasks`, its `.num` label "Slice N". Its parts go in this order:
+  - Files: one row per path in `.files`, labeled Create, Modify or Test.
+  - Types and signatures: a `<pre>` in `.signatures`.
+  - Call-stack sketch: `.diff-block` lines in `.call-stack`. Omit it or the signatures as `## Slice Structure` says.
+  - Steps: each step is one `<li>` in `<ol class="steps">`, starting with `<span class="checkbox" aria-hidden="true"></span>` and then the step text in `<div class="step-body">` without a "Step N:" label (the template's CSS numbers the steps). This is the html form of `- [ ]`.
+  - Run and Expected: `code.test-cmd` and `.expected` inside the step. The commit step's command is a `code.test-cmd` too.
+  - Acceptance criteria: `.acceptance`, after the steps.
+  - The `tricky-kernel` flag: `<span class="tricky-kernel">tricky-kernel</span>` in the step, then the one-line reason.
+  - The ordering note of a task that is not itself a slice: `<p class="order-note">`, after the header.
+- `#testing` and `#commit-points` have no md counterpart. Fill them from the slices' test commands and commit messages, or delete them.
 
 ## Scope Check
 

@@ -42,6 +42,8 @@ Cover, scaling each section to its complexity:
 - Out of scope. Give every exclusion a one-line reason naming what forces it out: a conflicting requirement, an external dependency, or a boundary into a separate spec. If the only reason is implementation effort, write "cut for effort" explicitly so the user can pull the item back in at the approval gate instead of assuming it was impossible.
 - Risks.
 
+In html, each item has its own `<section>` in the template. Reference artifacts go in `#reference-artifacts`; delete that section and its toc entry when there are none.
+
 Use `elements-of-style:writing-clearly-and-concisely` if available.
 
 ## Self-Review (Fresh-Eyes Subagent)

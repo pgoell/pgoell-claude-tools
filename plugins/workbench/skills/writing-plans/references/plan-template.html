@@ -183,6 +183,13 @@
   #tasks .task .files li { padding: 1px 0; }
   #tasks .task .files .label { display: inline-block; width: 60px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
 
+  #tasks .task :is(.signatures, .call-stack, .acceptance) { margin: 0 0 14px; }
+  #tasks .task :is(.signatures, .call-stack, .acceptance) > .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  #tasks .task .signatures pre { margin: 4px 0 0; padding: 10px 12px; background: var(--bg); border: 1px solid var(--rule); border-radius: var(--r-sm); overflow-x: auto; }
+  #tasks .task .acceptance { margin: 14px 0 0; padding-top: 10px; border-top: 1px solid var(--rule); }
+  .tricky-kernel { font-family: var(--mono); font-size: 11px; padding: 1px 6px; border-radius: 4px; background: var(--warn-soft); color: var(--warn); }
+  .order-note { color: var(--muted); font-size: 13.5px; font-style: italic; }
+
   .steps { list-style: none; counter-reset: step; margin: 0; padding: 0; }
   .steps > li { counter-increment: step; display: grid; grid-template-columns: 28px 1fr; gap: 10px 12px; padding: 10px 0; border-top: 1px dashed var(--rule); }
   .steps > li:first-child { border-top: 0; padding-top: 4px; }
@@ -396,74 +403,69 @@
         <summary>Backend <span class="tag">create</span><span class="tag modify">modify</span></summary>
         <pre class="tree">apps/api/
   src/
-    routes/
-      tasks.ts            (modify)
-      comments.ts         (create)
-    services/
-      comments.ts         (create)
-    db/
-      migrations/
-        20260508_comments.sql   (create)
+    app.ts                (modify)
+    routes/comments.ts    (create)
+    services/cursor.ts    (create)
   test/
-    routes/
-      comments.test.ts    (create)</pre>
-      </details>
-
-      <details>
-        <summary>Frontend <span class="tag">create</span><span class="tag modify">modify</span></summary>
-        <pre class="tree">apps/web/
-  src/
-    components/
-      TaskCard.tsx        (modify)
-      CommentThread.tsx   (create)
-      CommentForm.tsx     (create)
-    hooks/
-      useComments.ts      (create)
-  test/
-    CommentThread.test.tsx  (create)</pre>
+    routes/comments.test.ts  (create)</pre>
       </details>
     </section>
 
     <section id="tasks">
-      <h2>Tasks</h2>
+      <h2>Slices</h2>
 
       <article class="task">
         <header>
-          <span class="num">Task 01</span>
-          <h3>Create the <code>comments</code> table and migration</h3>
+          <span class="num">Slice 01</span>
+          <h3>Post a comment and read it back</h3>
         </header>
 
         <div class="files">
           <ul>
-            <li><span class="label">Create</span><code>apps/api/src/db/migrations/20260508_comments.sql</code></li>
-            <li><span class="label">Modify</span><code>apps/api/src/db/schema.ts</code></li>
+            <li><span class="label">Create</span><code>apps/api/src/routes/comments.ts</code></li>
+            <li><span class="label">Modify</span><code>apps/api/src/app.ts</code></li>
+            <li><span class="label">Test</span><code>apps/api/test/routes/comments.test.ts</code></li>
           </ul>
+        </div>
+
+        <!-- Omit when the slice adds no functions. -->
+        <div class="signatures">
+          <span class="label">Types and signatures</span>
+          <pre>createComment(taskId: string, authorId: string, body: string): Promise&lt;Comment&gt;
+listComments(taskId: string): Promise&lt;Comment[]&gt;</pre>
+        </div>
+
+        <!-- Omit when control flow does not change. -->
+        <div class="call-stack">
+          <span class="label">Call-stack sketch</span>
+          <div class="diff-block" aria-label="diff">
+            <span class="line ctx">buildApp()</span>
+            <span class="line add">  app.register(commentsRoutes)</span>
+            <span class="line add">    createComment()</span>
+          </div>
         </div>
 
         <ol class="steps">
           <li>
-            <span class="checkbox" aria-hidden="true"></span>
+            <span class="checkbox done" aria-hidden="true"></span>
             <div class="step-body">
-              <p>Write the migration that defines the <code>comments</code> table.</p>
-              <div class="diff-block" aria-label="diff">
-                <span class="line add">CREATE TABLE comments (</span>
-                <span class="line add">  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),</span>
-                <span class="line add">  task_id     uuid NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,</span>
-                <span class="line add">  author_id   uuid NOT NULL REFERENCES users(id),</span>
-                <span class="line add">  body        text NOT NULL,</span>
-                <span class="line add">  created_at  timestamptz NOT NULL DEFAULT now()</span>
-                <span class="line add">);</span>
-                <span class="line ctx">CREATE INDEX comments_task_idx ON comments(task_id, created_at);</span>
-              </div>
+              <p>Write the failing test: a POST returns 201 and a GET then lists that comment.</p>
             </div>
           </li>
 
           <li>
-            <span class="checkbox done" aria-hidden="true"></span>
+            <span class="checkbox" aria-hidden="true"></span>
             <div class="step-body">
-              <p>Run the migration locally and confirm the table exists.</p>
-              <code class="test-cmd">npm run db:migrate &amp;&amp; psql $DATABASE_URL -c "\d comments"</code>
-              <div class="expected">Expected: table description prints with six columns and one index.</div>
+              <p>Run the test and confirm it fails.</p>
+              <code class="test-cmd">npm test -- routes/comments</code>
+              <div class="expected">Expected: FAIL, route not found (404).</div>
+            </div>
+          </li>
+
+          <li>
+            <span class="checkbox" aria-hidden="true"></span>
+            <div class="step-body">
+              <p>Implement <code>createComment</code> and <code>listComments</code> per the signatures.</p>
             </div>
           </li>
 
@@ -471,23 +473,29 @@
             <span class="checkbox" aria-hidden="true"></span>
             <div class="step-body">
               <p>Commit.</p>
-              <code class="test-cmd">git add apps/api/src/db/migrations apps/api/src/db/schema.ts &amp;&amp; git commit</code>
+              <code class="test-cmd">git commit -m "feat(api): post and list task comments"</code>
             </div>
           </li>
         </ol>
+
+        <div class="acceptance">
+          <span class="label">Acceptance criteria</span>
+          <p>A comment posted to a task appears in that task's GET response.</p>
+        </div>
       </article>
 
       <article class="task">
         <header>
-          <span class="num">Task 02</span>
-          <h3>Add the <code>POST /tasks/:id/comments</code> route</h3>
+          <span class="num">Slice 02</span>
+          <h3>Add the keyset cursor helper</h3>
         </header>
+
+        <!-- Only for a task that is not itself a slice. -->
+        <p class="order-note">Scaffold, not a slice: ordered here because Slice 03 (paging) needs it.</p>
 
         <div class="files">
           <ul>
-            <li><span class="label">Create</span><code>apps/api/src/routes/comments.ts</code></li>
-            <li><span class="label">Create</span><code>apps/api/src/services/comments.ts</code></li>
-            <li><span class="label">Modify</span><code>apps/api/src/app.ts</code></li>
+            <li><span class="label">Create</span><code>apps/api/src/services/cursor.ts</code></li>
           </ul>
         </div>
 
@@ -495,24 +503,16 @@
           <li>
             <span class="checkbox" aria-hidden="true"></span>
             <div class="step-body">
-              <p>Register the route on the Fastify app.</p>
-              <div class="diff-block" aria-label="diff">
-                <span class="line del">app.register(tasksRoutes);</span>
-                <span class="line add">app.register(tasksRoutes);</span>
-                <span class="line add">app.register(commentsRoutes);</span>
-              </div>
-            </div>
-          </li>
-
-          <li>
-            <span class="checkbox" aria-hidden="true"></span>
-            <div class="step-body">
-              <p>Run the route tests.</p>
-              <code class="test-cmd">npm test -- routes/comments</code>
-              <div class="expected">Expected: 4 tests pass.</div>
+              <!-- The only place full code may appear. -->
+              <p>Implement <code>encodeCursor</code>. <span class="tricky-kernel">tricky-kernel</span> The (created_at, id) tiebreak order is the design.</p>
             </div>
           </li>
         </ol>
+
+        <div class="acceptance">
+          <span class="label">Acceptance criteria</span>
+          <p>Two comments with the same timestamp page in a stable order.</p>
+        </div>
       </article>
     </section>
 
@@ -530,14 +530,9 @@
           </thead>
           <tbody>
             <tr>
-              <td>Migrations</td>
-              <td><code>npm run db:migrate</code></td>
-              <td>1 migration applied.</td>
-            </tr>
-            <tr>
               <td>API route</td>
               <td><code>npm test -- routes/comments</code></td>
-              <td>4 passed, 0 failed; 201, 400, 401, 404 responses asserted.</td>
+              <td>All pass.</td>
             </tr>
             <tr>
               <td>Lint and types</td>
@@ -553,10 +548,8 @@
       <h2>Commit points</h2>
       <p>Commits in order. Each one leaves the tests green.</p>
       <ol>
-        <li><code class="commit-msg">feat(api): add comments table migration and schema</code></li>
-        <li><code class="commit-msg">feat(api): add POST /tasks/:id/comments route and service</code></li>
-        <li><code class="commit-msg">feat(web): render CommentThread inside TaskCard behind feature flag</code></li>
-        <li><code class="commit-msg">test(web): add CommentThread component test and e2e task-comments flow</code></li>
+        <li><code class="commit-msg">feat(api): post and list task comments</code></li>
+        <li><code class="commit-msg">feat(api): add keyset cursor helper</code></li>
       </ol>
     </section>
 
