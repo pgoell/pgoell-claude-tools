@@ -2,7 +2,7 @@
 
 Defines `.workbench/config.md` for projects that want to override per-artifact format defaults and output paths in the workbench skills `writing-spec`, `writing-plans`, `brainstorming`, and `systematic-debugging`.
 
-`research:research` does not consult this file. It uses its own hard-coded default (HTML, `reports/<topic-slug>-<YYYY-MM-DD>/report.html`).
+`research:running-research` does not consult this file. It uses its approved brief, else its own hard-coded default (HTML, `reports/<topic-slug>-<YYYY-MM-DD>/report.html`).
 
 ## Discovery (v1)
 

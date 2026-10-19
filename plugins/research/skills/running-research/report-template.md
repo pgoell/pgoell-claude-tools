@@ -24,7 +24,7 @@ Research approach, perspectives consulted, source types. Flag credibility tiers:
 
 ## What Matters Most
 
-The 3-7 most important findings, ranked by significance. This is the core of the report. Each finding should be argued, not just stated — compare sources, note contradictions, take positions. Structure around your thesis.
+The 3-7 most important findings, ranked by significance. This is the core of the report. Each finding should be argued, not just stated: compare sources, note contradictions, take positions. Structure around your thesis.
 
 ## Supporting Evidence
 
@@ -34,7 +34,7 @@ Detailed findings with inline citations. Flag source credibility where relevant.
 
 ## Analysis & Insights
 
-This section must be the strongest part of the report. Synthesize across findings — what patterns emerge? What surprised you? Where does the conventional wisdom get it wrong? What would you tell a decision-maker who has 5 minutes?
+This section must be the strongest part of the report. Synthesize across findings. What patterns emerge? What surprised you? Where does the conventional wisdom get it wrong? What would you tell a decision-maker who has 5 minutes?
 
 ## Limitations & Open Problems
 
@@ -48,7 +48,7 @@ Specific, falsifiable predictions with timelines. "Spending will increase" is no
 
 Summary of the thesis and main supporting arguments. Actionable recommendations prioritized by impact.
 
-End with a "Starting from zero" subsection: concrete guidance for the most common real-world scenario — an organization with a few pilots, no baselines, no measurement culture, and leadership asking "is this working?" This is not the ideal path; it is the realistic one.
+End with a "Starting from zero" subsection: concrete guidance for the most common real-world scenario: an organization with a few pilots, no baselines, no measurement culture, and leadership asking "is this working?" This is not the ideal path; it is the realistic one.
 
 ## References
 

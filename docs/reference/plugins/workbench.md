@@ -67,7 +67,7 @@ File names follow `YYYY-MM-DD-<topic>-<artifact>.<ext>`. Config schema: [config-
 
 ## Design systems
 
-`crafting-design-systems` saves a design system at project scope, `.workbench/design-systems/<name>/`, or user scope, `~/.claude/workbench/design-systems/<name>/`; the project one wins on a name clash. Name the active one in the prompt or under `## Design system` in `.workbench/config.md`. The four skills above, `crafting-html` and `/research:research` then inline it over their template defaults. Each follows the steps in `crafting-design-systems`' `references/applying-a-design-system.md`. Slide decks use [presentations](/reference/plugins/presentations.md) presets instead.
+`crafting-design-systems` saves a design system at project scope, `.workbench/design-systems/<name>/`, or user scope, `~/.claude/workbench/design-systems/<name>/`; the project one wins on a name clash. Name the active one in the prompt or under `## Design system` in `.workbench/config.md`. The four skills above, `crafting-html` and `/research:running-research` then inline it over their template defaults. Each follows the steps in `crafting-design-systems`' `references/applying-a-design-system.md`. Slide decks use [presentations](/reference/plugins/presentations.md) presets instead.
 
 ## Licence
 

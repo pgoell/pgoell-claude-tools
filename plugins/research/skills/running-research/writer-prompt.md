@@ -50,11 +50,17 @@ Dispatched agent prompt:
        new thesis or shift the position. The synthesis-reviewer already approved
        the thesis; your job is to render it as prose.
 
-    2. Render every section of the Deep Mode template. Required sections:
-       Executive Summary, Table of Contents, Introduction, Methodology, What
-       Matters Most, Supporting Evidence, Analysis & Insights, Limitations &
-       Open Problems, Future Outlook (or omit with rationale), Conclusions &
-       Practical Starting Point, References.
+    2. Fit the report to the brief's `Deliverable:` line: its form, length and
+       language. When the Deliverable is a full report, render every section
+       of the Deep Mode template: Executive Summary, Table of Contents,
+       Introduction, Methodology, What Matters Most, Supporting Evidence,
+       Analysis & Insights, Limitations & Open Problems, Future Outlook (or
+       omit with rationale), Conclusions & Practical Starting Point,
+       References. When it asks for something shorter (a two-page summary, a
+       one-page memo), keep only the sections that fit within that length, in
+       template order: Executive Summary with the thesis first, then What
+       Matters Most, then Conclusions, and always References. Never exceed the
+       stated length. Write in the language the Deliverable names.
 
     3. Preserve credibility tags inline. When a synthesis claim cites a vendor
        or consulting source, the prose must carry the caveat ("McKinsey's 55%
@@ -82,7 +88,8 @@ Dispatched agent prompt:
     ## Output Format
 
     Write to `{OUTPUT_PATH}/draft.md` (overwrite if exists). Use the Deep Mode
-    structure from `{TEMPLATE_PATH}`.
+    structure from `{TEMPLATE_PATH}`, cut to the brief's Deliverable as
+    Writing Task 2 says.
 
     ## Critical Constraints
 

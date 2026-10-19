@@ -1,6 +1,6 @@
 # Applying a design system
 
-Every HTML producer reads this file when a design system is set: `brainstorming`, `writing-spec`, `writing-plans`, `systematic-debugging`, `crafting-html` and `research:research`.
+Every HTML producer reads this file when a design system is set: `brainstorming`, `writing-spec`, `writing-plans`, `systematic-debugging`, `crafting-html` and `research:running-research`.
 
 Before emitting HTML, check for an active design system and inline its overrides into the artifact's `<style>` block:
 

@@ -36,7 +36,7 @@ When a user calls a workflow skill such as `workbench:pilot`, the agent follows 
 
 ## Agents for long-running, context-heavy operations (forward-looking, currently unused)
 
-When a skill's run would eat a lot of context (dozens of web pages, say), the intended layout is an agent in the plugin's `agents/` folder that the skill dispatches through the host's subagent tool, so the work runs in its own context. No plugin uses an `agents/` folder yet. The `research` plugin runs its subagents from prompt templates inside `skills/research/` instead. Treat `agents/` as a reserved slot, not a convention in use, and use skills for everything else.
+When a skill's run would eat a lot of context (dozens of web pages, say), the intended layout is an agent in the plugin's `agents/` folder that the skill dispatches through the host's subagent tool, so the work runs in its own context. No plugin uses an `agents/` folder yet. The `research` plugin runs its subagents from prompt templates inside `skills/running-research/` instead. Treat `agents/` as a reserved slot, not a convention in use, and use skills for everything else.
 
 ## Unregistered plugin directories are a valid stub state
 
@@ -54,4 +54,4 @@ One constraint makes it work: every shared path in the variant's `SKILL.md` carr
 
 A narrower live case: `writing:coach` reads one file from its sibling, `../ghostwrite/references/pyramid-audits.md`, because both skills use the same audits (ghostwrite reports them on outlines, coach teaches from them) and a second copy would drift. The coach keeps its own `references/` for everything else.
 
-The second live case is the design-system protocol. The five workbench HTML producers ship their own `references/` (their templates) and still read one shared file, `../crafting-design-systems/references/applying-a-design-system.md`, when a design system is set. Until workbench 1.2.2 each carried an identical inline copy, which could drift. `research:research` sits in another plugin, so it cannot use a sibling path; it finds the file through the installed workbench plugin and keeps its template's defaults when the file is missing.
+The second live case is the design-system protocol. The five workbench HTML producers ship their own `references/` (their templates) and still read one shared file, `../crafting-design-systems/references/applying-a-design-system.md`, when a design system is set. Until workbench 1.2.2 each carried an identical inline copy, which could drift. `research:running-research` sits in another plugin, so it cannot use a sibling path; it finds the file through the installed workbench plugin and keeps its template's defaults when the file is missing.

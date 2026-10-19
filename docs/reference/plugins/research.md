@@ -1,14 +1,18 @@
 ---
 type: Reference
 title: The research plugin
-description: The multi-agent research skill, its report format and where the report goes.
+description: The two research skills (clarify a brief, then run the research), the report format and where the report goes.
 tags: [plugin, research, report]
 status: stable
 ---
 
 # research
 
-One skill that researches a complex topic and writes a sourced report. It plans the work as clusters of questions, sends researcher subagents to search each cluster until new rounds add nothing, synthesizes the findings, and runs review gates before the final report.
+Two skills that research a complex topic and write a sourced report. `research` asks one question at a time until the brief is complete (topic, scope, audience, purpose, deliverable, deadline), writes `brief.md`, waits for your approval and recommends the next skill. You then call `running-research`: it plans the work as clusters of questions, sends researcher subagents to search each cluster until new rounds add nothing, synthesizes the findings, and runs review gates before the final report.
+
+The split is on purpose. While `research` asks, it cannot see the plan, search and report steps, so it does not rush past the questions to start them. `running-research` stops and sends you back to `research` when it finds no approved brief.
+
+You may skip a question. After you hear once why it matters, the field goes into the brief as `open (user skipped)`; `running-research` makes that choice while it plans and lists it under `## Open fields` in `plan.md`. The report fits the brief's deliverable: a two-page summary gets only the sections that fit two pages, in the language the brief names, and the report review fails a draft that runs longer or uses another language.
 
 **Runtimes:** Claude Code, Codex, Cursor
 
@@ -18,25 +22,26 @@ One skill that researches a complex topic and writes a sourced report. It plans 
 
 ## Skills
 
-| Invocation           | What it does                                                                                    |
-| -------------------- | ----------------------------------------------------------------------------------------------- |
-| `/research:research` | Plan the investigation, gather sources, synthesize, review the conclusions, and write a report. |
+| Invocation                   | What it does                                                                                                                  |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `/research:research`         | Ask one question at a time, write `brief.md`, get your approval, and recommend `/research:running-research`. Plans nothing.   |
+| `/research:running-research` | From the approved `brief.md`: plan the investigation, gather sources, synthesize, review the conclusions, and write a report. |
 
 ## How it checks its own work
 
-- Each researcher ends its reply on `ARTIFACT-VERIFIED <sha256>` or `ARTIFACT-MISSING <reason>`. The skill runs `sha256sum` on the researcher's file, compares the hash, and counts its `[source:` lines against a floor: 2 per sub-question, and 2 for a gap-fill file. A file that fails is sent back to the researcher once; a second failure goes to you.
+- Each researcher ends its reply on `ARTIFACT-VERIFIED <sha256>` or `ARTIFACT-MISSING <reason>`. `running-research` runs `sha256sum` on the researcher's file, compares the hash, and counts its `[source:` lines against a floor: 2 per sub-question, and 2 for a gap-fill file. A file that fails is sent back to the researcher once; a second failure goes to you.
 - Each review round fetches up to 5 cited URLs again, numbers first, then the claims the thesis rests on. The reviewer marks each claim `confirmed`, `rejected` or `unresolved`, with a quote from the page, in a `REFETCH:` block of the review file. A rejected claim is a critical `source-quality` issue that brings a gap-fill researcher. A URL that is dead, moved or refused after one try is `unresolved`, a minor issue, and the review goes on.
 - Every review round with a critical issue writes the synthesis again, once, after its gap-fill researchers end. The feedback names each issue and each gap-fill file, so the next review sees the new sources and does not stall on the same gap.
 
 ## Output
 
-- Format: HTML by default. Ask for "a markdown research report" to get markdown for one run.
-- Path: `reports/<topic-slug>-<YYYY-MM-DD>/report.html` (or `report.md`). You can name another path.
-- Config: the skill ignores `.workbench/config.md` for format and path. It does honor that file's `## Design system` section, so a project-wide design system themes research reports too (see [workbench](/reference/plugins/workbench.md)). Applying a design system needs workbench 1.2.2 or later installed; without it, the skill says so and the report keeps the template's defaults.
+- Format: the brief's `Format:` line, HTML unless you ask for markdown. Asking `running-research` for "a markdown research report" overrides the brief for one run.
+- Path: the brief's folder, `reports/<topic-slug>-<YYYY-MM-DD>/` by default, holding `brief.md` and later `report.html` (or `report.md`). You can name another folder while `research` asks its questions.
+- Config: `running-research` ignores `.workbench/config.md` for format and path. It does honor that file's `## Design system` section, so a project-wide design system themes research reports too (see [workbench](/reference/plugins/workbench.md)). Applying a design system needs workbench 1.2.2 or later installed; without it, the skill says so and the report keeps the template's defaults.
 
 ## Evals
 
-`plugins/research/evals/` holds 11 `claude plugin eval` cases that test when the skill fires. Cases 01 and 02 are triggers: a sourced investigation and a market comparison, where `research:research` must fire. Cases 21 to 23 are negatives (a concept question, a translation, a one-paragraph summary): neither `research:research` nor `anthropic-skills:deep-research` may fire.
+`plugins/research/evals/` holds 11 `claude plugin eval` cases that test when `research` fires. Cases 01 and 02 are triggers: a sourced investigation and a market comparison, where `research:research` must fire. Cases 21 to 23 are negatives (a concept question, a translation, a one-paragraph summary): neither `research:research` nor `anthropic-skills:deep-research` may fire.
 
 Cases 31 to 36 are near-misses. Cases 31 and 32 ask in the words of the anthropic-skills `deep-research` skill (a literature review; the history and trends of an industry): `research:research` must fire and `anthropic-skills:deep-research` must not. Cases 33 to 36 are plain web lookups (one fact, a current version, a docs page, a given URL): neither skill may fire, and an `llm` grader checks that the answer came straight back, with no plan, report or subagents. These four allow WebSearch and WebFetch. WebFetch is a gated tool that `allowed_tools` alone does not grant, so the run command below grants it with `--allow-tools WebFetch`; a run of these four needs network.
 
