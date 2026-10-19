@@ -18,7 +18,7 @@ A new HTML producer follows the same pattern: an `## Output Format` section with
 
 `workbench:crafting-design-systems` supplies the optional theming layer (CSS variables, components, images) that any of the six producers (the five plus `crafting-html`) inlines when a design system is set by prompt or in `.workbench/config.md` `## Design system`. Multi-slide decks sit outside this layer; the `presentations` plugin themes them through presets.
 
-The templates share no common CSS variable schema. Each producer template declares its own set in its `:root` block, and each of `crafting-html`'s 20 references carries its own. The inventory for the five producer templates lives in `plugins/workbench/skills/crafting-design-systems/SKILL.md`. It leaves out `crafting-html`'s references on purpose, because the active variables depend on which reference the agent picked. Renaming, adding, or removing a variable in any of the five producer `:root` blocks updates that inventory in the same commit.
+The templates share no common CSS variable schema. Each producer template declares its own set in its `:root` block, and each of `crafting-html`'s 20 reference examples carries its own. The inventory for the five producer templates lives in `plugins/workbench/skills/crafting-design-systems/SKILL.md`. It leaves out `crafting-html`'s references on purpose, because the active variables depend on which reference the agent picked. Renaming, adding, or removing a variable in any of the five producer `:root` blocks updates that inventory in the same commit.
 
 ## Multi-file HTML producers are a distinct shape
 

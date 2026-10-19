@@ -81,7 +81,7 @@ When editing `colors.css`, knowing which variables each producer template declar
 | `systematic-debugging` | `--ivory`, `--slate`, `--clay`, `--oat`, `--olive`, `--rust`, `--amber`, `--gray-100`, `--gray-300`, `--gray-500`, `--gray-700`, `--white`, `--serif`, `--sans`, `--mono`, `--radius-panel`, `--radius-row`, `--border`                               |
 | `research:research`    | `--ivory`, `--slate`, `--clay`, `--oat`, `--olive`, `--gray-150`, `--gray-300`, `--gray-500`, `--gray-700`, `--serif`, `--sans`, `--mono`                                                                                                             |
 
-`crafting-html` ships 21 templates with varied styling; inspect the chosen reference before authoring overrides for that producer.
+`crafting-html` ships 20 reference examples plus an index (21 files) with varied styling; inspect the chosen reference before authoring overrides for that producer.
 
 Multi-slide presentations are not themed by design systems: the `presentations` plugin's skills consume brand presets instead (see that plugin's `presets/README.md` contract).
 

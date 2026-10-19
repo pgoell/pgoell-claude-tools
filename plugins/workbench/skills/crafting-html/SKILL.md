@@ -44,7 +44,7 @@ This skill differs from `frontend-design`. `frontend-design` builds UI and compo
 
 ## How to use the references
 
-Read one reference file matching the artifact type before generating. Do not load all 21 references; each is self-contained and roughly 10 to 25 KB. The category map above is the index. The host agent reads `references/<file>.html` on demand, not proactively.
+Read one reference file matching the artifact type before generating. Do not load all 21 files (20 reference examples plus `references/index.html`); each example is self-contained and roughly 10 to 25 KB. The category map above is the index. The host agent reads `references/<file>.html` on demand, not proactively.
 
 ## Output Format
 
