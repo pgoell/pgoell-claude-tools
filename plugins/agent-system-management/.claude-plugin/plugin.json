@@ -1,7 +1,7 @@
 {
   "name": "agent-system-management",
   "version": "0.7.12",
-  "description": "Audit AGENTS.md / CLAUDE.md, capture session learnings, and create Claude Code / Codex skills.",
+  "description": "Audit AGENTS.md / CLAUDE.md, capture session learnings, and create Claude Code, Codex and Cursor skills.",
   "author": {
     "name": "Pascal Göllner"
   },
