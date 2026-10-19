@@ -12,7 +12,7 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
   "https://$ATLASSIAN_DOMAIN.atlassian.net/wiki/rest/api/search?cql=type%3Dpage+AND+title+~+%22search+term%22"
 ```
 
-See `references/cql-recipes.md` for common CQL patterns.
+See `cql-recipes.md` in this folder for common CQL patterns.
 
 ## Get page by ID
 

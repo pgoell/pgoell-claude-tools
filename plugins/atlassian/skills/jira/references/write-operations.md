@@ -2,7 +2,7 @@
 
 Read this when you create an issue, add a comment, or edit fields.
 
-ADF is required for curl write operations (create issue descriptions, add comments, update descriptions); read `references/adf-format.md` to build the body. When falling back to `acli`, pass plain text directly; no ADF required.
+ADF is required for curl write operations (create issue descriptions, add comments, update descriptions); read `adf-format.md` in this folder to build the body. When falling back to `acli`, pass plain text directly; no ADF required.
 
 ## Create Issue
 
@@ -10,11 +10,11 @@ ADF is required for curl write operations (create issue descriptions, add commen
 
 > Do you have a ticket template or writing guide you'd like me to follow (e.g., a team standard for Description + Acceptance Criteria)?
 >
-> If not, I can use the default template in `references/ticket-template.md`. It structures Context, Deliverable, Scope, Stakeholders, Timebox, References, and Acceptance Criteria checkboxes.
+> If not, I can use the default template in `ticket-template.md`. It structures Context, Deliverable, Scope, Stakeholders, Timebox, References, and Acceptance Criteria checkboxes.
 
-If the user has their own template, follow it. If they opt into the default (or don't have one), read `references/ticket-template.md` and structure the `--summary`, `--description`, and acceptance criteria fields according to it. For trivial bug reports or quick one-line tasks, skip the prompt unless the user explicitly asks for a structured ticket.
+If the user has their own template, follow it. If they opt into the default (or don't have one), read `ticket-template.md` in this folder and structure the `--summary`, `--description`, and acceptance criteria fields according to it. For trivial bug reports or quick one-line tasks, skip the prompt unless the user explicitly asks for a structured ticket.
 
-**curl** (requires ADF body for description, see `references/adf-format.md`):
+**curl** (requires ADF body for description, see `adf-format.md` in this folder):
 
 ```bash
 curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \

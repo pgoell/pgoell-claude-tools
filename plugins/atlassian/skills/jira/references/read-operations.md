@@ -20,7 +20,7 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
 acli jira workitem search --jql "assignee = currentUser() AND resolution = Unresolved" --json
 ```
 
-For common JQL patterns, read `references/jql-recipes.md`.
+For common JQL patterns, read `jql-recipes.md` in this folder.
 
 ## View Issue
 

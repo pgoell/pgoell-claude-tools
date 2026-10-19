@@ -23,7 +23,7 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
   }'
 ```
 
-See `references/storage-format.md` for how to construct the body value.
+See `storage-format.md` in this folder for how to construct the body value.
 
 ## Update page
 
