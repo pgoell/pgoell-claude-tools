@@ -444,9 +444,9 @@ Use this table to convert markdown intent into ADF node types.
 ### Create an Issue with ADF Description
 
 ```bash
-curl -s -X POST \
-  "https://${JIRA_DOMAIN}/rest/api/3/issue" \
-  -H "Authorization: Bearer ${JIRA_API_TOKEN}" \
+curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" -X POST \
+  "https://$ATLASSIAN_DOMAIN.atlassian.net/rest/api/3/issue" \
+  -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -d '{
   "fields": {
@@ -516,9 +516,9 @@ curl -s -X POST \
 ### Add a Comment with ADF Body
 
 ```bash
-curl -s -X POST \
-  "https://${JIRA_DOMAIN}/rest/api/3/issue/ENG-1234/comment" \
-  -H "Authorization: Bearer ${JIRA_API_TOKEN}" \
+curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" -X POST \
+  "https://$ATLASSIAN_DOMAIN.atlassian.net/rest/api/3/issue/ENG-1234/comment" \
+  -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -d '{
   "body": {
@@ -560,9 +560,9 @@ curl -s -X POST \
 ### Update a Description
 
 ```bash
-curl -s -X PUT \
-  "https://${JIRA_DOMAIN}/rest/api/3/issue/ENG-1234" \
-  -H "Authorization: Bearer ${JIRA_API_TOKEN}" \
+curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" -X PUT \
+  "https://$ATLASSIAN_DOMAIN.atlassian.net/rest/api/3/issue/ENG-1234" \
+  -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -d '{
   "fields": {

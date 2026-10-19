@@ -87,7 +87,7 @@ Tracks version progression in Improve mode. Located at workspace root.
 
 ## grading.json
 
-Output from the grader agent. Located at `<run-dir>/grading.json`.
+Output from the grader agent. Located at `<run-dir>/grading.json`. Here and below, `<run-dir>` is `<eval-dir>/<config>/` for one run, or `<eval-dir>/<config>/run-<n>/` when you repeat a config; it holds `outputs/`, `timing.json` and `grading.json`.
 
 ```json
 {

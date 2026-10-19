@@ -37,6 +37,16 @@ turn this conversation into a reusable skill
 cut this skill to its core
 ```
 
+## Tests
+
+`tests/run.sh` runs `creating-skills`' `scripts/aggregate_benchmark.py` against fixture iteration folders and checks that it finds each run: the one-run layout from `SKILL.md` (grading and `timing.json` in the config folder), `run-<n>/` repeats, a config with both (only `run-<n>/` counts), and a config with `outputs/` but no `grading.json` (a warning; `inputs/` stays quiet). It needs bash, python3 and jq, and no network:
+
+```bash
+bash plugins/agent-system-management/tests/run.sh
+```
+
+Last run 2026-10-19: 14 passed, 0 failed.
+
 ## Credits
 
 The `improving-instructions` and `capturing-session-learnings` skills are derived from Anthropic's [`claude-md-management`](https://github.com/anthropics/claude-plugins-official/tree/ea10b213686c90bb1984b2016937310e05336cf3/plugins/claude-md-management) plugin by Isabella He, licensed under Apache 2.0. The reference docs under `skills/improving-instructions/references/` are imported verbatim, except for formatting and two local checks in `quality-criteria.md`. See `NOTICE` for full attribution.

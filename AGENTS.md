@@ -58,7 +58,8 @@ plugins/
                             #   stub and after skills ship. plugins/databricks/references/research/
                             #   is gitignored and local-only: never force-add it.
     tests/                  # Optional self-contained check of shipped scripts, run by hand
-                            #   (issue-loop, insights, news: tests/run.sh with fakes, no network)
+                            #   (issue-loop, insights, news, agent-system-management:
+                            #   tests/run.sh with fakes or fixtures, no network)
     LICENSE                 # Required for ported plugins (see port attribution rules)
     NOTICE                  # Required for ported plugins: per-file upstream attribution
     README.md               # Required for ported plugins: overview with a Credits section
@@ -75,12 +76,12 @@ containers/dev/             # Podman-first dev container (run-dev, egress proxy,
 
 One line per plugin: name, version, skills. Descriptions live in `docs/reference/plugins/<name>.md`. `upstream` marks an external git-URL entry, which has no version.
 
-- `atlassian` 2.0.5: `jira`, `confluence`
+- `atlassian` 2.0.6: `jira`, `confluence`
 - `google-workspace` 1.0.3: `gmail`, `calendar`
 - `research` 2.1.5: `research`
 - `writing` 3.1.3: `ghostwrite`, `coach`
 - `runtime-bridge` 0.1.2: `claude-codex-bridge`
-- `agent-system-management` 0.7.1: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
+- `agent-system-management` 0.7.2: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
 - `workbench` 1.2.1: `pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`
 - `terminal` 0.1.1: `tmux`
 - `playground` 0.1.3: `playground`
