@@ -22,9 +22,9 @@ If there is no plan yet, use `workbench:writing-plans` first. If implementation 
 
 ## Task Loop
 
-For each plan slice (or bounded task, when the plan is not slice-shaped):
+For each plan slice or bounded task, in plan order:
 
-1. Paste the whole slice into the agent prompt: in an md plan the `### Slice N` section up to the next `###` or `##` heading, in an html plan the `<article class="task">` element. Either way it holds whichever of these the slice has: label and title, files map, signatures, call-stack sketch, test commands, acceptance criteria, and checkbox steps. One agent per slice; the checkbox steps are the slice's internal TDD rhythm and are never split across agents.
+1. Paste the whole slice into the agent prompt: in an md plan its `###` section (`### Slice N`, or a bounded task's own heading) up to the next `###` or `##` heading, in an html plan the `<article class="task">` element. Either way it holds whichever of these the slice has: label and title, files map, signatures, call-stack sketch, test commands, acceptance criteria, and checkbox steps. One agent per slice; the checkbox steps are the slice's internal TDD rhythm and are never split across agents.
 2. Define ownership: files, directories, or behavior the agent may change.
 3. Include acceptance criteria and verification commands.
 4. Tell the agent it is not alone in the codebase and must not revert edits made by others.
