@@ -55,6 +55,147 @@ MIME_OVERRIDES = {
 }
 
 
+# JSON readers. A missing value takes its default quietly; a wrong-typed one
+# (bool is never a number) takes it with one warning. Same helpers in
+# scripts/aggregate_benchmark.py.
+NUM = (int, float)
+KIND_NAMES = {dict: "an object", list: "a list", str: "a string", int: "an int", NUM: "a number"}
+
+
+def _read_obj(path: Path) -> dict | None:
+    """A JSON file's object; None, with a warning, for bad JSON, an
+    unreadable file or a value that is not an object."""
+    try:
+        data = json.loads(path.read_text())
+    except (ValueError, OSError) as e:
+        print(f"Warning: {path}: cannot read: {e}")
+        return None
+    if not isinstance(data, dict):
+        print(f"Warning: {path}: not a JSON object, ignored")
+        return None
+    return data
+
+
+def _ok(value, kind, path, field: str) -> bool:
+    """Whether value has the kind; warns when not."""
+    if isinstance(value, kind) and not isinstance(value, bool):
+        return True
+    print(f"Warning: {path}: {field} is not {KIND_NAMES[kind]}, ignored")
+    return False
+
+
+def _field(obj: dict, key: str, kind, default, path, field: str = ""):
+    """obj[key] if it has the kind, else default."""
+    if key not in obj:
+        return default
+    return obj[key] if _ok(obj[key], kind, path, field or key) else default
+
+
+def _items(values: list, kind, path, field: str) -> list:
+    """The items of values that have the kind."""
+    return [v for v in values if _ok(v, kind, path, field + " item")]
+
+
+def assign_eval_ids(evals: list[tuple]) -> list[int]:
+    """Unique ids for evals given as (folder, metadata id, folder id) in
+    folder order: the int metadata id (the first eval keeps a duplicate),
+    else the folder id if no eval holds it, else one past the largest id in
+    use. Same function in scripts/aggregate_benchmark.py."""
+    ids = [None] * len(evals)
+    used = set()
+    for i, (folder, meta_id, _) in enumerate(evals):
+        if meta_id is None:
+            continue
+        if meta_id in used:
+            print(f"Warning: {folder}: eval_id {meta_id} is taken by another eval")
+        else:
+            ids[i] = meta_id
+            used.add(meta_id)
+    for i, (_, _, folder_id) in enumerate(evals):
+        if ids[i] is None and folder_id is not None and folder_id not in used:
+            ids[i] = folder_id
+            used.add(folder_id)
+    for i, (folder, _, _) in enumerate(evals):
+        if ids[i] is None:
+            ids[i] = max(used, default=0) + 1
+            used.add(ids[i])
+            print(f"Warning: {folder}: no free eval id, using {ids[i]}")
+    return ids
+
+
+def clean_grading(path: Path) -> dict | None:
+    """grading.json with the fields the page reads made safe; None when it
+    is not an object."""
+    grading = _read_obj(path)
+    if grading is None:
+        return None
+    grading = dict(grading)
+    if "summary" in grading:
+        summary = dict(_field(grading, "summary", dict, {}, path))
+        for key in ("pass_rate", "passed", "failed", "total"):
+            if key in summary:
+                summary[key] = _field(summary, key, NUM, 0, path, "summary." + key)
+        grading["summary"] = summary
+    if "expectations" in grading:
+        grading["expectations"] = _items(
+            _field(grading, "expectations", list, [], path), dict, path, "expectations")
+    return grading
+
+
+# Numbers in a benchmark run's result
+RESULT_NUMBERS = ("pass_rate", "passed", "failed", "total", "time_seconds", "tokens", "tool_calls", "errors")
+
+
+def clean_benchmark(path: Path) -> dict | None:
+    """benchmark.json with the fields the Benchmark tab reads made safe:
+    a wrong-typed field is dropped or takes its default. None when it is
+    not an object (no Benchmark tab)."""
+    data = _read_obj(path)
+    if data is None:
+        return None
+    data = dict(data)
+    if "metadata" in data:
+        metadata = dict(_field(data, "metadata", dict, {}, path))
+        if "evals_run" in metadata and not _ok(metadata["evals_run"], list, path, "metadata.evals_run"):
+            del metadata["evals_run"]
+        data["metadata"] = metadata
+    if "run_summary" in data:
+        run_summary = {}
+        for config, stats in _field(data, "run_summary", dict, {}, path).items():
+            field = "run_summary." + config
+            if config == "delta":
+                run_summary[config] = stats if _ok(stats, dict, path, field) else {}
+            elif _ok(stats, dict, path, field):
+                run_summary[config] = {
+                    k: v for k, v in stats.items()
+                    if k not in ("pass_rate", "time_seconds", "tokens")
+                    or (_ok(v, dict, path, f"{field}.{k}")
+                        and _ok(v.get("mean"), NUM, path, f"{field}.{k}.mean")
+                        and _ok(v.get("stddev"), NUM, path, f"{field}.{k}.stddev"))
+                }
+        data["run_summary"] = run_summary
+    if "runs" in data:
+        runs = []
+        for run in _items(_field(data, "runs", list, [], path), dict, path, "runs"):
+            if "configuration" not in run or not _ok(run["configuration"], str, path, "runs item configuration"):
+                continue
+            run = dict(run)
+            if "result" in run:
+                run["result"] = {
+                    k: v for k, v in _field(run, "result", dict, {}, path, "runs item result").items()
+                    if k not in RESULT_NUMBERS or _ok(v, NUM, path, "runs item result." + k)
+                }
+            if "expectations" in run:
+                run["expectations"] = _items(
+                    _field(run, "expectations", list, [], path, "runs item expectations"),
+                    dict, path, "runs item expectations")
+            runs.append(run)
+        data["runs"] = runs
+    if "notes" in data:
+        data["notes"] = _items(_field(data, "notes", list, [], path), str, path, "notes")
+    return data
+
+
 def get_mime_type(path: Path) -> str:
     ext = path.suffix.lower()
     if ext in MIME_OVERRIDES:
@@ -66,13 +207,24 @@ def get_mime_type(path: Path) -> str:
 def find_runs(workspace: Path) -> list[dict]:
     """Recursively find directories that contain an outputs/ subdirectory."""
     runs: list[dict] = []
-    _find_runs_recursive(workspace, workspace, runs)
+    evals: dict[Path, tuple] = {}
+    _find_runs_recursive(workspace, workspace, runs, evals)
+    # Every eval-* folder holds an id, runs or not, as in the benchmark
+    for d in sorted(workspace.glob("eval-*")):
+        if d.is_dir():
+            _register_eval(d, evals)
+    # Eval ids by the same rule as scripts/aggregate_benchmark.py, over the
+    # evals in folder order; a run with no eval keeps None
+    folders = sorted(evals)
+    ids = dict(zip(folders, assign_eval_ids([(f, *evals[f][:2]) for f in folders])))
+    for run in runs:
+        run["eval_id"] = ids.get(run.pop("_eval"))
     # Runs without an eval_id sort last
     runs.sort(key=lambda r: (r["eval_id"] is None, r["eval_id"] or 0, r["id"]))
     return runs
 
 
-def _find_runs_recursive(root: Path, current: Path, runs: list[dict]) -> None:
+def _find_runs_recursive(root: Path, current: Path, runs: list[dict], evals: dict) -> None:
     if not current.is_dir():
         return
 
@@ -83,12 +235,12 @@ def _find_runs_recursive(root: Path, current: Path, runs: list[dict]) -> None:
     )
     if run_dirs:
         for d in run_dirs:
-            _find_runs_recursive(root, d, runs)
+            _find_runs_recursive(root, d, runs, evals)
         return
 
     outputs_dir = current / "outputs"
     if outputs_dir.is_dir():
-        run = build_run(root, current)
+        run = build_run(root, current, evals)
         if run:
             runs.append(run)
         return
@@ -98,31 +250,47 @@ def _find_runs_recursive(root: Path, current: Path, runs: list[dict]) -> None:
         # A run-* folder that is not run-<n> (run-notes/) is never a run
         stray_run = child.name.startswith("run-") and not RUN_DIR_RE.match(child.name)
         if child.is_dir() and child.name not in skip and not stray_run:
-            _find_runs_recursive(root, child, runs)
+            _find_runs_recursive(root, child, runs, evals)
 
 
-def build_run(root: Path, run_dir: Path) -> dict | None:
-    """Build a run dict with prompt, outputs, and grading data."""
-    prompt = ""
-    eval_id = None
-
-    # eval_metadata.json: climb from run_dir up to root, first hit wins
+def find_eval(root: Path, run_dir: Path, evals: dict) -> Path | None:
+    """The run's eval folder: the first folder from run_dir up to root that
+    holds eval_metadata.json, else the nearest eval-* folder. Records its
+    (metadata id, folder id, prompt) in evals, read once per folder."""
+    eval_dir = None
     for d in [run_dir, *run_dir.parents]:
-        candidate = d / "eval_metadata.json"
-        if candidate.exists():
-            try:
-                metadata = json.loads(candidate.read_text())
-                prompt = metadata.get("prompt", "")
-                eval_id = metadata.get("eval_id")
-            except (json.JSONDecodeError, OSError):
-                pass
-            # No int eval_id (bool counts as none): the folder id, else None
-            if not isinstance(eval_id, int) or isinstance(eval_id, bool):
-                m = EVAL_DIR_RE.match(d.name)
-                eval_id = int(m.group(1)) if m else None
+        if (d / "eval_metadata.json").exists():
+            eval_dir = d
             break
+        if eval_dir is None and d.name.startswith("eval-"):
+            eval_dir = d
         if d == root:
             break
+    if eval_dir is not None:
+        _register_eval(eval_dir, evals)
+    return eval_dir
+
+
+def _register_eval(eval_dir: Path, evals: dict) -> None:
+    """Record eval_dir's (metadata id, folder id, prompt) in evals, once."""
+    if eval_dir in evals:
+        return
+    meta_id, prompt = None, ""
+    path = eval_dir / "eval_metadata.json"
+    if path.exists():
+        metadata = _read_obj(path)
+        if metadata is not None:
+            meta_id = _field(metadata, "eval_id", int, None, path)
+            prompt = _field(metadata, "prompt", str, "", path)
+    m = EVAL_DIR_RE.match(eval_dir.name)
+    evals[eval_dir] = (meta_id, int(m.group(1)) if m else None, prompt)
+
+
+def build_run(root: Path, run_dir: Path, evals: dict) -> dict | None:
+    """Build a run dict with prompt, outputs, and grading data. Its eval_id
+    is None and _eval names its eval folder; find_runs sets the id."""
+    eval_dir = find_eval(root, run_dir, evals)
+    prompt = evals[eval_dir][2] if eval_dir is not None else ""
 
     # Fall back to transcript.md
     if not prompt:
@@ -155,17 +323,15 @@ def build_run(root: Path, run_dir: Path) -> dict | None:
     grading = None
     grading_path = run_dir / "grading.json"
     if grading_path.exists():
-        try:
-            grading = json.loads(grading_path.read_text())
-        except (json.JSONDecodeError, OSError):
-            pass
+        grading = clean_grading(grading_path)
 
     return {
         "id": run_id,
         "prompt": prompt,
-        "eval_id": eval_id,
+        "eval_id": None,
         "outputs": output_files,
         "grading": grading,
+        "_eval": eval_dir,
     }
 
 
@@ -358,10 +524,7 @@ class ReviewHandler(BaseHTTPRequestHandler):
             runs = find_runs(self.workspace)
             benchmark = None
             if self.benchmark_path and self.benchmark_path.exists():
-                try:
-                    benchmark = json.loads(self.benchmark_path.read_text())
-                except (json.JSONDecodeError, OSError):
-                    pass
+                benchmark = clean_benchmark(self.benchmark_path)
             html = generate_html(runs, self.skill_name, self.previous, benchmark)
             content = html.encode("utf-8")
             self.send_response(200)
@@ -446,10 +609,7 @@ def main() -> None:
     benchmark_path = args.benchmark.resolve() if args.benchmark else None
     benchmark = None
     if benchmark_path and benchmark_path.exists():
-        try:
-            benchmark = json.loads(benchmark_path.read_text())
-        except (json.JSONDecodeError, OSError):
-            pass
+        benchmark = clean_benchmark(benchmark_path)
 
     if args.static:
         html = generate_html(runs, skill_name, previous, benchmark)

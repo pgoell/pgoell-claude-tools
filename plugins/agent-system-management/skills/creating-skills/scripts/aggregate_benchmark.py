@@ -68,6 +68,73 @@ DASH = "\N{EM DASH}"
 # skill minus baseline.
 PRIMARY_CONFIGS = ("with_skill", "new_skill")
 
+# JSON readers. A missing value takes its default quietly; a wrong-typed one
+# (bool is never a number) takes it with one warning. Same helpers in
+# eval-viewer/generate_review.py.
+NUM = (int, float)
+KIND_NAMES = {dict: "an object", list: "a list", str: "a string", int: "an int", NUM: "a number"}
+
+
+def _read_obj(path: Path) -> dict | None:
+    """A JSON file's object; None, with a warning, for bad JSON, an
+    unreadable file or a value that is not an object."""
+    try:
+        data = json.loads(path.read_text())
+    except (ValueError, OSError) as e:
+        print(f"Warning: {path}: cannot read: {e}")
+        return None
+    if not isinstance(data, dict):
+        print(f"Warning: {path}: not a JSON object, ignored")
+        return None
+    return data
+
+
+def _ok(value, kind, path, field: str) -> bool:
+    """Whether value has the kind; warns when not."""
+    if isinstance(value, kind) and not isinstance(value, bool):
+        return True
+    print(f"Warning: {path}: {field} is not {KIND_NAMES[kind]}, ignored")
+    return False
+
+
+def _field(obj: dict, key: str, kind, default, path, field: str = ""):
+    """obj[key] if it has the kind, else default."""
+    if key not in obj:
+        return default
+    return obj[key] if _ok(obj[key], kind, path, field or key) else default
+
+
+def _items(values: list, kind, path, field: str) -> list:
+    """The items of values that have the kind."""
+    return [v for v in values if _ok(v, kind, path, field + " item")]
+
+
+def assign_eval_ids(evals: list[tuple]) -> list[int]:
+    """Unique ids for evals given as (folder, metadata id, folder id) in
+    folder order: the int metadata id (the first eval keeps a duplicate),
+    else the folder id if no eval holds it, else one past the largest id in
+    use. Same function in eval-viewer/generate_review.py."""
+    ids = [None] * len(evals)
+    used = set()
+    for i, (folder, meta_id, _) in enumerate(evals):
+        if meta_id is None:
+            continue
+        if meta_id in used:
+            print(f"Warning: {folder}: eval_id {meta_id} is taken by another eval")
+        else:
+            ids[i] = meta_id
+            used.add(meta_id)
+    for i, (_, _, folder_id) in enumerate(evals):
+        if ids[i] is None and folder_id is not None and folder_id not in used:
+            ids[i] = folder_id
+            used.add(folder_id)
+    for i, (folder, _, _) in enumerate(evals):
+        if ids[i] is None:
+            ids[i] = max(used, default=0) + 1
+            used.add(ids[i])
+            print(f"Warning: {folder}: no free eval id, using {ids[i]}")
+    return ids
+
 
 def calculate_stats(values: list[float]) -> dict:
     """Calculate mean, stddev, min, max for a list of values."""
@@ -106,23 +173,21 @@ def load_run_results(benchmark_dir: Path) -> dict:
 
     results: dict[str, list] = {}
 
-    for eval_idx, eval_dir in enumerate(eval_dirs):
-        eval_id = None
-        eval_name = None
+    # Read every eval's metadata first: an eval's id depends on the others
+    evals = []
+    for eval_dir in eval_dirs:
+        meta_id = eval_name = None
         metadata_path = eval_dir / "eval_metadata.json"
         if metadata_path.exists():
-            try:
-                with open(metadata_path) as mf:
-                    metadata = json.load(mf)
-                eval_id = metadata.get("eval_id")
-                eval_name = metadata.get("eval_name")
-            except (json.JSONDecodeError, OSError):
-                pass
-        # No int eval_id (bool counts as none): the folder id, else the index
-        if not isinstance(eval_id, int) or isinstance(eval_id, bool):
-            m = EVAL_DIR_RE.match(eval_dir.name)
-            eval_id = int(m.group(1)) if m else eval_idx
+            metadata = _read_obj(metadata_path)
+            if metadata is not None:
+                meta_id = _field(metadata, "eval_id", int, None, metadata_path)
+                eval_name = _field(metadata, "eval_name", str, None, metadata_path)
+        m = EVAL_DIR_RE.match(eval_dir.name)
+        evals.append((eval_dir, meta_id, int(m.group(1)) if m else None, eval_name))
+    eval_ids = assign_eval_ids([e[:3] for e in evals])
 
+    for (eval_dir, _, _, eval_name), eval_id in zip(evals, eval_ids):
         # Discover config directories dynamically rather than hardcoding names
         for config_dir in sorted(eval_dir.iterdir()):
             if not config_dir.is_dir():
@@ -167,22 +232,25 @@ def load_run(run_dir: Path, eval_id, eval_name, run_number: int) -> dict | None:
         print(f"Warning: grading.json not found in {run_dir}")
         return None
 
-    try:
-        with open(grading_file) as f:
-            grading = json.load(f)
-    except json.JSONDecodeError as e:
-        print(f"Warning: Invalid JSON in {grading_file}: {e}")
+    # Not an object: warned, the run is skipped
+    grading = _read_obj(grading_file)
+    if grading is None:
         return None
 
     # Extract metrics
+    summary = _field(grading, "summary", dict, {}, grading_file)
+
+    def stat(key, default):
+        return _field(summary, key, NUM, default, grading_file, "summary." + key)
+
     result = {
         "eval_id": eval_id,
         "eval_name": eval_name,
         "run_number": run_number,
-        "pass_rate": grading.get("summary", {}).get("pass_rate", 0.0),
-        "passed": grading.get("summary", {}).get("passed", 0),
-        "failed": grading.get("summary", {}).get("failed", 0),
-        "total": grading.get("summary", {}).get("total", 0),
+        "pass_rate": stat("pass_rate", 0.0),
+        "passed": stat("passed", 0),
+        "failed": stat("failed", 0),
+        "total": stat("total", 0),
     }
 
     # Time: grading.json timing, else timing.json (seconds, else duration_ms).
@@ -190,38 +258,36 @@ def load_run(run_dir: Path, eval_id, eval_name, run_number: int) -> dict | None:
     timing_data = {}
     timing_file = run_dir / "timing.json"
     if timing_file.exists():
-        try:
-            with open(timing_file) as tf:
-                timing_data = json.load(tf)
-        except json.JSONDecodeError as e:
-            print(f"Warning: Invalid JSON in {timing_file}: {e}")
+        timing_data = _read_obj(timing_file) or {}
+    timing = _field(grading, "timing", dict, {}, grading_file)
+    graded_seconds = _field(timing, "total_duration_seconds", NUM, None, grading_file,
+                            "timing.total_duration_seconds")
+    seconds = _field(timing_data, "total_duration_seconds", NUM, None, timing_file)
+    ms = _field(timing_data, "duration_ms", NUM, 0, timing_file)
     # A 0 counts as missing at each step.
-    result["time_seconds"] = (
-        grading.get("timing", {}).get("total_duration_seconds")
-        or timing_data.get("total_duration_seconds")
-        or (timing_data.get("duration_ms") or 0) / 1000
-        or 0.0
-    )
-    result["tokens"] = timing_data.get("total_tokens", 0)
+    result["time_seconds"] = graded_seconds or seconds or ms / 1000 or 0.0
+    result["tokens"] = _field(timing_data, "total_tokens", NUM, 0, timing_file)
 
     # Extract metrics if available
-    metrics = grading.get("execution_metrics", {})
-    result["tool_calls"] = metrics.get("total_tool_calls", 0)
-    result["errors"] = metrics.get("errors_encountered", 0)
+    metrics = _field(grading, "execution_metrics", dict, {}, grading_file)
+    result["tool_calls"] = _field(metrics, "total_tool_calls", NUM, 0, grading_file,
+                                  "execution_metrics.total_tool_calls")
+    result["errors"] = _field(metrics, "errors_encountered", NUM, 0, grading_file,
+                              "execution_metrics.errors_encountered")
 
     # Extract expectations: viewer requires fields: text, passed, evidence
-    raw_expectations = grading.get("expectations", [])
+    raw_expectations = _items(_field(grading, "expectations", list, [], grading_file),
+                              dict, grading_file, "expectations")
     for exp in raw_expectations:
         if "text" not in exp or "passed" not in exp:
             print(f"Warning: expectation in {grading_file} missing required fields (text, passed, evidence): {exp}")
     result["expectations"] = raw_expectations
 
     # Extract notes from user_notes_summary
-    notes_summary = grading.get("user_notes_summary", {})
+    notes_summary = _field(grading, "user_notes_summary", dict, {}, grading_file)
     notes = []
-    notes.extend(notes_summary.get("uncertainties", []))
-    notes.extend(notes_summary.get("needs_review", []))
-    notes.extend(notes_summary.get("workarounds", []))
+    for key in ("uncertainties", "needs_review", "workarounds"):
+        notes.extend(_field(notes_summary, key, list, [], grading_file, "user_notes_summary." + key))
     result["notes"] = notes
 
     return result

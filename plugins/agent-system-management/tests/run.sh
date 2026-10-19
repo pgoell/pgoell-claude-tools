@@ -5,8 +5,12 @@
 # describes, the run-<n> layout, a mix of both, an ungraded run, a stray
 # run-* entry, config order, timing and token sources, evals with and
 # without eval_metadata.json, an eval_id that is not an int (null, string,
-# missing, true, in a folder with or without an id), and the dash shown for
-# a missing delta (main() with the delta taken out). AGG and VIEWER override the script paths (to
+# missing, true, in a folder with or without an id), eval_metadata.json that
+# is not an object, unique eval ids (a taken folder id, a duplicate metadata
+# id), wrong-typed fields in eval_metadata.json, grading.json, timing.json
+# and the viewer's --benchmark file, files that cannot be read, and the
+# dash shown for a missing delta (main() with the delta taken out). AGG
+# and VIEWER override the script paths (to
 # run the cases against another copy). No session, no network. Needs bash,
 # python3, jq.
 set -u
@@ -201,14 +205,19 @@ ok "viewer no metadata: both shown" "$(vq vnometa '[.runs[].id]|join(",")' 2>&1)
 # with_skill run, whose eval_metadata.json holds that eval_id ("" leaves
 # the key out)
 meta() {
+  if [ -n "$3" ]; then
+    mfix "$1" "$2" "{\"eval_id\":$3,\"prompt\":\"P\"}"
+  else
+    mfix "$1" "$2" '{"prompt":"P"}'
+  fi
+}
+# mfix <iteration> <folder> <text>: as meta, with eval_metadata.json holding
+# that text ("" writes no eval_metadata.json)
+mfix() {
   local e="$T/$1/$2"
   mkdir -p "$e/with_skill/outputs"
   echo x >"$e/with_skill/outputs/x.txt"
-  if [ -n "$3" ]; then
-    echo "{\"eval_id\":$3,\"prompt\":\"P\"}" >"$e/eval_metadata.json"
-  else
-    echo '{"prompt":"P"}' >"$e/eval_metadata.json"
-  fi
+  [ -n "$3" ] && echo "$3" >"$e/eval_metadata.json"
   grade "$e/with_skill" 1.0
 }
 # bids <iteration>: benchmark.json's evals_run, then its runs' eval ids
@@ -243,11 +252,176 @@ meta idbool eval-4-b true
 ok "true eval_id: benchmark folder id" "$(bids idbool)" "1,4 1,4"
 ok "true eval_id: viewer folder id" "$(vids idbool)" 1,4
 
-# bad eval_id in a folder with no id: benchmark takes the index, viewer null
+# bad eval_id in a folder with no id: one past the largest id in use
 meta idname eval-5-a 5
 meta idname eval-x-b '"9"'
-ok "no folder id: benchmark index" "$(bids idname)" "1,5 5,1"
-ok "no folder id: viewer null" "$(vids idname)" 5,null
+ok "no folder id: benchmark next free id" "$(bids idname)" "5,6 5,6"
+ok "no folder id: viewer next free id" "$(vids idname)" 5,6
+
+# non-object metadata (#191): eval_metadata.json that is valid JSON but not
+# an object warns and counts as no metadata, so the folder id holds
+meta nonobj eval-1-a 1
+mfix nonobj eval-3-b '[]'
+mfix nonobj eval-4-c '"x"'
+mfix nonobj eval-5-d 1
+out=$(run nonobj)
+hasnt "non-object metadata: benchmark no crash" "$out" Traceback
+has "non-object metadata: benchmark warns" "$out" "Warning: $T/nonobj/eval-3-b/eval_metadata.json: not a JSON object"
+ok "non-object metadata: benchmark folder ids" "$(bids nonobj)" "1,3,4,5 1,3,4,5"
+out=$(view nonobj)
+hasnt "non-object metadata: viewer no crash" "$out" Traceback
+ok "non-object metadata: viewer folder ids" "$(vids nonobj)" 1,3,4,5
+
+# unique id (#192): no two evals share an id. An int metadata id first (the
+# first eval in folder order keeps a duplicate), then the folder id if free,
+# else one past the largest id in use
+meta uniq eval-1-a 1
+mfix uniq eval-x-b '{}'
+ok "unique id: issue case benchmark" "$(bids uniq)" "1,2 1,2"
+ok "unique id: issue case runs per config" "$(q uniq '.metadata.runs_per_configuration')" 1
+ok "unique id: issue case viewer" "$(vids uniq)" 1,2
+meta taken eval-1-a ""
+meta taken eval-2-b 1
+ok "unique id: folder id taken benchmark" "$(bids taken)" "1,2 2,1"
+ok "unique id: folder id taken viewer" "$(vids taken)" 1,2
+meta dup eval-1-a 3
+meta dup eval-2-b 3
+out=$(run dup)
+has "unique id: duplicate warns" "$out" "Warning: $T/dup/eval-2-b: eval_id 3 is taken"
+ok "unique id: duplicate benchmark" "$(bids dup)" "2,3 3,2"
+ok "unique id: duplicate viewer" "$(vids dup)" 2,3
+# viewer: a run in an eval-* folder with no eval_metadata.json takes its id
+meta vuniq eval-1-foo 1
+mfix vuniq eval-2-bar ""
+ok "unique id: viewer eval without metadata" "$(vids vuniq)" 1,2
+# an eval with no runs still holds its id, in the benchmark and the viewer
+mkdir -p "$T/norun/eval-1-a"
+echo '{"eval_id":7}' >"$T/norun/eval-1-a/eval_metadata.json"
+meta norun eval-7-b ""
+ok "unique id: eval without runs benchmark" "$(bids norun)" "8 8"
+ok "unique id: eval without runs viewer" "$(vids norun)" 8
+
+# metadata fields: a non-string eval_name or prompt is dropped
+mfix mfields eval-1-a '{"eval_id":1,"eval_name":5,"prompt":7}'
+out=$(run mfields)
+has "metadata fields: eval_name warns" "$out" "eval_name is not a string"
+ok "metadata fields: eval_name" "$(q mfields '.runs[0].eval_name')" null
+view mfields >/dev/null
+ok "metadata fields: viewer prompt" "$(vq mfields '.runs[0].prompt')" "(No prompt found)"
+
+# gfix <iteration> <grading.json text>: eval-1-foo with one with_skill run
+# (outputs/ and that grading.json); runs the benchmark and the viewer and
+# keeps their output in $out
+gfix() {
+  local e
+  e=$(eval_dir "$1")
+  mkdir -p "$e/with_skill/outputs"
+  echo x >"$e/with_skill/outputs/x.txt"
+  echo "$2" >"$e/with_skill/grading.json"
+  out=$(run "$1"; view "$1")
+}
+# grading fields: a wrong-typed field takes its default, never a crash
+gfix gnon '[]'
+hasnt "grading fields: non-object no crash" "$out" Traceback
+ok "grading fields: non-object run skipped" "$(q gnon '.runs|length')" 0
+ok "grading fields: non-object viewer no grades" "$(vq gnon '.runs[0].grading')" null
+gfix gsum '{"summary":"x"}'
+hasnt "grading fields: summary no crash" "$out" Traceback
+ok "grading fields: summary pass rate" "$(q gsum '.runs[0].result.pass_rate == 0')" true
+ok "grading fields: summary viewer" "$(vq gsum '.runs[0].grading.summary|tojson')" "{}"
+gfix grate '{"summary":{"pass_rate":"x","passed":1}}'
+hasnt "grading fields: pass_rate no crash" "$out" Traceback
+has "grading fields: pass_rate warns" "$out" "summary.pass_rate is not a number"
+ok "grading fields: pass_rate" "$(q grate '.runs[0].result.pass_rate == 0')" true
+ok "grading fields: pass_rate viewer" "$(vq grate '.runs[0].grading.summary|tojson')" '{"pass_rate":0,"passed":1}'
+gfix gexp '{"expectations":5}'
+hasnt "grading fields: expectations no crash" "$out" Traceback
+ok "grading fields: expectations" "$(q gexp '.runs[0].expectations|tojson')" "[]"
+ok "grading fields: expectations viewer" "$(vq gexp '.runs[0].grading.expectations|tojson')" "[]"
+gfix gitem '{"expectations":[1,{"text":"t","passed":true}]}'
+hasnt "grading fields: expectation item no crash" "$out" Traceback
+ok "grading fields: expectation item" "$(q gitem '[.runs[0].expectations[].text]|join(",")')" t
+ok "grading fields: expectation item viewer" "$(vq gitem '[.runs[0].grading.expectations[].text]|join(",")')" t
+gfix gtime '{"timing":"x"}'
+hasnt "grading fields: timing no crash" "$out" Traceback
+ok "grading fields: timing" "$(q gtime '.runs[0].result.time_seconds == 0')" true
+gfix gmet '{"execution_metrics":[]}'
+hasnt "grading fields: execution_metrics no crash" "$out" Traceback
+ok "grading fields: execution_metrics" "$(q gmet '.runs[0].result.tool_calls')" 0
+gfix gcalls '{"execution_metrics":{"total_tool_calls":"x"}}'
+ok "grading fields: total_tool_calls" "$(q gcalls '.runs[0].result.tool_calls')" 0
+gfix gnotes '{"user_notes_summary":[]}'
+hasnt "grading fields: user_notes_summary no crash" "$out" Traceback
+ok "grading fields: user_notes_summary" "$(q gnotes '.runs[0].notes|length')" 0
+gfix gunc '{"user_notes_summary":{"uncertainties":"abc","workarounds":["w"]}}'
+ok "grading fields: uncertainties" "$(q gunc '.runs[0].notes|join(",")')" w
+
+# tfix <iteration> <timing.json text>: a graded run with that timing.json
+tfix() {
+  local e
+  e=$(eval_dir "$1")
+  grade "$e/with_skill" 1.0
+  echo "$2" >"$e/with_skill/timing.json"
+  out=$(run "$1")
+}
+# timing fields: a wrong-typed field is ignored, never a crash
+tfix tnon '[]'
+hasnt "timing fields: non-object no crash" "$out" Traceback
+has "timing fields: non-object warns" "$out" "timing.json: not a JSON object"
+ok "timing fields: non-object tokens" "$(q tnon '.runs[0].result.tokens')" 0
+tfix ttok '{"total_tokens":"x","total_duration_seconds":2}'
+hasnt "timing fields: total_tokens no crash" "$out" Traceback
+ok "timing fields: total_tokens" "$(q ttok '.runs[0].result.tokens')" 0
+tfix tms '{"duration_ms":"x"}'
+hasnt "timing fields: duration_ms no crash" "$out" Traceback
+ok "timing fields: duration_ms" "$(q tms '.runs[0].result.time_seconds == 0')" true
+
+# bview <iteration> <benchmark.json text>: one viewer run, with --benchmark
+# pointing at that benchmark.json; keeps the output in $out
+bview() {
+  local e
+  e=$(eval_dir "$1")
+  mkdir -p "$e/with_skill/outputs"
+  echo x >"$e/with_skill/outputs/x.txt"
+  echo "$2" >"$T/$1-benchmark.json"
+  out=$(python3 "$viewer" "$T/$1" --static "$T/$1.html" --skill-name x --benchmark "$T/$1-benchmark.json" 2>&1)
+}
+# benchmark fields: the Benchmark tab gets wrong-typed fields dropped or
+# defaulted, and no tab for a non-object file
+bview bnon '"x"'
+has "benchmark fields: non-object warns" "$out" "bnon-benchmark.json: not a JSON object"
+ok "benchmark fields: non-object no tab" "$(vq bnon '.benchmark')" null
+bview btop '{"metadata":{"evals_run":"x","skill_name":"s"},"runs":5,"notes":3,"run_summary":{"with_skill":{"pass_rate":{"mean":"x","stddev":0},"time_seconds":{"mean":1,"stddev":0}},"old_skill":5,"delta":7}}'
+has "benchmark fields: evals_run warns" "$out" "metadata.evals_run is not a list"
+ok "benchmark fields: evals_run" "$(vq btop '.benchmark.metadata|tojson')" '{"skill_name":"s"}'
+ok "benchmark fields: runs" "$(vq btop '.benchmark.runs|tojson')" "[]"
+ok "benchmark fields: notes" "$(vq btop '.benchmark.notes|tojson')" "[]"
+ok "benchmark fields: stat mean" "$(vq btop '.benchmark.run_summary.with_skill|keys|join(",")')" time_seconds
+ok "benchmark fields: config" "$(vq btop '.benchmark.run_summary|keys|join(",")')" delta,with_skill
+ok "benchmark fields: delta" "$(vq btop '.benchmark.run_summary.delta|tojson')" "{}"
+bview bruns '{"runs":[1,{"configuration":5},{"configuration":"with_skill","result":"x"},{"configuration":"with_skill","result":{"pass_rate":"x","passed":1},"expectations":[null,{"text":"t"}]},{"configuration":"with_skill","expectations":3}],"notes":["n",4]}'
+has "benchmark fields: run item warns" "$out" "runs item is not an object"
+ok "benchmark fields: bad runs dropped" "$(vq bruns '.benchmark.runs|length')" 3
+ok "benchmark fields: result" "$(vq bruns '.benchmark.runs[0].result|tojson')" "{}"
+ok "benchmark fields: result numbers" "$(vq bruns '.benchmark.runs[1].result|tojson')" '{"passed":1}'
+ok "benchmark fields: expectation items" "$(vq bruns '.benchmark.runs[1].expectations|tojson')" '[{"text":"t"}]'
+ok "benchmark fields: expectations" "$(vq bruns '.benchmark.runs[2].expectations|tojson')" "[]"
+ok "benchmark fields: note items" "$(vq bruns '.benchmark.notes|join(",")')" n
+
+# unreadable: a grading.json or eval_metadata.json that is a directory warns
+E=$(eval_dir unread)
+mkdir -p "$E/with_skill/outputs" "$E/with_skill/grading.json"
+echo x >"$E/with_skill/outputs/x.txt"
+mfix unread eval-3-u ""
+mkdir -p "$T/unread/eval-3-u/eval_metadata.json"
+out=$(run unread)
+hasnt "unreadable: benchmark no crash" "$out" Traceback
+has "unreadable: benchmark grading warns" "$out" "Warning: $E/with_skill/grading.json: cannot read"
+has "unreadable: benchmark metadata warns" "$out" "Warning: $T/unread/eval-3-u/eval_metadata.json: cannot read"
+ok "unreadable: benchmark ids" "$(q unread '[.runs[].eval_id]|join(",")')" 3
+out=$(view unread)
+has "unreadable: viewer grading warns" "$out" "Warning: $E/with_skill/grading.json: cannot read"
+has "unreadable: viewer metadata warns" "$out" "Warning: $T/unread/eval-3-u/eval_metadata.json: cannot read"
 
 # missing delta: benchmark.md and the summary show a dash. The script always
 # writes a delta, so main() runs here with the delta taken out.

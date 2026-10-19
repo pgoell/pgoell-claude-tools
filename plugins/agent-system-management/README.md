@@ -39,13 +39,13 @@ cut this skill to its core
 
 ## Tests
 
-`tests/run.sh` builds fixture iteration folders in the layout `creating-skills`' `SKILL.md` sets and runs both readers on them: `scripts/aggregate_benchmark.py` and `eval-viewer/generate_review.py --static`. It checks that both find the same runs: the one-run layout (grading and `timing.json` in the config folder), `run-<n>/` repeats, a config with both (only `run-<n>/` counts), a stray `run-notes/` (skipped with a warning), and a config with `outputs/` but no `grading.json` (a warning; `inputs/` stays quiet). It also checks the fields: `eval_name`, `runs_per_configuration`, the delta order, time from `duration_ms`, tokens from `timing.json`, and the viewer's prompt, eval id and grading per run. An `eval_id` that is not an int (null, a string, a missing key, `true`) gives the eval folder's number in both readers, and a missing delta shows a dash. It needs bash, python3 (3.11 or later) and jq, and no network:
+`tests/run.sh` builds fixture iteration folders in the layout `creating-skills`' `SKILL.md` sets and runs both readers on them: `scripts/aggregate_benchmark.py` and `eval-viewer/generate_review.py --static`. It checks that both find the same runs: the one-run layout (grading and `timing.json` in the config folder), `run-<n>/` repeats, a config with both (only `run-<n>/` counts), a stray `run-notes/` (skipped with a warning), and a config with `outputs/` but no `grading.json` (a warning; `inputs/` stays quiet). It also checks the fields: `eval_name`, `runs_per_configuration`, the delta order, time from `duration_ms`, tokens from `timing.json`, and the viewer's prompt, eval id and grading per run. An `eval_id` that is not an int (null, a string, a missing key, `true`) gives the eval folder's number in both readers, eval ids stay unique (a taken folder number gives one past the largest id in use), and a missing delta shows a dash. Malformed input in `eval_metadata.json`, `grading.json`, `timing.json` and `benchmark.json` (a file that is not an object, a field of the wrong type, bad JSON, an unreadable file) gives one warning line and the field's default, never a crash. It needs bash, python3 (3.11 or later) and jq, and no network:
 
 ```bash
 bash plugins/agent-system-management/tests/run.sh
 ```
 
-Last run 2026-10-19: 48 passed, 0 failed, on Python 3.12 and on 3.11.
+Last run 2026-10-19: 120 passed, 0 failed, on Python 3.12; both scripts parse on 3.11.
 
 ## Credits
 
