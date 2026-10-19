@@ -19,7 +19,7 @@ Keep these parts of the template as they are:
 - The section pattern: `<section id="X" aria-labelledby="X-h">` with `<h2 id="X-h">`.
 - The class names the styles need: `#executive-summary`, `#methodology`, `ol.sources`, `li.source-entry`, `.source-body`, `.title`, `.ref`.
 
-Replace everything else. The template's text is sample text about rate limiting; none of it may stay.
+Replace everything else. The template's text is sample text about rate limiting; none of it may stay, including its notes under headings (such as the line about superscript citations under Sources). Where report.md lacks a part the template shows (a date line, a methodology section, reference details beyond the link), drop that part; never fill it in. The executive summary is the first `##` section other than a Table of Contents, whatever its heading says.
 
 ## 3. Map report.md into the frame
 
