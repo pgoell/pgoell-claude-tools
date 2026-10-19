@@ -80,7 +80,7 @@
       "name": "presentations",
       "source": "./plugins/presentations",
       "description": "Presentation lifecycle skills: content design, HTML deck building with brand presets and a perfecting loop, a local deck editor, native PPTX export, and preset extraction.",
-      "version": "0.7.0"
+      "version": "0.7.1"
     },
     {
       "name": "diagrams",
@@ -92,7 +92,7 @@
       "name": "news",
       "source": "./plugins/news",
       "description": "Build a personal daily newspaper in a kasten vault, linked from the daily note, shaped by your feedback.",
-      "version": "0.9.0"
+      "version": "0.9.1"
     },
     {
       "name": "insights",
@@ -104,7 +104,7 @@
       "name": "issue-loop",
       "source": "./plugins/issue-loop",
       "description": "Run an unattended build loop: one orchestrator session drives one implementer session through a repo's GitHub issues, one merged and deployed PR per task, with a gate between tasks.",
-      "version": "0.7.2"
+      "version": "0.7.3"
     },
     {
       "name": "prose-styles",

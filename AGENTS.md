@@ -88,11 +88,11 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `databricks` 0.3.2: `databricks-core`, `databricks-docs`
 - `learning` 0.3.1: `quizzing-the-session`, `quizzing-a-topic`, `surveying-blind-spots`, `rebuilding-a-concept`
 - `critique` 0.1.2: `critiquing-ideas`
-- `presentations` 0.7.0: `designing-presentations`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
+- `presentations` 0.7.1: `designing-presentations`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
 - `diagrams` 0.1.1: `creating-diagrams`
-- `news` 0.9.0: `edition`, `feedback`, `tune`
+- `news` 0.9.1: `edition`, `feedback`, `tune`
 - `insights` 0.6.0: `digest`, `apply`, `activity`
-- `issue-loop` 0.7.2: `running-the-loop`, `handing-over` (Claude Code only)
+- `issue-loop` 0.7.3: `running-the-loop`, `handing-over` (Claude Code only)
 - `prose-styles` 0.1.0: no skills; output styles `orwell`, `concise`, `ste`, `house` (Claude Code only)
 - `guards` 0.1.2: no skills; `PreToolUse` hook `pkill-self-match` (Claude Code only)
 - `session-title` 0.1.0: no skills; `SessionStart` hook `session-title` (Claude Code only)

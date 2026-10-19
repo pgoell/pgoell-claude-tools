@@ -167,7 +167,7 @@ The loop was built and run with Claude Code sessions only. Under Codex the orche
 
 ## Self-Healing
 
-- A loop folder made by version 0.6.0 or earlier, or by hand: read `references/upgrading.md`. It says which files to copy anew from the skill's `assets/`.
+- A loop folder made by version 0.7.0 or earlier, or by hand: read `references/upgrading.md`. It says which files to copy anew from the skill's `assets/`.
 - `next.sh` exits 4: the implementer still works. Wait for its DONE line.
 - `start.sh` exits 5: a start dialog shows and nothing was sent. It prints the screen. A folder trust question goes to the user.
 - `next.sh` exits 3: `rules.md` has a `FILL:` marker left, or it uses a setting that is empty in `loop.env` (a repo with no deploy: rewrite rule 9, then leave `DEPLOY_WORKFLOW` and `ALIVE_URL` empty), or the file `orch-name` is missing while rule 19 is in the brief, or the standing order is missing in the loop folder's `CLAUDE.md` or in the implementer's `CLAUDE.local.md` (the message says which; the user runs `grant.sh`).

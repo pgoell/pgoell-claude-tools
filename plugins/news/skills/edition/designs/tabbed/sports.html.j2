@@ -1,0 +1,41 @@
+{#- A story's tournament tree and a section's league tables; only tabbed draws them. None reads `edition`. -#}
+{%- macro bracket(st) -%}
+<div class="bracket" role="group" aria-label="{{ 'Turnierbaum' if st.lang == 'de' else 'Bracket' }}">
+  {%- for r in st.bracket.rounds %}
+  <div class="round">
+    <h4>{{ r.name }}</h4>
+    <div class="ms">
+    {%- for m in r.matches %}
+      <div class="m{{ ' open' if not m.winner }}">
+        {%- for side in ['a', 'b'] %}
+        <div class="t{{ ' win' if m.winner == side }}{{ ' out' if m.winner and m.winner != side }}"><span class="tn">{{ m[side] }}</span>{% if m.score %}<span class="sc">{{ m.score.split('-')[0 if side == 'a' else 1] }}</span>{% endif %}</div>
+        {%- endfor %}
+        {%- if m.when and not m.winner %}<div class="when">{{ m.when }}</div>{% endif %}
+      </div>
+    {%- endfor %}
+    </div>
+  </div>
+  {%- endfor %}
+</div>
+{%- endmacro -%}
+{%- macro tables(s) -%}
+<div class="tables">
+  <h4>Tabellen</h4>
+  {%- for t in s.tables %}
+  <details{% if loop.first %} open{% endif %}>
+    <summary>{{ t.name }}{% if t.matchday %}<span class="md">{{ t.matchday }}</span>{% endif %}</summary>
+    <div class="tw">
+    <table>
+      <thead><tr><th class="r">#</th><th class="tm">Verein</th><th>Sp.</th><th class="x">S</th><th class="x">U</th><th class="x">N</th><th class="x">Tore</th><th>Diff.</th><th>Pkt.</th></tr></thead>
+      <tbody>
+      {%- for r in t.rows %}
+        <tr><td class="r">{{ r.rank }}{% if r.trend == 'up' %}<span class="up" title="aufgestiegen">&#9650;</span>{% elif r.trend == 'down' %}<span class="dn" title="abgerutscht">&#9660;</span>{% endif %}</td><td class="tm">{{ r.team }}</td><td>{{ r.played }}</td><td class="x">{{ r.won }}</td><td class="x">{{ r.drawn }}</td><td class="x">{{ r.lost }}</td><td class="x">{{ r.goals }}</td><td>{{ '%+d'|format(r.diff) if r.diff else 0 }}</td><td class="p">{{ r.points }}</td></tr>
+      {%- endfor %}
+      </tbody>
+    </table>
+    </div>
+    <p class="tsrc"><a href="{{ t.url }}" rel="noopener">sportschau.de</a></p>
+  </details>
+  {%- endfor %}
+</div>
+{%- endmacro -%}

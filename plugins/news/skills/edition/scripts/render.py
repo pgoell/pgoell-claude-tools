@@ -12,7 +12,9 @@ so a morning run still produces a paper. Before rendering it sets
 carries no `recent_feedback`, the three newest lines of memory/changelog.md.
 It also adds `published_display` to every story and `generated_display` to the
 edition, both in Europe/Berlin time ("7.10., 15:46"), because Jinja has no
-time zones and the reader's clock is Berlin's.
+time zones and the reader's clock is Berlin's. Templates load from the design's
+folder, then from designs/, so a design can include another folder's files
+(`heimatblatt/base.css.j2`).
 """
 
 import json
@@ -80,7 +82,7 @@ def main() -> None:
     for story in stories(edition):
         story["published_display"] = published(story["published"])
 
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader(DESIGNS / design), autoescape=True)
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader([DESIGNS / design, DESIGNS]), autoescape=True)
     html = env.get_template("template.html.j2").render(edition=edition)
     out = args.out or folder / f"{day}.html"
     out.write_text(html)

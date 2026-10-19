@@ -42,6 +42,12 @@ that warms photos).
   text-only layout (tiny inline handler). Times are `published_display`,
   already in Berlin time.
 
+## Files
+
+`template.html.j2` imports `macros.html.j2` and includes `base.css.j2`,
+`story.css.j2` and `layout.css.j2`. `tabbed` uses the same four files, so a
+change to one of them changes both designs.
+
 ## What I would tune
 
 - Long summaries make the small columns tall; a line clamp or a "weiterlesen"

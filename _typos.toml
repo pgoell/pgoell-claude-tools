@@ -30,4 +30,4 @@ ist = "ist"
 [files]
 # The news designs print German page chrome ("Foto", "Juli", "Sie"), which an
 # English spell check cannot read.
-extend-exclude = ["plugins/news/skills/edition/designs/*/template.html.j2"]
+extend-exclude = ["plugins/news/skills/edition/designs/*/*.j2"]

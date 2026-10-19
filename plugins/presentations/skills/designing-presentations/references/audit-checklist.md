@@ -170,7 +170,7 @@ Flag MAJOR when it runs front to back, unless the storyboard's choice record say
 
 ## Check K: Copy lint (by reference)
 
-Run the copy lint (`presentations:creating-presentations`, `references/copy-lint.md`) over the text each slide will show on screen: `title`, `headline`, and any on-screen words named in `visual`. Pass `deck_mode` from the deck header so the lint applies the right word budget. The lint's lists live in that file only; do not restate them here or in `deck.md`.
+Run the copy lint (`presentations:creating-presentations`, `references/copy-lint.md`) over the text each slide will show on screen: `title`, `headline`, and any on-screen words named in `visual`. Pass `deck_mode` from the deck header so the lint applies the right word budget. The lint's lists live in that file and in `copy-probe.md` beside it only; do not restate them here or in `deck.md`.
 
 Record the lint's hard-fail items as violations and its warnings as a separate `### Copy lint warnings` list. If the lint file is not installed, note "copy lint skipped: file not found" and continue.
 

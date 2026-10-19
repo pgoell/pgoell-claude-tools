@@ -4,7 +4,9 @@ The Heimatblatt look, cut into tabs. Every section is one tab, so an edition
 can carry as many stories as the config allows without growing into one long
 scroll. Fonts, tokens, story layout and the framed "Aus der Region" block are
 Heimatblatt's; see `../heimatblatt/NOTES.md`. `overrides:` set for Heimatblatt
-carry over unchanged.
+carry over unchanged. The template imports Heimatblatt's `macros.html.j2` and
+includes its three CSS parts, then adds the tab strip, the bracket and the
+tables (`sports.html.j2`).
 
 ## Tabs
 

@@ -13,7 +13,7 @@ Edit this file freely; it lives next to your deck as `deck-standards.md` and you
 
 ## Hard gates (measured)
 
-Thresholds are tunable defaults; change them here and the probes in `hard-gates.md` follow.
+Thresholds are tunable defaults; change them here and the probes in `hard-gates.md`, `copy-probe.md`, and `layout-geometry-probe.md` follow.
 
 - **H1 No clipped text.** No text element extends past the slide canvas. Slide content overflowing the canvas without clipping any text (decorative bleed, full-bleed panels) is not a failure; it is routed to the visual judge with the screenshot.
 - **H2 No overlapping text.** No two text elements intersect by more than 4 canvas pixels in both axes.
@@ -23,7 +23,7 @@ Thresholds are tunable defaults; change them here and the probes in `hard-gates.
 - **H6 Contrast floor.** Text elements longer than two characters (shorter ones are decorative markers) must reach 3:1 contrast against their effective background. Text under 24 canvas pixels that lands between 3:1 and 4.5:1 is routed to the visual judge as borderline, not auto-failed. Text over images or gradients is judged from the screenshot (S13).
 - **H7 Minimum type size.** Rendered size by role on the 1920x1080 canvas: body at least 36 px, captions, chart labels, and table cells at least 28 px, footer and source line at least 24 px. These are starting points from the exporter's 0.5 pt per px arithmetic, not sourced numbers. Text never shrinks to fit: split the slide or cut words.
 - **H8 Copy lint.** The hard-fail items of `copy-lint.md`: title over 15 words or two rendered lines, topic-label or count-only title, banned characters, and P0 tells (eyebrow label on most slides, italic or accent word in a title, a row of stat tiles, middle dot, P0 vocabulary). Its warnings go to the clarity judge.
-- **H9 Layout geometry.** No colliding boxes, no content escaping its container, no content crammed against the canvas edge, no near-miss alignment, no touching blocks, no overloaded slide, per the thresholds in `hard-gates.md`. Balance and empty space go to the visual judge.
+- **H9 Layout geometry.** No colliding boxes, no content escaping its container, no content crammed against the canvas edge, no near-miss alignment, no touching blocks, no overloaded slide, per the thresholds in `layout-geometry-probe.md`. Balance and empty space go to the visual judge.
 
 ## Soft gates (judged)
 
