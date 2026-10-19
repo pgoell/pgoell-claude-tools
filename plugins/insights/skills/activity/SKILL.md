@@ -1,7 +1,6 @@
 ---
 name: activity
-description: "Build a day's HTML page in the kasten vault on what your agents did per repository and what waits for you, linked from the daily note. Started by /insights:activity or by cron."
-disable-model-invocation: true
+description: "Use when the user wants to know what their agents did on a day and what now waits for them, for example \"what did my agents do yesterday\", \"what needs me this morning\" or \"build the activity page\", or when cron runs it. Counts one day per repository (pull requests, issues, failed CI, commits, loop ledger lines, sessions, cost), writes one HTML page in the kasten vault and links it from the daily note. Not for what went wrong in sessions (use insights:digest)."
 ---
 
 # Activity

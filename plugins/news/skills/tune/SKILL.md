@@ -1,7 +1,6 @@
 ---
 name: tune
-description: "Reconfigure the personal newspaper through a short interview on sections, depth, sources, interests and design. Started by /news:tune."
-disable-model-invocation: true
+description: "Use when the user wants to reconfigure their personal newspaper through a short interview, for example \"tune my newspaper\", \"change the sections\", \"try another design\" or \"which designs are there\". Walks through sections, depth, sources, interests and design one question at a time, rewrites the vault config, shows the diff, and can re-render today's edition with another design. Not for one quick change (use news:feedback) or for building an edition (use news:edition)."
 ---
 
 # Tune

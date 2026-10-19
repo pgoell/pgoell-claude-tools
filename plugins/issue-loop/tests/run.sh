@@ -351,5 +351,11 @@ takeover=$(grep '^\*\*If you were started in the loop folder' "$skill/SKILL.md")
 has "running-the-loop takeover names the title" "$takeover" '<project>-orchestrator-main'
 hasnt "running-the-loop takeover holds no herdr command" "$takeover" 'herdr agent prompt'
 
+# every skill is model-invocable, so a successor can load running-the-loop
+hasnt "running-the-loop leaves model invocation on" "$(cat "$skill/SKILL.md")" 'disable-model-invocation'
+ok "no skill turns off implicit invocation for Codex" "$(grep -rl allow_implicit_invocation "$here/../skills" 2>/dev/null)" ""
+has "first message loads the skill with the Skill tool" "$tmpl" 'load it with the Skill tool'
+hasnt "first message names no skill file" "$tmpl" '<skill file>'
+
 echo "$pass passed, $fail failed"
 [ $fail = 0 ]

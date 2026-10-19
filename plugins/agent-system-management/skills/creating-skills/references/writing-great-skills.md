@@ -13,7 +13,7 @@ How a skill is reached, and the two loads you pay for the choice.
 
 A third state exists in Claude Code: `user-invocable: false` keeps model invocation but removes the human's menu entry. Same context load, zero human reach, zero cognitive load, because there is nothing for the human to remember. Use it for background knowledge that is not actionable as a command (mechanics and the full state table: platform-mechanics.md).
 
-Pick model invocation only when the agent must reach the skill on its own, or another skill must. If it only ever fires by hand, make it user-invoked and pay no context load.
+Default to model invocation, and pay for it with a short description. A user-invoked skill is out of reach for the agent, for other skills and for a successor session that takes over the work, which tends to show only when a hand-off needs it. Make a skill user-invoked only when the user asks for it.
 
 When user-invoked skills multiply past what the human can remember, the cure is a **router skill**: one user-invoked skill that names the others and when to reach for each. It can only hint, never fire them, since user-invoked skills have no description for anything but the human to reach.
 

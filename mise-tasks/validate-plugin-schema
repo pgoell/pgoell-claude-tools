@@ -73,6 +73,16 @@ for codex_manifest in plugins/*/.codex-plugin/plugin.json; do
   fi
 done
 
+# Every skill stays model-invocable (AGENTS.md, "Every skill is model-invocable").
+# Upstream entries have no folder under plugins/, so this covers only our own.
+if user_only="$(grep -l '^disable-model-invocation: *true' plugins/*/skills/*/SKILL.md)"; then
+  echo "✗ these skills set disable-model-invocation: true:" >&2
+  printf '  - %s\n' $user_only >&2
+  status=1
+else
+  echo "✓ no skill sets disable-model-invocation"
+fi
+
 # The Cursor manifests are generated from the two above; fail on drift.
 if ! mise-tasks/sync-cursor-manifests --check; then
   status=1

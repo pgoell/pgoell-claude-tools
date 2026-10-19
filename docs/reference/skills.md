@@ -10,7 +10,7 @@ status: stable
 
 Every live skill, in marketplace order. Invoke a skill from the host agent with its full name, `/<plugin>:<skill>`, which works whatever else you have installed. Each plugin's page has more detail. The names are Claude Code's; Codex names most taste-skill skills differently, and [taste-skill](/reference/plugins/taste-skill.md) lists both.
 
-Seven skills start only when you type the slash command (or cron types it for you): `/insights:activity`, `/insights:apply`, `/insights:digest`, `/news:edition`, `/news:tune`, `/issue-loop:running-the-loop` and `/workbench:pilot`. The agent does not start them on its own from a plain request.
+The agent can also start every skill on its own from a plain request that matches its description; cron types the slash command for `/insights:digest`, `/insights:activity` and `/news:edition`.
 
 | Skill                                                  | Plugin                                                                   | What it does                                                                                                             |
 | ------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |

@@ -18,7 +18,7 @@ A daily look back at your Claude Code sessions and the newspaper's runs: what we
 
 ## Skills
 
-All three skills set `disable-model-invocation: true`, so they run only when you type the slash command (or cron runs it): `/insights:digest`, `/insights:apply`, `/insights:activity`. Cron starts digest and activity; digest's run also carries out any review note you renamed to `## Keep`.
+Each skill starts from its slash command or from a plain request ("what went wrong in my sessions yesterday"). Cron starts digest and activity; digest's run also carries out any review note you renamed to `## Keep`.
 
 | Invocation           | What it does                                                                                                                                                                                                                                                                                                                                                  |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

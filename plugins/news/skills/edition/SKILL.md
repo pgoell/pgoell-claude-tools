@@ -1,7 +1,6 @@
 ---
 name: edition
-description: "Build a day's newspaper as one HTML page in the kasten vault and link it from the daily note. Started by /news:edition or by cron."
-disable-model-invocation: true
+description: "Use when the user wants today's (or a given day's) personal newspaper built in their kasten vault, for example \"build today's edition\" or \"make the newspaper\", or when cron runs it. Applies open feedback, gathers news per configured section, drops stories earlier editions ran, renders one HTML page with the configured design, and links it from the daily note. Not for changing what the paper covers (use news:feedback or news:tune)."
 ---
 
 # Edition

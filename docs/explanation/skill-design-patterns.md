@@ -20,13 +20,15 @@ The `presentations` plugin follows the product-family rule. Its five skills (`de
 
 Terminal skills that depend on local Unix tools belong in the `terminal` plugin, so Windows users can skip them unless they use WSL.
 
-## Skills only the user starts, and short descriptions
+## Model invocation and short descriptions
 
-Every model-invoked skill's description loads into every request. A skill audit on 2026-10-19 (against Matt Pocock's talk "Building Great Agent Skills: The Missing Manual") counted 46 live descriptions at 15,143 characters, none of them user-only, and 13 over 500 characters. Seven skills only ever start from the user or from cron, so their descriptions paid that cost for nothing: `insights:activity`, `insights:apply`, `insights:digest`, `news:edition`, `news:tune`, `issue-loop:running-the-loop` and `workbench:pilot` (issues #158 and #159). They now set `disable-model-invocation: true` and carry one plain sentence for the human. The rule itself lives in `creating-skills` (`references/writing-great-skills.md`).
+Every model-invoked skill's description loads into every request. A skill audit on 2026-10-19 (against Matt Pocock's talk "Building Great Agent Skills: The Missing Manual") counted 46 live descriptions at 15,143 characters, none of them user-only, and 13 over 500 characters. Seven skills only ever start from the user or from cron, so their descriptions paid that cost for nothing: `insights:activity`, `insights:apply`, `insights:digest`, `news:edition`, `news:tune`, `issue-loop:running-the-loop` and `workbench:pilot` (issues #158 and #159). They then set `disable-model-invocation: true` and carried one plain sentence for the human. The advice for it lived in `creating-skills` (`references/writing-great-skills.md`).
 
 The flag also stops the model from loading such a skill through the Skill tool. So no other skill may tell the model to start one: `insights:digest` reads `../apply/SKILL.md` by path, and an issue-loop handover sends a first message that starts with `/issue-loop:running-the-loop`, which Claude Code expands as a typed command. Cron is unaffected: the wrappers send the slash command as the `-p` prompt, a user turn. The trigger evals that asserted the model fired `running-the-loop` on its own were dropped with the flag.
 
 `learning:*` and `news:feedback` stay model-invoked: people reach them with plain requests ("quiz me on this", "less Polizeibericht").
+
+The same day the user had the flag dropped again from all seven skills, with the Codex `agents/openai.yaml` files beside them. A successor orchestrator could not load `running-the-loop`, so a handover failed when the leading slash command did not run. Every skill in this repo is model-invocable now; the seven carry model-facing "Use when" descriptions under 500 characters, the trigger evals for `running-the-loop` are back, and a handover's first message tells a successor that missed the command to load the skill with the Skill tool. The trims to the other descriptions stay.
 
 ## Workflow skills are execution protocols
 
