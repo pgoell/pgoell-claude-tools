@@ -86,7 +86,7 @@
       "name": "diagrams",
       "source": "./plugins/diagrams",
       "description": "Draw validated, themeable architecture and flow diagrams as interactive HTML.",
-      "version": "0.1.1"
+      "version": "0.1.2"
     },
     {
       "name": "news",
