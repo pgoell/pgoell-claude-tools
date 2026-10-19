@@ -42,6 +42,11 @@ section { background: var(--paper); color: var(--ink); padding: 100px; }
     </div>
   </section>
 </deck-stage>
+<script src="deck-print.js"></script>
+<script src="deck-controls.js"></script>
+<script src="deck-thumbs.js"></script>
+<script src="deck-edit.js"></script>
+<script src="deck-rail.js"></script>
 <script src="deck-stage.js"></script>
 </body>
 </html>
