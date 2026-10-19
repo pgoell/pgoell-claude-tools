@@ -41,7 +41,7 @@ Renaming one symbol, a one-line lint fix, a typo. Use a subagent if the work tou
 
 Each subagent prompt must include:
 
-- The slice it owns. Paste the whole slice from the plan: the `### Slice N` section (md) or the `<article class="task">` element (html), as `workbench:subagent-driven-development` Task Loop step 1 says.
+- The slice or bounded task it owns. Paste the whole of it from the plan: the `### Slice N` section (md, a bounded task's ordering note included) or the `<article class="task">` element (html), as `workbench:subagent-driven-development` Task Loop step 1 says.
 - Which files to touch.
 - Relevant commits that preceded it (one-line summary each).
 - Acceptance criteria: tests to run, lint to pass, project-specific rules from the profile that apply.
