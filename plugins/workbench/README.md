@@ -25,6 +25,16 @@ Workbench owns reusable workflow kernels. Projects own local policy through smal
 
 Workbench ships the steps and invariants. The project profile carries PR behavior and hooks. Project information that already lives in `CLAUDE.md` or `AGENTS.md` stays there.
 
+## Evals
+
+`evals/` holds 21 cases that test which skill a prompt triggers. Cases 01 to 12 give one trigger case per skill. Case 12 checks `using-workbench` by its answer, through an LLM grader, because the `SessionStart` hook injects that skill into every session, so the model never needs to call it. Nobody has checked that the eval runner fires that hook; if it does not, case 12 tests the model's own triage, and a pass that called `using-workbench` through the Skill tool still counts. Cases 21 to 23 are negatives: each checks that the four or five skills nearest its prompt do not fire. Cases 31 to 36 are near-misses: prompts close to one skill that belong to another.
+
+No one has run the suite yet; a run costs money, so the user decides when. Run from `plugins/workbench`:
+
+```bash
+claude plugin eval . --trust-plugin --tag core --runs 1 -j 4 --max-cost-usd 10 --no-publish
+```
+
 ## Coexistence
 
 Workbench is designed to run alongside the upstream `superpowers` plugin. When a slug exists in both plugins, prefer the Workbench version.
