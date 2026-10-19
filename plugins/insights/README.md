@@ -188,7 +188,7 @@ line, and a verdict for the earlier id never replaces it.
 
 `evals/` holds 12 cases that test which skill a prompt triggers. Cases 01 to 03 give one trigger case per skill: `digest`, `apply` and `activity`. Cases 21 to 23 are negatives: each checks that none of the three skills fires. Cases 31 to 36 are near-misses, one per ordered pair of skills: each prompt borrows the words of one skill and belongs to another.
 
-`digest` hands off to `apply` when it finds a review note renamed `## Keep`. The runner has no vault, so that should not happen; no digest prompt names a vault, a review note or kept fixes.
+`digest` hands off to `apply` when it finds a review note renamed `## Keep`. It does so by reading `../apply/SKILL.md`, not through the Skill tool, and the runner allows no Bash, so the hand-off cannot trip an apply-not-fired grader. Still, no digest prompt names a vault, a review note or kept fixes.
 
 No one has run the suite yet; a run costs money, so the user decides when. Run from `plugins/insights`:
 
