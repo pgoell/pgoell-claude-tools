@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+#MISE description="Fail when an authored file passes 5000 tokens (bytes/4); checks the given paths, or every tracked file"
+set -euo pipefail
+
+LIMIT=5000
+
+# Globs for files no person or agent writes by hand, as git pathspec globs.
+EXCLUDES=(
+  # lockfile
+  'mise.lock'
+  # generated
+  '**/generated-*.mjs'
+  # binaries
+  '**/*.png' '**/*.jpg' '**/*.jpeg' '**/*.gif' '**/*.webp' '**/*.ico'
+  '**/*.woff' '**/*.woff2' '**/*.ttf' '**/*.otf' '**/*.pdf'
+  # ported code, listed in docs/explanation/external-and-vendored-plugins.md
+  'plugins/diagrams/skills/creating-diagrams/engine/**'
+  'plugins/agent-system-management/skills/creating-skills/eval-viewer/viewer.html'
+  'plugins/workbench/skills/crafting-html/references/*.html'
+  # frozen archive
+  'plugins/deprecated/**'
+  # license texts
+  '**/LICENSE*' '**/NOTICE'
+)
+
+top=$(git rev-parse --show-toplevel)
+
+# The "top" magic anchors excludes at the repo root while arguments resolve
+# against the caller's directory.
+pathspecs=()
+for glob in "${EXCLUDES[@]}"; do pathspecs+=(":(top,exclude,glob)$glob"); done
+
+if [ "$#" -eq 0 ]; then set -- ':(top)'; fi
+# git 2.43 drops a leading "**/" exclude when all arguments share a folder
+# prefix. ".git" at the root is never tracked, so this matches nothing and
+# only clears that prefix.
+set -- "$@" ':(top,literal).git'
+
+# A file, not a process substitution, so a git failure stops the script.
+list=$(mktemp)
+trap 'rm -f "$list"' EXIT
+git ls-files -z --full-name -- "$@" "${pathspecs[@]}" >"$list"
+cd "$top"
+
+failed=0
+while IFS= read -r -d '' path; do
+  # Skip symlinks and paths deleted from the worktree.
+  if [ -L "$path" ] || [ ! -f "$path" ]; then continue; fi
+  tokens=$(($(wc -c <"$path") / 4))
+  if [ "$tokens" -gt "$LIMIT" ]; then
+    echo "file-size: $path is ~$tokens tokens (bytes/4); the limit is $LIMIT." >&2
+    failed=1
+  fi
+done <"$list"
+
+if [ "$failed" -eq 0 ]; then exit 0; fi
+
+printf '%s\n' \
+  '' \
+  'Big files cost agents: they read them in pieces and lose track. Do not fix this' \
+  'by cutting the file into parts by line count, or by moving code into' \
+  'pass-through wrappers, barrel files or a utils grab bag. That gives many' \
+  'shallow modules, and a reader then has to open all of them.' \
+  '' \
+  'Split along a deep module instead (John Ousterhout, "A Philosophy of Software' \
+  'Design"): a module whose interface is small next to what it hides.' \
+  '1. List what the file does. Find a group of functions that share state or' \
+  '   knowledge the rest of the file does not need.' \
+  '2. Move that group into its own module behind a few functions. Callers should' \
+  '   not need to know how it works inside.' \
+  "3. Check: if the new module's interface is nearly as big as its body, or every" \
+  '   caller still reaches into its details, you picked the wrong line. Try again.' \
+  '- Tests: split by the behaviour or module under test, one file per unit,' \
+  '  shared fixtures in one helper.' \
+  '- Docs: split by topic into a folder with an index page that links them.' \
+  '- Data (word lists, fixtures): move it into a data file and add it to the' \
+  '  exclude list, if no person or agent edits it by hand.' \
+  '- Skills: a SKILL.md over the limit moves step detail into references/ and' \
+  '  links it from the step that needs it.' >&2
+exit 1
