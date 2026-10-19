@@ -23,35 +23,64 @@ EXCLUDES=(
   '**/LICENSE*' '**/NOTICE'
 )
 
-top=$(git rev-parse --show-toplevel)
-
 # The "top" magic anchors excludes at the repo root while arguments resolve
 # against the caller's directory.
 pathspecs=()
 for glob in "${EXCLUDES[@]}"; do pathspecs+=(":(top,exclude,glob)$glob"); done
 
-if [ "$#" -eq 0 ]; then set -- ':(top)'; fi
+# Files, not process substitutions, so a git failure stops the script.
+list=$(mktemp)
+sizes=$(mktemp)
+index=$(mktemp)
+trap 'rm -f "$list" "$sizes" "$index"' EXIT
+
+# "literal" makes a "*" or a leading ":" in a file name match only itself.
+args=()
+for arg in "$@"; do args+=(":(literal)$arg"); done
+if [ "${#args[@]}" -eq 0 ]; then
+  args=(':(top)')
+  # A bare run (pre-push, CI) judges what is committed, not what is staged,
+  # so it reads HEAD's tree into a throwaway index. With arguments
+  # (pre-commit) or before the first commit, the real index is sized.
+  if git rev-parse -q --verify HEAD >/dev/null; then
+    export GIT_INDEX_FILE=$index
+    git read-tree HEAD
+  fi
+fi
 # git 2.43 drops a leading "**/" exclude when all arguments share a folder
 # prefix. ".git" at the root is never tracked, so this matches nothing and
 # only clears that prefix.
-set -- "$@" ':(top,literal).git'
+args+=(':(top,literal).git')
 
-# A file, not a process substitution, so a git failure stops the script.
-list=$(mktemp)
-trap 'rm -f "$list"' EXIT
-git ls-files -z --full-name -- "$@" "${pathspecs[@]}" >"$list"
-cd "$top"
+# Records "mode sha stage<TAB>path": the staged copy is what the commit carries.
+git ls-files -s -z --full-name -- "${args[@]}" "${pathspecs[@]}" >"$list"
+
+paths=()
+shas=()
+while IFS= read -r -d '' record; do
+  meta=${record%%$'\t'*}
+  # Skip symlinks and submodules; a path deleted from the worktree but still
+  # staged is sized.
+  case $meta in 120000\ * | 160000\ *) continue ;; esac
+  rest=${meta#* }
+  shas+=("${rest%% *}")
+  paths+=("${record#*$'\t'}")
+done <"$list"
+if [ "${#shas[@]}" -eq 0 ]; then exit 0; fi
+
+printf '%s\n' "${shas[@]}" | git cat-file --batch-check='%(objectsize)' >"$sizes"
 
 failed=0
-while IFS= read -r -d '' path; do
-  # Skip symlinks and paths deleted from the worktree.
-  if [ -L "$path" ] || [ ! -f "$path" ]; then continue; fi
-  tokens=$(($(wc -c <"$path") / 4))
+i=0
+while IFS= read -r bytes; do
+  path=${paths[$i]}
+  i=$((i + 1))
+  tokens=$((bytes / 4))
   if [ "$tokens" -gt "$LIMIT" ]; then
     echo "file-size: $path is ~$tokens tokens (bytes/4); the limit is $LIMIT." >&2
     failed=1
   fi
-done <"$list"
+done <"$sizes"
 
 if [ "$failed" -eq 0 ]; then exit 0; fi
 

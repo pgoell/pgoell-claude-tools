@@ -1,5 +1,5 @@
 pre-commit:
-  parallel: true
+  # Not parallel: file-size must size what format re-staged.
   skip: [merge, rebase]
   jobs:
     - name: format
@@ -9,6 +9,8 @@ pre-commit:
     - name: validate-json
       glob: "*.json"
       run: mise exec -- jq empty {staged_files}
+    - name: file-size
+      run: mise-tasks/check-file-size {staged_files}
 
 commit-msg:
   jobs:
