@@ -127,7 +127,7 @@ Skip this step in the quick and medium lanes; the medium lane's combined doc rep
 Then, following that skill's guidance:
 
 - Use the design converged on in step 2 (the human-driven brainstorm, or, without the `design` gate, the decision doc).
-- Path: `<paths.specs>/YYYY-MM-DD-<topic>-design.md`. `<paths.specs>` resolves through the bootstrap precedence chain.
+- Path: `<paths.specs>/YYYY-MM-DD-<topic>-design.<ext>`; `<ext>` is the format writing-spec resolves (`md` or `html`). `<paths.specs>` resolves through the bootstrap precedence chain.
 - If `<paths.specs>` is `don't commit`, write the spec under `/tmp/<project-name>-pilot/` instead and do not commit it.
 - The skill runs its self-review subagent and its user approval gate. **With the `design` gate active,** this is a real human gate: present the spec and WAIT for the user's approval; do not answer it yourself. If the user requests changes, apply them and re-run the self-review before proceeding. **Without the `design` gate,** self-answer the approval gate using the decision doc as the basis.
 - Commit: `docs: add <topic> design spec`, unless `<paths.specs>` is `don't commit`.
@@ -145,7 +145,7 @@ With the `design` gate active, once the user approves the spec, proceed autonomo
 
 Then:
 
-- Path: `<paths.plans>/YYYY-MM-DD-<topic>.md`.
+- Path: `<paths.plans>/YYYY-MM-DD-<topic>.<ext>`, `<ext>` as writing-plans resolves it.
 - If `<paths.plans>` is `don't commit`, write the plan under `/tmp/<project-name>-pilot/` instead and do not commit it.
 - Use slice-ordered tasks (checkbox syntax `- [ ]` per step within each slice) so progress is trackable.
 - Commit: `docs: add <topic> implementation plan`, unless `<paths.plans>` is `don't commit`.

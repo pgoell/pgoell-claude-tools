@@ -17,8 +17,8 @@ If the user is still asking questions or exploring approaches, return them to `w
 
 You MUST create a task for each of these items and complete them in order:
 
-1. **Resolve the spec path** based on profile or session context.
-2. **Draft the spec document** at the resolved path.
+1. **Resolve the output format and the spec path** (see `## Output Format` and `## Path Resolution`).
+2. **Draft the spec document** at the resolved path. For html, write the skeleton of `references/spec-template.html` into the `.html` file and replace all its sample content; for md, write markdown.
 3. **Dispatch the self-review subagent** with the prompt template in `spec-document-reviewer-prompt.md`.
 4. **Apply the reviewer's findings inline.** No re-review.
 5. **Present to the user for approval.**
@@ -33,7 +33,7 @@ You MUST create a task for each of these items and complete them in order:
 2. Project `CLAUDE.md` or `AGENTS.md` spec-path convention.
 3. `.workbench/specs/` (default).
 
-If the resolved value is `don't commit`, write the spec to `/tmp/<project-name>-pilot/YYYY-MM-DD-<topic>-design.md` and skip the commit step. Otherwise write to `<paths.specs>/YYYY-MM-DD-<topic>-design.md`.
+Resolve the format first. If `<paths.specs>` is `don't commit`, write the spec to `/tmp/<project-name>-pilot/YYYY-MM-DD-<topic>-design.<ext>` and skip the commit step. Otherwise write to `<paths.specs>/YYYY-MM-DD-<topic>-design.<ext>`, where `<ext>` is `html` or `md` per the format resolved in `## Output Format`.
 
 ## Drafting
 
@@ -93,7 +93,7 @@ Override resolution order, highest precedence first:
 2. `.workbench/config.md` `## Output formats` entry for `Specs:`. Schema documented in `plugins/workbench/skills/pilot/references/config-schema.md`.
 3. Per-skill hard-coded default (md).
 
-Path resolution order: `.workbench/pilot.md` `## Documentation paths` `Specs:` first; then `.workbench/config.md` `## Output paths` `Specs:`; then `.workbench/specs/` default. Path and format resolve independently.
+Path resolution order: `.workbench/pilot.md` `## Documentation paths` `Specs:` first; then `.workbench/config.md` `## Output paths` `Specs:`; then `.workbench/specs/` default. Path and format resolve independently; the file name takes its extension from the format, as `## Path Resolution` says.
 
 When emitting HTML, follow the structural skeleton in `references/spec-template.html` in this skill's directory. Read the template lazily, only when actually producing the artifact. Do not introduce U+2014 or U+2013 codepoints in body copy; HTML entity forms (`&mdash;`, `&#8212;`, `&ndash;`, `&#8211;`) are permitted.
 
