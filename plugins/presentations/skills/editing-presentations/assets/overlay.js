@@ -1,5 +1,6 @@
 /* Deck editor overlay. Injected by server.py into the served deck, never into
- * the file. Every slide element carries data-de, its offset in the source. */
+ * the file. Every slide element carries data-de, its offset in the source.
+ * server.py loads overlay-edit.js and overlay-gates.js before this script. */
 (() => {
   if (window.top !== window) return; // presenter iframes show the deck as is
   const stage = document.querySelector('deck-stage');
@@ -287,226 +288,17 @@
     checkGates();
   });
 
-  // Text: double-click, type, Enter or click away to save, Esc to cancel.
-  window.addEventListener('dblclick', (e) => {
-    const el = target(e);
-    if (!el || editing || !(el instanceof HTMLElement) || !el.textContent.trim()) return;
-    const before = el.innerHTML;
-    editing = el;
-    sel = [el];
-    el.contentEditable = 'plaintext-only';
-    el.focus();
-    const done = (save) => {
-      el.removeEventListener('blur', onBlur);
-      el.removeEventListener('keydown', onKey);
-      el.removeAttribute('contenteditable');
-      editing = null;
-      if (!save) el.innerHTML = before;
-      else if (el.innerHTML !== before) {
-        op('text', () => ({ pos: pos(el), html: el.innerHTML.replace(/ data-de="\d+"/g, '') }), el.children.length > 0);
-      }
-    };
-    const onBlur = () => done(true);
-    const onKey = (k) => {
-      if (k.key === 'Enter' && !k.shiftKey) { k.preventDefault(); done(true); }
-      if (k.key === 'Escape') { k.stopPropagation(); done(false); }
-    };
-    el.addEventListener('blur', onBlur);
-    el.addEventListener('keydown', onKey);
-  }, true);
+  // Text edit, reorder, free move and the panel chips (overlay-edit.js). They read and write the
+  // selection state through these accessors, and add their listeners after the ones above.
+  const { buildTools } = DeckEdit({ stage, target, pos, slideOf, op, changed, $, state: {
+    get sel() { return sel; }, set sel(v) { sel = v; },
+    get editing() { return editing; }, set editing(v) { editing = v; },
+    get dragged() { return dragged; }, set dragged(v) { dragged = v; },
+    set dropLine(v) { dropLine = v; },
+  } });
 
-  // Reorder: drag the selected element among its siblings.
-  window.addEventListener('dragstart', (e) => { if (target(e)) e.preventDefault(); }, true); // no native image drag
-  window.addEventListener('pointerdown', (e) => {
-    const el = sel.length === 1 && sel[0];
-    if (!el || editing || e.button || e.altKey || e.shiftKey || !el.contains(e.target) || el.parentElement === stage) return;
-    // The press itself stays native, so a double-click still selects its word for the text edit.
-    const sibs = [...el.parentElement.children].filter(c => c !== el && c.dataset.de);
-    const first = sibs[0] && sibs[0].getBoundingClientRect(), own = el.getBoundingClientRect();
-    const row = first && Math.abs(first.left - own.left) > Math.abs(first.top - own.top);
-    let drop = null;
-    const move = (m) => {
-      if (!drop && Math.hypot(m.clientX - e.clientX, m.clientY - e.clientY) < 6) return;
-      document.documentElement.style.userSelect = 'none';
-      getSelection().removeAllRanges();
-      const at = row ? m.clientX : m.clientY;
-      const mid = (c) => { const r = c.getBoundingClientRect(); return row ? r.left + r.width / 2 : r.top + r.height / 2; };
-      const sib = sibs.reduce((a, b) => Math.abs(mid(a) - at) <= Math.abs(mid(b) - at) ? a : b, sibs[0]);
-      if (!sib) return;
-      const r = sib.getBoundingClientRect(), after = at > mid(sib);
-      drop = { sib, after };
-      dropLine = row ? { left: (after ? r.right : r.left) - 2, top: r.top, width: 4, height: r.height }
-        : { left: r.left, top: (after ? r.bottom : r.top) - 2, width: r.width, height: 4 };
-    };
-    const up = () => {
-      window.removeEventListener('pointermove', move, true);
-      window.removeEventListener('pointerup', up, true);
-      document.documentElement.style.userSelect = '';
-      dropLine = null;
-      if (!drop) return;
-      dragged = true;
-      const { sib, after } = drop;
-      if ((after ? sib.nextElementSibling : sib.previousElementSibling) === el) return;
-      const ids = { pos: pos(el), ref: pos(sib), after };
-      sib[after ? 'after' : 'before'](el);
-      op('move', () => ids);
-    };
-    window.addEventListener('pointermove', move, true);
-    window.addEventListener('pointerup', up, true);
-  }, true);
-
-  // Free move, opt-in: Alt+drag or Alt+arrows shift an element with the CSS translate property, which
-  // leaves flex and grid flow alone. Meant for diagram parts and things already placed absolutely.
-  const shift = (el) => {
-    const t = getComputedStyle(el).translate.split(' ').map(parseFloat), s = slideOf(el);
-    const inner = el instanceof SVGElement && !(el instanceof SVGSVGElement) && el.parentNode.getScreenCTM();
-    const scale = s.getBoundingClientRect().width / s.offsetWidth;
-    return { x: t[0] || 0, y: t[1] || 0, scale, unit: inner ? Math.hypot(inner.a, inner.b) : scale };
-  };
-  const place = (el, x, y) => { el.style.translate = `${+x.toFixed(1)}px ${+y.toFixed(1)}px`; };
-  const saveShift = (el) => op('style', () => ({ pos: pos(el), props: { translate: el.style.translate } }));
-  window.addEventListener('pointerdown', (e) => {
-    const hit = e.altKey && !e.button && !editing && target(e);
-    const el = hit && (sel.find(s => s.contains(hit)) || hit);
-    if (!el || el.parentElement === stage) return;
-    e.preventDefault();
-    sel = [el];
-    changed();
-    const from = shift(el);
-    const move = (m) => {
-      dragged = true;
-      place(el, from.x + (m.clientX - e.clientX) / from.unit, from.y + (m.clientY - e.clientY) / from.unit);
-    };
-    const up = () => {
-      window.removeEventListener('pointermove', move, true);
-      window.removeEventListener('pointerup', up, true);
-      if (dragged) saveShift(el);
-    };
-    window.addEventListener('pointermove', move, true);
-    window.addEventListener('pointerup', up, true);
-  }, true);
-  let nudgeTimer;
-  window.addEventListener('keydown', (e) => {
-    const el = sel.length === 1 && !editing && sel[0];
-    if (!e.altKey || !e.key.startsWith('Arrow') || !el || el.parentElement === stage) return;
-    e.preventDefault(); // Alt+Left is "back" in the browser
-    const from = shift(el), step = (e.shiftKey ? 10 : 1) * from.scale / from.unit;
-    place(el, from.x + step * ((e.key === 'ArrowRight') - (e.key === 'ArrowLeft')), from.y + step * ((e.key === 'ArrowDown') - (e.key === 'ArrowUp')));
-    clearTimeout(nudgeTimer);
-    nudgeTimer = setTimeout(() => saveShift(el), 400);
-  });
-
-  // Handles: one chip per property in the panel. Drag the label to scrub, or type a number.
-  // Gap, padding and font size go to every element of the same kind on the slide, as one rule in
-  // <style id="deck-edits"> scoped by the slide's label. Width is an inline style on the one element.
-  const live = document.head.appendChild(document.createElement('style')); // mirrors rules written this session
-  const TOOLS = [
-    ['font', 'font-size', 'font-size', (el) => el instanceof HTMLElement && [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())],
-    ['gap', 'gap', 'column-gap', (el) => /flex|grid/.test(getComputedStyle(el).display)],
-    ['pad', 'padding', 'padding-top', (el) => el instanceof HTMLElement && !el.matches('img, video, canvas')],
-    ['width', 'width', 'width', (el) => el.matches('img, svg, video, canvas')],
-  ];
-  const setProp = (el, prop, probe, px, prior, commit) => {
-    const slide = slideOf(el), label = slide.dataset.screenLabel, path = [];
-    for (let n = el; n !== slide; n = n.parentElement) path.unshift(n.tagName.toLowerCase() + [...n.classList].map(c => '.' + CSS.escape(c)).join(''));
-    const peers = prop === 'width' ? [el] : [...slide.querySelectorAll(path.join(' '))];
-    const props = prop === 'width' ? { width: px, height: 'auto' } : { [prop]: px };
-    const inline = () => peers.forEach(p => Object.entries(props).forEach(([k, v]) => p.style.setProperty(k, v)));
-    peers.forEach(p => prior.has(p) || prior.set(p, p.style.getPropertyValue(prop)));
-    inline();
-    if (!commit) return;
-    if (prop !== 'width' && label) {
-      // Try the rule first. It only stands when it wins the cascade on this element.
-      const rule = `[data-screen-label="${label.replace(/["\\]/g, '\\$&')}"] ${path.join(' ')}`;
-      const before = live.textContent;
-      peers.forEach(p => p.style.setProperty(prop, prior.get(p)));
-      live.textContent += `${rule} { ${prop}: ${px}; }\n`;
-      if (Math.abs(parseFloat(getComputedStyle(el).getPropertyValue(probe)) - parseFloat(px)) < 0.5) {
-        return op('rule', () => ({ selector: rule, props }));
-      }
-      live.textContent = before;
-      inline();
-    }
-    peers.forEach(p => op('style', () => ({ pos: pos(p), props })));
-  };
-  const buildTools = () => {
-    const tools = $('.tools'), el = sel.length === 1 && !editing && sel[0];
-    tools.replaceChildren();
-    if (!el) return;
-    TOOLS.filter(([, , , fits]) => fits(el)).forEach(([label, prop, probe]) => {
-      const chip = document.createElement('label'), grip = document.createElement('span'), input = document.createElement('input');
-      const prior = new Map();
-      grip.textContent = label;
-      input.type = 'number';
-      input.min = 0;
-      input.value = Math.round(parseFloat(getComputedStyle(el).getPropertyValue(probe)) || 0);
-      const set = (commit) => setProp(el, prop, probe, Math.max(0, +input.value) + 'px', prior, commit);
-      input.addEventListener('input', () => set(false));
-      input.addEventListener('change', () => set(true));
-      grip.addEventListener('pointerdown', (e) => {
-        e.preventDefault();
-        grip.setPointerCapture(e.pointerId);
-        const from = +input.value;
-        grip.onpointermove = (m) => { input.value = Math.max(0, Math.round(from + m.clientX - e.clientX)); set(false); };
-        grip.onpointerup = () => { grip.onpointermove = grip.onpointerup = null; set(true); };
-      });
-      chip.append(grip, input);
-      tools.append(chip);
-    });
-    if (el.tagName === 'IMG') {
-      const swap = document.createElement('button'), file = Object.assign(document.createElement('input'), { type: 'file', accept: 'image/*' });
-      swap.textContent = 'swap image';
-      swap.onclick = () => file.click();
-      file.onchange = async () => {
-        const f = file.files[0];
-        if (!f) return;
-        // A deck that inlines its images keeps doing so; otherwise the file goes to the deck's assets/.
-        const src = (el.getAttribute('src') || '').startsWith('data:')
-          ? await new Promise(done => { const r = new FileReader(); r.onload = () => done(r.result); r.readAsDataURL(f); })
-          : await (await fetch('/__editor/upload?' + encodeURIComponent(f.name), { method: 'POST', body: f })).text();
-        el.src = src;
-        op('attr', () => ({ pos: pos(el), name: 'src', value: src }));
-      };
-      tools.append(swap);
-    }
-  };
-
-  // Hard gates H1, H2 and H7 on the active slide, condensed from creating-presentations'
-  // references/hard-gates.md and measured through the stage scale instead of noscale. Failures the
-  // slide already had when it was first shown are counted, not listed, so a new one stands out.
-  const known = new Map();
-  const checkGates = () => setTimeout(() => {
-    const slide = slides().find(s => s.hasAttribute('data-deck-active'));
-    if (!slide) return;
-    const S = slide.getBoundingClientRect(), k = slide.offsetWidth / S.width, fails = [];
-    const gist = (el) => `"${el.textContent.trim().replace(/\s+/g, ' ').slice(0, 30)}"`;
-    const fail = (gate, what, ...els) => fails.push([gate + ' ' + what, els]);
-    const texts = [...slide.querySelectorAll('*')].filter(el => el.children.length === 0 && el.textContent.trim())
-      .map(el => [el, el.getBoundingClientRect()]).filter(([, r]) => r.width && r.height);
-    texts.forEach(([el, r], a) => {
-      const t = 2 / k;
-      if (r.right > S.right + t || r.bottom > S.bottom + t || r.left < S.left - t || r.top < S.top - t) fail('H1', `${gist(el)} leaves the slide`, el);
-      texts.slice(a + 1).forEach(([other, o]) => {
-        const ox = Math.min(r.right, o.right) - Math.max(r.left, o.left), oy = Math.min(r.bottom, o.bottom) - Math.max(r.top, o.top);
-        if (ox > 4 / k && oy > 4 / k) fail('H2', `${gist(el)} overlaps ${gist(other)}`, el, other);
-      });
-      if (el.textContent.trim().length <= 2 || el.closest('[aria-hidden="true"]')) return;
-      const tagged = el.closest('[data-role]')?.dataset.role;
-      const role = tagged ? (['footer', 'source'].includes(tagged) ? 'footer' : ['caption', 'label', 'legend'].includes(tagged) ? 'caption' : 'body')
-        : el.closest('footer, .footer, .source, .slide-number') ? 'footer'
-        : el.closest('figcaption, th, td, svg, [class*="caption"], [class*="label"], .meta') ? 'caption' : 'body';
-      const floor = { body: 36, caption: 28, footer: 24 }[role];
-      const m = el instanceof SVGElement && el.getScreenCTM && el.getScreenCTM();
-      const px = parseFloat(getComputedStyle(el).fontSize) * (m ? Math.hypot(m.a, m.b) * k : 1);
-      if (px < floor - 0.5) fail('H7', `${role} text ${gist(el)} is ${px.toFixed(0)}px, floor ${floor}px`, el);
-    });
-    if (!known.has(slide)) known.set(slide, new Set(fails.map(([what]) => what)));
-    const fresh = fails.filter(([what]) => !known.get(slide).has(what));
-    bad = fresh.flatMap(([, els]) => els);
-    const lines = fresh.map(([what]) => what);
-    if (fails.length > fresh.length) lines.push(`${fails.length - fresh.length} gate failures were here before your edits.`);
-    $('.gates').replaceChildren(...lines.map(what => Object.assign(document.createElement('div'), { textContent: what })));
-  }, 300);
+  // Hard gates H1, H2 and H7 on the active slide (overlay-gates.js).
+  const checkGates = DeckGates({ slides, out: $('.gates'), onBad: (els) => { bad = els; } });
 
   // Reload when Claude (or anyone) changes a file the page loaded; keep note and selection where they still resolve.
   new EventSource('/__editor/events').onmessage = () => location.reload();

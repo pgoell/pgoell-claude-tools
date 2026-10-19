@@ -14,7 +14,7 @@ These rules cover every skill and doc in the repository. [AGENTS.md](../../AGENT
 
 Through 2026-09 this rule banned all shipped code; it now bans only the wrapper. A skill that drives a service still calls its CLI directly (`gws` for Google Workspace) or raw `curl` with env-var auth (for Atlassian), because a bash layer that renames existing commands drifts out of date and adds nothing.
 
-A skill may ship code when the code does work the agent cannot do reliably from prose: layout, geometry validation, rendering, deterministic checks. The `diagrams` plugin was the first: `skills/creating-diagrams/engine/` vendors the archify Node engine, which lays out, validates, and renders diagrams. `presentations:editing-presentations` is another: `assets/server.py` (Python standard library) serves a deck with source offsets on every slide element and patches the file at those offsets, and `assets/overlay.js` is the editor it injects into the served page.
+A skill may ship code when the code does work the agent cannot do reliably from prose: layout, geometry validation, rendering, deterministic checks. The `diagrams` plugin was the first: `skills/creating-diagrams/engine/` vendors the archify Node engine, which lays out, validates, and renders diagrams. `presentations:editing-presentations` is another: `assets/server.py` (Python standard library) serves a deck with source offsets on every slide element and patches the file at those offsets through `assets/deck_source.py`, and `assets/overlay.js` is the editor it injects into the served page, with `assets/overlay-edit.js` (the edit tools) and `assets/overlay-gates.js` (the hard-gate check).
 
 Shipped code must:
 
