@@ -1,7 +1,7 @@
 {
   "name": "insights",
   "displayName": "Insights",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Find what went wrong in yesterday's Claude Code sessions and newspaper runs, and propose one concrete fix per problem on a page in a kasten vault; kept fixes become pull requests, todos and feedback lines.",
   "author": {
     "name": "Pascal Göllner"

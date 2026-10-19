@@ -26,9 +26,9 @@ cannot be carried out, say why in `## Done` and move on.
 
 `/insights:apply [--vault PATH] [--date YYYY-MM-DD] [--periodic FOLDER]`
 
-Vault and periodic folder resolve as in `../digest/SKILL.md`. The date is the
-day the note covers, default yesterday in Europe/Berlin. Below, `ARGS` and
-`IN` mean what they mean there.
+Vault and periodic folder resolve as in `../digest/SKILL.md` `## Arguments`.
+The date is the day the note covers, default yesterday in Europe/Berlin.
+Below, `ARGS` and `IN` mean what they mean there.
 
 ## Verdicts
 

@@ -11,23 +11,25 @@ happens: kept fixes become pull requests, todos or newspaper feedback lines.
 All three skills run only when you type the slash command (or cron runs
 `/insights:digest` and `/insights:activity`).
 
-- `/insights:digest [--vault PATH] [--date YYYY-MM-DD]`: reads 14 days of
-  transcripts through `extract.py`, groups recurring errors, guard refusals
-  and typed corrections into problems, checks memory and the files a fix would
-  go to, verifies causes where a check is cheap, and writes the page, the
-  review note and memory. The date is the day analysed, yesterday in Berlin by
-  default. It first applies any review note you finished since the last run.
-- `/insights:apply [--date YYYY-MM-DD]`: acts on a review note you finished.
+- `/insights:digest [--vault PATH] [--date YYYY-MM-DD] [--periodic FOLDER]`:
+  reads 14 days of transcripts through `extract.py`, groups recurring errors,
+  guard refusals and typed corrections into problems, checks memory and the
+  files a fix would go to, verifies causes where a check is cheap, and writes
+  the page, the review note and memory. The date is the day analysed,
+  yesterday in Berlin by default. It first applies any review note you
+  finished since the last run.
+- `/insights:apply [--vault PATH] [--date YYYY-MM-DD] [--periodic FOLDER]`:
+  acts on a review note you finished.
   Run by hand, it takes the note as approved whether or not you renamed
   `## Proposed`. Opens a pull request per kept fix where a repository exists
   (never merges), adds todos to today's daily note, adds newspaper feedback
   lines, and records a verdict per line. A partly applied note picks up where
   it stopped.
-- `/insights:activity [--vault PATH] [--date YYYY-MM-DD]`: what your agents
-  did on a day, per repository, and what waits for you now. A script counts;
-  the model picks what needs you and writes at most two sentences per repo
-  from PR titles and ledger lines. The date is the day counted, yesterday in
-  Berlin by default.
+- `/insights:activity [--vault PATH] [--date YYYY-MM-DD] [--periodic FOLDER]`:
+  what your agents did on a day, per repository, and what waits for you now.
+  A script counts; the model picks what needs you and writes at most two
+  sentences per repo from PR titles and ledger lines. The date is the day
+  counted, yesterday in Berlin by default.
 
 ## What it reads
 

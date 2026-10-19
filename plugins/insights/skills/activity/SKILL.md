@@ -21,10 +21,9 @@ next run leaves them out.
 
 `/insights:activity [--vault PATH] [--date YYYY-MM-DD] [--periodic FOLDER]`
 
-- **vault**: `--vault`, else `$KASTEN_VAULT`, else the working directory when
-  it holds the periodic folder. If none applies, stop and say so.
+- **vault** and **periodic**: resolve as in `../digest/SKILL.md`
+  `## Arguments`.
 - **date**: the day to count. `--date`, else yesterday in Europe/Berlin.
-- **periodic**: `--periodic`, else `$KASTEN_PERIODIC_PATH`, else `01 Periodic`.
 
 Below, `ARGS` stands for `--vault "<vault>" --periodic "<periodic>" --date <date>`,
 `AC` for `<vault>/<periodic>/07 Activity` and `D` for the date.

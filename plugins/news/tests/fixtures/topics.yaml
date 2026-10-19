@@ -1,0 +1,4 @@
+freshness_days: 2
+sections:
+  - id: evals
+    freshness_days: 7

@@ -75,6 +75,11 @@ table: # a league table, filled by tables.py from sportschau.de; only `tabbed` d
   repeats a story's URL.
 - With `--memory`: every follow-up names a story memory holds, and no story
   reuses the URL of an earlier story unless it is a follow-up.
+- A story's `published` day (Europe/Berlin; a bare day or naive datetime
+  counts as Berlin) lies between the edition date minus `freshness_days` and
+  the edition date. `freshness_days` comes from the story's section in
+  `config/topics.yaml` (the lead's `section`), else its top-level value, else
+  2. Without topics.yaml this check is skipped with a warning.
 - A summary outside its importance's range (3: 90 to 150 words, 2: 50 to 90,
   1: 25 to 45) is a warning, not an error.
 - A section's `local`, when present, is true or false.
@@ -102,6 +107,9 @@ table: # a league table, filled by tables.py from sportschau.de; only `tabbed` d
   sportschau.de, because copying 150 table rows by hand invites errors.
 - Summary length now follows importance instead of one 60 to 180 word range,
   to keep the page short enough to read over breakfast.
+- 2026-10-19: `validate.py` fails a `published` day outside the section's
+  `freshness_days` window or after the edition date, because nothing checked
+  a story's date before.
 
 ## Page constraints (kasten HTML pane sandbox)
 

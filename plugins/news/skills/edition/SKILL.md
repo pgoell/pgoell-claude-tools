@@ -96,23 +96,39 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
    `uv run "${CLAUDE_SKILL_DIR}/scripts/tables.py" ARGS` fills `tables` on
    every section whose topics.yaml entry lists `tables:`, from sportschau.de;
    a warning means that league's table is left out.
-8. **Validate.** `uv run "${CLAUDE_SKILL_DIR}/scripts/validate.py" "NP/<date>.json" --memory "NP/memory/stories.jsonl"`.
+8. **Check the lead.** `uv run "${CLAUDE_SKILL_DIR}/scripts/refetch.py" ARGS`
+   fetches the lead's URL again and prints the page text. Never ask here; this
+   runs headless.
+   - Exit 1 means the lead is dead. Record its domain in
+     `NP/memory/source-failures.md` as the source-failure rule in Self-Healing
+     says, make the next most important story from a section in
+     `edition.lead_from` the lead (put the old lead back in its section or drop
+     it), and run refetch again. Swap at most twice, then go on with what you
+     have and say so in the report.
+   - Exit 0: check at least two of the lead's `key_facts` against the printed
+     text. When fewer than two hold, rewrite the facts and summary from that
+     text; when the text cannot carry the story, swap the lead as above.
+9. **Validate.** `uv run "${CLAUDE_SKILL_DIR}/scripts/validate.py" "NP/<date>.json" --memory "NP/memory/stories.jsonl"`.
    Fix every error and run it again until it reports 0 errors. A repeated URL
-   means drop the story or make it a real follow-up. Length warnings do not
-   block, but trim any summary more than a third over its range.
-9. **Render.** `uv run "${CLAUDE_SKILL_DIR}/scripts/render.py" ARGS`. It writes
-   `NP/<date>.html` with design.yaml's design and overrides, and fills the
-   footer's recent changes from the changelog, and the Berlin-time
-   `published_display` of each story. A warning that the design is
-   not installed means it fell back to `plain`; mention it in the report.
-10. **Remember.** `uv run "${CLAUDE_SKILL_DIR}/scripts/remember.py" ARGS`.
+   means drop the story or make it a real follow-up. It also fails on a
+   `published` day before the section's `freshness_days` window or after the
+   edition date: take the date from the article's own meta or text, or drop
+   the story. Length warnings do not block, but trim any summary more than a
+   third over its range.
+10. **Render.** `uv run "${CLAUDE_SKILL_DIR}/scripts/render.py" ARGS`. It writes
+    `NP/<date>.html` with design.yaml's design and overrides, and fills the
+    footer's recent changes from the changelog, and the Berlin-time
+    `published_display` of each story. A warning that the design is
+    not installed means it fell back to `plain`; mention it in the report.
+11. **Remember.** `uv run "${CLAUDE_SKILL_DIR}/scripts/remember.py" ARGS`.
     A rerun for the same date replaces that date's memory, never duplicates it.
-11. **Link.** `uv run "${CLAUDE_SKILL_DIR}/scripts/link_daily.py" ARGS`. It adds
+12. **Link.** `uv run "${CLAUDE_SKILL_DIR}/scripts/link_daily.py" ARGS`. It adds
     `Zeitung: [[<periodic>/05 Newspaper/<date>.html]]` to the daily note above
     its first `##` heading, once, creating the note in kasten's format if it is
     missing.
-12. **Report** in under ten lines: the page path, stories per section, the
-    lead, follow-ups, feedback applied, questions left in the feedback note,
+13. **Report** in under ten lines: the page path, stories per section, the
+    lead and what the lead check found (facts held, rewritten, or swapped),
+    follow-ups, feedback applied, questions left in the feedback note,
     sections that came up empty, and any fallback or warning.
 
 ## Platform mapping

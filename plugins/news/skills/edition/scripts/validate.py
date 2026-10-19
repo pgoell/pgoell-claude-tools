@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = []
+# dependencies = ["pyyaml>=6"]
 # ///
 """Check an edition JSON file against the contract in references/edition-contract.md.
 
@@ -8,14 +8,24 @@ Exits 1 and lists every error when the edition breaks the contract; prints
 warnings (summary length for the story's importance) without failing. With --memory, also fails on a
 follow-up that links a story memory does not hold, and on a story whose URL an
 earlier edition already ran without marking it as a follow-up.
+
+It also fails on a story whose `published` day (Europe/Berlin) lies before the
+edition date minus its section's `freshness_days`, or after the edition date.
+The window comes from topics.yaml (`<edition folder>/config/topics.yaml`, or
+--config): the section's `freshness_days`, else the top-level one, else 2. The
+lead uses its `section` field. Without topics.yaml the check is skipped with a
+warning.
 """
 
 import argparse
 import json
 import re
 import sys
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
+
+import yaml
 
 DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 STORY_ID = re.compile(r"^\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*-\d{2}$")
@@ -196,16 +206,60 @@ def against_memory(stories: list[dict], day: str, memory: Path) -> None:
             errors.append(f"{s['id']}: url already ran on {seen.get('date')} as {seen.get('id')}; drop it or make it a follow-up")
 
 
+def berlin_day(published: str) -> date | None:
+    """The Berlin calendar day of `published`; a naive or date-only value counts as Berlin."""
+    try:
+        value = datetime.fromisoformat(published)
+    except ValueError:
+        return None
+    if value.tzinfo is not None:
+        value = value.astimezone(ZoneInfo("Europe/Berlin"))
+    return value.date()
+
+
+def freshness(e: dict, topics: dict) -> None:
+    try:
+        day = date.fromisoformat(str(e.get("date")))
+    except ValueError:
+        return
+    default = topics.get("freshness_days", 2)
+    windows = {s.get("id"): s.get("freshness_days", default) for s in topics.get("sections") or [] if isinstance(s, dict)}
+    lead = e.get("lead") if isinstance(e.get("lead"), dict) else {}
+    pairs = [(lead, lead.get("section"))]
+    for sec in e.get("sections") if isinstance(e.get("sections"), list) else []:
+        if isinstance(sec, dict) and isinstance(sec.get("stories"), list):
+            pairs += [(s, sec.get("id")) for s in sec["stories"] if isinstance(s, dict)]
+    for s, section in pairs:
+        published = berlin_day(str(s.get("published")))
+        if published is None:
+            continue
+        days = windows.get(section, default)
+        start = day - timedelta(days=days)
+        if published < start:
+            errors.append(
+                f"{s.get('id')}: published {published} is older than section {section or '(none)'} "
+                f"(freshness_days {days}) allows; the window starts {start}. Drop it or fix the date"
+            )
+        elif published > day:
+            errors.append(f"{s.get('id')}: published {published} is after the edition date {day}; the date is guessed or wrong")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("edition", type=Path)
     parser.add_argument("--memory", type=Path, help="memory/stories.jsonl to check follow-ups and repeats against")
+    parser.add_argument("--config", type=Path, help="topics.yaml with freshness_days (default: config/topics.yaml beside the edition)")
     args = parser.parse_args()
 
     data = json.loads(args.edition.read_text())
     stories = edition(data)
     if args.memory and args.memory.exists():
         against_memory(stories, str(data.get("date")), args.memory)
+    config = args.config or args.edition.parent / "config" / "topics.yaml"
+    if not config.exists():
+        warnings.append(f"no topics.yaml at {config}; published dates not checked against freshness_days")
+    elif isinstance(data, dict):
+        freshness(data, yaml.safe_load(config.read_text()) or {})
 
     for w in warnings:
         print(f"warning: {w}")

@@ -14,9 +14,9 @@ changing anything.
 
 `/news:feedback "<text>" [--vault PATH] [--periodic FOLDER]`
 
-Vault and periodic folder resolve as in the edition skill: the flag, else
-`$KASTEN_VAULT` and `$KASTEN_PERIODIC_PATH`, else the working directory when it
-holds the periodic folder, else ask. Below, `NP` is
+Vault and periodic folder resolve as in `../edition/SKILL.md` `## Arguments`,
+except that this skill is interactive: when no vault resolves, ask the user
+instead of stopping. Below, `NP` is
 `<vault>/<periodic>/05 Newspaper`. With no text, apply every item under
 `## Open` in `NP/feedback.md` instead.
 
