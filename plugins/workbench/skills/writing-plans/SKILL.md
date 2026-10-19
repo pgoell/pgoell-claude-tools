@@ -21,7 +21,7 @@ Resolve the output format first (see `## Output Format`), then the plan path in 
 2. Project `CLAUDE.md` or `AGENTS.md` plan-path convention.
 3. `.workbench/plans/YYYY-MM-DD-<feature-name>.<ext>`.
 
-If the resolved value is `don't commit`, write the plan to `/tmp/<project-name>-pilot/YYYY-MM-DD-<feature-name>.<ext>` and skip committing it. In every path, `<ext>` is `html` or `md` per the format resolved in `## Output Format`.
+If the resolved plan path is `don't commit`, write the plan to `/tmp/<project-name>-pilot/YYYY-MM-DD-<feature-name>.<ext>` and skip committing it. In every path, `<ext>` is `html` or `md` per the format resolved in `## Output Format`.
 
 For html, write the skeleton of `references/plan-template.html` into the `.html` file and replace all its sample content; for md, write markdown. In html, the `## Plan Document Header` goes in the template's slots: the title in the `<h1>` of `header.page-head`, the "For agentic workers" line as a `<p>` right after that `<h1>`, and Goal, Architecture and Tech Stack in `#summary`.
 

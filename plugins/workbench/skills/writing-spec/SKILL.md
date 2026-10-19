@@ -33,7 +33,7 @@ You MUST create a task for each of these items and complete them in order:
 2. Project `CLAUDE.md` or `AGENTS.md` spec-path convention.
 3. `.workbench/specs/` (default).
 
-Resolve the format first. If the resolved value is `don't commit`, write the spec to `/tmp/<project-name>-pilot/YYYY-MM-DD-<topic>-design.<ext>` and skip the commit step. Otherwise write to `<paths.specs>/YYYY-MM-DD-<topic>-design.<ext>`, where `<ext>` is `html` or `md` per the format resolved in `## Output Format`.
+Resolve the format first. If `<paths.specs>` is `don't commit`, write the spec to `/tmp/<project-name>-pilot/YYYY-MM-DD-<topic>-design.<ext>` and skip the commit step. Otherwise write to `<paths.specs>/YYYY-MM-DD-<topic>-design.<ext>`, where `<ext>` is `html` or `md` per the format resolved in `## Output Format`.
 
 ## Drafting
 
