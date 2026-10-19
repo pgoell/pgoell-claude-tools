@@ -8,7 +8,7 @@ CQL (Confluence Query Language) is used for searching Confluence content. **CQL 
 GET /wiki/rest/api/search?cql=<query>
 ```
 
-The v2 API does not support CQL search.
+URL-encode `<query>` before you put it in the URL (`type = page` becomes `type+%3D+page`). The recipes below show CQL unencoded. The v2 API does not support CQL search.
 
 ## Basic Search
 
@@ -176,10 +176,10 @@ Common sort fields: `lastModified`, `created`, `title`.
 
 ## Pagination
 
-The v1 search endpoint supports `limit` and `start` parameters:
+The v1 search endpoint supports `limit` and `start` parameters. URL-encode the `cql` value, as `read-operations.md` does:
 
 ```
-GET /wiki/rest/api/search?cql=type=page AND space="ENG"&limit=25&start=0
+GET /wiki/rest/api/search?cql=type%3Dpage+AND+space%3D%22ENG%22&limit=25&start=0
 ```
 
 Default limit is 25. Maximum depends on instance configuration (typically 200).
@@ -189,6 +189,6 @@ Default limit is 25. Maximum depends on instance configuration (typically 200).
 - CQL only works with the **v1 API** (`/wiki/rest/api/search`). The v2 API does not have a CQL search endpoint.
 - The `~` operator is case-insensitive for title and text searches.
 - `currentUser()` resolves to the authenticated user making the API call.
-- Page IDs for `ancestor` queries can be found in page URLs or via the content API.
+- Page IDs for `ancestor` queries can be found in page URLs or via the v2 pages API (`/wiki/api/v2/pages`).
 - Space keys are case-sensitive and typically uppercase.
 - Wrap string values in double quotes. Field names and operators are not quoted.

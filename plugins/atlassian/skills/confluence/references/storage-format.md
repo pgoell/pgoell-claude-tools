@@ -4,24 +4,26 @@ Read this when you build the body of a page or comment you create or update.
 
 ## When You Need This
 
-Confluence stores page content in an XHTML-based format called "storage format." You must use this format when creating or updating pages via the REST API (curl). The `body.storage.value` field in API requests expects storage format XHTML, not Markdown or plain HTML.
+Confluence stores page content in an XHTML-based format called "storage format." You must use this format when creating or updating pages via the REST API (curl). In v2 API requests, the `body.value` field (with `body.representation` set to `storage`) expects storage format XHTML, not Markdown or plain HTML.
 
-Example API call context:
+Example API call context, the v2 page update from `write-operations.md`. GET the page first and send its `version.number` plus one (here the page is at version 1):
 
 ```bash
-curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" -X PUT \
-  "https://$ATLASSIAN_DOMAIN.atlassian.net/wiki/rest/api/content/${PAGE_ID}" \
+curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
+  -X PUT \
+  "https://$ATLASSIAN_DOMAIN.atlassian.net/wiki/api/v2/pages/{id}" \
   -d '{
-    "version": { "number": NEW_VERSION },
+    "id": "{id}",
+    "status": "current",
     "title": "Page Title",
-    "type": "page",
     "body": {
-      "storage": {
-        "value": "<p>This is storage format XHTML.</p>",
-        "representation": "storage"
-      }
+      "representation": "storage",
+      "value": "<p>This is storage format XHTML.</p>"
+    },
+    "version": {
+      "number": 2
     }
   }'
 ```

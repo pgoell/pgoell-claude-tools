@@ -1,6 +1,6 @@
 # JSON Schemas
 
-This document defines the JSON schemas used by skill-creator.
+This document defines the JSON schemas used by creating-skills.
 
 ---
 
@@ -37,51 +37,25 @@ Defines the evals for a skill. Located at `evals/evals.json` within the skill di
 
 ---
 
-## history.json
+## eval_metadata.json
 
-Tracks version progression in Improve mode. Located at workspace root.
+Describes one test case in one iteration. Located at `<skill>-workspace/iteration-<N>/eval-<id>-<name>/eval_metadata.json` (the eval dir). The script and the viewer look for it in the run dir and each folder above it, up to the eval dir.
 
 ```json
 {
-  "started_at": "2026-01-15T10:30:00Z",
-  "skill_name": "pdf",
-  "current_best": "v2",
-  "iterations": [
-    {
-      "version": "v0",
-      "parent": null,
-      "expectation_pass_rate": 0.65,
-      "grading_result": "baseline",
-      "is_current_best": false
-    },
-    {
-      "version": "v1",
-      "parent": "v0",
-      "expectation_pass_rate": 0.75,
-      "grading_result": "won",
-      "is_current_best": false
-    },
-    {
-      "version": "v2",
-      "parent": "v1",
-      "expectation_pass_rate": 0.85,
-      "grading_result": "won",
-      "is_current_best": true
-    }
-  ]
+  "eval_id": 1,
+  "eval_name": "chart-axis-labels",
+  "prompt": "The user's task prompt",
+  "assertions": ["The chart has labelled axes"]
 }
 ```
 
 **Fields:**
 
-- `started_at`: ISO timestamp of when improvement started
-- `skill_name`: Name of the skill being improved
-- `current_best`: Version identifier of the best performer
-- `iterations[].version`: Version identifier (v0, v1, ...)
-- `iterations[].parent`: Parent version this was derived from
-- `iterations[].expectation_pass_rate`: Pass rate from grading
-- `iterations[].grading_result`: "baseline", "won", "lost", or "tie"
-- `iterations[].is_current_best`: Whether this is the current best version
+- `eval_id`: The test case's `id` in `evals/evals.json` (an integer)
+- `eval_name`: Short descriptive name; it becomes `runs[].eval_name` in benchmark.json
+- `prompt`: The task the executor ran
+- `assertions`: The statements to grade. eval_metadata.json calls them `assertions`; evals.json and grading.json call the same statements `expectations`.
 
 ---
 
@@ -155,10 +129,10 @@ Output from the grader agent. Located at `<run-dir>/grading.json`. Here and belo
 
 - `expectations[]`: Graded expectations with evidence
 - `summary`: Aggregate pass/fail counts
-- `execution_metrics`: Tool usage and output size (from executor's metrics.json)
+- `execution_metrics`: Tool usage and output size, read only when `outputs/metrics.json` exists
 - `timing`: Wall clock timing (from timing.json)
 - `claims`: Extracted and verified claims from the output
-- `user_notes_summary`: Issues flagged by the executor
+- `user_notes_summary`: Issues flagged by the executor, read only when `outputs/user_notes.md` exists
 - `eval_feedback`: (optional) Improvement suggestions for the evals, only present when the grader identifies issues worth raising
 
 ---
@@ -222,7 +196,7 @@ Wall clock timing for a run. Located at `<run-dir>/timing.json`.
 
 ## benchmark.json
 
-Output from Benchmark mode. Located at `benchmarks/<timestamp>/benchmark.json`.
+Output from `scripts/aggregate_benchmark.py`. Located at `<skill>-workspace/iteration-<N>/benchmark.json`, beside `benchmark.md`.
 
 ```json
 {
@@ -299,26 +273,57 @@ Output from Benchmark mode. Located at `benchmarks/<timestamp>/benchmark.json`.
 - `metadata`: Information about the benchmark run
   - `skill_name`: Name of the skill
   - `timestamp`: When the benchmark was run
-  - `evals_run`: List of eval names or IDs
-  - `runs_per_configuration`: Number of runs per config (e.g. 3)
+  - `evals_run`: List of eval ids (integers)
+  - `runs_per_configuration`: The most runs found for any (eval, config) pair
 - `runs[]`: Individual run results
   - `eval_id`: Numeric eval identifier
-  - `eval_name`: Human-readable eval name (used as section header in the viewer)
-  - `configuration`: Must be `"with_skill"` or `"without_skill"` (the viewer uses this exact string for grouping and color coding)
+  - `eval_name`: Human-readable eval name from `eval_metadata.json` (used as section header in the viewer)
+  - `configuration`: The config dir name: `"with_skill"`, `"without_skill"`, `"old_skill"` or `"new_skill"` (the viewer uses this exact string for grouping and color coding)
   - `run_number`: Integer run number (1, 2, 3...)
-  - `result`: Nested object with `pass_rate`, `passed`, `total`, `time_seconds`, `tokens`, `errors`
-- `run_summary`: Statistical aggregates per configuration
-  - `with_skill` / `without_skill`: Each contains `pass_rate`, `time_seconds`, `tokens` objects with `mean` and `stddev` fields
-  - `delta`: Difference strings like `"+0.50"`, `"+13.0"`, `"+1700"`
-- `notes`: Freeform observations from the analyzer
+  - `result`: Nested object with `pass_rate`, `passed`, `total`, `time_seconds`, `tokens`, `errors`. `time_seconds` comes from grading.json `timing.total_duration_seconds`, else timing.json `total_duration_seconds`, else timing.json `duration_ms` / 1000; `tokens` comes from timing.json `total_tokens` (0 when absent)
+- `run_summary`: Statistical aggregates per configuration, `with_skill` or `new_skill` first
+  - one key per configuration: Each contains `pass_rate`, `time_seconds`, `tokens` objects with `mean` and `stddev` fields
+  - `delta`: The first configuration minus the second, as strings like `"+0.50"`, `"+13.0"`, `"+1700"`
+- `notes`: Freeform observations from the analyzer. The script writes `[]`; the analyst pass (SKILL.md Step 4) fills it
 
 **Important:** The viewer reads these field names exactly. Using `config` instead of `configuration`, or putting `pass_rate` at the top level of a run instead of nested under `result`, will cause the viewer to show empty/zero values. Always reference this schema when generating benchmark.json manually.
 
 ---
 
+## feedback.json
+
+The user's reviews from the viewer. Located at `<skill>-workspace/iteration-<N>/feedback.json`. The viewer writes it there in server mode; with `--static`, the browser downloads it and you copy it there.
+
+```json
+{
+  "reviews": [
+    {
+      "run_id": "eval-1-chart-axis-labels-with_skill",
+      "feedback": "the chart is missing axis labels",
+      "timestamp": "2026-01-15T10:40:00Z"
+    },
+    {
+      "run_id": "eval-1-chart-axis-labels-with_skill-run-1",
+      "feedback": "",
+      "timestamp": "2026-01-15T10:40:00Z"
+    }
+  ],
+  "status": "complete"
+}
+```
+
+**Fields:**
+
+- `reviews[].run_id`: The run dir's path below `iteration-<N>/`, joined with `-`: `eval-1-chart-axis-labels-with_skill` for one run, `eval-1-chart-axis-labels-with_skill-run-1` for `with_skill/run-1/`
+- `reviews[].feedback`: The user's text; empty means the user had no complaint
+- `reviews[].timestamp`: ISO timestamp of the save
+- `status`: `"in_progress"` while the user types, `"complete"` after "Submit All Reviews"
+
+---
+
 ## comparison.json
 
-Output from blind comparator. Located at `<grading-dir>/comparison-N.json`.
+Output from blind comparator. Located in the eval dir: `<skill>-workspace/iteration-<N>/eval-<id>-<name>/comparison.json`.
 
 ```json
 {
@@ -401,7 +406,7 @@ Output from blind comparator. Located at `<grading-dir>/comparison-N.json`.
 
 ## analysis.json
 
-Output from post-hoc analyzer. Located at `<grading-dir>/analysis.json`.
+Output from post-hoc analyzer. Located in the eval dir: `<skill>-workspace/iteration-<N>/eval-<id>-<name>/analysis.json`.
 
 ```json
 {

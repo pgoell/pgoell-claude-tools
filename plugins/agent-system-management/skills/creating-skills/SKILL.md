@@ -276,12 +276,11 @@ Once all runs are done:
 
 1. **Grade each run**: spawn a grader subagent (or grade inline) that reads `agents/grader.md` and evaluates each assertion against the outputs. Save results to `grading.json` in each run directory, beside `outputs/`. The grading.json expectations array must use the fields `text`, `passed`, and `evidence` (not `name`/`met`/`details` or other variants); the viewer depends on these exact field names. For assertions that can be checked programmatically, write and run a script rather than eyeballing it: scripts are faster, more reliable, and can be reused across iterations.
 
-2. **Aggregate into benchmark**: run the aggregation script from the skill-creator directory:
+2. **Aggregate into benchmark**: run the aggregation script with `<creating-skills-path>` (this skill's folder) as the working directory:
    ```bash
-   python -m scripts.aggregate_benchmark <workspace>/iteration-N --skill-name <name>
+   cd <creating-skills-path> && python -m scripts.aggregate_benchmark <workspace>/iteration-N --skill-name <name>
    ```
-   This produces `benchmark.json` and `benchmark.md` with pass_rate, time, and tokens for each configuration, with mean ± stddev and the delta. If generating benchmark.json manually, see `references/schemas.md` for the exact schema the viewer expects.
-   Put each with_skill version before its baseline counterpart.
+   This writes `benchmark.json` and `benchmark.md` into `iteration-N/` with pass_rate, time, and tokens for each configuration, with mean ± stddev and the delta (with_skill or new_skill minus the baseline). If generating benchmark.json manually, see `references/schemas.md` for the exact schema the viewer expects.
 
 3. **Check the leading words**: a skill steers through its leading words, the compact concepts its description and body lean on (see "Leading words" in `references/writing-great-skills.md`). Before you grep, list them: read the description and body and write down each such word (for example _tracer bullets_, _red_, _tight_). Leave out a word the eval prompt itself contains: a hit would only echo the prompt. Then count each word, as a whole word, in every with_skill run's transcript:
    ```bash
@@ -289,13 +288,13 @@ Once all runs are done:
    ```
    The transcript is the executor's written log of its plan and reasoning, not its raw hidden thinking. A leading word that is absent from a run's reasoning and plan (a count of 0) is a steering failure, even when every assertion passes: the agent did not think with the word, so the skill did not steer that run. Write down each miss, hand the list to the analyst pass below, and fix it before the next iteration, per `references/writing-great-skills.md`: pick a stronger word, or anchor the word at the step where it should act.
 
-4. **Do an analyst pass**: read the benchmark data and surface patterns the aggregate stats might hide. See `agents/analyzer.md` (the "Analyzing Benchmark Results" section) for what to look for: things like assertions that always pass regardless of skill (non-discriminating), high-variance evals (possibly flaky), and time/token tradeoffs.
+4. **Do an analyst pass**: read the benchmark data and surface patterns the aggregate stats might hide. See `agents/analyzer.md` (the "Analyzing Benchmark Results" section) for what to look for: things like assertions that always pass regardless of skill (non-discriminating), high-variance evals (possibly flaky), and time/token tradeoffs. Write the analyzer's notes array into the `notes` field of `iteration-N/benchmark.json` (the script leaves it `[]`), so the viewer shows them.
 
 5. **Launch the viewer** with both qualitative outputs and quantitative data:
    ```bash
-   nohup python <skill-creator-path>/eval-viewer/generate_review.py \
+   nohup python <creating-skills-path>/eval-viewer/generate_review.py \
      <workspace>/iteration-N \
-     --skill-name "my-skill" \
+     --skill-name <name> \
      --benchmark <workspace>/iteration-N/benchmark.json \
      > /dev/null 2>&1 &
    VIEWER_PID=$!
@@ -321,11 +320,11 @@ The "Outputs" tab shows one test case at a time:
 
 The "Benchmark" tab shows the stats summary: pass rates, timing, and token usage for each configuration, with per-eval breakdowns and analyst observations.
 
-Navigation is via prev/next buttons or arrow keys. When done, they click "Submit All Reviews" which saves all feedback to `feedback.json`.
+Navigation is via prev/next buttons or arrow keys. When done, they click "Submit All Reviews" which saves all feedback to `iteration-N/feedback.json`.
 
 ### Step 5: Read the feedback
 
-When the user tells you they're done, read `feedback.json`:
+When the user tells you they're done, read `<workspace>/iteration-N/feedback.json` (schema in `references/schemas.md`; a `run-<n>` run's id ends in `-run-<n>`, as in `eval-1-chart-axis-labels-with_skill-run-1`):
 
 ```json
 {

@@ -1,12 +1,17 @@
 #!/bin/bash
 # usage: tests/run.sh
-# Runs creating-skills' aggregate_benchmark.py against fixture iteration
-# folders: the flat layout SKILL.md describes, the run-<n> layout, a mix of
-# both, and an ungraded run. No session, no network. Needs bash, python3, jq.
+# Runs creating-skills' aggregate_benchmark.py and eval-viewer/generate_review.py
+# (--static) against fixture iteration folders: the flat layout SKILL.md
+# describes, the run-<n> layout, a mix of both, an ungraded run, a stray
+# run-* entry, config order, timing and token sources, and evals with and
+# without eval_metadata.json. AGG and VIEWER override the script paths (to
+# run the cases against another copy). No session, no network. Needs bash,
+# python3, jq.
 set -u
 export PYTHONDONTWRITEBYTECODE=1
 here=$(cd "$(dirname "$0")" && pwd)
-agg="$here/../skills/creating-skills/scripts/aggregate_benchmark.py"
+agg="${AGG:-$here/../skills/creating-skills/scripts/aggregate_benchmark.py}"
+viewer="${VIEWER:-$here/../skills/creating-skills/eval-viewer/generate_review.py}"
 T=$(mktemp -d)
 trap 'rm -rf "$T"' EXIT
 pass=0 fail=0
@@ -26,11 +31,21 @@ grade() {
 eval_dir() {
   local e="$T/$1/eval-1-foo"
   mkdir -p "$e"
-  echo '{"eval_id":1,"eval_name":"foo","prompt":"p","assertions":[]}' >"$e/eval_metadata.json"
+  echo '{"eval_id":1,"eval_name":"foo","prompt":"PROMPTX","assertions":[]}' >"$e/eval_metadata.json"
   echo "$e"
 }
 run() { python3 "$agg" "$T/$1" --skill-name x 2>&1; }
 q() { jq -r "$2" "$T/$1/benchmark.json"; }
+# view <iteration>: write the static viewer page, print the run's output
+view() { python3 "$viewer" "$T/$1" --static "$T/$1.html" --skill-name x 2>&1; }
+# vq <iteration> <jq>: query the JSON the viewer embeds in its page
+vq() {
+  python3 -c 'import sys
+s = open(sys.argv[1]).read()
+k = "const EMBEDDED_DATA = "
+a = s.index(k) + len(k)
+print(s[a:s.index(";\n", a)])' "$T/$1.html" | jq -r "$2"
+}
 
 # flat layout: grading.json and outputs/ straight in the config folder
 E=$(eval_dir flat)
@@ -78,6 +93,90 @@ out=$(run ungraded)
 has "ungraded warn: warns" "$out" "grading.json not found"
 has "ungraded warn: names with_skill" "$out" "with_skill"
 hasnt "ungraded warn: quiet on inputs" "$out" "inputs"
+
+# runs per config: the most runs found for any (eval, config) pair
+ok "runs per config: run-n" "$(q repeat '.metadata.runs_per_configuration')" 2
+ok "runs per config: flat" "$(q flat '.metadata.runs_per_configuration')" 1
+
+# eval name: from eval_metadata.json
+ok "eval name: flat" "$(q flat '[.runs[].eval_name]|unique|join(",")')" foo
+ok "eval name: run-n" "$(q repeat '[.runs[].eval_name]|unique|join(",")')" foo
+
+# run-notes: a run-* entry that is not run-<digits> is skipped with a warning
+E=$(eval_dir notes)
+grade "$E/with_skill/run-1" 1.0
+mkdir -p "$E/with_skill/run-notes"
+echo x >"$E/with_skill/run-log.txt"
+out=$(run notes)
+has "run-notes: warns on folder" "$out" "Warning: skipping $E/with_skill/run-notes: not a run-<n> folder"
+has "run-notes: warns on file" "$out" "Warning: skipping $E/with_skill/run-log.txt: not a run-<n> folder"
+ok "run-notes: one run" "$(q notes '.runs|length' 2>&1)" 1
+
+# config order: with_skill first, so the delta is with_skill minus old_skill
+E=$(eval_dir order)
+grade "$E/with_skill" 1.0
+grade "$E/old_skill" 0.0
+run order >/dev/null
+ok "config order: delta sign" "$(q order '.run_summary.delta.pass_rate')" +1.00
+ok "config order: with_skill first" "$(q order '.run_summary|keys_unsorted[0]')" with_skill
+
+# duration_ms: timing.json with only duration_ms gives the time
+E=$(eval_dir durms)
+grade "$E/with_skill" 1.0
+echo '{"duration_ms":4500}' >"$E/with_skill/timing.json"
+run durms >/dev/null
+ok "duration_ms: time" "$(q durms '.runs[0].result.time_seconds')" 4.5
+
+# tokens: from timing.json even when grading.json has timing, never output_chars
+E=$(eval_dir tokens)
+mkdir -p "$E/with_skill" "$E/without_skill"
+g='{"summary":{"pass_rate":1.0,"passed":1,"failed":0,"total":1},"expectations":[],"timing":{"total_duration_seconds":3},"execution_metrics":{"output_chars":999}}'
+echo "$g" >"$E/with_skill/grading.json"
+echo "$g" >"$E/without_skill/grading.json"
+echo '{"total_tokens":700,"total_duration_seconds":9}' >"$E/with_skill/timing.json"
+run tokens >/dev/null
+ok "tokens: from timing.json" "$(q tokens '.runs[]|select(.configuration=="with_skill").result.tokens')" 700
+ok "tokens: grading.json time wins" "$(q tokens '.runs[]|select(.configuration=="with_skill").result.time_seconds')" 3
+ok "tokens: 0 without timing.json" "$(q tokens '.runs[]|select(.configuration=="without_skill").result.tokens')" 0
+
+# viewer run-n prompt: run-<n> runs find eval_metadata.json in the eval dir
+E=$(eval_dir vrep)
+for n in 1 2; do
+  mkdir -p "$E/with_skill/run-$n/outputs"
+  echo x >"$E/with_skill/run-$n/outputs/x.txt"
+  grade "$E/with_skill/run-$n" 1.0
+done
+view vrep >/dev/null
+ok "viewer run-n prompt: prompt" "$(vq vrep '[.runs[].prompt]|unique|join(",")')" PROMPTX
+ok "viewer run-n prompt: eval id" "$(vq vrep '[.runs[].eval_id]|unique|join(",")')" 1
+ok "viewer run-n prompt: run id" "$(vq vrep '.runs[0].id')" eval-1-foo-with_skill-run-1
+
+# viewer mixed: outputs/ + grading.json and run-1/ in one config: run-1 only
+E=$(eval_dir vmixed)
+mkdir -p "$E/with_skill/outputs" "$E/with_skill/run-1/outputs"
+echo x >"$E/with_skill/outputs/x.txt"
+echo x >"$E/with_skill/run-1/outputs/x.txt"
+grade "$E/with_skill" 0.0
+grade "$E/with_skill/run-1" 1.0
+view vmixed >/dev/null
+ok "viewer mixed: run-1 only" "$(vq vmixed '[.runs[].id]|join(",")')" eval-1-foo-with_skill-run-1
+
+# viewer grading: a run without its own grading.json shows none
+E=$(eval_dir vgrade)
+mkdir -p "$E/with_skill/run-1/outputs"
+echo x >"$E/with_skill/run-1/outputs/x.txt"
+grade "$E/with_skill" 1.0
+view vgrade >/dev/null
+ok "viewer grading: null" "$(vq vgrade '.runs[0].grading')" null
+
+# viewer no metadata: an eval without eval_metadata.json beside one with it
+E=$(eval_dir vnometa)
+mkdir -p "$E/with_skill/outputs" "$T/vnometa/eval-2-bar/with_skill/outputs"
+echo x >"$E/with_skill/outputs/x.txt"
+echo x >"$T/vnometa/eval-2-bar/with_skill/outputs/x.txt"
+out=$(view vnometa)
+hasnt "viewer no metadata: no crash" "$out" "Traceback"
+ok "viewer no metadata: both shown" "$(vq vnometa '[.runs[].id]|join(",")' 2>&1)" eval-1-foo-with_skill,eval-2-bar-with_skill
 
 echo "$pass passed, $fail failed"
 [ "$fail" -eq 0 ]

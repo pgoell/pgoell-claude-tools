@@ -39,13 +39,13 @@ cut this skill to its core
 
 ## Tests
 
-`tests/run.sh` runs `creating-skills`' `scripts/aggregate_benchmark.py` against fixture iteration folders and checks that it finds each run: the one-run layout from `SKILL.md` (grading and `timing.json` in the config folder), `run-<n>/` repeats, a config with both (only `run-<n>/` counts), and a config with `outputs/` but no `grading.json` (a warning; `inputs/` stays quiet). It needs bash, python3 and jq, and no network:
+`tests/run.sh` builds fixture iteration folders in the layout `creating-skills`' `SKILL.md` sets and runs both readers on them: `scripts/aggregate_benchmark.py` and `eval-viewer/generate_review.py --static`. It checks that both find the same runs: the one-run layout (grading and `timing.json` in the config folder), `run-<n>/` repeats, a config with both (only `run-<n>/` counts), a stray `run-notes/` (skipped with a warning), and a config with `outputs/` but no `grading.json` (a warning; `inputs/` stays quiet). It also checks the fields: `eval_name`, `runs_per_configuration`, the delta order, time from `duration_ms`, tokens from `timing.json`, and the viewer's prompt, eval id and grading per run. It needs bash, python3 and jq, and no network:
 
 ```bash
 bash plugins/agent-system-management/tests/run.sh
 ```
 
-Last run 2026-10-19: 14 passed, 0 failed.
+Last run 2026-10-19: 34 passed, 0 failed.
 
 ## Credits
 
