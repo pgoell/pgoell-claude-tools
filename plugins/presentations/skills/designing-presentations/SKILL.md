@@ -18,7 +18,7 @@ Two entry modes:
 
 ## Dependencies
 
-Nothing to install: filesystem operations only. The skill reads templates from its own `references/` directory and writes phase artifacts to the working directory. No external services, no APIs, no rendering. The one capability worth checking before Phase 5 is subagent dispatch (the Agent tool) for the three critic personas; when subagents are unavailable, run each persona inline in sequence, loading its prompt from `references/critic-prompts.md` and appending its findings to `audit-report.md`.
+Nothing to install: filesystem operations only. The skill reads templates from its own `references/` directory and writes phase artifacts to the working directory. No external services, no APIs, no rendering. The one capability worth checking before Phase 5 is subagent dispatch (the Agent tool; in Cursor, the `Task` tool) for the three critic personas; when subagents are unavailable, run each persona inline in sequence, loading its prompt from `references/critic-prompts.md` and appending its findings to `audit-report.md`.
 
 ## Workflow
 
@@ -111,7 +111,7 @@ Apply the assertion-evidence pattern: the slide states (headline) and shows (vis
 
 1. **Heuristic audit** (inline). Run every check in `references/audit-checklist.md`: form checks A to E, then written-output checks F to K (title-only read-through against the governing idea, specificity test on every headline, exec-summary mapping, recommendation position, document order when a source document was the input, and the copy lint by reference). Each written check puts its output in `audit-report.md` before it judges.
 
-2. **Critic personas** (three subagents in parallel via the Agent tool; prompts in `references/critic-prompts.md`):
+2. **Critic personas** (three subagents in parallel via the Agent tool, or in Cursor three `Task` calls in one message; prompts in `references/critic-prompts.md`):
    - Audience critic: a sequential walkthrough as one audience member, noting where understanding breaks.
    - Argument critic: logical force, evidence sufficiency, objection preemption, close landing.
    - Visual critic: one focal point per slide, one chart one comparison, no read-aloud redundancy.

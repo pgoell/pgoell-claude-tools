@@ -235,3 +235,5 @@ Inline the actual prompt texts and schemas; the script must be self-contained. J
 ## Fallback without the Workflow tool
 
 Dispatch the four judges as parallel Agent calls with the same prompts and ask each to end with the findings as a JSON code block. Then dispatch verifiers the same way. Parse, filter through the ledger, fix, loop. Slower, same isolation guarantees.
+
+Cursor has no Workflow tool, so it always takes this path with the `Task` tool. Send the four judges as several `Task` calls in one message, then the verifiers the same way. Every judge and verifier must start fresh, so make a new `Task` call for each one in every round; do not resume an earlier agent by its ID. Read the `Task` tool's own schema before the call for the field names; to use a more capable model, name it in the `Task` call if the schema has a model field.

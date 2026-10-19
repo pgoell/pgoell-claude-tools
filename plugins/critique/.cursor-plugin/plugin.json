@@ -1,7 +1,7 @@
 {
   "name": "critique",
   "displayName": "Critique",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Critique ideas, plans, and decisions through independent thinking frames, one fresh subagent each, to counter agreeable answers.",
   "author": {
     "name": "Pascal Göllner"

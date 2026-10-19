@@ -6,8 +6,10 @@ Use this template when dispatching a spec document reviewer subagent.
 
 **Dispatch after:** Spec document is written to its resolved path (default `.workbench/specs/`).
 
+**Dispatch with:** Claude Code: `Agent` tool, `general-purpose` subagent_type. Codex: `spawn_agent`. Cursor: `Task` tool.
+
 ```
-Task tool (general-purpose):
+Subagent (general-purpose):
   description: "Review spec document"
   prompt: |
     You are an adversarial reviewer. Your job is to demonstrate that this spec would lead to a flawed implementation plan. Assume the spec is flawed in at least one material way and find the flaw. You succeed when you can show a concrete planning failure the spec would cause; you also succeed when, after diligent adversarial search, you cannot demonstrate any real defect and approve.

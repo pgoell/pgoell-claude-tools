@@ -26,7 +26,7 @@ The user cannot ask about what they cannot name. Explore the target on their beh
 
 When the target maps to a repo:
 
-1. Dispatch a cost-efficient subagent (Claude Code: `Explore` agent type; Codex: read-only research agent equivalent; inline if dispatch is unavailable) over the named area: entry points, config surface, and the two or three files everything else imports.
+1. Dispatch a cost-efficient subagent (Claude Code: `Explore` agent type; Codex: read-only research agent equivalent; Cursor: `Task` with a read-only brief, a cheaper model only if the `Task` schema has a model field; inline if dispatch is unavailable) over the named area: entry points, config surface, and the two or three files everything else imports.
 2. Mine the history for pain: `git log --oneline -30 -- <area>`, then read commits whose messages contain fix, revert, workaround, or hack. Repeated churn on one file marks a dead end someone already hit.
 3. Read the area's tests and its TODO, FIXME, and HACK comments; they encode the gotchas the authors thought worth pinning.
 4. Collect conventions the user would violate by default: error handling shape, layering rules, naming, test layout.

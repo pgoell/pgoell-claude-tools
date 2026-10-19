@@ -1,6 +1,6 @@
 # Claude Code Adapter for Workbench Pilot
 
-This doc maps the pilot skill's tool references to Claude Code tool names and documents Claude-Code-specific patterns. Read alongside `SKILL.md`.
+This doc maps the pilot skill's tool references to Claude Code tool names and documents Claude-Code-specific patterns. Read alongside `SKILL.md`. Cursor readers: see the Cursor paragraph in `subagent-dispatch.md` (Cursor's subagent tool is `Task`).
 
 ## Tool name mapping
 

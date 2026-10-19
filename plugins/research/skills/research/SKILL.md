@@ -33,6 +33,8 @@ Use the host platform's equivalent tools without changing the workflow:
 | File reads        | Read                             | shell reads such as `sed`, `rg`, or equivalent file read tools                   |
 | Shell             | Bash                             | shell command tool                                                               |
 
+Cursor: dispatch subagents with the `Task` tool; to run agents in parallel, send several `Task` calls in one message.
+
 When a platform cannot dispatch subagents for the current request, keep the same artifact boundaries and run each phase inline in the orchestrator. Tell the user when this changes runtime or context cost.
 
 ## Workflow

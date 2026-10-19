@@ -17,7 +17,7 @@ Under `off`, skip capturing-session-learnings entirely and log the skip.
 
 Runs on `always`, or explicit user request this run; never on plain `on_learnings`; an explicit user request this run also overrides `off`, since user instructions outrank the profile.
 
-Dispatch `agent-system-management:improving-instructions` to a general-purpose subagent (Claude Code: `Agent` tool, `general-purpose` subagent_type, no model override. Codex: equivalent general-purpose subagent.) Pass **inline-prompt B** below. The improver does a cold read and does not need session context; running it in a subagent keeps the orchestrator's context lean.
+Dispatch `agent-system-management:improving-instructions` to a general-purpose subagent (Claude Code: `Agent` tool, `general-purpose` subagent_type, no model override. Codex: equivalent general-purpose subagent. Cursor: `Task` tool.) Pass **inline-prompt B** below. The improver does a cold read and does not need session context; running it in a subagent keeps the orchestrator's context lean.
 
 Either skill can be replaced via the profile.
 

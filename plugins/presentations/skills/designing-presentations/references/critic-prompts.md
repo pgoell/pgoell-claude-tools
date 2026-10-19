@@ -1,6 +1,6 @@
 # Phase 5 Critic Persona Prompts
 
-Phase 5 dispatches three critic personas as parallel subagents (the Agent tool), each with a fresh context. Each persona receives a copy of one of the prompt blocks below, with the bracketed paths (`[DECK_PATH]`, `[AUDIENCE_BRIEF_PATH]`, `[MESSAGE_ARCHITECTURE_PATH]`, `[STORYBOARD_PATH]`) substituted to the actual files in this session. Each critic returns its findings as a single markdown fragment that the host agent appends to the `### Critic findings` section of `audit-report.md`.
+Phase 5 dispatches three critic personas as parallel subagents (the Agent tool; in Cursor, several `Task` calls in one message), each with a fresh context. Each persona receives a copy of one of the prompt blocks below, with the bracketed paths (`[DECK_PATH]`, `[AUDIENCE_BRIEF_PATH]`, `[MESSAGE_ARCHITECTURE_PATH]`, `[STORYBOARD_PATH]`) substituted to the actual files in this session. Each critic returns its findings as a single markdown fragment that the host agent appends to the `### Critic findings` section of `audit-report.md`.
 
 The prompt blocks are written to be self-contained: pasted verbatim into a dispatch, they tell the critic what to read, how to think, and how to format the response. Do not rewrite them for tone; the determinism is the point.
 
@@ -200,4 +200,4 @@ Judge every finding against `message-architecture.md`, the committed argument, b
 
 Mark each finding in the report as `accepted` or `rejected: <reason>`. Then triage the accepted ones: CRITICAL findings are fixed in place when the fix is mechanical (rewrite a headline, add a consequence-if-delayed) or surfaced to the user when the fix needs judgement (reframe the argument, change the close). MAJOR findings are usually fixed in place. MINOR findings are listed in the report as polish opportunities but do not block.
 
-If any CRITICAL finding remains after the host agent's first pass, the host agent re-dispatches the relevant critic(s) on the revised deck. The gate is two iterations: if a CRITICAL finding survives two rounds of fix-and-re-dispatch, the host agent stops, surfaces the issue plainly to the user, and asks for direction. This prevents infinite-loop polishing on a single intractable finding.
+If any CRITICAL finding remains after the host agent's first pass, the host agent re-dispatches the relevant critic(s) on the revised deck (in Cursor, a new `Task` call per critic, so each starts with a fresh context; do not resume the old agent by its ID). The gate is two iterations: if a CRITICAL finding survives two rounds of fix-and-re-dispatch, the host agent stops, surfaces the issue plainly to the user, and asks for direction. This prevents infinite-loop polishing on a single intractable finding.

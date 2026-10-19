@@ -20,19 +20,19 @@
       "name": "research",
       "source": "./plugins/research",
       "description": "Research complex topics and produce sourced reports.",
-      "version": "2.2.2"
+      "version": "2.2.3"
     },
     {
       "name": "writing",
       "source": "./plugins/writing",
       "description": "Ghostwrite pieces from the owner's own facts, or get coached to write them yourself.",
-      "version": "3.1.3"
+      "version": "3.1.4"
     },
     {
       "name": "runtime-bridge",
       "source": "./plugins/runtime-bridge",
       "description": "Align Claude Code and Codex project configuration.",
-      "version": "0.1.2"
+      "version": "0.1.3"
     },
     {
       "name": "agent-system-management",
@@ -44,7 +44,7 @@
       "name": "workbench",
       "source": "./plugins/workbench",
       "description": "Personal Workbench skills for design and autonomous feature work.",
-      "version": "1.4.3"
+      "version": "1.4.4"
     },
     {
       "name": "terminal",
@@ -68,19 +68,19 @@
       "name": "learning",
       "source": "./plugins/learning",
       "description": "Socratic teach-and-quiz skills plus a pre-work blind-spot survey, so you deeply understand a session, a topic, or an unfamiliar area.",
-      "version": "0.3.1"
+      "version": "0.3.2"
     },
     {
       "name": "critique",
       "source": "./plugins/critique",
       "description": "Critique ideas, plans, and decisions through independent thinking frames, one fresh subagent each, with verdicts shown word for word and one decision.",
-      "version": "0.1.2"
+      "version": "0.1.3"
     },
     {
       "name": "presentations",
       "source": "./plugins/presentations",
       "description": "Presentation lifecycle skills: content design, HTML deck building with brand presets and a perfecting loop, a local deck editor, native PPTX export, and preset extraction.",
-      "version": "0.7.3"
+      "version": "0.7.4"
     },
     {
       "name": "diagrams",
@@ -92,7 +92,7 @@
       "name": "news",
       "source": "./plugins/news",
       "description": "Build a personal daily newspaper in a kasten vault, linked from the daily note, shaped by your feedback.",
-      "version": "0.9.1"
+      "version": "0.9.2"
     },
     {
       "name": "insights",
