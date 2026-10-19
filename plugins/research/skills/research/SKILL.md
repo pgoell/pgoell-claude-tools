@@ -132,9 +132,9 @@ For each gap-fill issue:
 1. Read `researcher-prompt.md`. Inject: BRIEF, OUTPUT_PATH, RECIPES_PATH, CLUSTER_SLUG=<best-fit existing cluster>, OUTPUT_FILE=`{OUTPUT_PATH}/research/gap-{N}-{issue-slug}.md`, TARGETED_GAP=<full issue description with location pointer>.
 2. Dispatch in parallel for all gap-fill issues when supported. Wait for completion. Run the Step 4 check on each gap-fill file (floor 2).
 
-Every round with a critical issue then writes the synthesis again, once, whatever the mix of issues. A gap-fill file reaches the review only through synthesis.md, so never skip step 3:
+Then, once per round, not once per gap-fill: every round with a critical issue writes the synthesis again, whatever the mix of issues. A gap-fill file reaches the review only through synthesis.md, so never skip step 3:
 
-3. When every gap-fill file has passed its Step 4 check, re-dispatch synthesis (Step 5 with ITERATION=N+1) once, with REVIEWER_FEEDBACK holding every critical issue of this round:
+3. When every gap-fill file has passed its Step 4 check (or the user, asked after a second failure, said to go on without it), re-dispatch synthesis (Step 5 with ITERATION=N+1) once, with REVIEWER_FEEDBACK holding every critical issue of this round:
    - each gap-fill issue, with its gap-fill file path;
    - each rejected refetch claim, with the claim, the page quote from the `REFETCH:` block and the gap-fill file path, so the wrong claim leaves synthesis.md;
    - each `logic` or `structure` issue.
