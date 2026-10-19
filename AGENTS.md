@@ -86,18 +86,18 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `writing` 3.1.4: `ghostwrite`, `coach`
 - `runtime-bridge` 0.1.3: `claude-codex-bridge`
 - `agent-system-management` 0.7.8: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
-- `workbench` 1.4.13: `pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`
+- `workbench` 1.4.14: `pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`
 - `terminal` 0.1.1: `tmux`
 - `playground` 0.1.3: `playground`
 - `databricks` 0.3.2: `databricks-core`, `databricks-docs`
 - `learning` 0.3.2: `quizzing-the-session`, `quizzing-a-topic`, `surveying-blind-spots`, `rebuilding-a-concept`
 - `critique` 0.1.3: `critiquing-ideas`
-- `presentations` 0.7.6: `designing-presentations`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
+- `presentations` 0.7.7: `designing-presentations`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
 - `diagrams` 0.1.1: `creating-diagrams`
 - `news` 0.9.3: `edition`, `feedback`, `tune`
 - `insights` 0.6.1: `digest`, `apply`, `activity`
 - `file-size` 0.1.0: `setting-up-the-check`
-- `issue-loop` 0.7.3: `running-the-loop`, `handing-over` (Claude Code only)
+- `issue-loop` 0.7.4: `running-the-loop`, `handing-over` (Claude Code only)
 - `prose-styles` 0.1.0: no skills; output styles `orwell`, `concise`, `ste`, `house` (Claude Code only)
 - `guards` 0.1.2: no skills; `PreToolUse` hook `pkill-self-match` (Claude Code only)
 - `session-title` 0.1.0: no skills; `SessionStart` hook `session-title` (Claude Code only)

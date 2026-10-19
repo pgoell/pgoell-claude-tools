@@ -1,6 +1,6 @@
 # Perfecting the Deck
 
-How each round of the perfecting loop runs. The skill's "Perfecting the deck" section says when the loop starts and when it stops; read this file before round 1. Paths are relative to the skill's directory.
+How each round of the perfecting loop runs. The skill's "Perfecting the deck" section says when the loop starts, and "When the loop stops" below says when it stops; read this file before round 1. Paths are relative to the skill's directory.
 
 ## Convergence rules
 
@@ -9,6 +9,14 @@ Three rules keep the loop convergent rather than oscillating:
 - **Judges cite the constitution, never taste.** A finding without a rule citation is not a finding.
 - **Fresh judges every round.** A judge subagent is never reused and never told which round it is. The fixer (the main session) never judges; judges never fix.
 - **The ledger ratchets.** Findings rejected by verification are recorded; an identical finding in a later round is auto-dismissed without re-judging. The finding space only shrinks.
+
+## When the loop stops
+
+The deck is done when fresh reviewers can no longer find anything that survives adversarial scrutiny against an explicit standard. Never ask "is the deck perfect?": a self-graded loop collapses into early self-approval, and a "be very strict" reviewer never terminates. Ask "did this round find anything new that survives verification?" and stop only when:
+
+1. every hard gate passes, and
+2. two consecutive review rounds produce zero verified findings at or above the severity threshold, and
+3. the round cap (default 5) has not been hit. If it is hit, stop and report the remaining open findings honestly instead of looping forever.
 
 ## The constitution
 

@@ -114,7 +114,7 @@ Skip this step in the quick lane.
 
 The brainstorming skill writes its own summary artifact (HTML by default, or per `.workbench/config.md`). Pilot does not commit that record.
 
-**Without the `design` gate:** do not invoke `workbench:brainstorming`. (This includes `Gates: slices`; the slice gate still fires in step 5.) Instead write a short decision doc directly to `/tmp/<project-name>-pilot/decision.md`: topic, options considered, decisions, risks. No simulated Q&A, no format-verify grep. If the topic is too big for one spec, decompose it, record the chosen sub-topic and the reasoning in the deviation log, and continue with that sub-topic.
+**Without the `design` gate:** do not invoke `workbench:brainstorming`. (This includes `Gates: slices`; the slice gate still fires in step 5.) When the `design` gate is off, read `references/decision-doc.md` and follow it: the decision doc you write in place of the brainstorm (path and contents) and how to handle a topic too big for one spec.
 
 `<project-name>` resolves through the bootstrap precedence chain (profile `## Project name` heading; otherwise repo dir basename).
 
@@ -124,16 +124,7 @@ Skip this step in the quick and medium lanes; the medium lane's combined doc rep
 
 **First action:** invoke `workbench:writing-spec` via the `Skill` tool. (If the profile replaces this row, invoke the replacement.)
 
-Then, following that skill's guidance:
-
-- Use the design converged on in step 2 (the human-driven brainstorm, or, without the `design` gate, the decision doc).
-- Path and format: as writing-spec resolves them, by `references/config-schema.md` `## Resolution order` (`don't commit` included).
-- The skill runs its self-review subagent and its user approval gate. **With the `design` gate active,** this is a real human gate: present the spec and WAIT for the user's approval; do not answer it yourself. If the user requests changes, apply them and re-run the self-review before proceeding. **Without the `design` gate,** self-answer the approval gate using the decision doc as the basis.
-- Commit: `docs: add <topic> design spec`, unless `<paths.specs>` is `don't commit`.
-
-If `Hooks.post_spec` is defined in the profile, run it now with `{{spec_path}}` substituted to the spec path.
-
-With the `design` gate active, once the user approves the spec, proceed autonomously through the remaining steps.
+When you reach this step in the large lane, read `references/write-spec.md` and follow it: the design the spec starts from, path and format, the approval gate with and without the `design` gate, the commit, and the `post_spec` hook.
 
 ### Step 4: Write the implementation plan
 

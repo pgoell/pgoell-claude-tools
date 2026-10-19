@@ -105,13 +105,9 @@ To change a finished deck by hand, or to point at elements instead of describing
 
 ## Perfecting the deck
 
-A strict reviewer that does not stop at "looks good". The loop dispatches fresh judge and verifier subagents every round (`Task` calls in Cursor), so it is token intensive; it runs only on the user's go-ahead. A request to review, audit, polish, or perfect the deck is that go-ahead. After building a deck and running the render check, offer the loop instead of starting it: name the cost (several subagents per round, typically a few rounds) and wait for a yes. The deck is done when fresh reviewers can no longer find anything that survives adversarial scrutiny against an explicit standard. Never ask "is the deck perfect?": a self-graded loop collapses into early self-approval, and a "be very strict" reviewer never terminates. Ask "did this round find anything new that survives verification?" and stop only when:
+A strict reviewer that does not stop at "looks good". The loop dispatches fresh judge and verifier subagents every round (`Task` calls in Cursor), so it is token intensive; it runs only on the user's go-ahead. A request to review, audit, polish, or perfect the deck is that go-ahead. After building a deck and running the render check, offer the loop instead of starting it: name the cost (several subagents per round, typically a few rounds) and wait for a yes.
 
-1. every hard gate passes, and
-2. two consecutive review rounds produce zero verified findings at or above the severity threshold, and
-3. the round cap (default 5) has not been hit. If it is hit, stop and report the remaining open findings honestly instead of looping forever.
-
-Once the loop has its go-ahead, read `references/perfecting.md` before round 1: the three rules that keep the loop convergent, the constitution (`deck-standards.md` next to the deck) and its deck brief, the five steps of one round, severity and strict mode, and the `report.md` each round updates. It links `references/review-loop.md` for the judge and verifier prompts.
+Once the loop has its go-ahead, read `references/perfecting.md` before round 1: the three rules that keep the loop convergent, when the loop stops (the hard gates, two dry rounds, and the round cap), the constitution (`deck-standards.md` next to the deck) and its deck brief, the five steps of one round, severity and strict mode, and the `report.md` each round updates. It links `references/review-loop.md` for the judge and verifier prompts.
 
 ## Caveats
 

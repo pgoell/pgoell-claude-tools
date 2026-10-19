@@ -73,7 +73,7 @@ Do not rebuild the whole deck. Propose a shortlist covering the structural slide
 
 From a template library, shortlist with low-dpi contact sheets and record the unbuilt layouts as a catalogue in `guidelines.md`, per [references/template-libraries.md](references/template-libraries.md).
 
-When the source is a color guide with no deck to mine, steps 3 and 4 collapse to a single palette specimen: a real slide layout that shows the palette groups and exercises the semantic mapping in every encoded variant. It validates the mapping in a browser and gives the gallery its first entry; the structural slide set follows once real deck material exists. Record the missing pieces (typography, wordmark, slide set) as manifest gaps.
+When the source is a color guide with no deck to mine, read [references/colors.md](references/colors.md), "A color guide with no deck (steps 3 and 4)": what replaces the slide shortlist and rebuild.
 
 ### 4. Rebuild each slide
 
@@ -105,9 +105,7 @@ The default home for a new preset is `.pgoell/presentations/presets/<name>/` at 
 
 ## Extending an existing preset
 
-New slide material enters the workflow at step 3, into the existing preset directory. When a deck built with the `creating-presentations` skill produced a new slide worth keeping, this skill folds it back into the preset.
-
-A new guidance source with no slides to mine (another portal page, an updated brand guide) re-enters at step 2 instead: merge its rules into the existing `colors.css`, `typography.css`, and `guidelines.md`, then update the manifest's sources, coverage, and gaps. Reconcile every new rule against what earlier pages already settled, and record cross-page divergences in the manifest as found, with a resolution when one page is more specific. One follow-on is easy to miss: extending a bundled preset is still a plugin change that needs the version bump from step 8 (local `.pgoell` presets need no repo change).
+When the user wants an existing preset extended (a new slide worth keeping, another portal page, an updated brand guide), read [references/extending-a-preset.md](references/extending-a-preset.md): which workflow step new material enters at, and what to merge and record.
 
 ## Cross-references
 
