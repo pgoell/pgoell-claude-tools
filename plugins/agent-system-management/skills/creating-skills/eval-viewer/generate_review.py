@@ -7,7 +7,7 @@ a tiny HTTP server. Feedback auto-saves to feedback.json in the workspace.
 
 Usage:
     python generate_review.py <workspace-path> [--port PORT] [--skill-name NAME]
-    python generate_review.py <workspace-path> --previous-feedback /path/to/old/feedback.json
+    python generate_review.py <workspace-path> --previous-workspace /path/to/old/iteration
 
 No dependencies beyond the Python stdlib are required.
 """
@@ -92,7 +92,9 @@ def _find_runs_recursive(root: Path, current: Path, runs: list[dict]) -> None:
 
     skip = {"node_modules", ".git", "__pycache__", "skill", "inputs"}
     for child in sorted(current.iterdir()):
-        if child.is_dir() and child.name not in skip:
+        # A run-* folder that is not run-<n> (run-notes/) is never a run
+        stray_run = child.name.startswith("run-") and not RUN_DIR_RE.match(child.name)
+        if child.is_dir() and child.name not in skip and not stray_run:
             _find_runs_recursive(root, child, runs)
 
 

@@ -39,7 +39,7 @@ Defines the evals for a skill. Located at `evals/evals.json` within the skill di
 
 ## eval_metadata.json
 
-Describes one test case in one iteration. Located at `<skill>-workspace/iteration-<N>/eval-<id>-<name>/eval_metadata.json` (the eval dir). The script and the viewer look for it in the run dir and each folder above it, up to the eval dir.
+Describes one test case in one iteration. Located at `<skill>-workspace/iteration-<N>/eval-<id>-<name>/eval_metadata.json` (the eval dir). Keep it in the eval dir only, never in a config or run dir: the script reads it from the eval dir, and the viewer climbs from each run dir up to it.
 
 ```json
 {
@@ -78,10 +78,10 @@ Output from the grader agent. Located at `<run-dir>/grading.json`. Here and belo
     }
   ],
   "summary": {
-    "passed": 2,
+    "passed": 1,
     "failed": 1,
-    "total": 3,
-    "pass_rate": 0.67
+    "total": 2,
+    "pass_rate": 0.5
   },
   "execution_metrics": {
     "tool_calls": {

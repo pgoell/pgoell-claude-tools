@@ -127,6 +127,14 @@ echo '{"duration_ms":4500}' >"$E/with_skill/timing.json"
 run durms >/dev/null
 ok "duration_ms: time" "$(q durms '.runs[0].result.time_seconds')" 4.5
 
+# zero timing: a 0 in grading.json timing falls back to timing.json
+E=$(eval_dir zerotime)
+mkdir -p "$E/with_skill"
+echo '{"summary":{"pass_rate":1.0,"passed":1,"failed":0,"total":1},"expectations":[],"timing":{"total_duration_seconds":0}}' >"$E/with_skill/grading.json"
+echo '{"total_duration_seconds":12}' >"$E/with_skill/timing.json"
+run zerotime >/dev/null
+ok "zero timing: time" "$(q zerotime '.runs[0].result.time_seconds')" 12
+
 # tokens: from timing.json even when grading.json has timing, never output_chars
 E=$(eval_dir tokens)
 mkdir -p "$E/with_skill" "$E/without_skill"
@@ -168,6 +176,15 @@ echo x >"$E/with_skill/run-1/outputs/x.txt"
 grade "$E/with_skill" 1.0
 view vgrade >/dev/null
 ok "viewer grading: null" "$(vq vgrade '.runs[0].grading')" null
+
+# viewer run-notes: a run-* folder that is not run-<n> is not a run
+E=$(eval_dir vnotes)
+mkdir -p "$E/with_skill/run-notes/outputs" "$E/without_skill/outputs"
+echo x >"$E/with_skill/run-notes/outputs/x.txt"
+echo x >"$E/without_skill/outputs/x.txt"
+grade "$E/with_skill/run-notes" 1.0
+view vnotes >/dev/null
+ok "viewer run-notes: not shown" "$(vq vnotes '[.runs[].id]|join(",")')" eval-1-foo-without_skill
 
 # viewer no metadata: an eval without eval_metadata.json beside one with it
 E=$(eval_dir vnometa)

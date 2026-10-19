@@ -188,12 +188,13 @@ def load_run(run_dir: Path, eval_id, eval_name, run_number: int) -> dict | None:
                 timing_data = json.load(tf)
         except json.JSONDecodeError as e:
             print(f"Warning: Invalid JSON in {timing_file}: {e}")
-    time_seconds = grading.get("timing", {}).get("total_duration_seconds")
-    if time_seconds is None:
-        time_seconds = timing_data.get("total_duration_seconds")
-    if time_seconds is None and "duration_ms" in timing_data:
-        time_seconds = timing_data["duration_ms"] / 1000
-    result["time_seconds"] = time_seconds or 0.0
+    # A 0 counts as missing at each step.
+    result["time_seconds"] = (
+        grading.get("timing", {}).get("total_duration_seconds")
+        or timing_data.get("total_duration_seconds")
+        or (timing_data.get("duration_ms") or 0) / 1000
+        or 0.0
+    )
     result["tokens"] = timing_data.get("total_tokens", 0)
 
     # Extract metrics if available
