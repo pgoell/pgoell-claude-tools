@@ -1,0 +1,32 @@
+{#- Heimatblatt family, part 2 of 3: the ornament and the parts every story has. -#}
+
+/* ---------- ornament ---------- */
+.orn{display:flex;align-items:center;gap:14px;margin:34px auto;max-width:420px;color:var(--accent)}
+.orn::before,.orn::after{content:"";flex:1;border-top:1px solid var(--rule)}
+.orn svg{width:46px;height:12px;flex:none}
+
+/* ---------- shared story parts ---------- */
+.hl{font-size:22px;color:var(--ink)}
+.dek{font-family:var(--font-head);font-weight:500;font-size:18px;line-height:1.35;color:var(--ink-soft);margin:.45em 0 .5em}
+.meta{font-family:var(--font-head);font-size:13.5px;color:var(--muted);margin:.55em 0 .8em;line-height:1.5;
+  display:flex;flex-wrap:wrap;gap:2px 12px;align-items:baseline}
+.meta .src{color:var(--ink-soft);font-weight:600}
+.meta .lang{font-size:11px;letter-spacing:.08em;border:1px solid var(--rule);border-radius:3px;padding:0 4px;line-height:1.5}
+.meta .orig{color:var(--accent);text-decoration:none;font-weight:500}
+.meta .orig:hover{text-decoration:underline}
+.meta .sid{font-family:var(--font-mono);font-size:11px;color:var(--muted);opacity:.75;text-decoration:none}
+.meta .sid:hover{opacity:1}
+.sum{hyphens:auto;-webkit-hyphens:auto}
+.sum p:last-child{margin-bottom:0}
+.flag{display:inline-block;font-family:var(--font-head);font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:6px}
+.flag::before{content:"";display:inline-block;width:7px;height:7px;background:var(--accent);transform:rotate(45deg);margin-right:7px;vertical-align:1px}
+.update{background:var(--update-bg);border-left:3px solid var(--accent);padding:9px 12px;margin:14px 0 0;font-size:15.5px;line-height:1.5}
+.update strong{display:block;font-family:var(--font-head);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.earlier{margin-top:12px;font-size:14.5px;line-height:1.45}
+.earlier-label{font-family:var(--font-head);font-weight:600;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.earlier ul{list-style:none;margin:4px 0 0;padding:0}
+.earlier li{padding:3px 0 3px 14px;position:relative}
+.earlier li::before{content:"";position:absolute;left:0;top:.75em;width:6px;border-top:1px solid var(--accent)}
+.fdate{font-family:var(--font-head);font-weight:600;color:var(--ink-soft)}
+

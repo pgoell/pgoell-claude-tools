@@ -6,6 +6,21 @@ plus notes and a screenshot. `config/design.yaml` in
 the vault names the design by its folder name; `render.py --design NAME`
 overrides it for one render.
 
+A template may pull in other files with `{% include %}` or `{% import %}`.
+`render.py` looks for a name in the design's folder first, then in `designs/`,
+so templates name every such file from `designs/` (`'heimatblatt/base.css.j2'`).
+A folder counts as a design only when it holds `template.html.j2`.
+
+- `heimatblatt/` holds the parts that `heimatblatt` and `tabbed` share:
+  `macros.html.j2` (story meta, follow-ups, photo, paragraphs, the emblem) and
+  the CSS in three parts, `base.css.j2` (palette, page, masthead),
+  `story.css.j2` (ornament, story parts) and `layout.css.j2` (lead, sections,
+  the home region). Each template adds its own CSS between and after them, so
+  a change to a part shows in both designs.
+- `tabbed/sports.html.j2` draws the tournament tree and the league tables.
+- `briefing/style.css.j2` and `magazine/style.css.j2` hold each design's CSS
+  below its palette; they share nothing with other designs.
+
 | Design        | Idea                                                                                  |
 | ------------- | ------------------------------------------------------------------------------------- |
 | `heimatblatt` | The default. A warm Kinzig valley local paper; the `local` section framed in green.   |
@@ -34,6 +49,6 @@ A design must:
   `{% if edition.design_overrides %}<style>:root{ {% for k,v in edition.design_overrides.items() %}--{{k}}:{{v}};{% endfor %} }</style>{% endif %}`;
 - draw a story's optional `bracket` (a tournament tree), or leave it out: only
   `tabbed` draws one, and the other designs show the summary alone;
-- work in kasten's HTML pane: one self-contained file, inline CSS, no fetch,
+- work in kasten's HTML pane: render to one self-contained file, inline CSS, no fetch,
   light and dark through `prefers-color-scheme`, no horizontal scroll at phone
   width with a 16px gutter.

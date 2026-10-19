@@ -75,7 +75,7 @@ same file.
 </p>
 
 Each design lives in `skills/edition/designs/<name>/` as `template.html.j2`
-with a `NOTES.md`; the contract they render is
+(some with included parts beside it) with a `NOTES.md`; the contract they render is
 `skills/edition/references/edition-contract.md`, and
 `skills/edition/designs/README.md` says what a design must do.
 

@@ -28,7 +28,7 @@ Pick the MIT overlay when you want the additions plainly under MIT (playground);
 
 If the upstream declares no license (the GitHub API reports `license: null`, no `LICENSE` file), do not relicense it and do not refuse the port. Vendor it verbatim and say in `NOTICE` that it has no license: record the commit SHA, the author's publishing intent (for example "distributed via `npx skills add <user>/<repo>` for AI agent use, per its README"), and that all rights to the text stay with the author. Mechanical changes such as the dash substitution add no authorship.
 
-The `emil-design-eng` port was the only case. It went away in 2026-10, after the upstream adopted MIT and became the external `emil` plugin, so no live example remains; its old `NOTICE` text is in git history.
+The live example is `plugins/workbench/`: the `crafting-html` references come from ThariqS/html-effectiveness at commit `5d64f68`, which had no license, and its `NOTICE` says so. The `emil-design-eng` port was another case. It went away in 2026-10, after the upstream adopted MIT and became the external `emil` plugin; its old `NOTICE` text is in git history.
 
 ## Upstream with restricted-license upstream (use-scope restriction)
 
