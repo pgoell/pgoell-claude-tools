@@ -82,11 +82,11 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 
 - `atlassian` 2.0.7: `jira`, `confluence`
 - `google-workspace` 1.0.3: `gmail`, `calendar`
-- `research` 2.2.4: `research`
+- `research` 2.3.0: `research`, `running-research`
 - `writing` 3.1.4: `ghostwrite`, `coach`
 - `runtime-bridge` 0.1.3: `claude-codex-bridge`
 - `agent-system-management` 0.7.8: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
-- `workbench` 1.4.6: `pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`
+- `workbench` 1.4.7: `pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`
 - `terminal` 0.1.1: `tmux`
 - `playground` 0.1.3: `playground`
 - `databricks` 0.3.2: `databricks-core`, `databricks-docs`
@@ -150,7 +150,7 @@ User docs live in `docs/`, a Diátaxis tree in Open Knowledge Format v0.2. Read 
 
 - **Skills are self-contained.** A SKILL.md holds everything the agent needs to use the service, except reference docs it links to.
 - **Skill invocation syntax in docs is `/<plugin>:<skill>`, not `/<marketplace>:<skill>`.** Always use the fully qualified form (`/atlassian:jira`); never teach the short `/<skill>` form. `pgoell-claude-tools` appears only in `/plugin install <plugin>@pgoell-claude-tools` and `codex plugin marketplace add pgoell/pgoell-claude-tools`. Audit: `grep -rnE '/pgoell-claude-tools:[a-z]' README.md docs/` must print nothing; `grep -rnE '/(atlassian|google-workspace|research|writing|runtime-bridge|agent-system-management|workbench|terminal|playground|databricks|learning|critique|presentations|diagrams|news|insights|file-size|issue-loop|ponytail|emil|vercel|taste-skill|deprecated):' docs/` should match each plugin whose skills the doc names. Keep that list to the plugins with skills in `.claude-plugin/marketplace.json`.
-- **Em-dash lint and instruction text.** U+2014 and U+2013 are forbidden in every file: skills, `references/*.html`, vendored CSS and JS, root docs. In markdown, name them by codepoint, never as literals. Repo-wide check: `grep -rnP '[\x{2014}\x{2013}]' plugins/ README.md AGENTS.md`. It is not empty: 9 older tracked files (google-workspace recipes, research, runtime-bridge, workbench's visualizing-options, the frozen using-superpowers snapshot, session-start hook) are accepted debt, plus gitignored databricks research notes. So gate on changed files: `git diff <base>..HEAD --name-only | xargs grep -nP '[\x{2014}\x{2013}]'` must print nothing, and `README.md` and `AGENTS.md` stay clean. HTML body copy may use `&mdash;`, `&#8212;`, `&ndash;`, `&#8211;`. CSS and JS comments have no escape: substitute the character at port time.
+- **Em-dash lint and instruction text.** U+2014 and U+2013 are forbidden in every file: skills, `references/*.html`, vendored CSS and JS, root docs. In markdown, name them by codepoint, never as literals. Repo-wide check: `grep -rnP '[\x{2014}\x{2013}]' plugins/ README.md AGENTS.md`. It is not empty: 7 older tracked files (google-workspace recipes, workbench's visualizing-options, the frozen using-superpowers snapshot, session-start hook) are accepted debt, plus gitignored databricks research notes. So gate on changed files: `git diff <base>..HEAD --name-only | xargs grep -nP '[\x{2014}\x{2013}]'` must print nothing, and `README.md` and `AGENTS.md` stay clean. HTML body copy may use `&mdash;`, `&#8212;`, `&ndash;`, `&#8211;`. CSS and JS comments have no escape: substitute the character at port time.
 - **SKILL.md frontmatter `description:` must not contain a colon-space unless the whole value is quoted.** Frontmatter must be strict YAML; an unquoted colon-space fails with `mapping values are not allowed here`. Rephrase (`Examples:` becomes `For example`) or quote the whole value. Validate by hand: feed the frontmatter to `python3 -c 'import yaml,sys; yaml.safe_load(sys.stdin)'`.
 - **Lazy auth, never print secrets.** Never check auth up front: run the operation and diagnose auth failures in Self-Healing. Never print or echo credentials, tokens, or API keys; only test whether they are set (`test -n`).
 

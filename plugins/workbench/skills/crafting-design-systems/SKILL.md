@@ -5,7 +5,7 @@ description: Use when the user wants to create or edit a workbench design system
 
 # Crafting Design Systems
 
-Create or edit a design system that themes HTML output from workbench producer skills. Producers (`writing-spec`, `writing-plans`, `brainstorming`, `systematic-debugging`, `crafting-html`, `research:research`) apply the active design system on their own; this skill is for authoring the design system itself.
+Create or edit a design system that themes HTML output from workbench producer skills. Producers (`writing-spec`, `writing-plans`, `brainstorming`, `systematic-debugging`, `crafting-html`, `research:running-research`) apply the active design system on their own; this skill is for authoring the design system itself.
 
 ## When to use this skill
 
@@ -73,13 +73,13 @@ Create or edit a design system that themes HTML output from workbench producer s
 
 When editing `colors.css`, knowing which variables each producer template declares helps you decide what to override. The starter file declares the union; this table shows which variables each template actually consults.
 
-| Producer template      | Variables declared in `:root`                                                                                                                                                                                                                         |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `brainstorming`        | `--ivory`, `--slate`, `--clay`, `--oat`, `--olive`, `--gray-100`, `--gray-150`, `--gray-300`, `--gray-500`, `--gray-700`, `--white`, `--serif`, `--sans`, `--mono`, `--radius-sm`, `--radius`, `--radius-lg`                                          |
-| `writing-spec`         | `--bg`, `--bg-soft`, `--bg-code`, `--bg-row-alt`, `--bg-row-hover`, `--ink`, `--ink-soft`, `--ink-mute`, `--rule`, `--accent`, `--accent-soft`, `--warn`, `--sans`, `--serif`, `--mono`, `--measure`                                                  |
-| `writing-plans`        | `--bg`, `--surface`, `--ink`, `--muted`, `--rule`, `--rule-strong`, `--accent`, `--accent-soft`, `--good`, `--good-soft`, `--bad`, `--bad-soft`, `--warn`, `--warn-soft`, `--code-bg`, `--code-ink`, `--sans`, `--mono`, `--r-sm`, `--r-md`, `--r-lg` |
-| `systematic-debugging` | `--ivory`, `--slate`, `--clay`, `--oat`, `--olive`, `--rust`, `--amber`, `--gray-100`, `--gray-300`, `--gray-500`, `--gray-700`, `--white`, `--serif`, `--sans`, `--mono`, `--radius-panel`, `--radius-row`, `--border`                               |
-| `research:research`    | `--ivory`, `--slate`, `--clay`, `--oat`, `--olive`, `--gray-150`, `--gray-300`, `--gray-500`, `--gray-700`, `--serif`, `--sans`, `--mono`                                                                                                             |
+| Producer template           | Variables declared in `:root`                                                                                                                                                                                                                         |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `brainstorming`             | `--ivory`, `--slate`, `--clay`, `--oat`, `--olive`, `--gray-100`, `--gray-150`, `--gray-300`, `--gray-500`, `--gray-700`, `--white`, `--serif`, `--sans`, `--mono`, `--radius-sm`, `--radius`, `--radius-lg`                                          |
+| `writing-spec`              | `--bg`, `--bg-soft`, `--bg-code`, `--bg-row-alt`, `--bg-row-hover`, `--ink`, `--ink-soft`, `--ink-mute`, `--rule`, `--accent`, `--accent-soft`, `--warn`, `--sans`, `--serif`, `--mono`, `--measure`                                                  |
+| `writing-plans`             | `--bg`, `--surface`, `--ink`, `--muted`, `--rule`, `--rule-strong`, `--accent`, `--accent-soft`, `--good`, `--good-soft`, `--bad`, `--bad-soft`, `--warn`, `--warn-soft`, `--code-bg`, `--code-ink`, `--sans`, `--mono`, `--r-sm`, `--r-md`, `--r-lg` |
+| `systematic-debugging`      | `--ivory`, `--slate`, `--clay`, `--oat`, `--olive`, `--rust`, `--amber`, `--gray-100`, `--gray-300`, `--gray-500`, `--gray-700`, `--white`, `--serif`, `--sans`, `--mono`, `--radius-panel`, `--radius-row`, `--border`                               |
+| `research:running-research` | `--ivory`, `--slate`, `--clay`, `--oat`, `--olive`, `--gray-150`, `--gray-300`, `--gray-500`, `--gray-700`, `--serif`, `--sans`, `--mono`                                                                                                             |
 
 `crafting-html` ships 20 reference examples plus an index (21 files) with varied styling; inspect the chosen reference before authoring overrides for that producer.
 

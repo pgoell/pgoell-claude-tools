@@ -1,302 +1,102 @@
 ---
 name: research
-description: Research complex topics with sources, synthesis, review, and a final report.
+description: Research complex topics with sources, synthesis, review, and a final report. Starts every research job by clarifying the ask one question at a time (topic, scope, audience, purpose, deliverable, deadline), then writes brief.md, gets the user's approval and hands over to research:running-research. Not for simple factual questions.
 ---
 
 # Research Skill
 
-Orchestrator-driven deep research. The skill plans the work itself, spawns parallel deep-research subagents per topic cluster, synthesizes findings under unbounded review, and produces a polished report.
+Clarify a research ask into an approved brief. This skill asks, writes `brief.md` and hands over. It does not plan, search or write the report; `research:running-research` does that once the user calls it.
 
 ---
 
 ## Auth Approach
 
-No authentication required. Uses the host agent's web search and fetch or browse capability, and writes to the local filesystem.
+No authentication required. Writes one file to the local filesystem.
 
 ## Tool Preference
 
-1. **Subagent dispatch when available and permitted**: dispatch researcher, synthesis, writer, and reviewer agents.
-2. **File read tools**: load prompt templates before dispatch.
-3. **Shell**: directory creation, date generation, file globbing, and the `sha256sum` and `grep -c` checks of Step 4, and the `sha256sum` and `head -1` check of Step 5.
-4. **Progress list**: live loop bookkeeping.
-5. **Web search and fetch or browse tools**: researchers and the synthesis reviewer use them; the orchestrator uses them only if subagent dispatch fails.
+1. **Conversation**: ask the user, one question per message.
+2. **File write tools**: write and update `brief.md`.
+3. **Shell**: create the output folder and generate the date.
 
 ## Platform Adaptation
 
 Use the host platform's equivalent tools without changing the workflow:
 
-| Capability        | Claude Code                      | Codex                                                                            |
-| ----------------- | -------------------------------- | -------------------------------------------------------------------------------- |
-| Subagent dispatch | Agent tool                       | `spawn_agent` only when available and permitted. Otherwise run the phase inline. |
-| Progress list     | TaskCreate, TaskUpdate, TaskList | `update_plan`                                                                    |
-| Web research      | WebSearch, WebFetch              | `web.run` search and open calls, or the host browser/search tools                |
-| File reads        | Read                             | shell reads such as `sed`, `rg`, or equivalent file read tools                   |
-| Shell             | Bash                             | shell command tool                                                               |
+| Capability  | Claude Code                    | Codex                                       |
+| ----------- | ------------------------------ | ------------------------------------------- |
+| Ask a user  | AskUserQuestion, or plain text | `request_user_input` if present, else text  |
+| File writes | Write, Edit                    | `apply_patch` or equivalent file edit tools |
+| Shell       | Bash                           | shell command tool                          |
 
-Cursor: dispatch subagents with the `Task` tool; to run agents in parallel, send several `Task` calls in one message.
-
-When a platform cannot dispatch subagents for the current request, keep the same artifact boundaries and run each phase inline in the orchestrator. Tell the user when this changes runtime or context cost.
+Cursor: ask in plain text and write with its file edit tools.
 
 ## Workflow
 
-### Step 1: Intake (lightweight clarify)
+### Step 1: Read what the ask already answers
 
-If the request is already concrete (specific topic + scope + audience clear), skip ahead. Otherwise, ask ONE consolidated question covering scope (timeframe, geography), audience, and purpose. No multi-question ladder.
+The brief has these fields:
 
-After clarification, write a `brief.md` to the output directory capturing the consolidated brief.
+- **Topic**: what to research.
+- **Scope**: time span, place, and what is in and what is out.
+- **Audience**: who reads the result.
+- **Purpose**: the decision or use the research serves.
+- **Deliverable**: form (full report, short summary, comparison table), length, and language. Format follows from it: `html` unless the user asks for markdown.
+- **Deadline**: when the user needs it, or none.
 
-### Step 2: Configure
+Fill each field the request already answers, in the user's own words. Do not ask about those.
 
-Output path is the only knob. Default: `reports/{topic-slug}-{YYYY-MM-DD}/`. Allow user override.
+### Step 2: Ask one question at a time
 
-Create directories:
+For each empty field, ask one question, then wait for the answer before you ask the next. Never bundle several fields into one message. Offer choices where they fit (for example: "Who reads this: you alone, co-owners, or a client?"). Ask the highest-leverage fields first: purpose and deliverable shape the whole job.
 
-```bash
-mkdir -p {OUTPUT_PATH}/research
-```
+When an answer opens a new gap (the purpose names a decision, but not by when), ask about that too. Stop when every field holds a real answer. "No deadline" is a real answer; an empty field is not.
 
-### Step 3: Plan (orchestrator-internal)
+Do not guess a field and do not fill one with a default the user never chose. The one exception is the output path: default `reports/{topic-slug}-{YYYY-MM-DD}/` (the date from `date +%F`), unless the user names another.
 
-YOU plan, not an agent. Decompose the brief into sub-questions and cluster them into coherent topics. As many clusters as the brief demands; each cluster should be deep enough to warrant a dedicated researcher. Cluster slugs must be unique and avoid colliding with reserved names (`synthesis`, `gap-N-*`, `*-review-*`). A slug must not start with `report`, `summary`, `findings` or `analysis` (see File Layout).
+### Step 3: Write brief.md
 
-Write `{OUTPUT_PATH}/plan.md`:
+Create the folder with `mkdir -p {OUTPUT_PATH}` and write `{OUTPUT_PATH}/brief.md`:
 
 ```markdown
-# Research Plan
+# Research Brief
 
-## Brief
+Status: draft
 
 Topic: <topic>
-Scope: <scope>
+Scope: <time, place, in and out>
 Audience: <audience>
-Purpose: <purpose>
-
-## Clusters
-
-### Cluster: <cluster-slug-1>
-
-Title: <human-readable title>
-Sub-questions:
-
-- SQ1: <sub-question>
-  - Search angles: <angle1>, <angle2>, <angle3>
-  - Source types: <academic, industry, etc.>
-- SQ2: ...
-
-### Cluster: <cluster-slug-2>
-
-...
+Purpose: <decision or use>
+Deliverable: <form, length, language>
+Format: <html | markdown>
+Deadline: <date, or none>
+Output path: <OUTPUT_PATH>
 ```
 
-Use the progress list to seed: "Spawn researchers", "Synthesize", "Review synthesis", "Write report", "Review report". Mark tasks completed as the pipeline progresses.
+If the folder is not writable, suggest another path and ask the user.
 
-### Step 4: Spawn parallel researchers
+### Step 4: Show the brief and wait
 
-Each researcher does iterative deep search on its cluster (round-by-round breadth, depth, adversarial, then iterative deepening) until two consecutive rounds add no new evidence (saturation). The researcher produces one self-contained markdown with notes and inline sources (no separate sources or notes files). For each cluster in plan.md:
+Show the user the full brief and ask them to approve it or change it. Wait for the answer. Apply each change to `brief.md` and show it again. Repeat until the user approves. An approval that carries a change ("approved, but add X") counts as approval: apply the change and show the changed line, without another round.
 
-1. Read `researcher-prompt.md` from this skill directory.
-2. Inject: BRIEF, OUTPUT_PATH, RECIPES_PATH (path to research-recipes.md), CLUSTER_SLUG, OUTPUT_FILE (`{OUTPUT_PATH}/research/{cluster-slug}.md`), TARGETED_GAP (empty).
-3. Dispatch via the host subagent tool. Send all clusters in parallel when supported.
-4. Wait for all to complete. Check each output file yourself; do not trust the report:
-   - The last line of the response must be `ARTIFACT-VERIFIED <sha256>`.
-   - Compare that hash with your own: `sha256sum {OUTPUT_FILE} | cut -d' ' -f1`
-   - Count source lines that were read: `grep '\[source:' {OUTPUT_FILE} | grep -vc '\[inaccessible\]'`. The floor is 2 per sub-question in the cluster's plan.md block, which `sed -n '/^### Cluster: {CLUSTER_SLUG}$/,/^### Cluster: /p' {OUTPUT_PATH}/plan.md | grep -c '^- SQ'` counts. If that prints 0, the plan.md block does not match the Step 3 format: fix plan.md, do not pass the file. A gap-fill file's floor is 2.
+When the user approves, change the line `Status: draft` to `Status: approved`. `research:running-research` refuses a brief without that line.
 
-A check fails on `ARTIFACT-MISSING`, a hash mismatch, a missing or unparseable last line, or a count under the floor. Re-dispatch that researcher once; if it fails again, surface it to the user (often a bad cluster boundary). When you ran the researcher inline, there is no marker to parse; the count still runs.
+### Step 5: Hand over
 
-### Step 5: Synthesize (iteration N, starting at 1)
+Your terminal step is to recommend the next skill: tell the user to run `/research:running-research`, and give the path to `brief.md`. Do NOT invoke it yourself.
 
-1. Read `synthesis-prompt.md`.
-2. Inject: BRIEF, OUTPUT_PATH, ITERATION, REVIEWER_FEEDBACK (empty on first pass; populated on re-dispatch).
-3. Record the hash of the old file: `sha256sum {OUTPUT_PATH}/research/synthesis.md 2>/dev/null | cut -d' ' -f1` (prints nothing on iteration 1, when the file does not exist yet). Dispatch via the host subagent tool. Wait for completion.
-4. Check the file yourself; do not trust the report. `test -f {OUTPUT_PATH}/research/synthesis.md` must pass, `sha256sum {OUTPUT_PATH}/research/synthesis.md | cut -d' ' -f1` must differ from the hash you recorded, and `head -1 {OUTPUT_PATH}/research/synthesis.md` must print `# Synthesis (Iteration N)`, with N the ITERATION you injected.
-
-A check fails on a missing file, an unchanged hash, or a wrong first line. Re-dispatch synthesis once with the same inputs and run item 4 again against the hash from before the first dispatch (do not record a new one); if it fails again, tell the user which check failed and ask how to go on. Never go on to Step 6 with the old file.
-
-### Step 6: Review synthesis (iteration N)
-
-1. Read `synthesis-reviewer-prompt.md`.
-2. Inject: BRIEF, OUTPUT_PATH, ITERATION, REVIEWER_FEEDBACK (empty for normal flow; populated only when re-dispatched from cross-loop branch in Step 10).
-3. Dispatch via the host subagent tool. Wait for completion. In its sixth check, the reviewer fetches again up to 5 cited URLs (first any URL the prior round left `rejected` or `unresolved`, then numbers, then thesis pillars) and records each mark in the file's `REFETCH:` block.
-4. Read the verdict from agent response, or from `{OUTPUT_PATH}/research/synthesis-review-{N}.md` if response is unparseable.
-
-If verdict is PASS: continue to Step 8.
-
-If verdict is ISSUES with critical issues: classify and proceed to Step 7.
-
-### Step 7: Address synthesis-review issues
-
-Classify each critical issue:
-
-- `evidence-gap`, `coverage`, `source-quality` → spawn gap-fill researcher per issue (or per coherent group of related issues). A `rejected` refetch claim (id `refetch-<claim-slug>`) is a `source-quality` issue.
-- `logic`, `structure` → no researcher; step 3 takes them.
-
-For each gap-fill issue:
-
-1. Read `researcher-prompt.md`. Inject: BRIEF, OUTPUT_PATH, RECIPES_PATH, CLUSTER_SLUG=<best-fit existing cluster>, OUTPUT_FILE=`{OUTPUT_PATH}/research/gap-{N}-{issue-slug}.md`, TARGETED_GAP=<full issue description with location pointer>.
-2. Dispatch in parallel for all gap-fill issues when supported. Wait for completion. Run the Step 4 check on each gap-fill file (floor 2).
-
-Then, once per round, not once per gap-fill: every round with a critical issue writes the synthesis again, whatever the mix of issues. A gap-fill file reaches the review only through synthesis.md, so never skip step 3:
-
-3. When every gap-fill file has passed its Step 4 check (or the user, asked after a second failure, said to go on without it), re-dispatch synthesis (Step 5 with ITERATION=N+1) once per round (the retry on a failed Step 5 check still applies), with REVIEWER_FEEDBACK holding every critical issue of this round:
-   - each gap-fill issue, with its gap-fill file path;
-   - each rejected refetch claim, with the claim, the page quote from the `REFETCH:` block and the gap-fill file path, so the wrong claim leaves synthesis.md;
-   - each `logic` or `structure` issue.
-
-   Wait for completion.
-4. Return to Step 6 with iteration N+1.
-
-### Loop safeguards (Steps 6-7)
-
-**Stall detection.** After writing `synthesis-review-{N}.md`, compare its issue id set to `synthesis-review-{N-1}.md`. If identical, surface to user immediately.
-
-**Check-in.** After synthesis-review iterations 3, 6, 9, ..., pause and surface:
-
-- Open issue ids and one-line descriptions
-- What was attempted (which gap-fills ran)
-- What's been narrowed (issues closed since iteration 1)
-- Options: `continue`, `ship as-is`, `intervene`
-
-Update the progress list at every step so the user can inspect live status through the host platform.
-
-### Step 8: Write (iteration M, starting at 1)
-
-1. Read `writer-prompt.md`.
-2. Inject: BRIEF, OUTPUT_PATH, TEMPLATE_PATH (path to report-template.md), REVIEWER_FEEDBACK (empty on first pass; populated on re-dispatch).
-3. Dispatch via the host subagent tool. Wait for completion.
-4. Verify `{OUTPUT_PATH}/draft.md` exists.
-
-### Step 9: Review report (iteration M)
-
-1. Read `writer-reviewer-prompt.md`.
-2. Inject: BRIEF, OUTPUT_PATH, TEMPLATE_PATH, ITERATION=M.
-3. Dispatch via the host subagent tool. Wait for completion.
-4. Read verdict.
-
-If PASS: continue to Step 11.
-
-If ISSUES with critical issues: classify and proceed to Step 10.
-
-### Step 10: Address writer-review issues
-
-Classify each critical issue:
-
-- `prose`, `flow`, `accuracy`, `format` → batch into a single re-write with all such issues as feedback.
-- `content-gap-suspected` → re-run synthesis-reviewer with this hypothesis (cross-loop).
-
-For batched prose/flow/accuracy/format issues:
-
-1. Re-dispatch writer with REVIEWER_FEEDBACK populated. Wait. Return to Step 9 with iteration M+1.
-
-For any `content-gap-suspected` issues:
-
-2. Re-dispatch synthesis-reviewer (Step 6) with REVIEWER_FEEDBACK populated with the writer-reviewer's content-gap-suspected issue list. The next synthesis-review file is `synthesis-review-{prior-N+1}.md` (synthesis loop counter resumes monotonically).
-3. Branch on synthesis-reviewer verdict:
-   - PASS → re-dispatch writer with prose-only feedback (drop the content-gap notes from the writer-reviewer's issue list). Return to Step 9.
-   - ISSUES → return to Step 7's classification logic (`evidence-gap` / `coverage` / `source-quality` route to gap-fill research; `logic` / `structure` route to re-synthesize; a rejected refetch claim takes both routes, as Step 7 says). When the synthesis loop closes again, re-dispatch writer with the original prose feedback (if any) plus a fresh writer review. Return to Step 9.
-
-### Loop safeguards (Steps 9-10)
-
-Same as synthesis loop. Stall detection on consecutive identical id sets in `draft-review-{M}.md` and `draft-review-{M-1}.md`. Check-in every 3 iterations of writer-review. Same options.
-
-### Step 11: Present
-
-Rename the passed draft with the shell: `mv {OUTPUT_PATH}/draft.md {OUTPUT_PATH}/report.md`. Then surface output path + brief summary: total iterations of each loop, final artifact paths, any minor (non-blocking) issues from the final reviews.
-
-## File Layout (output directory)
-
-```
-{output-path}/
-├── brief.md
-├── plan.md
-├── research/
-│   ├── {cluster-slug}.md         (one per cluster, notes + inline sources)
-│   ├── gap-{n}-{slug}.md         (gap-fill research)
-│   ├── synthesis.md              (overwritten each iteration)
-│   └── synthesis-review-{n}.md
-├── draft.md                      (overwritten each iteration; renamed report.md in Step 11)
-└── draft-review-{n}.md
-```
-
-Subagents never write a file named `report*`, `summary*`, `findings*` or `analysis*` with a `.md` extension: Claude Code refuses those writes from a subagent ("Subagents should return findings as text, not write report files"). That is why the writer writes `draft.md` and only the orchestrator, in Step 11, names it `report.md`.
-
-## Verdict Parsing
-
-Both reviewers return verdicts in this format:
-
-```
-VERDICT: PASS | ISSUES
-ISSUES:
-  - id: <stable-id>
-    severity: critical | minor
-    category: <category>
-    description: <one line>
-    location: <pointer>
-SUMMARY: <text>
-```
-
-A verdict of PASS with critical issues is malformed; re-dispatch the reviewer once with a format reminder. Stable ids enable stall detection: same id set in consecutive reviews means surface to user.
-
-Only the synthesis reviewer writes a `REFETCH:` block, after SUMMARY in `synthesis-review-{N}.md`. Its response stays the verdict line plus the issue id list.
-
-```
-REFETCH:
-  - url: <URL>
-    claim: <claim as synthesis.md states it>
-    mark: confirmed | rejected | unresolved
-    quote: "<short quote from the page>" (unresolved: the reason instead)
-```
-
-## Verification Markers
-
-These words are fixed. Every prompt that writes or reads them uses these spellings and no others.
-
-- `ARTIFACT-VERIFIED <sha256>`: last line of a researcher's response; the file is complete.
-- `ARTIFACT-MISSING <reason>`: last line of a researcher's response; the file is absent or partial.
-- `REFETCH:`: the block in `synthesis-review-{N}.md` that lists refetched URLs.
-- `confirmed`, `rejected`, `unresolved`: the mark per refetched URL. A `rejected` claim is a critical `source-quality` issue; an `unresolved` one is minor.
+This skill does not plan, search the web, dispatch researchers, or write `plan.md`, research notes or the report. Those belong to `research:running-research`, which reads the approved brief in its first step. Stop once you have recommended it.
 
 ## Self-Healing
 
-- Agent dispatch fails: fall back to running that step inline. Warn user about context cost.
-- Artifact file missing: re-dispatch once. Surface if still missing.
-- Verdict unparseable: re-dispatch reviewer once with format reminder.
-- Researcher fails the Step 4 check (`ARTIFACT-MISSING`, hash mismatch, missing or unparseable last line, source count under the floor): re-dispatch once. Surface if it fails again (likely bad cluster boundary).
-- Refetched URL dead, moved, paywalled or refused: the reviewer marks it `unresolved` and goes on. Never retry it yourself.
-- Stall detected: surface to user immediately. Don't auto-retry.
-- Check-in interval reached: pause, present status, await user choice.
-- Output dir not writable: suggest alternative path, ask user.
+- The user answers a question with "you decide": offer two or three concrete choices and ask them to pick one.
+- The user wants to skip the questions: say which fields are still empty and why each one changes the result, then ask for the most important one.
+- Output folder not writable: suggest another path, ask the user.
+- An old `brief.md` already sits at the path: show it and ask whether to reuse it, change it, or pick a new path.
 
 ## Behavioral Guidelines
 
 - Trigger on research intent, not simple factual questions.
-- When in doubt: ask "Would you like me to run a thorough research investigation, or just answer from what I know?"
-- Never pass session history to agents. Construct each dispatch fresh from the template + injected values.
-- Each prompt template has placeholders. Researcher: BRIEF, OUTPUT_PATH, RECIPES_PATH, CLUSTER_SLUG, OUTPUT_FILE, TARGETED_GAP. Synthesis: BRIEF, OUTPUT_PATH, ITERATION, REVIEWER_FEEDBACK. Synthesis-reviewer: BRIEF, OUTPUT_PATH, ITERATION, REVIEWER_FEEDBACK (cross-loop only). Writer: BRIEF, OUTPUT_PATH, TEMPLATE_PATH, REVIEWER_FEEDBACK. Writer-reviewer: BRIEF, OUTPUT_PATH, TEMPLATE_PATH, ITERATION.
-- Credentials/secrets never appear in templates or injected values.
-- See `report-template.md` for report structure (use Deep Mode section) and `research-recipes.md` for search patterns.
-
-## Output Format
-
-Default for this artifact: **html**.
-
-Override resolution order, highest precedence first:
-
-1. Per-invocation override in the user prompt. Recognize phrases like `"a markdown research report"`, `"in HTML"`, `"as a markdown report"`, and equivalents.
-2. Per-skill hard-coded default (html).
-
-For format and path, `research:research` does not consult `.workbench/config.md`. It is in a different plugin and has no project-level config knob for those two axes; format and path are determined by per-invocation override or the hard-coded default. (Design system selection is the exception: the cross-reference at the end of this section honors `.workbench/config.md` `## Design system` so a project-wide design-system pin affects research reports too.)
-
-Path: `reports/<topic-slug>-<YYYY-MM-DD>/report.<ext>` by default, where `<ext>` resolves from format.
-
-When emitting HTML, follow `references/research-report-template.html` in this skill's directory. Read the template lazily. Do not introduce U+2014 or U+2013 codepoints in body copy; HTML entity forms are permitted.
-
-For other HTML artifact types not covered by a workbench or research skill, see `workbench:crafting-html`.
-
-### Applying a design system
-
-Before emitting HTML, check whether a design system is set: a per-prompt override (e.g., "render with the `brand-2026` design system"), else `.workbench/config.md` `## Design system` `Name:`. This is the one axis on which research honors `.workbench/config.md`; format and path ignore it, per the disclaimer above. If none is set, emit with the template's defaults.
-
-If one is set, read `references/applying-a-design-system.md` in the folder of the workbench plugin's `crafting-design-systems` skill, and follow it. That folder holds the skill's `SKILL.md`: on Claude Code, `<installPath>/skills/crafting-design-systems/`, with `installPath` taken from the `workbench@pgoell-claude-tools` entry in `~/.claude/plugins/installed_plugins.json`; on Codex and Cursor, the path their skill list shows for `crafting-design-systems`. If the workbench plugin is not installed, or its folder has no `references/applying-a-design-system.md` (workbench older than 1.2.2), tell the user the design system needs a current workbench plugin, and emit with the template's defaults.
-
-To create or edit a design system, see `workbench:crafting-design-systems`.
+- When in doubt, ask: "Would you like me to run a thorough research investigation, or just answer from what I know?"
+- One question per message, always.
+- Never write any file other than `brief.md`.
