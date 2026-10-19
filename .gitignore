@@ -8,6 +8,7 @@ plugins/databricks/references/research/
 plugins/presentations/evals/results/
 plugins/writing/evals/results/
 plugins/workbench/evals/results/
+plugins/insights/evals/results/
 __pycache__/
 
 # Hosted deck editor secrets
