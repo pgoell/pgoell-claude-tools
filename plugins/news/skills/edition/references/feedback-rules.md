@@ -20,17 +20,18 @@ All paths sit under `<vault>/<periodic>/05 Newspaper/`:
 
 ## From item to change
 
-| The reader says                     | Change                                                                                                      |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| more like #id                       | add the story's main entities or theme to `interests`; raise its section's `max_stories` by 1 if it was cut |
-| less like #id, not interested in X  | add the theme to `avoid`, or to that section's `exclude` when it is section-specific                        |
-| add a place, company, person, topic | add queries to the closest section; a new beat gets a new section only when the reader asks for one         |
-| source X is paywalled, broken, bad  | remove it from `sources` or move its domain to `blocked_sources`; note a free alternative if known          |
-| use source X                        | add it to that section's `sources` with a one-line `notes`                                                  |
-| shorter, longer, more detail        | change that section's `depth` (1 briefs, 2 short, 3 full) or `max_stories`                                  |
-| writing style, Smart Brevity, form  | `edition.style` in topics.yaml: `smart-brevity` or `normal`                                                 |
-| older news is fine, only today      | change that section's `freshness_days`                                                                      |
-| look, colours, fonts, design        | `design.yaml` (`design`, or `overrides` tokens such as `accent`, `font-body`)                               |
+| The reader says                       | Change                                                                                                      |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| more like #id                         | add the story's main entities or theme to `interests`; raise its section's `max_stories` by 1 if it was cut |
+| less like #id, not interested in X    | add the theme to `avoid`, or to that section's `exclude` when it is section-specific                        |
+| add a place, company, person, topic   | add queries to the closest section; a new beat gets a new section only when the reader asks for one         |
+| source X is paywalled, broken, bad    | remove it from `sources` or move its domain to `blocked_sources`; note a free alternative if known          |
+| use source X                          | add it to that section's `sources` with a one-line `notes`                                                  |
+| shorter, longer, more detail          | change that section's `depth` (1 briefs, 2 short, 3 full) or `max_stories`                                  |
+| writing style, Smart Brevity, form    | `edition.style` in topics.yaml: `smart-brevity` or `normal`                                                 |
+| "why it matters" is weak, too obvious | `edition.why_it_matters` in topics.yaml: one free-text rule for that paragraph                              |
+| older news is fine, only today        | change that section's `freshness_days`                                                                      |
+| look, colours, fonts, design          | `design.yaml` (`design`, or `overrides` tokens such as `accent`, `font-body`)                               |
 
 Make the smallest change that does what the reader asked. Never delete a
 section, a source or an interest the item did not name.

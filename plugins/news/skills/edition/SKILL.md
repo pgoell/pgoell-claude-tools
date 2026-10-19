@@ -69,7 +69,15 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
    the lead's included, as three paragraphs: a one-sentence lede, then
    `Warum das wichtig ist:` (`Why it matters:` in English) with one or two
    sentences, then `Die Details:` (`The details:`) with the rest. The word
-   ranges stay the same. Any other value, or none, means plain paragraphs. Facts from the fetched article only; no opinion, no filler. Give every story `entities` and two to four
+   ranges stay the same. "Why it matters" analyses one level above the lede:
+   a consequence, a second-order effect, who wins or loses, or what the story
+   means for the reader's `interests` and sections. It never adds a fact,
+   number or quote; those go in the details. When no real "so what" exists,
+   leave the paragraph out instead of restating the lede. Follow
+   `edition.why_it_matters` in topics.yaml when it is set. Any other style
+   value, or none, means plain paragraphs. Facts come from the fetched article
+   only and no paragraph invents one; reasoning from those facts belongs in
+   "why it matters" alone, every other paragraph carries no opinion. No filler. Give every story `entities` and two to four
    `key_facts`, which memory uses to spot repeats tomorrow. Story ids are
    `<date>-<slug>-NN`, where slug is the section id or a short subject slug
    (`anthropic`, `bnd`), lowercase ASCII, NN counting from 01 per slug.
