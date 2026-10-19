@@ -60,14 +60,14 @@ Upstream licensed the repository after the port. Commit cbc9cfc
 Commit 67ed672 (2026-05-18) switched it to Apache-2.0; it merged as
 0e8d447 (PR #5, "Switch to Apache-2.0"). The appendix of the Apache
 LICENSE names "Copyright 2026 Anthropic PBC". Upstream HTML files
-since then carry the line "Copyright 2026 Anthropic PBC,
-SPDX-License-Identifier: Apache-2.0".
+since then open with a comment that holds "Copyright 2026 Anthropic
+PBC" and "SPDX-License-Identifier: Apache-2.0".
 
 The files shipped here come from 5d64f68, before both changes, so the
 no-license shape above still fits them. A refresh of these files
 re-ports them at a licensed upstream commit and switches to the
-Apache-2.0 attribution shape in AGENTS.md ("Upstream-port
-attribution").
+Apache-2.0 attribution shape ("Upstream-port attribution" in
+docs/reference/conventions/ports-and-licenses.md).
 
 Adaptations to the crafting-html references (the punctuation
 substitution) are mechanical and add no original authorship.

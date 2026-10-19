@@ -1,6 +1,10 @@
 # generate_review.py --static on its own: which runs the viewer finds and
 # their prompt, eval id and grading. Sourced by run.sh.
 
+# viewer isolated: python -I still finds workspace.py beside the script
+python3 -I "$viewer" --help >/dev/null 2>&1 && st=0 || st=$?
+ok "viewer isolated: python -I runs" "$st" 0
+
 # viewer run-n prompt: run-<n> runs find eval_metadata.json in the eval dir
 E=$(eval_dir vrep)
 for n in 1 2; do

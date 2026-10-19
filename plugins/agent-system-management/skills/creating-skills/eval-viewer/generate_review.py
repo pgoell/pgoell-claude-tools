@@ -25,6 +25,9 @@ from functools import partial
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 
+# workspace.py sits beside this script; isolated mode (python -I) leaves the
+# script's folder off sys.path.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from workspace import clean_benchmark, find_runs, load_previous_iteration
 
 

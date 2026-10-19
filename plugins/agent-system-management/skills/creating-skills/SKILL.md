@@ -108,7 +108,7 @@ See `references/schemas.md` for the full schema (the assertions you'll add later
 
 ## Running and evaluating test cases
 
-If you have no subagents (Claude.ai), no browser or display (Cowork, a remote box), or a `present_files` tool, read `references/other-surfaces.md` first: it says which steps below change.
+If you have no subagents (Claude.ai), no browser or display (Cowork, a remote box), or a `present_files` tool, read `references/other-surfaces.md` first: it says which steps below and in `references/running-evals.md` change.
 
 This section is one continuous sequence: don't stop partway through. Do NOT use `/skill-test` or any other testing skill.
 
@@ -163,7 +163,7 @@ This is optional, requires subagents, and most users won't need it. The human re
 
 ## Description Optimization
 
-The description field in SKILL.md frontmatter is the primary mechanism that determines whether Claude invokes a skill. After creating or improving a skill, offer to optimize the description for better triggering accuracy. The loop below needs `claude -p`; on claude.ai, check triggering by hand as `references/other-surfaces.md` says.
+The description field in SKILL.md frontmatter is the primary mechanism that determines whether Claude invokes a skill. After creating or improving a skill, offer to optimize the description for better triggering accuracy. The loop in `references/description-optimization.md` needs `claude -p`; on claude.ai, check triggering by hand as `references/other-surfaces.md` says.
 
 Read `references/description-optimization.md` and follow its steps: generate trigger eval queries, review them with the user, run the optimization loop, and apply the result within the length limits. It also explains how skill triggering works and how to keep a trigger regression test.
 
