@@ -9,7 +9,7 @@ The check fails when an authored file passes 5000 tokens (bytes/4). Big files co
 
 **Platforms.** The skill uses only shell and file tools, so it runs the same in Claude Code, Codex and Cursor.
 
-**Assets.** `SKILL_DIR` is the folder that holds this SKILL.md (in Claude Code, `${CLAUDE_SKILL_DIR}`). The script and hook templates sit beside it: `assets/check-file-size`, `assets/pre-commit`, `assets/pre-push`. Always copy from `"$SKILL_DIR/assets/..."`.
+**Assets.** The script and hook templates sit beside this SKILL.md: `assets/check-file-size`, `assets/pre-commit`, `assets/pre-push`. The commands below write `"${CLAUDE_SKILL_DIR}/assets/..."`, which Claude Code sets. In Codex and Cursor, replace `${CLAUDE_SKILL_DIR}` by the absolute path of the folder that holds this SKILL.md; never leave it empty, or `cp` reads from `/assets`.
 
 ## When NOT to invoke
 
@@ -31,13 +31,15 @@ ls .git/hooks/pre-commit .git/hooks/pre-push 2>/dev/null
 ls scripts/check-file-size .file-size-excludes 2>/dev/null
 ```
 
-Note the answers: lefthook config (and whether `lefthook` runs bare or only through `mise exec --`), CI files, a set `core.hooksPath`, real hooks in `.git/hooks` (not `*.sample`). If `scripts/check-file-size` already exists, this run is an update.
+Note the answers: a lefthook config file (and whether `lefthook` runs bare or only through `mise exec --`), CI files, a set `core.hooksPath`, real hooks in `.git/hooks` (not `*.sample`). If `scripts/check-file-size` already exists, this run is an update.
+
+The repo uses lefthook only when it has one of those config files. `lefthook` on PATH without a config does not count: go to step 5, or ask the user whether to start a `lefthook.yml` instead.
 
 ## Step 2: Copy the script
 
 ```bash
 mkdir -p scripts
-cp "$SKILL_DIR/assets/check-file-size" scripts/check-file-size
+cp "${CLAUDE_SKILL_DIR}/assets/check-file-size" scripts/check-file-size
 chmod 755 scripts/check-file-size
 ```
 
@@ -61,6 +63,7 @@ The script already skips lockfiles, images, fonts, PDFs and license texts. `.fil
 - one git glob per line, anchored at the repo root;
 - `*` stays inside one folder, `**/` crosses folders;
 - a line that starts with `#` is a comment; blank lines are ignored;
+- the rest of a line is taken as is: no leading `/` (write `dir/**`, not `/dir/**`) and no trailing `# comment`;
 - no file means the defaults only. The script finds the file from any subdirectory and reads the working-tree copy.
 
 ```text
@@ -72,13 +75,13 @@ third_party/**
 data/words.txt
 ```
 
-Create or edit it with your file tools, then rerun `scripts/check-file-size` until it prints nothing.
+Create or edit it with your file tools. A bare run sizes the files at HEAD but reads `.file-size-excludes` from the working tree: a new exclude line counts at once, a split counts only once committed. So commit each split (and the excludes file) before you rerun `scripts/check-file-size`, and repeat until it prints nothing. Ask the user before you commit.
 
 Pre-commit sizes only the files a commit stages, so wire it (step 4 or 5) even while offenders remain. Do not wire pre-push or CI while the bare run still fails, unless the user says so: every push and every CI run would fail.
 
 ## Step 4: Wire lefthook, if the repo uses it
 
-Add a pre-commit job `file-size` with `run: scripts/check-file-size {staged_files}` and a pre-push job `file-size` with `run: scripts/check-file-size`. Merge into the existing config; keep every job it has. Read [references/lefthook.md](references/lefthook.md) first: it covers both config shapes, the `parallel` and `stage_fixed` trap, and when to append to an existing `lint` task instead. Then install the hooks with the same prefix lefthook needed in step 1:
+Only when step 1 found a lefthook config file; otherwise go to step 5. Add a pre-commit job `file-size` with `run: scripts/check-file-size {staged_files}` and a pre-push job `file-size` with `run: scripts/check-file-size`. Merge into the existing config; keep every job it has. Read [references/lefthook.md](references/lefthook.md) first: it covers both config shapes, the `parallel` and `stage_fixed` trap, and when to append to an existing `lint` task instead. Then install the hooks with the same prefix lefthook needed in step 1:
 
 ```bash
 lefthook install    # or: mise exec -- lefthook install
@@ -86,11 +89,11 @@ lefthook install    # or: mise exec -- lefthook install
 
 ## Step 5: Plain git hooks, if the repo has no lefthook
 
-Use the versioned hook folder `.githooks/` and the templates `assets/pre-commit` and `assets/pre-push`. Never overwrite an existing hook or a set `core.hooksPath`. Read [references/fallback-hooks.md](references/fallback-hooks.md): it says which of three cases you are in and the exact lines for each. Tell the user that each clone must run `git config core.hooksPath .githooks` once, and put that line in the README or the setup script.
+Use the versioned hook folder `.githooks/` and the templates `assets/pre-commit` and `assets/pre-push`. Never overwrite an existing hook or a set `core.hooksPath`. Read [references/fallback-hooks.md](references/fallback-hooks.md): it says which of three cases you are in and the exact lines for each. When you set `core.hooksPath` yourself, tell the user that each clone must run `git config core.hooksPath .githooks` once, and write that line down where the next person will find it (the reference says where).
 
 ## Step 6: CI
 
-Run `scripts/check-file-size` in CI after the checkout step: in an existing lint job, or a new small job. [references/ci.md](references/ci.md) has the GitHub Actions YAML and the one command for other CI systems.
+Run `scripts/check-file-size` in CI after the checkout step: in an existing lint job, or a new small job. [references/ci.md](references/ci.md) has the GitHub Actions YAML and the one command for other CI systems. If the repo has no CI, skip this step and give the user that one command to add later.
 
 ## Step 7: Check it works
 
@@ -139,5 +142,5 @@ CI still runs the check.
 - **No commit yet.** A bare run sizes the index, not HEAD, until the first commit exists. That is expected.
 - **`fatal: not a git repository`.** `git ls-files` runs outside a repo. `cd` into the repo; the script itself works from any subdirectory.
 - **`mktemp` fails.** The script needs a writable temp folder. Set `TMPDIR` to one, for example `TMPDIR="$PWD/.tmp"` after `mkdir -p .tmp`.
-- **Hooks do not fire.** With lefthook, run `lefthook install` (or `mise exec -- lefthook install`) and check `.git/hooks/pre-commit` is lefthook's. Without it, check `git config --get core.hooksPath` prints the folder that holds the hooks and that they are executable (`chmod 755`).
+- **Hooks do not fire.** With lefthook, run `lefthook install` (or `mise exec -- lefthook install`) and check `.git/hooks/pre-commit` is lefthook's. Without it, check `git config --get core.hooksPath` prints the folder that holds the hooks (with Husky, `.husky/_` runs the hooks in `.husky/`) and that they are executable (`chmod 755`).
 - **`Permission denied` on the script.** Run `chmod 755 scripts/check-file-size` and commit the mode: `git update-index --chmod=+x scripts/check-file-size`.

@@ -9,10 +9,12 @@ Find your case from step 1, and handle each hook (`pre-commit`, `pre-push`) on i
 
 ## Case A: `core.hooksPath` is already set
 
-Another tool owns the hooks (husky's `.husky/`, for example). Do not change the config. In the folder it names:
+Another tool owns the hooks (Husky, for example). Do not change the config. In the folder it names:
 
 - If `<folder>/<hook>` exists, append the call line (below).
-- If not, copy the template there: `cp "$SKILL_DIR/assets/<hook>" <folder>/<hook>` and `chmod 755 <folder>/<hook>`.
+- If not, copy the template there: `cp "${CLAUDE_SKILL_DIR}/assets/<hook>" <folder>/<hook>` and `chmod 755 <folder>/<hook>`.
+
+**Husky v9 sets the path to `.husky/_`.** That folder is gitignored and Husky writes it anew, and its stubs run the versioned hooks in `.husky/`. So never edit anything inside `.husky/_`. Append the call line to `.husky/<hook>` instead; if that file is missing, create it with just the call line and `chmod 755 .husky/<hook>`. Husky runs it with `sh -e`, so no shebang is needed.
 
 ## Case B: no `core.hooksPath`, but a real `.git/hooks/<hook>`
 
@@ -30,8 +32,8 @@ Append the call line to `.githooks/pre-commit`, and do the same for `pre-push` i
 
 ```bash
 mkdir -p .githooks
-cp "$SKILL_DIR/assets/pre-commit" .githooks/pre-commit
-cp "$SKILL_DIR/assets/pre-push" .githooks/pre-push
+cp "${CLAUDE_SKILL_DIR}/assets/pre-commit" .githooks/pre-commit
+cp "${CLAUDE_SKILL_DIR}/assets/pre-push" .githooks/pre-push
 chmod 755 .githooks/pre-commit .githooks/pre-push
 git config core.hooksPath .githooks
 ```
@@ -62,4 +64,16 @@ scripts/check-file-size || exit 1
 git config core.hooksPath .githooks
 ```
 
-Add that line to the README's setup section or to the repo's setup script, and tell the user you did. Case A needs no such line: the other tool already sets the path.
+Add that line to the repo's setup script, or to the README's setup section. If the repo has neither, add a short section to the README (create `README.md` if there is none):
+
+````markdown
+## Setup
+
+After you clone, turn on the repo's git hooks once:
+
+```bash
+git config core.hooksPath .githooks
+```
+````
+
+Tell the user where you put it. Case A needs no such line: the other tool already sets the path.

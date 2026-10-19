@@ -4,7 +4,7 @@ The CI run is bare: it sizes every tracked file at the checked-out commit. A sha
 
 ## GitHub Actions, existing lint job
 
-If a workflow under `.github/workflows/` already has a lint job, add one step after its `actions/checkout` step:
+A lint job is a job that already runs format or lint checks on every pull request. If a workflow under `.github/workflows/` has one, add one step after its `actions/checkout` step:
 
 ```yaml
 - run: scripts/check-file-size
@@ -12,7 +12,13 @@ If a workflow under `.github/workflows/` already has a lint job, add one step af
 
 ## GitHub Actions, new workflow
 
-Otherwise create `.github/workflows/file-size.yml`. Find the default branch with `git symbolic-ref --short refs/remotes/origin/HEAD` (it prints `origin/<branch>`; use the part after the slash). If that fails, ask the user.
+If no job like that exists, create `.github/workflows/file-size.yml`. Find the default branch, trying these in order:
+
+1. `git symbolic-ref --short refs/remotes/origin/HEAD` prints `origin/<branch>`; use the part after the slash. It fails in a repo that was not cloned.
+2. `git config init.defaultBranch`.
+3. `git branch --show-current`.
+
+If all three fail, or the answer looks like a feature branch, ask the user.
 
 ```yaml
 name: file-size
@@ -41,3 +47,7 @@ scripts/check-file-size
 ```
 
 It exits 0 when every file fits and 1 when one does not, and prints the offenders to stderr.
+
+## No CI
+
+If the repo has no CI at all, skip this step. Tell the user the one command above, to add when they set up CI.
