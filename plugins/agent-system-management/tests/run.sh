@@ -3,8 +3,10 @@
 # Runs creating-skills' aggregate_benchmark.py and eval-viewer/generate_review.py
 # (--static) against fixture iteration folders: the flat layout SKILL.md
 # describes, the run-<n> layout, a mix of both, an ungraded run, a stray
-# run-* entry, config order, timing and token sources, and evals with and
-# without eval_metadata.json. AGG and VIEWER override the script paths (to
+# run-* entry, config order, timing and token sources, evals with and
+# without eval_metadata.json, an eval_id that is not an int (null, string,
+# missing, true, in a folder with or without an id), and the dash shown for
+# a missing delta (main() with the delta taken out). AGG and VIEWER override the script paths (to
 # run the cases against another copy). No session, no network. Needs bash,
 # python3, jq.
 set -u
@@ -194,6 +196,77 @@ echo x >"$T/vnometa/eval-2-bar/with_skill/outputs/x.txt"
 out=$(view vnometa)
 hasnt "viewer no metadata: no crash" "$out" "Traceback"
 ok "viewer no metadata: both shown" "$(vq vnometa '[.runs[].id]|join(",")' 2>&1)" eval-1-foo-with_skill,eval-2-bar-with_skill
+
+# meta <iteration> <folder> <eval_id JSON>: an eval folder with a graded
+# with_skill run, whose eval_metadata.json holds that eval_id ("" leaves
+# the key out)
+meta() {
+  local e="$T/$1/$2"
+  mkdir -p "$e/with_skill/outputs"
+  echo x >"$e/with_skill/outputs/x.txt"
+  if [ -n "$3" ]; then
+    echo "{\"eval_id\":$3,\"prompt\":\"P\"}" >"$e/eval_metadata.json"
+  else
+    echo '{"prompt":"P"}' >"$e/eval_metadata.json"
+  fi
+  grade "$e/with_skill" 1.0
+}
+# bids <iteration>: benchmark.json's evals_run, then its runs' eval ids
+bids() {
+  run "$1" >/dev/null
+  echo "$(q "$1" '.metadata.evals_run|join(",")' 2>&1)" \
+    "$(q "$1" '[.runs[].eval_id|tostring]|join(",")' 2>&1)"
+}
+# vids <iteration>: the viewer's run eval ids, or its Traceback
+vids() {
+  local out
+  out=$(view "$1")
+  if grep -q Traceback <<<"$out"; then echo Traceback; else vq "$1" '[.runs[].eval_id|tostring]|join(",")'; fi
+}
+
+# bad eval_id: null, a string, a missing key or true beside an int id
+# falls back to the folder id, in the benchmark and the viewer
+meta idnull eval-1-a 1
+meta idnull eval-7-b null
+ok "null eval_id: benchmark folder id" "$(bids idnull)" "1,7 1,7"
+ok "null eval_id: viewer folder id" "$(vids idnull)" 1,7
+meta idstr eval-1-a 1
+meta idstr eval-7-b '"9"'
+ok "string eval_id: benchmark folder id" "$(bids idstr)" "1,7 1,7"
+ok "string eval_id: viewer folder id" "$(vids idstr)" 1,7
+meta idmiss eval-1-a 1
+meta idmiss eval-5-b ""
+ok "missing eval_id: benchmark folder id, not index" "$(bids idmiss)" "1,5 1,5"
+ok "missing eval_id: viewer folder id" "$(vids idmiss)" 1,5
+meta idbool eval-1-a 1
+meta idbool eval-4-b true
+ok "true eval_id: benchmark folder id" "$(bids idbool)" "1,4 1,4"
+ok "true eval_id: viewer folder id" "$(vids idbool)" 1,4
+
+# bad eval_id in a folder with no id: benchmark takes the index, viewer null
+meta idname eval-5-a 5
+meta idname eval-x-b '"9"'
+ok "no folder id: benchmark index" "$(bids idname)" "1,5 5,1"
+ok "no folder id: viewer null" "$(vids idname)" 5,null
+
+# missing delta: benchmark.md and the summary show a dash. The script always
+# writes a delta, so main() runs here with the delta taken out.
+E=$(eval_dir dash)
+grade "$E/with_skill" 1.0
+out=$(python3 -c 'import importlib.util, sys
+s = importlib.util.spec_from_file_location("agg", sys.argv[1])
+m = importlib.util.module_from_spec(s)
+s.loader.exec_module(m)
+g = m.generate_benchmark
+def nodelta(*a):
+    b = g(*a)
+    del b["run_summary"]["delta"]
+    return b
+m.generate_benchmark = nodelta
+sys.argv = [sys.argv[1], sys.argv[2], "--skill-name", "x"]
+m.main()' "$agg" "$T/dash" 2>&1)
+has "missing delta: summary dash" "$out" "Delta:         "$'\xe2\x80\x94'
+has "missing delta: benchmark.md dash" "$(cat "$T/dash/benchmark.md")" "| "$'\xe2\x80\x94'" |"
 
 echo "$pass passed, $fail failed"
 [ "$fail" -eq 0 ]

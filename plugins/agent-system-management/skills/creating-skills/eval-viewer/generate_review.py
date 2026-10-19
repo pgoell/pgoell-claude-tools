@@ -30,6 +30,9 @@ from pathlib import Path
 # A repeat run folder: run-<n>. Same constant in scripts/aggregate_benchmark.py.
 RUN_DIR_RE = re.compile(r"^run-(\d+)$")
 
+# An eval folder: eval-<n>-<name>. Same constant in scripts/aggregate_benchmark.py.
+EVAL_DIR_RE = re.compile(r"^eval-(\d+)(-|$)")
+
 # Files to exclude from output listings
 METADATA_FILES = {"transcript.md", "user_notes.md", "metrics.json"}
 
@@ -113,6 +116,10 @@ def build_run(root: Path, run_dir: Path) -> dict | None:
                 eval_id = metadata.get("eval_id")
             except (json.JSONDecodeError, OSError):
                 pass
+            # No int eval_id (bool counts as none): the folder id, else None
+            if not isinstance(eval_id, int) or isinstance(eval_id, bool):
+                m = EVAL_DIR_RE.match(d.name)
+                eval_id = int(m.group(1)) if m else None
             break
         if d == root:
             break

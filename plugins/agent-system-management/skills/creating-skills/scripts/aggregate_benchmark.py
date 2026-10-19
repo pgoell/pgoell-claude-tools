@@ -57,6 +57,13 @@ from pathlib import Path
 # A repeat run folder: run-<n>. Same constant in eval-viewer/generate_review.py.
 RUN_DIR_RE = re.compile(r"^run-(\d+)$")
 
+# An eval folder: eval-<n>-<name>. Same constant in eval-viewer/generate_review.py.
+EVAL_DIR_RE = re.compile(r"^eval-(\d+)(-|$)")
+
+# Shown for a missing delta. A name, since Python before 3.12 rejects a
+# backslash inside an f-string expression.
+DASH = "\N{EM DASH}"
+
 # Configs that hold the skill under test; they come first so the delta is
 # skill minus baseline.
 PRIMARY_CONFIGS = ("with_skill", "new_skill")
@@ -100,21 +107,21 @@ def load_run_results(benchmark_dir: Path) -> dict:
     results: dict[str, list] = {}
 
     for eval_idx, eval_dir in enumerate(eval_dirs):
+        eval_id = None
         eval_name = None
         metadata_path = eval_dir / "eval_metadata.json"
         if metadata_path.exists():
             try:
                 with open(metadata_path) as mf:
                     metadata = json.load(mf)
-                eval_id = metadata.get("eval_id", eval_idx)
+                eval_id = metadata.get("eval_id")
                 eval_name = metadata.get("eval_name")
             except (json.JSONDecodeError, OSError):
-                eval_id = eval_idx
-        else:
-            try:
-                eval_id = int(eval_dir.name.split("-")[1])
-            except (ValueError, IndexError):
-                eval_id = eval_idx
+                pass
+        # No int eval_id (bool counts as none): the folder id, else the index
+        if not isinstance(eval_id, int) or isinstance(eval_id, bool):
+            m = EVAL_DIR_RE.match(eval_dir.name)
+            eval_id = int(m.group(1)) if m else eval_idx
 
         # Discover config directories dynamically rather than hardcoding names
         for config_dir in sorted(eval_dir.iterdir()):
@@ -362,17 +369,17 @@ def generate_markdown(benchmark: dict) -> str:
     # Format pass rate
     a_pr = a_summary.get("pass_rate", {})
     b_pr = b_summary.get("pass_rate", {})
-    lines.append(f"| Pass Rate | {a_pr.get('mean', 0)*100:.0f}% ± {a_pr.get('stddev', 0)*100:.0f}% | {b_pr.get('mean', 0)*100:.0f}% ± {b_pr.get('stddev', 0)*100:.0f}% | {delta.get('pass_rate', '\u2014')} |")
+    lines.append(f"| Pass Rate | {a_pr.get('mean', 0)*100:.0f}% ± {a_pr.get('stddev', 0)*100:.0f}% | {b_pr.get('mean', 0)*100:.0f}% ± {b_pr.get('stddev', 0)*100:.0f}% | {delta.get('pass_rate', DASH)} |")
 
     # Format time
     a_time = a_summary.get("time_seconds", {})
     b_time = b_summary.get("time_seconds", {})
-    lines.append(f"| Time | {a_time.get('mean', 0):.1f}s ± {a_time.get('stddev', 0):.1f}s | {b_time.get('mean', 0):.1f}s ± {b_time.get('stddev', 0):.1f}s | {delta.get('time_seconds', '\u2014')}s |")
+    lines.append(f"| Time | {a_time.get('mean', 0):.1f}s ± {a_time.get('stddev', 0):.1f}s | {b_time.get('mean', 0):.1f}s ± {b_time.get('stddev', 0):.1f}s | {delta.get('time_seconds', DASH)}s |")
 
     # Format tokens
     a_tokens = a_summary.get("tokens", {})
     b_tokens = b_summary.get("tokens", {})
-    lines.append(f"| Tokens | {a_tokens.get('mean', 0):.0f} ± {a_tokens.get('stddev', 0):.0f} | {b_tokens.get('mean', 0):.0f} ± {b_tokens.get('stddev', 0):.0f} | {delta.get('tokens', '\u2014')} |")
+    lines.append(f"| Tokens | {a_tokens.get('mean', 0):.0f} ± {a_tokens.get('stddev', 0):.0f} | {b_tokens.get('mean', 0):.0f} ± {b_tokens.get('stddev', 0):.0f} | {delta.get('tokens', DASH)} |")
 
     # Notes section
     if benchmark.get("notes"):
@@ -446,7 +453,7 @@ def main():
         pr = run_summary[config]["pass_rate"]["mean"]
         label = config.replace("_", " ").title()
         print(f"  {label}: {pr*100:.1f}% pass rate")
-    print(f"  Delta:         {delta.get('pass_rate', '\u2014')}")
+    print(f"  Delta:         {delta.get('pass_rate', DASH)}")
 
 
 if __name__ == "__main__":
