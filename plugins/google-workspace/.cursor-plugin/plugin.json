@@ -1,7 +1,7 @@
 {
   "name": "google-workspace",
   "displayName": "Google Workspace",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Use Gmail and Calendar through gws.",
   "author": {
     "name": "Pascal Göllner"

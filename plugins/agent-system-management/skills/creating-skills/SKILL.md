@@ -211,7 +211,7 @@ If you have no subagents (Claude.ai), no browser or display (Cowork, a remote bo
 
 This section is one continuous sequence: don't stop partway through. Do NOT use `/skill-test` or any other testing skill.
 
-Put results in `<skill-name>-workspace/` as a sibling to the skill directory. Within the workspace, organize results by iteration (`iteration-1/`, `iteration-2/`, etc.) and within that, each test case gets a directory (`eval-0/`, `eval-1/`, etc.). Don't create all of this upfront, just create directories as you go.
+Put results in `<skill-name>-workspace/` as a sibling to the skill directory. Within the workspace, organize results by iteration (`iteration-1/`, `iteration-2/`, etc.) and within that, each test case gets a directory `eval-<id>-<name>/`, where `<id>` is the test case's `id` in `evals/evals.json` (ids start at 1) and `<name>` is a short descriptive name (for example `eval-1-chart-axis-labels/`). Don't create all of this upfront, just create directories as you go.
 
 ### Step 1: Spawn all runs (with-skill AND baseline) in the same turn
 
@@ -224,9 +224,9 @@ Execute this task:
 - Skill path: <path-to-skill>
 - Task: <eval prompt>
 - Input files: <eval files if any, or "none">
-- Save outputs to: <workspace>/iteration-<N>/eval-<ID>/with_skill/outputs/
+- Save outputs to: <workspace>/iteration-<N>/eval-<id>-<name>/with_skill/outputs/
 - Outputs to save: <what the user cares about, e.g., "the .docx file", "the final CSV">
-- Save a transcript of your plan, reasoning and tool calls to: <workspace>/iteration-<N>/eval-<ID>/with_skill/outputs/transcript.md
+- Save a transcript of your plan, reasoning and tool calls to: <workspace>/iteration-<N>/eval-<id>-<name>/with_skill/outputs/transcript.md
 ```
 
 **Baseline run** (same prompt, but the baseline depends on context):
@@ -235,11 +235,11 @@ Execute this task:
 - **Improving an existing skill**: the old version. Before editing, snapshot the skill (`cp -r <skill-path> <workspace>/skill-snapshot/`), then point the baseline subagent at the snapshot. Save to `old_skill/outputs/`.
 - **Discipline-enforcing skill whose baselines already ran before the skill was written** (the inverted path in Test Cases): reuse those captured runs as the baseline arm and spawn only the with-skill runs.
 
-Write an `eval_metadata.json` for each test case (assertions can be empty for now). Give each eval a descriptive name based on what it's testing, not just "eval-0". Use this name for the directory too. If this iteration uses new or modified eval prompts, create these files for each new eval directory; don't assume they carry over from previous iterations.
+Write an `eval_metadata.json` for each test case (assertions can be empty for now). Set `eval_id` to the test case's `id` in `evals/evals.json`, and give each eval a descriptive name (`eval_name`) based on what it's testing. The directory is `eval-<id>-<descriptive-name>`. If this iteration uses new or modified eval prompts, create these files for each new eval directory; don't assume they carry over from previous iterations.
 
 ```json
 {
-  "eval_id": 0,
+  "eval_id": 1,
   "eval_name": "descriptive-name-here",
   "prompt": "The user's task prompt",
   "assertions": []
@@ -329,13 +329,17 @@ When the user tells you they're done, read `feedback.json`:
 {
   "reviews": [
     {
-      "run_id": "eval-0-with_skill",
+      "run_id": "eval-1-chart-axis-labels-with_skill",
       "feedback": "the chart is missing axis labels",
       "timestamp": "..."
     },
-    { "run_id": "eval-1-with_skill", "feedback": "", "timestamp": "..." },
     {
-      "run_id": "eval-2-with_skill",
+      "run_id": "eval-2-csv-summary-with_skill",
+      "feedback": "",
+      "timestamp": "..."
+    },
+    {
+      "run_id": "eval-3-pivot-table-with_skill",
       "feedback": "perfect, love this",
       "timestamp": "..."
     }

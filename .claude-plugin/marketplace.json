@@ -8,13 +8,13 @@
       "name": "atlassian",
       "source": "./plugins/atlassian",
       "description": "Use Jira and Confluence from agent workflows.",
-      "version": "2.0.4"
+      "version": "2.0.5"
     },
     {
       "name": "google-workspace",
       "source": "./plugins/google-workspace",
       "description": "Use Gmail and Calendar through gws.",
-      "version": "1.0.2"
+      "version": "1.0.3"
     },
     {
       "name": "research",
@@ -38,13 +38,13 @@
       "name": "agent-system-management",
       "source": "./plugins/agent-system-management",
       "description": "Audit AGENTS.md / CLAUDE.md, capture session learnings, and create Claude Code / Codex skills.",
-      "version": "0.7.0"
+      "version": "0.7.1"
     },
     {
       "name": "workbench",
       "source": "./plugins/workbench",
       "description": "Personal Workbench skills for design and autonomous feature work.",
-      "version": "1.2.0"
+      "version": "1.2.1"
     },
     {
       "name": "terminal",

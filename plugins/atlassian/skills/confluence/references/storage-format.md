@@ -1,5 +1,7 @@
 # Confluence XHTML Storage Format Reference
 
+Read this when you build the body of a page or comment you create or update.
+
 ## When You Need This
 
 Confluence stores page content in an XHTML-based format called "storage format." You must use this format when creating or updating pages via the REST API (curl). The `body.storage.value` field in API requests expects storage format XHTML, not Markdown or plain HTML.
