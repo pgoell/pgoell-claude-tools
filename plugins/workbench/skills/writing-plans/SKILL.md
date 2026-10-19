@@ -21,8 +21,8 @@ For html, write the skeleton of `references/plan-template.html` into the `.html`
 
 - `## Plan Document Header`: the title in the `<h1>` of `header.page-head`, the "For agentic workers" line as a `<p>` right after that `<h1>`, and Goal, Architecture and Tech Stack in `#summary`.
 - Medium lane: the `## Design` preamble goes in `<section id="design">`, right after `#summary`, as its `<dl>` entries Problem, Chosen approach, Key decisions and Out of scope. Remove the "Source spec" link from `header .meta`; there is no spec.
-- Large lane: delete `<section id="design">`. The `Spec: <path>` line becomes the "Source spec" link in `header .meta`, its `href` set to the spec path.
-- Slices: each slice is one `<article class="task">` in `#tasks`. Each step is one `<li>` in that article's `<ol class="steps">`, starting with `<span class="checkbox" aria-hidden="true"></span>` and then the step text in `<div class="step-body">`. This is the html form of `- [ ]`.
+- Large lane: delete `<section id="design">`. The `Spec: <path>` line becomes the "Source spec" link in `header .meta`, its `href` the spec's path relative to the plan file (e.g. `../specs/<file>`).
+- Slices: each slice is one `<article class="task">` in `#tasks`. Each step is one `<li>` in that article's `<ol class="steps">`, starting with `<span class="checkbox" aria-hidden="true"></span>` and then the step text in `<div class="step-body">` without a "Step N:" label (the template's CSS numbers the steps). This is the html form of `- [ ]`.
 
 ## Scope Check
 
