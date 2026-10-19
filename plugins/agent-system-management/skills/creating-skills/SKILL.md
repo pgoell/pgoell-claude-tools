@@ -285,7 +285,7 @@ Once all runs are done:
 
 3. **Check the leading words**: a skill steers through its leading words, the compact concepts its description and body lean on (see "Leading words" in `references/writing-great-skills.md`). Before you grep, list them: read the description and body and write down each such word (for example _tracer bullets_, _red_, _tight_). Leave out a word the eval prompt itself contains: a hit would only echo the prompt. Then count each word, as a whole word, in every with_skill run's transcript:
    ```bash
-   grep -c -i -w '<word>' <workspace>/iteration-N/*/with_skill/outputs/transcript.md
+   grep -s -c -i -w '<word>' <workspace>/iteration-N/*/with_skill/outputs/transcript.md <workspace>/iteration-N/*/with_skill/run-*/outputs/transcript.md
    ```
    The transcript is the executor's written log of its plan and reasoning, not its raw hidden thinking. A leading word that is absent from a run's reasoning and plan (a count of 0) is a steering failure, even when every assertion passes: the agent did not think with the word, so the skill did not steer that run. Write down each miss, hand the list to the analyst pass below, and fix it before the next iteration, per `references/writing-great-skills.md`: pick a stronger word, or anchor the word at the step where it should act.
 
