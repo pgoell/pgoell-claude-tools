@@ -27,7 +27,7 @@ Build the monthly supplier payment batch from `payments/approved.csv` and write 
 
 ## Rules
 
-- The bank portal rejects any batch whose remittance text holds an umlaut or ß, so transliterate ä to ae, ö to oe, ü to ue and ß to ss before writing the file.
+- The bank portal rejects any batch whose remittance text holds an umlaut or ß, so before writing the file, spell each umlaut as its vowel plus e (ä as ae) and ß as ss.
 - Use descriptive variable names and keep functions short, so the code stays easy to read.
 - Amounts in the CSV use a comma as decimal separator; the XML needs a dot.
 - Always double-check your work before you tell the user you are done.
