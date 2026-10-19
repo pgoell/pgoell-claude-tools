@@ -12,7 +12,7 @@ Skills covering the full presentation lifecycle: content design, HTML deck build
 | `exporting-presentations-to-pptx` | Converts a finished HTML deck into native, editable PowerPoint (real text boxes, autoshapes, embedded images, speaker notes).                                |
 | `extracting-presets`              | Turns brand material (PPTX templates, PDF guidelines, example decks) into reusable presets: CSS variables, assets, icon libraries, example slides.           |
 
-The typical flow: `designing-presentations` writes `deck.md`, `creating-presentations` renders and perfects the deck, `editing-presentations` opens it for changes by hand, `exporting-presentations-to-pptx` produces the editable file when someone needs PowerPoint.
+The typical flow: `designing-presentations` writes `deck.md`, `creating-presentations` renders and perfects the deck, `editing-presentations` opens it for changes by hand, `exporting-presentations-to-pptx` produces the editable file when someone needs PowerPoint. A bare ask for a deck, with no `deck.md`, storyline, or content, starts at `designing-presentations`, which asks for the material first; an ask with a `deck.md`, a settled storyline, or its own content goes straight to `creating-presentations`.
 
 ## Presets
 
