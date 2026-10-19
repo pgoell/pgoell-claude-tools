@@ -137,7 +137,7 @@ The skills' judgement steps have no test.
 
 `evals/` holds 12 cases that test which skill a prompt triggers. Cases 01 to 03 give one trigger case per skill: `edition`, `feedback` and `tune`. Cases 21 to 23 are negatives: each checks that none of the three skills fires. Cases 31 to 36 are near-misses, one per ordered pair of skills: each prompt borrows the words of one skill and belongs to another. Between `feedback` and `tune` the prompt's scope decides: one stated change goes to `feedback`; a walk through the settings, a list of designs or a comparison of designs goes to `tune`.
 
-No news skill calls another through the Skill tool. `tune` re-renders through `../edition/scripts/render.py` with Bash, `feedback` tells the user to run the build themselves, and `edition` applies open items from the vault's feedback note itself. The runner allows no Bash either, so no chain can trip a not-fired grader.
+No news skill calls another through the Skill tool. `tune` re-renders through `../edition/scripts/render.py` with Bash, `feedback` tells the user to run the build themselves, and `edition` applies open items from the vault's feedback note itself. The runner allows no Bash either. The graders match the full names `news:edition`, `news:feedback` and `news:tune`, so a skill's name quoted in a call's args does not match a sibling's grader.
 
 No one has run the suite yet; a run costs money, so the user decides when. Run from `plugins/news`:
 

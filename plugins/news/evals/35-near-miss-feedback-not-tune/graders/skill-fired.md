@@ -1,5 +1,5 @@
 ---
 type: tool_used
 tool: Skill
-input_match: feedback
+input_match: news:feedback
 ---

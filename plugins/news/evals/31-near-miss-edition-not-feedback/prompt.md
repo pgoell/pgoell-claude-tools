@@ -6,4 +6,4 @@ allowed_tools: [Skill, Read, Glob, Grep]
 runs: 3
 ---
 
-Build today's paper. Apply whatever is still open in the note where I collect my comments, as usual, then gather the stories, render the page and link it from today's daily note.
+Build today's paper and link it from today's daily note. The build picks up the open items in the note where I collect my comments on its own, as always, so they need no separate handling.
