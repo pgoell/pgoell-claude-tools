@@ -71,4 +71,4 @@ File names follow `YYYY-MM-DD-<topic>-<artifact>.<ext>`. Config schema: [config-
 
 ## Licence
 
-The plugin is MIT. Several skills and the session hook derive from Jesse Vincent's [Superpowers](https://github.com/obra/superpowers) 5.0.7 (MIT). The `crafting-html` gallery is vendored from `ThariqS/html-effectiveness`, which declares no licence. Workbench is built to run beside Superpowers; when a skill name exists in both, prefer the workbench one.
+The plugin is MIT. Several skills and the session hook derive from Jesse Vincent's [Superpowers](https://github.com/obra/superpowers) 5.0.7 (MIT). The `crafting-html` gallery is vendored from `ThariqS/html-effectiveness` at commit `5d64f68`, which had no licence. Upstream later moved to Apache-2.0; `NOTICE` says what a refresh must change. Workbench is built to run beside Superpowers; when a skill name exists in both, prefer the workbench one.

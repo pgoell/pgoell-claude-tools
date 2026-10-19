@@ -5,7 +5,7 @@ description: Use when the user wants to ship a feature end to end with configura
 
 # Pilot: feature flow with composable human gates
 
-You are running the workbench pilot workflow. Pilot replaces autopilot and copilot with one orchestrator whose human gates come from the project profile's `Gates:` row: `none` runs the whole flow autonomously (the old autopilot behavior), `design` pauses for a human-driven brainstorm and spec (or combined-doc) approval while everything else stays automated (the old copilot behavior), and `slices` adds a pause after each implemented slice to review its diff before the next one starts. The default, when the row is absent, is `design, slices`. A per-invocation phrase overrides the profile for this run only: "auto mode" or "no gates" resolves to `none`; "co mode" resolves to `design`.
+You are running the workbench pilot workflow. Pilot replaces autopilot and copilot with one orchestrator whose human gates come from the project profile's `Gates:` row: `none` runs the whole flow autonomously (the old autopilot behavior), `design` pauses for a human-driven brainstorm and spec (or combined-doc) approval while everything else stays automated (the old copilot behavior), and `slices` adds a pause after each implemented slice to review its diff before the next one starts. Bootstrap item 2 gives the default and the phrases that override the profile for one run.
 
 ## Bootstrap
 
@@ -80,23 +80,9 @@ See `references/invariants.md` for the full list. Summary:
 
 ## Required skill invocations
 
-Read `references/required-skills.md` for the full table and `replaces` / `additional` semantics.
-
-| Step   | Universal skill                                                                                            | Lane                    |
-| ------ | ---------------------------------------------------------------------------------------------------------- | ----------------------- |
-| 0      | `workbench:using-workbench`                                                                                | all                     |
-| 2      | `workbench:brainstorming`                                                                                  | medium, large           |
-| 3      | `workbench:writing-spec`                                                                                   | large                   |
-| 4      | `workbench:writing-plans`                                                                                  | medium, large           |
-| 5      | `workbench:test-driven-development`                                                                        | all                     |
-| 5      | `workbench:subagent-driven-development`                                                                    | medium, large           |
-| 5      | `ponytail:ponytail` (optional, see below)                                                                  | all                     |
-| 6      | `agent-system-management:capturing-session-learnings` and `agent-system-management:improving-instructions` | per `Improvement pass:` |
-| pre-PR | `workbench:verification-before-completion`                                                                 | all                     |
+Read `references/required-skills.md` (bootstrap item 4) for the universal table, which skill each step invokes in which lane, the one optional row (`ponytail:ponytail`, step 5), and `replaces` / `additional` semantics. Each step below names its skill as its first action (step 6 in `references/improvement-pass.md`).
 
 If a listed skill is unavailable in the current runtime, say so explicitly in the end-of-turn summary and skip only that entry. Never silently drop a row.
-
-`ponytail:ponytail` is the one optional row: it lives in a separate plugin that a project may not have installed, so its absence is expected and is not reported as a skipped requirement. It also ships hooks that inject its ruleset at session start, so when the plugin is installed the ruleset is usually already active and no explicit invocation is needed. Invoke it only if step 5 begins without it in context. Where it conflicts with `workbench:test-driven-development`, TDD wins: ponytail governs how much code gets written, never whether the test comes first.
 
 ## Runtime adapters
 
@@ -168,7 +154,7 @@ If `Hooks.post_plan` is defined, run it now with `{{plan_path}}` substituted.
 
 ### Step 5: Execute the plan
 
-**First actions:** invoke `workbench:test-driven-development` via the `Skill` tool; in the medium and large lanes also invoke `workbench:subagent-driven-development` (in that order, both replaceable via the profile). TDD governs every implementation chunk; subagent-driven-development governs how slices run and covers safe parallel fanout (its `## Parallel dispatch` section). It is not invoked in the quick lane: it requires a plan, and the quick lane has none.
+**First actions:** invoke `workbench:test-driven-development` via the `Skill` tool; in the medium and large lanes also invoke `workbench:subagent-driven-development` (in that order, both replaceable via the profile). TDD governs every implementation chunk; subagent-driven-development governs how slices run and covers safe parallel fanout (its `## Parallel dispatch` section). It is not invoked in the quick lane: it requires a plan, and the quick lane has none. Invoke the optional `ponytail:ponytail` only if it is installed and not already in context (`references/required-skills.md`, "Optional rows").
 
 **Quick lane:** execute as one TDD-governed chunk in the main session, no plan document, no subagent task loop, no slice gate.
 
@@ -176,17 +162,7 @@ If `Hooks.post_plan` is defined, run it now with `{{plan_path}}` substituted.
 
 **With the `slices` gate active:** after a slice's own review gates pass (per `workbench:subagent-driven-development`), present the slice's diff summary to the user: files touched, key hunks, verification results. Wait for the user to approve or resteer before starting the next slice. **Without the `slices` gate,** move straight to the next slice.
 
-**Subagent dispatch (Claude Code):** see `references/claude-code-adapter.md` for the full pattern. Summary:
-
-- Independent tasks (no shared files, no ordering dependency): multiple `Agent` calls in one message.
-- Shared-state tasks: one agent at a time, sequential.
-- Trivial polish (rename one symbol, one-line lint fix): main session if files are already loaded; otherwise a subagent.
-
-**Subagent dispatch (Codex):** see `references/codex-adapter.md`. Use Codex's task or subagent equivalent if installed; else execute tasks sequentially in the main session with explicit context-reset discipline.
-
-Each subagent prompt must include: the slice text it owns, which files to touch, the relevant commits that preceded it, the acceptance criteria.
-
-**Project-specific rebuild discipline.** When the profile's `## Project-specific rules` requires a rebuild or regen step before tests (for example "rebuild PyO3 binding before pytest"), include that step in the subagent's prompt as an explicit acceptance criterion. Otherwise the subagent observes phantom errors from stale artifacts.
+**Subagent dispatch.** Before you dispatch the first slice, read `references/subagent-dispatch.md`: which tasks run in parallel, what each subagent prompt must include, and the project-specific rebuild discipline.
 
 Then:
 
@@ -197,41 +173,7 @@ If `Hooks.post_implementation` is defined, run it now after the last implementat
 
 ### Step 6: Finalize docs and improvement pass
 
-Branch on `Improvement pass:` from the profile (`always`, `on_learnings` default, or `off`).
-
-**Capturing session learnings (`always`, or `on_learnings` when the run surfaced non-obvious learnings):**
-
-1. Under `on_learnings`, judge whether the run surfaced a non-obvious learning worth capturing (a gotcha, a corrected assumption, a repo convention discovered mid-run). Log the judgment, run or skip and why, in the deviation log.
-2. If running: invoke `agent-system-management:capturing-session-learnings` via the `Skill` tool in the main session. This skill reads the conversation transcript, so it must run inline in the orchestrator. Pass **inline-prompt A** below. Wait for it to return and verify its commits exist on the feature branch via `git log` before proceeding.
-
-Under `off`, skip capturing-session-learnings entirely and log the skip.
-
-**Improving instructions (`always`, or explicit user request this run; never on plain `on_learnings`; an explicit user request this run also overrides `off`, since user instructions outrank the profile):**
-
-Dispatch `agent-system-management:improving-instructions` to a general-purpose subagent (Claude Code: `Agent` tool, `general-purpose` subagent_type, no model override. Codex: equivalent general-purpose subagent.) Pass **inline-prompt B** below. The improver does a cold read and does not need session context; running it in a subagent keeps the orchestrator's context lean.
-
-Either skill can be replaced via the profile.
-
-**Inline-prompt A (orchestrator pastes into the session-capture Skill invocation):**
-
-> "You are running inside workbench pilot in the main orchestrator session, on the feature branch in the current working directory. Skip the approval prompt at the end of your skill. After deciding what to change, apply the edits directly. Commit each logical change on the feature branch with a Conventional Commits message. Report back: every file you edited and a one-line summary per file."
-
-**Inline-prompt B (orchestrator pastes into the improver subagent dispatch):**
-
-> "You are running inside workbench pilot as a subagent, on the feature branch in the current working directory. Invoke `agent-system-management:improving-instructions` via the `Skill` tool. Skip the approval prompt at the end of the skill. After deciding what to change, apply the edits directly. Commit each logical change on the feature branch with a Conventional Commits message (`docs(agents-md): ...`). Report back: every file you edited, a one-line summary per file, and the commit hashes you created."
-
-**All edits land on the feature branch in this run.** AGENTS.md, CLAUDE.md, `*.local.md`, user-global agent-instruction files, ADRs, OPEN_THINGS updates: each one a commit on the current branch with a matching Conventional Commits type. No follow-up chore PRs.
-
-After each dispatched skill returns, the orchestrator:
-
-1. Reads its summary.
-2. Verifies the commits exist via `git log <feature-branch> --oneline`.
-3. Includes the summary in the end-of-turn report.
-
-Then, **the orchestrator** updates the following inline (it does not delegate to a subagent), committing each as a separate Conventional Commits entry on the feature branch:
-
-- Update `<paths.adr>/NNNN-<short-title>.md` for load-bearing decisions if the path exists in the project. Index in `<paths.adr>/README.md`.
-- Update `<paths.open_things>` if it exists: remove resolved items, add follow-ups ordered by importance.
+Branch on `Improvement pass:` from the profile (`always`, `on_learnings` default, or `off`). When you reach this step, read `references/improvement-pass.md` and follow it: which skill runs under each value and where, inline-prompts A and B, and the ADR and open-things updates the orchestrator makes itself.
 
 ### Pre-PR verification (between step 6 and step 7)
 
@@ -247,8 +189,7 @@ After pre-PR verification passes:
 
 - Push: `git push -u <git remote, default origin> <branch>`. If the project documents a wrapper (for example `mise exec --` for pinned hooks), use it.
 - Create the PR: `gh pr create --base <base branch> --title "<Conventional-Commits title>" --body "<body>"`.
-- PR body structure: `## Summary` (1-3 bullets), then scope or non-goals if relevant, `## Reading guide`, `## Test plan` checklist, links to spec (or design preamble) + plan + ADR if present.
-- `## Reading guide` is always present, in every lane: one line per slice, in review order, naming what to look at and what verification already proved. In the quick lane (no slices), it degenerates to one line covering the whole change.
+- Before you write the body, read `references/pull-request.md` "PR body": its sections, and the `## Reading guide` every lane needs.
 
 If `Hooks.post_pr` is defined, run it now with `{{pr}}` substituted to the PR number.
 
@@ -277,41 +218,7 @@ Branch on `Mode` from the profile.
 - Report the PR URL in the end-of-turn summary.
 - Stop. Do not merge.
 
-**`automerge`:**
-
-1. Set automerge:
-
-   ```bash
-   gh pr merge <pr> --auto --squash
-   ```
-
-   Use `--squash` if `Squash: yes` (default), `--merge` if `Squash: no`.
-
-2. Poll for merge:
-
-   ```bash
-   gh pr view <pr> --json state -q .state
-   ```
-
-   Until it returns `MERGED`. If it returns `CLOSED` without merging, branch protection blocked the merge; surface the reason to the user instead of retrying.
-
-3. Refresh local default branch:
-
-   ```bash
-   git checkout <default branch>
-   git pull origin <default branch>
-   git branch -d <feature-branch>
-   ```
-
-   The lowercase `-d` refuses to delete an unmerged branch; if it fails, inspect before forcing.
-
-4. Report the merged commit hash and PR URL in the end-of-turn summary.
-
-**`request_review`:**
-
-- `gh pr ready <pr>`.
-- Post a one-line reviewer note as a PR comment.
-- Stop. Report the PR URL.
+**`automerge`** or **`request_review`:** read `references/pull-request.md` and follow the procedure for that mode.
 
 If the user explicitly says "don't merge" before or during the run, override `automerge` to `request_review` for this run only; do not modify the profile.
 

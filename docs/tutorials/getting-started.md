@@ -70,7 +70,7 @@ Cursor installs plugins from its own marketplace screens, not from a chat comman
 
 ## Where to go next
 
-- [Skills at a glance](/reference/skills.md) lists every skill, with the plugin that ships it.
+- [Skills at a glance](/reference/skills.md) lists every skill of this repo's plugins, and [Upstream skills at a glance](/reference/upstream-skills.md) those of the upstream plugins, each with the plugin that ships it.
 - [Plugins](/reference/plugins/index.md) has one page per plugin, with what it needs.
 - Some plugins need a CLI or an account first. Their setup guides are in [How-to guides](/how-to/index.md), for example [Set up the atlassian plugin](/how-to/set-up-atlassian.md).
 - [Update plugins](/how-to/update-plugins.md) shows how to pick up new versions.

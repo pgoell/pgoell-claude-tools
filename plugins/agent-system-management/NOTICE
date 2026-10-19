@@ -37,7 +37,12 @@ commit b092d56), which is itself derived from:
     run_loop,utils}.py are byte-identical to the port.
       - SKILL.md, agents/, scripts/, eval-viewer/, assets/,
         references/schemas.md (adapted),
-        references/other-surfaces.md (text moved from SKILL.md, adapted)
+        references/other-surfaces.md (text moved from SKILL.md, adapted),
+        references/skill-writing-guide.md, references/running-evals.md,
+        references/improving-skills.md, references/description-optimization.md
+        (text moved from SKILL.md, adapted; upstream skills/skill-creator/SKILL.md),
+        eval-viewer/workspace.py (code moved from eval-viewer/generate_review.py,
+        adapted; upstream skills/skill-creator/eval-viewer/generate_review.py)
   - Matt Pocock's writing-great-skills skill
     (https://github.com/mattpocock/skills, commit 391a2701, MIT):
       - references/writing-great-skills.md (adapted)
