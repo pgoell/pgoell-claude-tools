@@ -97,18 +97,23 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
    every section whose topics.yaml entry lists `tables:`, from sportschau.de;
    a warning means that league's table is left out.
 8. **Check the lead.** `uv run "${CLAUDE_SKILL_DIR}/scripts/refetch.py" ARGS`
-   fetches the lead's URL again and prints the page text. Never ask here; this
+   fetches the lead's URL again and prints its `og:title` and `og:description`
+   (when present) as the first lines, then the page text. Never ask here; this
    runs headless.
    - Exit 1 means the lead is dead. Append `- <date> <domain> <code>` to
-     `NP/memory/source-failures.md` (domain without port; code is the HTTP
-     status, or `refused` or `timeout`) and apply the Self-Healing rule on a
+     `NP/memory/source-failures.md` (domain without port; code is the one
+     refetch printed: `404`, `410`, `refused`, `timeout`, `dns` or `ssl`) and apply the Self-Healing rule on a
      repeat failure. Drop the old lead. Make the most important story from a
      section in `edition.lead_from` the lead (ties go to the earlier section
      in `lead_from`), set its `section`, and leave out a section the swap
      empties. Run refetch again. Swap at most twice, then go on with what you
      have and say so in the report.
+   - Exit 2 means the site turned the script away (any other HTTP error, such
+     as a bot block). Keep the lead, log nothing, and say in the report that
+     the lead was not checked.
    - Exit 0: check at least two of the lead's `key_facts` against the printed
-     text; a fact holds when the page states it, in any words. When fewer than
+     text; a fact holds when the page states it, in any words, and it may hold
+     in the og lines alone (a paywalled body). When fewer than
      two hold, rewrite the facts and summary from that text; when the text
      gives fewer than two facts for the story, swap the lead as above.
 9. **Validate.** `uv run "${CLAUDE_SKILL_DIR}/scripts/validate.py" "NP/<date>.json" --memory "NP/memory/stories.jsonl"`.

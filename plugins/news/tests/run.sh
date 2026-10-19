@@ -53,13 +53,14 @@ has "validate future names the date" "$out" "2026-10-19-bridge-01: published 202
 out=$(validate --config "$T/none.yaml"); ok "validate without config exit" $? 0
 has "validate without config warns" "$out" "published dates not checked against freshness_days"
 
-# refetch.py: a closed port is a dead lead; a live page prints its text without scripts
+# refetch.py: a closed port or a 404 is a dead lead, a 403 is a refusal (exit 2),
+# a live page prints its text without scripts, a paywalled page its og meta
 refetch() { uv run -q "$S/refetch.py" --vault "$RV" --date 2026-10-19 2>&1; }
 edition http://127.0.0.1:1/ 2026-10-18 2026-10-13
 out=$(refetch); ok "refetch dead exit" $? 1
-has "refetch dead names the url" "$out" "error: lead url http://127.0.0.1:1/ is dead:"
+has "refetch dead names the url" "$out" "error: lead url http://127.0.0.1:1/ is dead: refused"
 : >"$T/srv.log"
-python3 -u -m http.server 0 --bind 127.0.0.1 --directory "$here/fixtures" >"$T/srv.log" 2>&1 &
+python3 -u "$here/fixtures/server.py" >"$T/srv.log" 2>&1 &
 srv=$!
 port= n=0
 while [ -z "$port" ] && [ "$n" -lt 20000 ]; do port=$(sed -n 's/.*port \([0-9]*\).*/\1/p' "$T/srv.log"); n=$((n + 1)); done
@@ -67,6 +68,15 @@ edition "http://127.0.0.1:$port/lead.html" 2026-10-18 2026-10-13
 out=$(refetch); ok "refetch live exit" $? 0
 has "refetch live prints the page" "$out" "The new bridge over the Kinzig cost twelve million euros."
 ok "refetch live drops scripts" "$(grep -c SCRIPT_TEXT <<<"$out")" 0
+edition "http://127.0.0.1:$port/missing.html" 2026-10-18 2026-10-13
+out=$(refetch); ok "refetch 404 exit" $? 1
+has "refetch 404 is dead" "$out" "error: lead url http://127.0.0.1:$port/missing.html is dead: 404"
+edition "http://127.0.0.1:$port/blocked" 2026-10-18 2026-10-13
+out=$(refetch); ok "refetch 403 exit" $? 2
+has "refetch 403 is a refusal" "$out" "error: lead url http://127.0.0.1:$port/blocked refused the fetch: HTTP 403"
+edition "http://127.0.0.1:$port/paywall.html" 2026-10-18 2026-10-13
+out=$(refetch); ok "refetch paywall exit" $? 0
+has "refetch paywall prints og:description" "$out" "og:description: The bridge cost twelve million euros and took two years."
 
 echo "$pass passed, $fail failed"
 [ "$fail" -eq 0 ]

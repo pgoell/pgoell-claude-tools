@@ -125,9 +125,11 @@ scripts under test open no outside connection; `uv` may fetch pyyaml once. It ch
   offset), fails a story older than the window and one dated after the
   edition, reading `config/topics.yaml` beside the edition by default, and
   only warns when there is no topics.yaml.
-- `refetch.py`: a lead URL on a closed port fails as dead; a page served by a
-  local `http.server` prints its text without the script.
+- `refetch.py`, against a closed port and a local server
+  (`tests/fixtures/server.py`): a closed port and a 404 fail as dead (exit 1),
+  a 403 fails as a refusal (exit 2), a page prints its text without the
+  script, and a paywalled page prints its `og:description`.
 
-Last run, 2026-10-19: 19 of 19 checks pass.
+Last run, 2026-10-19: 25 of 25 checks pass.
 
 The skills' judgement steps have no test.
