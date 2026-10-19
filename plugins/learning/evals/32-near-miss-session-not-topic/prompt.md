@@ -6,7 +6,7 @@ allowed_tools: [Skill, Read, Glob, Grep]
 runs: 3
 ---
 
-This is the change we made today:
+This is the change we made in this session:
 
 ```diff
  class SessionCache:
