@@ -314,6 +314,12 @@ for i in 1 2; do mfix iters "iteration-$i/eval-0-a" '{"eval_id":0,"prompt":"p"}'
 out=$(view iters)
 hasnt "unique id: per iteration no warning" "$out" "Warning"
 ok "unique id: per iteration viewer" "$(vq iters '[.runs[].eval_id]|join(",")')" 0,0
+# a run-less eval beside a run's eval counts when the viewer runs a level up
+mfix deep iteration-1/eval-1-a ""
+mkdir -p "$T/deep/iteration-1/eval-2-b"
+echo '{"eval_id":1,"prompt":"p"}' >"$T/deep/iteration-1/eval-2-b/eval_metadata.json"
+view deep >/dev/null
+ok "unique id: run-less sibling below workspace" "$(vq deep '[.runs[].eval_id]|join(",")')" 2
 
 # metadata fields: a non-string eval_name or prompt is dropped
 mfix mfields eval-1-a '{"eval_id":1,"eval_name":5,"prompt":7}'
@@ -381,6 +387,8 @@ ok "grading fields: NaN pass_rate viewer" "$(vq gnan '.runs[0].grading.summary.p
 # script tag: a "</script>" in embedded data cannot end the page's script
 gfix stag '{"expectations":[{"text":"a </script><b>","passed":true}]}'
 ok "script tag: escaped" "$(grep -c '</script><b>' "$T/stag.html") $(vq stag '.runs[0].grading.expectations[0].text')" "0 a </script><b>"
+gfix scom '{"expectations":[{"text":"<!--<script>","passed":true}]}'
+ok "script tag: comment escaped" "$(grep -c '<!--<script>' "$T/scom.html") $(vq scom '.runs[0].grading.expectations[0].text')" "0 <!--<script>"
 
 # tfix <iteration> <timing.json text>: a graded run with that timing.json
 tfix() {

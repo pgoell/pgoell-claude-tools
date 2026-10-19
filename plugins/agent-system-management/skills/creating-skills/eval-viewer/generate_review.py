@@ -218,15 +218,13 @@ def find_runs(workspace: Path) -> list[dict]:
     runs: list[dict] = []
     metas: dict[Path, tuple] = {}
     _find_runs_recursive(workspace, workspace, runs, metas)
-    # Evals: the runs' eval-* folders, plus every eval-* folder in the
-    # workspace, runs or not, as in the benchmark
-    evals = {run["_eval"] for run in runs if run["_eval"] is not None}
-    evals.update(d for d in workspace.glob("eval-*") if d.is_dir())
     # Eval ids by the same rule as scripts/aggregate_benchmark.py, per folder
-    # of evals (the benchmark reads one iteration folder), in folder order
+    # of evals (the benchmark reads one iteration folder), in folder order;
+    # every eval-* folder beside a run's eval counts, runs or not
+    evals = {run["_eval"] for run in runs if run["_eval"] is not None}
     ids: dict[Path, int] = {}
     for parent in sorted({d.parent for d in evals}):
-        group = sorted(d for d in evals if d.parent == parent)
+        group = sorted(d for d in parent.glob("eval-*") if d.is_dir())
         entries = []
         for d in group:
             meta = _folder_meta(d, metas)
@@ -479,8 +477,9 @@ def generate_html(
     if benchmark:
         embedded["benchmark"] = benchmark
 
-    # "<\/" so a "</script>" in any string cannot end the script block
-    data_json = json.dumps(embedded).replace("</", "<\\/")
+    # Every "<" as <, so no string ("</script>", "<!--") can end or
+    # change the script block
+    data_json = json.dumps(embedded).replace("<", "\\u003c")
 
     return template.replace("/*__EMBEDDED_DATA__*/", f"const EMBEDDED_DATA = {data_json};")
 
