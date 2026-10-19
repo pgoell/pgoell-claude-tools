@@ -1,6 +1,6 @@
 ---
 name: improving-instructions
-description: Audit and improve AGENTS.md and CLAUDE.md files across project and user scopes.
+description: Audit and improve AGENTS.md and CLAUDE.md files across project and user scopes. Use when the user wants an instruction file checked, scored or fixed, or wants an overlong AGENTS.md or CLAUDE.md cut down, trimmed or shortened. To save what was learned in this session, use capturing-session-learnings instead.
 tools: Read, Glob, Grep, Bash, Edit
 ---
 
@@ -123,7 +123,7 @@ After outputting the quality report, ask user for confirmation before updating.
 
 **Update Guidelines (Critical):**
 
-1. **Propose targeted additions only**: focus on genuinely useful info:
+1. **Propose targeted additions** (unless the user asked for a trim, see item 4): focus on genuinely useful info:
    - Commands or workflows discovered during analysis
    - Gotchas or non-obvious patterns found in code
    - Package relationships that weren't clear
@@ -140,6 +140,11 @@ After outputting the quality report, ask user for confirmation before updating.
    - Which file to update (use the canonical realpath)
    - The specific addition (as a diff or quoted block)
    - Brief explanation of why this helps future sessions
+
+4. **Trim on request**: when the user asks to cut, trim or shorten a file, propose removals instead of additions:
+   - Remove duplicate lines, restated commands, history, generic advice and vague rules ("be careful")
+   - Keep every command, gotcha and project-specific rule the agent needs
+   - Show them as a diff with `-` lines and the same **Why:** line; apply only after approval, as with additions
 
 **Diff Format:**
 
