@@ -66,10 +66,7 @@ Check available MCPs - if useful for research (searching docs, finding similar s
 Based on the user interview, fill in these components:
 
 - **name**: Skill identifier. Prefer a verb-first gerund named for what the skill does or its core insight (processing-pdfs, condition-based-waiting), not vague nouns like helper, utils, or tools. In Claude Code the typed `/command` comes from the skill's directory name, not this field (which is a display label), so name the directory with the same care and keep the two identical.
-- **description**: When to trigger, what it does. This is the primary triggering mechanism. It does two jobs: state what the skill is, and list the branches (genuinely distinct ways the skill gets used) that should trigger it. All "when to use" info goes here, not in the body. Every word of the description sits in the context window on every turn, so it earns even harder pruning than the body:
-  - Front-load the skill's leading word; the description is where it does its invocation work, and when the same word lives in the user's prompts and docs, the agent links that shared language to the skill and fires it more reliably.
-  - One trigger per branch. Synonyms that rename a single branch are duplication ("build features using TDD ... asks for test-first development" is one branch written twice). Collapse them; keep only the genuinely distinct branches.
-  - Cut identity that's already in the body. Keep the description to triggers, plus any "when another skill needs..." reach clause.
+- **description**: When to trigger, what it does. This is the primary triggering mechanism. It does two jobs: state what the skill is, and list the branches (genuinely distinct ways the skill gets used) that should trigger it. All "when to use" info goes here, not in the body. Every word of the description sits in the context window on every turn, so it earns even harder pruning than the body. Read "Writing the description" in `references/writing-great-skills.md` before you write one: it covers front-loading the leading word, one trigger per branch, and cutting identity the body already holds. Two rules it lacks:
   - Write it in the third person, and never summarize the skill's workflow in it. An agent that can see the process in the description follows that shortcut instead of reading the body: a description saying "code review between tasks" produced a single review where the body required two. For discipline-enforcing skills (those that impose a rule the agent is tempted to break under pressure), the triggers should include symptoms of imminent violation ("when tempted to test after").
   - Budget the length for the tightest platform the skill ships to: the spec's hard limit is 1024 characters, Claude Code truncates the combined `description` plus `when_to_use` at 1,536 characters in the skill listing (so the key use case must sit in the first sentence), and claude.ai uploads cap the description at 200 characters.
 - **disable-model-invocation** (optional): Set to `true` when a skill should only ever fire by the user typing its name. The description then stops loading into the agent's context on every turn and becomes a human-facing one-line summary. It also blocks invocation through the Skill tool, subagent preloading, and scheduled-task use. Keep model invocation (the default) only when the agent must reach the skill on its own, or another skill must.
@@ -109,9 +106,7 @@ These word counts are approximate and you can feel free to go longer if needed.
 - Reference files clearly from SKILL.md with guidance on when to read them
 - Keep references one level deep: link every reference file directly from SKILL.md. Agents preview nested files with partial reads (`head -100`), so material two hops away gets truncated or missed.
 - For large reference files (>300 lines), include a table of contents
-- Branching is the cleanest disclosure test: inline what every branch of the skill needs, push behind a pointer what only some branches reach.
-- A pointer's wording, not its target, decides when and how reliably the agent reaches the material. If a must-have reference file keeps getting skipped, sharpen the pointer's wording first; inline the material only if that fails.
-- Co-locate: keep a concept's definition, rules, and caveats under one heading rather than scattered across the file, so reading one part brings its neighbours with it.
+- To decide what goes behind a pointer, how to word the pointer, and what to keep together, read "Information hierarchy" in `references/writing-great-skills.md` (the branching test, pointer wording, co-location).
 
 **Domain organization**: When a skill supports multiple domains/frameworks, organize by variant:
 
@@ -178,12 +173,7 @@ Output: feat(auth): implement JWT-based authentication
 
 Try to explain to the model why things are important in lieu of heavy-handed musty MUSTs. Use theory of mind and try to make the skill general and not super-narrow to specific examples. Start by writing a draft and then look at it with fresh eyes and improve it.
 
-A skill exists to wrangle determinism out of a stochastic system. Predictability, the agent taking the same process every run rather than producing the same output, is the root virtue the practices below serve (adapted from Matt Pocock's writing-great-skills; `references/writing-great-skills.md` has the full vocabulary):
-
-- **Leading words**: anchor behaviour in a compact concept the model already knows from pretraining (_lesson_, _fog of war_, _tracer bullets_) instead of restating a quality in a sentence. "Fast, deterministic, low-overhead" collapses into a _tight_ loop. Fewer tokens, and a sharper hook for the agent to hang its thinking on.
-- **Completion criteria**: end each step on a condition that is checkable (the agent can tell done from not-done) and, where it matters, exhaustive ("every modified model accounted for", not "produce a change list"). A vague criterion invites the agent to declare done early and rush ahead.
-- **Prompt the positive**: steering by prohibition backfires, since a ban names the unwanted behaviour into context ("don't think of an elephant"). State the target behaviour ("write one-line comments") so the banned one is never spoken; keep a prohibition only as a hard guardrail you cannot phrase positively, and pair it with what to do instead. Discipline enforcement is the one failure type where prohibitions are the correct form (see below).
-- **The no-op test**: for each sentence, ask whether it changes behaviour versus what the model does by default. If not, delete the whole sentence rather than trim it. A weak leading word ("be thorough" when the agent is already thorough-ish) is a no-op; the fix is a stronger word (_relentless_).
+Before you draft the body, and again when you review it, read `references/writing-great-skills.md` (adapted from Matt Pocock's writing-great-skills). Its sections "Leading words", "Completion criteria and legwork", "Pruning" (the no-op test) and "Failure modes" (negation, so prompt the positive) set how each sentence should steer.
 
 Calibrate specificity to fragility: prose heuristics where many approaches work, a parameterized template where one pattern is preferred, an exact do-not-modify command where the operation breaks under variation. Pick one term per concept and use it throughout; mixing synonyms (URL, route, path) makes instructions harder to follow.
 
@@ -215,6 +205,8 @@ See `references/schemas.md` for the full schema (the assertions you'll add later
 
 ## Running and evaluating test cases
 
+If you have no subagents (Claude.ai), no browser or display (Cowork, a remote box), or a `present_files` tool, read `references/other-surfaces.md` first: it says which steps below change.
+
 This section is one continuous sequence: don't stop partway through. Do NOT use `/skill-test` or any other testing skill.
 
 Put results in `<skill-name>-workspace/` as a sibling to the skill directory. Within the workspace, organize results by iteration (`iteration-1/`, `iteration-2/`, etc.) and within that, each test case gets a directory (`eval-0/`, `eval-1/`, etc.). Don't create all of this upfront, just create directories as you go.
@@ -232,6 +224,7 @@ Execute this task:
 - Input files: <eval files if any, or "none">
 - Save outputs to: <workspace>/iteration-<N>/eval-<ID>/with_skill/outputs/
 - Outputs to save: <what the user cares about, e.g., "the .docx file", "the final CSV">
+- Save a transcript of your plan, reasoning and tool calls to outputs/transcript.md
 ```
 
 **Baseline run** (same prompt, but the baseline depends on context):
@@ -286,9 +279,15 @@ Once all runs are done:
    This produces `benchmark.json` and `benchmark.md` with pass_rate, time, and tokens for each configuration, with mean ± stddev and the delta. If generating benchmark.json manually, see `references/schemas.md` for the exact schema the viewer expects.
    Put each with_skill version before its baseline counterpart.
 
-3. **Do an analyst pass**: read the benchmark data and surface patterns the aggregate stats might hide. See `agents/analyzer.md` (the "Analyzing Benchmark Results" section) for what to look for: things like assertions that always pass regardless of skill (non-discriminating), high-variance evals (possibly flaky), and time/token tradeoffs.
+3. **Check the leading words**: a skill steers through its leading words, the compact concepts its description and body lean on (see "Leading words" in `references/writing-great-skills.md`). Before you grep, list them: read the description and body and write down each such word (for example _tracer bullets_, _red_, _tight_). Then count each word in every with_skill run's transcript:
+   ```bash
+   grep -c -i '<word>' <workspace>/iteration-N/*/with_skill/outputs/transcript.md
+   ```
+   The transcript is the executor's written log of its plan and reasoning, not its raw hidden thinking. A leading word that is absent from a run's reasoning and plan is a steering failure, even when every assertion passes: the agent did not think with the word, so the skill did not steer that run. Record each miss in the analyst notes and fix it before the next iteration, per `references/writing-great-skills.md`: pick a stronger word, or anchor the word at the step where it should act.
 
-4. **Launch the viewer** with both qualitative outputs and quantitative data:
+4. **Do an analyst pass**: read the benchmark data and surface patterns the aggregate stats might hide. See `agents/analyzer.md` (the "Analyzing Benchmark Results" section) for what to look for: things like assertions that always pass regardless of skill (non-discriminating), high-variance evals (possibly flaky), and time/token tradeoffs.
+
+5. **Launch the viewer** with both qualitative outputs and quantitative data:
    ```bash
    nohup python <skill-creator-path>/eval-viewer/generate_review.py \
      <workspace>/iteration-N \
@@ -299,11 +298,11 @@ Once all runs are done:
    ```
    For iteration 2+, also pass `--previous-workspace <workspace>/iteration-<N-1>`.
 
-   **Cowork / headless environments:** If `webbrowser.open()` is not available or the environment has no display, use `--static <output_path>` to write a standalone HTML file instead of starting a server. Feedback will be downloaded as a `feedback.json` file when the user clicks "Submit All Reviews". After download, copy `feedback.json` into the workspace directory for the next iteration to pick up.
+   With no display (a remote box), pass `--static <output_path>` to write a standalone HTML file instead of starting a server; `references/other-surfaces.md` covers how `feedback.json` comes back then.
 
-Note: please use generate_review.py to create the viewer; there's no need to write custom HTML.
+   After the runs finish, build the viewer with `generate_review.py` and put it in front of the user before you judge the outputs yourself; it beats writing custom HTML.
 
-5. **Tell the user** something like: "I've opened the results in your browser. There are two tabs: 'Outputs' lets you click through each test case and leave feedback, 'Benchmark' shows the quantitative comparison. When you're done, come back here and let me know."
+6. **Tell the user** something like: "I've opened the results in your browser. There are two tabs: 'Outputs' lets you click through each test case and leave feedback, 'Benchmark' shows the quantitative comparison. When you're done, come back here and let me know."
 
 ### What the user sees in the viewer
 
@@ -489,56 +488,9 @@ The optimization loop is a one-time tune-up; triggering can still regress later,
 
 ---
 
-### Package and Present (only if `present_files` tool is available)
+### Package and present
 
-Check whether you have access to the `present_files` tool. If you don't, skip this step. If you do, first sweep the skill directory: every file referenced from SKILL.md exists (the packaging validator warns on broken markdown links, but backtick path references still need a manual check), and no bundled file carries secrets, since a packaged skill is a shared artifact. Then package the skill and present the .skill file to the user:
-
-```bash
-python -m scripts.package_skill <path/to/skill-folder>
-```
-
-After packaging, direct the user to the resulting `.skill` file path so they can install it.
-
----
-
-## Claude.ai-specific instructions
-
-In Claude.ai, the core workflow is the same (draft → test → review → improve → repeat), but because Claude.ai doesn't have subagents, some mechanics change. Here's what to adapt:
-
-**Running test cases**: No subagents means no parallel execution. For each test case, read the skill's SKILL.md, then follow its instructions to accomplish the test prompt yourself. Do them one at a time. This is less rigorous than independent subagents (you wrote the skill and you're also running it, so you have full context), but it's a useful sanity check, and the human review step compensates. Skip the baseline runs, just use the skill to complete the task as requested.
-
-**Reviewing results**: If you can't open a browser (e.g., Claude.ai's VM has no display, or you're on a remote server), skip the browser reviewer entirely. Instead, present results directly in the conversation. For each test case, show the prompt and the output. If the output is a file the user needs to see (like a .docx or .xlsx), save it to the filesystem and tell them where it is so they can download and inspect it. Ask for feedback inline: "How does this look? Anything you'd change?"
-
-**Benchmarking**: Skip the quantitative benchmarking: it relies on baseline comparisons which aren't meaningful without subagents. Focus on qualitative feedback from the user.
-
-**The iteration loop**: Same as before (improve the skill, rerun the test cases, ask for feedback), just without the browser reviewer in the middle. You can still organize results into iteration directories on the filesystem if you have one.
-
-**Description optimization**: The automated loop requires the `claude` CLI tool (specifically `claude -p`) which is only available in Claude Code. On Claude.ai, verify triggering manually instead: after the user uploads and enables the skill, have them try several prompts that should trigger it, check Claude's thinking to confirm the skill loads, and iterate on the description when it misses. Keep the description within claude.ai's 200-character cap.
-
-**Blind comparison**: Requires subagents. Skip it.
-
-**Packaging**: The `package_skill.py` script works anywhere with Python and a filesystem. On Claude.ai, you can run it and the user can download the resulting `.skill` file.
-
-**Updating an existing skill**: The user might be asking you to update an existing skill, not create a new one. In this case:
-
-- **Preserve the original name.** Note the skill's directory name and `name` frontmatter field -- use them unchanged. E.g., if the installed skill is `research-helper`, output `research-helper.skill` (not `research-helper-v2`).
-- **Copy to a writeable location before editing.** The installed skill path may be read-only. Copy to `/tmp/skill-name/`, edit there, and package from the copy.
-- **If packaging manually, stage in `/tmp/` first**, then copy to the output directory -- direct writes may fail due to permissions.
-- **Match the upload format.** The archive must contain the skill folder as its root (not loose files, not a nested wrapper), and the folder name must match the skill name. `package_skill.py` produces this shape; replicate it when zipping by hand.
-
----
-
-## Cowork-Specific Instructions
-
-If you're in Cowork, the main things to know are:
-
-- You have subagents, so the main workflow (spawn test cases in parallel, run baselines, grade, etc.) all works. (However, if you run into severe problems with timeouts, it's OK to run the test prompts in series rather than parallel.)
-- You don't have a browser or display, so when generating the eval viewer, use `--static <output_path>` to write a standalone HTML file instead of starting a server. Then proffer a link that the user can click to open the HTML in their browser.
-- For whatever reason, the Cowork setup seems to disincline Claude from generating the eval viewer after running the tests, so just to reiterate: whether you're in Cowork or in Claude Code, after running tests, you should always generate the eval viewer for the human to look at examples before revising the skill yourself and trying to make corrections, using `generate_review.py` (not writing your own boutique html code). Sorry in advance but I'm gonna go all caps here: GENERATE THE EVAL VIEWER _BEFORE_ evaluating inputs yourself. You want to get them in front of the human ASAP!
-- Feedback works differently: since there's no running server, the viewer's "Submit All Reviews" button will download `feedback.json` as a file. You can then read it from there (you may have to request access first).
-- Packaging works: `package_skill.py` just needs Python and a filesystem.
-- Description optimization (`run_loop.py` / `run_eval.py`) should work in Cowork just fine since it uses `claude -p` via subprocess, not a browser, but please save it until you've fully finished making the skill and the user agrees it's in good shape.
-- **Updating an existing skill**: The user might be asking you to update an existing skill, not create a new one. Follow the update guidance in the claude.ai section above.
+If you have a `present_files` tool, or the user wants a `.skill` file for claude.ai or Cowork, follow "Package and present" in `references/other-surfaces.md`.
 
 ---
 
@@ -557,6 +509,7 @@ The references/ directory has additional documentation:
 - `references/writing-great-skills.md`: skill design vocabulary adapted from Matt Pocock's writing-great-skills (invocation and context load, information hierarchy, leading words, completion criteria, pruning, failure modes). Read it when drafting a new skill or diagnosing a misbehaving one.
 - `references/bulletproofing.md`: test-first hardening for discipline-enforcing skills, adapted from Jesse Vincent's writing-skills (baseline-before-writing, pressure scenarios, rationalization tables, the form-to-failure matrix, wording micro-tests, persuasion register). Read it when a skill enforces a rule agents might skip under pressure, or when an agent keeps rationalizing its way around one.
 - `references/cutting-skills.md`: trimming a skill to its behavioral core, adapted from swyx's skill-cutter (audit and cut modes, rule-force and content tables, gate check, trigger narrowing, report shape). Read it when the user asks to cut, shorten, or de-slop a skill, or to make it trigger less.
+- `references/other-surfaces.md`: what changes on claude.ai (no subagents) and in Cowork (no browser or display), how to update an installed skill there, and how to package and present a `.skill` file. Read it before running test cases when you lack subagents or a display, or when you have a `present_files` tool.
 - `references/marketplace-integration.md`: shipping a skill inside a plugin marketplace repo (convention discovery, manifest and marketplace registration, version bump discipline, structure and trigger-regression test scaffolds). Read it when the skill under construction lives in a repo that distributes plugins.
 
 ---
@@ -572,6 +525,6 @@ Repeating one more time the core loop here for emphasis:
 - Repeat until you and the user are satisfied
 - Package the final skill and return it to the user.
 
-Please add steps to your TodoList, if you have such a thing, to make sure you don't forget. If you're in Cowork, please specifically put "Create evals JSON and run `eval-viewer/generate_review.py` so human can review test cases" in your TodoList to make sure it happens.
+Please add steps to your TodoList, if you have such a thing, to make sure you don't forget.
 
 Good luck!
