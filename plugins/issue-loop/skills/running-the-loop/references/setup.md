@@ -40,3 +40,31 @@ These are the stand-ins for a person who watches. `references/limits.md` says wh
 ## What stays with the user
 
 Branch protection itself (bind admins too, name the required checks). The loop's token can often change it, and for that reason the loop must not: the orchestrator does not change its own limits.
+
+## Setup, once per repo
+
+Then make the loop folder, outside every checkout:
+
+```bash
+"${CLAUDE_SKILL_DIR}/scripts/init.sh" ~/loops/<project>
+```
+
+It copies `loop.env`, `rules.md`, `next.sh`, `wait.sh`, `gate.sh`, `start.sh`, `notify.sh`, `grant.sh`, `takeover-check.sh`, `standing-order.md`, `standing-order-impl.md`, `lib.sh`, `driver-herdr.sh`, `ledger.tsv` and a blank `HANDOFF.md`. Then:
+
+1. Edit `loop.env`: the implementer's session name, its checkout, the base branch, the deploy workflow, a URL that proves the app is alive.
+2. Fill every `<FILL: ...>` in `rules.md` with the user, or delete the rule. `next.sh` refuses to send a brief with a marker left. `references/brief-rules.md` gives the reason behind each rule, so the user can drop one that does not fit.
+3. Write the user's standing orders into `HANDOFF.md` as they give them. That file is your memory.
+4. Write your own session name into the file `orch-name` in the loop folder: the name this session was started under. If you cannot tell which name in the driver's list is yours (with herdr, `herdr agent list`), ask the user. Rule 19 of the brief has the implementer tell that session when it is done. `next.sh` refuses to send a brief while the file is missing. Then name the Claude session for the user: `herdr agent prompt <your name> "/rename <project>-orchestrator-main"` (it runs when your turn ends). The driver's name stays as it is; the scripts use it. At a handover the names and the old tabs change as `handing-over` says.
+5. Ask the user to start `claude` once in the loop folder and accept the folder trust question. A successor orchestrator starts in that folder, and a session in a folder Claude Code has never seen sits on that question. Trusting a folder is the user's choice: never answer it for them.
+6. Get the user's standing order (next section). `next.sh` refuses to send a brief without it.
+7. Start the implementer if none runs: write a one-line hello to a file and run `./start.sh <name> <checkout> "<tab label>" <file>`. The implementer should have a checkout of its own that no other session works in. One that ran before the standing order was granted must be started anew, since a session reads its instructions when it starts.
+
+If the host has no herdr, read `references/driver.md` and write the five driver functions for what the host has, before anything else.
+
+## Granting the standing order
+
+So the user gives the order once, in their own channel, where every later session finds it as its instructions:
+
+1. Ask the user in plain words: "May the orchestrator send the implementer its briefs, and may an orchestrator hand the loop to a successor, without your go each time? What stays yours?" Take their answer as it comes.
+2. Fill the `<FILL: ...>` marks in `standing-order.md`: the project, the user's own words with the date, the orchestrators' names or their pattern, and what stays the user's. Do not put words in their mouth: where they said nothing, write the default and say that it is the default. Read `standing-order-impl.md` with them; it has no marks.
+3. The user runs `./grant.sh` in a terminal of their own. It prints both texts, asks for a typed yes, and then writes `CLAUDE.md` in the loop folder (for orchestrators) and `CLAUDE.local.md` in the implementer's checkout (kept out of git through `.git/info/exclude`, so the gate's clean-tree check holds). Claude Code loads both as the user's instructions for a session that starts there.

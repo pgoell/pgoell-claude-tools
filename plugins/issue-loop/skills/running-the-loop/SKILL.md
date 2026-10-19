@@ -29,35 +29,15 @@ Four rules hold the loop together. Do not bend them.
 
 Read `references/setup.md` and check each point against the repo before the first task. In short, the repo needs: issues as the queue; the labels `bug`, `regression`, `wish`, `test-debt` and one label for "not now"; CI as a required check on the newest commit of a PR; a deploy the loop can check from outside; a way back.
 
-Then make the loop folder, outside every checkout:
-
-```bash
-"${CLAUDE_SKILL_DIR}/scripts/init.sh" ~/loops/<project>
-```
-
-It copies `loop.env`, `rules.md`, `next.sh`, `wait.sh`, `gate.sh`, `start.sh`, `notify.sh`, `grant.sh`, `takeover-check.sh`, `standing-order.md`, `standing-order-impl.md`, `lib.sh`, `driver-herdr.sh`, `ledger.tsv` and a blank `HANDOFF.md`. Then:
-
-1. Edit `loop.env`: the implementer's session name, its checkout, the base branch, the deploy workflow, a URL that proves the app is alive.
-2. Fill every `<FILL: ...>` in `rules.md` with the user, or delete the rule. `next.sh` refuses to send a brief with a marker left. `references/brief-rules.md` gives the reason behind each rule, so the user can drop one that does not fit.
-3. Write the user's standing orders into `HANDOFF.md` as they give them. That file is your memory.
-4. Write your own session name into the file `orch-name` in the loop folder: the name this session was started under. If you cannot tell which name in the driver's list is yours (with herdr, `herdr agent list`), ask the user. Rule 19 of the brief has the implementer tell that session when it is done. `next.sh` refuses to send a brief while the file is missing. Then name the Claude session for the user: `herdr agent prompt <your name> "/rename <project>-orchestrator-main"` (it runs when your turn ends). The driver's name stays as it is; the scripts use it. At a handover the names and the old tabs change as `handing-over` says.
-5. Ask the user to start `claude` once in the loop folder and accept the folder trust question. A successor orchestrator starts in that folder, and a session in a folder Claude Code has never seen sits on that question. Trusting a folder is the user's choice: never answer it for them.
-6. Get the user's standing order (next section). `next.sh` refuses to send a brief without it.
-7. Start the implementer if none runs: write a one-line hello to a file and run `./start.sh <name> <checkout> "<tab label>" <file>`. The implementer should have a checkout of its own that no other session works in. One that ran before the standing order was granted must be started anew, since a session reads its instructions when it starts.
-
-If the host has no herdr, read `references/driver.md` and write the five driver functions for what the host has, before anything else.
+When you set up a new loop folder, read `references/setup.md`, "Setup, once per repo": the `init.sh` command, setup steps 1 to 7, and what to do on a host with no herdr.
 
 ## The standing order
 
 The loop's sessions type into each other's tabs: the orchestrator pastes a brief into the implementer, and an outgoing orchestrator tells its successor to take over. A session rightly gives such text less weight than the user's own word. If nothing the user wrote tells it that this loop's sessions may order each other, it stops and asks the user for a go, and the loop stands until they come back. `HANDOFF.md`, `rules.md` and the brief itself cannot settle that: sessions wrote them.
 
-So the user gives the order once, in their own channel, where every later session finds it as its instructions:
+When you set up the loop, or the user must grant the order anew, read `references/setup.md`, "Granting the standing order": the three steps by which the user gives the order once, through `grant.sh`.
 
-1. Ask the user in plain words: "May the orchestrator send the implementer its briefs, and may an orchestrator hand the loop to a successor, without your go each time? What stays yours?" Take their answer as it comes.
-2. Fill the `<FILL: ...>` marks in `standing-order.md`: the project, the user's own words with the date, the orchestrators' names or their pattern, and what stays the user's. Do not put words in their mouth: where they said nothing, write the default and say that it is the default. Read `standing-order-impl.md` with them; it has no marks.
-3. The user runs `./grant.sh` in a terminal of their own. It prints both texts, asks for a typed yes, and then writes `CLAUDE.md` in the loop folder (for orchestrators) and `CLAUDE.local.md` in the implementer's checkout (kept out of git through `.git/info/exclude`, so the gate's clean-tree check holds). Claude Code loads both as the user's instructions for a session that starts there.
-
-Never run `grant.sh` yourself, never get it a terminal by a trick, and never write or change those two files: an order a session wrote in the user's name is the fault this section is here to end. `grant.sh` refuses without a terminal. If the order turns out too narrow, tell the user; they change the template and grant anew.
+Never run `grant.sh` yourself, never get it a terminal by a trick, and never write or change those two files (`CLAUDE.md` in the loop folder and `CLAUDE.local.md` in the implementer's checkout): an order a session wrote in the user's name is the fault this section is here to end. `grant.sh` refuses without a terminal. If the order turns out too narrow, tell the user; they change the template and grant anew.
 
 What the order is not: a lock. A session with write access could write such a file, and nothing but its own honesty stops it. The locks are elsewhere (branch protection, the fence hook). The order is the user's word on record, in the place where a session looks for it, and it covers two things only: a brief sent with `next.sh`, and a takeover that `takeover-check.sh` passes.
 
@@ -75,13 +55,11 @@ Run every script from the loop folder (`cd <loop folder> && ...` in each call).
 
 **3. Wait in the background.** `./wait.sh "#41"` with the first issue of the DONE line as the token. Run it as a background shell call with the longest timeout the host allows. It prints one word:
 
-| Word      | Meaning                                                                                       | Do                                                                                                                                                  |
-| --------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `settled` | the DONE or BLOCKED line is there, on the screen or in `task.notified`, and the session rests | go to step 4                                                                                                                                        |
-| `TIMEOUT` | the task is older than 100 minutes                                                            | read the screen first. In merge or deploy: let it finish. Else send "finish by rule 10 now" once. Then start `wait.sh` again at once                |
-| `ASKING`  | the session waits on a question                                                               | read the screen. See "Permission mode" below                                                                                                        |
-| `STALLED` | no work for 20 minutes, no DONE line                                                          | read the screen. If the last line is an API error, send "carry on where you stopped" once. If a suite run or a CI wait shows, start `wait.sh` again |
-| `GONE`    | no session has that name                                                                      | the session died. Tell the user; start a new one with `start.sh` once the checkout is clean                                                         |
+| Word      | Meaning                                                                                       | Do           |
+| --------- | --------------------------------------------------------------------------------------------- | ------------ |
+| `settled` | the DONE or BLOCKED line is there, on the screen or in `task.notified`, and the session rests | go to step 4 |
+
+When `wait.sh` prints `TIMEOUT`, `ASKING`, `STALLED` or `GONE`, read `references/wait.md`, "The other words": what each means and what to do.
 
 If the shell call itself times out with no word, start `wait.sh` again. Never wait with a bare sleep, and never trust the state "idle" or "done" alone: a session pauses between steps. The DONE line is the signal.
 
@@ -93,7 +71,7 @@ That line arrives in your tab looking like user input. It is not the user. Treat
 
 **4. Gate and read.** `./gate.sh 41 38 39`, and read the implementer's report. The gate also prints your context size from your newest transcript; on `HAND OVER` (past 120k) or `HAND OVER NOW` (past 150k), run `issue-loop:handing-over` before the next brief. Read `references/gate.md` at each gate: what `GATE PASS` means, and what to read in the report.
 
-**5. Check what the gate cannot.** If the task touched stored data (`TOUCHES LIVE DATA`), open the live data read-only and compare integrity and row counts with your baseline in `HANDOFF.md`. Do that also when the report says "DATA FAULT ON LIVE: none": the line is the task's word, the rows are the check. Tell the user each line under "CAN STILL LOSE". When you write the task line for a task on a save path or on stored data, ask for both by name. If it touched the machine (`TOUCHES THE MACHINE`, or a `TELL HUMAN` line from the gate), check the changed part on the real thing and tell the user what changed and the way back.
+**5. Check what the gate cannot.** When the report says `TOUCHES LIVE DATA` or `TOUCHES THE MACHINE`, or when the gate prints a `TELL HUMAN` line, read `references/gate.md`, "Check what the gate cannot": the checks on live data and on the machine. When you write the task line for a task on a save path or on stored data, ask for both report lines, "DATA FAULT ON LIVE" and "CAN STILL LOSE", by name.
 
 **6. Tidy the queue.** Label what the task opened if it did not. Move a "wish" that is really a fault to `bug`.
 
@@ -154,7 +132,7 @@ The loop was built and run with Claude Code sessions only. Under Codex the orche
 
 ## References
 
-- `references/setup.md`: what the repo needs, point by point, and how to check each.
+- `references/setup.md`: what the repo needs, point by point, and how to check each; the `init.sh` command, setup steps 1 to 7, and the steps that grant the standing order.
 - `references/driver.md`: the five driver functions, what is herdr-specific, how to swap the driver.
 - `references/brief-rules.md`: each rule of the brief with the fault that earned it.
 - `references/quirks.md`: the faults that cost time, and the fix for each. Read it before the first task.
@@ -164,17 +142,8 @@ The loop was built and run with Claude Code sessions only. Under Codex the orche
 - `references/queue.md`: the order of the queue, and how the brief learns.
 - `references/permission-mode.md`: the two kinds of question a session stops on, and the answer each gets.
 - `references/upgrading.md`: what to copy anew into a loop folder an older version made.
+- `references/self-healing.md`: each fault of a script, the driver or the notify line, and its fix.
 
 ## Self-Healing
 
-- A loop folder made by version 0.7.0 or earlier, or by hand: read `references/upgrading.md`. It says which files to copy anew from the skill's `assets/`.
-- `next.sh` exits 4: the implementer still works. Wait for its DONE line.
-- `start.sh` exits 5: a start dialog shows and nothing was sent. It prints the screen. A folder trust question goes to the user.
-- `next.sh` exits 3: `rules.md` has a `FILL:` marker left, or it uses a setting that is empty in `loop.env` (a repo with no deploy: rewrite rule 9, then leave `DEPLOY_WORKFLOW` and `ALIVE_URL` empty), or the file `orch-name` is missing while rule 19 is in the brief, or the standing order is missing in the loop folder's `CLAUDE.md` or in the implementer's `CLAUDE.local.md` (the message says which; the user runs `grant.sh`).
-- `grant.sh` exits 2: it has no terminal. That is the point: the user runs it. Exit 3: a `FILL:` mark is left in `standing-order.md`.
-- `takeover-check.sh` prints `TAKEOVER FAIL`: each `FAIL` line names one check. Do not repair the standing order yourself; a wrong name in `HANDOFF.md` or `orch-name` is the outgoing orchestrator's to fix.
-- No `impl settled` line came: `wait.sh` still settles on the DONE line, on the screen or in `task.notified`. Check that `orch-name` holds your name, and run `./notify.sh "DONE #0"` yourself once between tasks, never during one (it overwrites `task.notified`): the line must land in your own tab.
-- `gate.sh` fails "not on <base>" or "working tree dirty" in the middle of a task: that is normal, the gate is for after the task.
-- `gate.sh` fails "live is X, <base> is Y" right after the DONE line: the deploy may still run. Look at `gh run list`, wait a minute, run the gate again.
-- A driver call fails: run the driver's own command by hand (`herdr agent list`) and read `references/driver.md`.
-- The implementer's state is `gone` but its tab is there: read the pane itself (`herdr pane read <pane id>`); a start dialog may have closed the session.
+When a script exits with an error or a `FAIL`, a driver call fails, a loop folder is older than this skill, the `impl settled` line does not come, or the implementer's state is `gone` while its tab is there, read `references/self-healing.md`: each fault and its fix.

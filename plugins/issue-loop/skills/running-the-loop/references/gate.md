@@ -15,3 +15,7 @@ The screen keeps only about 70 lines of it (`. ./lib.sh; drv_read "$IMPL" 130` s
 - **Issues opened**: this is where shipped faults hide. For each, ask: is it a gap in what was asked, a privacy or data fault, or something that hides the product's main function? If yes, it runs NEXT.
 - **OUTPUT CHANGES**: what the product now puts out differently for the same input (a print, an export). Tell the user each line; nobody asked for most of them.
 - **Heads up** lines at the bottom of the session's screen.
+
+## Check what the gate cannot
+
+If the task touched stored data (`TOUCHES LIVE DATA`), open the live data read-only and compare integrity and row counts with your baseline in `HANDOFF.md`. Do that also when the report says "DATA FAULT ON LIVE: none": the line is the task's word, the rows are the check. Tell the user each line under "CAN STILL LOSE". If it touched the machine (`TOUCHES THE MACHINE`, or a `TELL HUMAN` line from the gate), check the changed part on the real thing and tell the user what changed and the way back.
