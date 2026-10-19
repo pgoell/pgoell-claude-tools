@@ -1,12 +1,14 @@
 # Atlassian Document Format (ADF) Reference
 
+Read this when you build the JSON body of a curl write call (issue description, comment, description update).
+
 ## When ADF Is Needed
 
 ADF is required **only** for curl-based Jira REST API write operations:
 
-- **Create issue** (`POST /rest/api/3/issue`) — the `description` field
-- **Add comment** (`POST /rest/api/3/issue/{key}/comment`) — the `body` field
-- **Update description** (`PUT /rest/api/3/issue/{key}`) — the `description` field inside `fields`
+- **Create issue** (`POST /rest/api/3/issue`): the `description` field
+- **Add comment** (`POST /rest/api/3/issue/{key}/comment`): the `body` field
+- **Update description** (`PUT /rest/api/3/issue/{key}`): the `description` field inside `fields`
 
 ADF is **not needed** when using `acli`. The CLI accepts plain text directly.
 
@@ -163,7 +165,7 @@ The `language` attribute is optional but recommended for syntax highlighting.
 }
 ```
 
-Code blocks contain **plain text nodes only** — no marks or inline formatting.
+Code blocks contain **plain text nodes only**, no marks or inline formatting.
 
 ### Blockquote
 
@@ -397,7 +399,7 @@ Marks are applied to text nodes to add formatting. Multiple marks can be combine
 | Subscript     | `{"type": "subsup", "attrs": {"type": "sub"}}`         |
 | Superscript   | `{"type": "subsup", "attrs": {"type": "sup"}}`         |
 
-Example — bold and italic combined:
+Example: bold and italic combined.
 
 ```json
 {
@@ -540,7 +542,7 @@ curl -s -X POST \
             "text": "PR #482",
             "marks": [{"type": "link", "attrs": {"href": "https://github.com/org/repo/pull/482"}}]
           },
-          {"type": "text", "text": " — ready for review."}
+          {"type": "text", "text": ", ready for review."}
         ]
       },
       {

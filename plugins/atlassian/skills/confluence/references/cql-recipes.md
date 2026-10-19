@@ -1,5 +1,7 @@
 # CQL Recipes Reference
 
+Read this when you turn a request into CQL (title, space, creator, date, label or ancestor queries).
+
 CQL (Confluence Query Language) is used for searching Confluence content. **CQL is only available via the v1 REST API.** All CQL queries must use:
 
 ```

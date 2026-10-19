@@ -1,5 +1,7 @@
 # JQL Recipes Reference
 
+Read this when you turn a request into JQL (my issues, sprint, status, dates, text, labels, standup or review queries).
+
 Common JQL patterns for Jira queries. Use these with:
 
 - **CLI:** `acli jira workitem search --jql '<JQL>'`

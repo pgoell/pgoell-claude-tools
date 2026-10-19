@@ -1,6 +1,6 @@
 {
   "name": "atlassian",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Use Jira and Confluence from agent workflows.",
   "author": {
     "name": "Pascal Göllner"

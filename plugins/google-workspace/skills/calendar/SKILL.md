@@ -26,7 +26,7 @@ Always prefer `+` helpers when one exists for the operation.
 
 ---
 
-## Operations — Tier 1 (Read)
+## Operations: Tier 1 (Read)
 
 ### View Agenda
 
@@ -60,7 +60,7 @@ gws calendar freebusy query --json '{"timeMin": "<iso>", "timeMax": "<iso>", "it
 
 ---
 
-## Operations — Tier 2 (Write)
+## Operations: Tier 2 (Write)
 
 ### Create Event
 
@@ -92,7 +92,7 @@ gws calendar events move --params '{"calendarId": "primary", "eventId": "<id>", 
 
 ---
 
-## Operations — Tier 3 (Manage)
+## Operations: Tier 3 (Manage)
 
 ### Delete Event
 
@@ -161,7 +161,6 @@ If gws is not installed or not authenticated, tell the user:
 
 ## Behavioral Guidelines
 
-- Prefer `+` helpers (`+agenda`, `+insert`) over raw API calls when available.
 - Default to `"calendarId": "primary"` in `--params` unless the user specifies a different calendar.
 - Use ISO 8601 / RFC 3339 format for all timestamps (e.g., `2026-03-18T14:00:00-04:00`).
 - Use `--dry-run` to preview commands before executing destructive operations.

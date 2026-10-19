@@ -26,7 +26,7 @@ Always prefer `+` helpers when one exists for the operation.
 
 ---
 
-## Operations — Tier 1 (Read)
+## Operations: Tier 1 (Read)
 
 ### Triage Inbox
 
@@ -68,7 +68,7 @@ gws gmail users labels list --params '{"userId": "me"}'
 
 ---
 
-## Operations — Tier 2 (Write)
+## Operations: Tier 2 (Write)
 
 ### Send Email
 
@@ -107,7 +107,7 @@ gws gmail users drafts create --params '{"userId": "me"}' --json '<draft-json>'
 
 ---
 
-## Operations — Tier 3 (Manage)
+## Operations: Tier 3 (Manage)
 
 ### Trash / Delete Message
 
@@ -116,7 +116,7 @@ gws gmail users messages trash --params '{"userId": "me", "id": "<id>"}'
 gws gmail users messages delete --params '{"userId": "me", "id": "<id>"}'
 ```
 
-Trash is reversible. Delete is permanent — confirm with the user first.
+Trash is reversible. Delete is permanent: confirm with the user first.
 
 ### Modify Labels on a Message
 
@@ -175,7 +175,6 @@ If gws is not installed or not authenticated, tell the user:
 
 ## Behavioral Guidelines
 
-- Prefer `+` helper commands over raw API calls when a helper exists.
 - JSON is the default output format for all commands including helpers. Use `--format table` for human-readable output when needed.
 - Use `--dry-run` to preview destructive operations before executing.
 - Confirm with the user before destructive operations (delete). Trash is reversible, delete is not.
