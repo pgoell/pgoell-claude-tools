@@ -56,6 +56,8 @@ The order covers two things: a brief sent with `next.sh`, which the implementer 
 
 `grant.sh` refuses without a terminal, and the skills forbid a session to write those files. That is a rule, not a lock: a session that can write to the folder could forge the file. The locks stay where they were: branch protection, a fence hook.
 
+**After an update to 0.6.0**, on a loop that runs: `running-the-loop` now starts only from `/issue-loop:running-the-loop`, so the model cannot load it on its own. Run `/reload-plugins` in the orchestrator's tab, so its next handover sends the new first message, and change the line "Run the loop by the skill `issue-loop:running-the-loop`" in the loop folder's `HANDOFF.md` to the one in `skills/handing-over/references/handoff-template.md`.
+
 **After an update from 0.2.0 or earlier**, on a loop that runs: in this order: run `scripts/init.sh <loop folder>` again (it adds the new files and overwrites nothing), copy `lib.sh` anew from `skills/running-the-loop/assets/`, fill `standing-order.md`, run `./grant.sh`, and only then copy `next.sh` and `start.sh` anew. The new `next.sh` refuses to send a brief without the order; with the old one the loop works as before, with a go from you now and then. A hand-made loop folder needs a `loop.env` first.
 
 Sessions run with permissions skipped (`claude --permission-mode bypassPermissions`). Set `PERMISSION_MODE=auto` in `loop.env` for a loop that should ask.
