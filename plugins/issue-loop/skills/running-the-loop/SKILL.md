@@ -13,6 +13,7 @@ This skill drives Claude Code sessions (`/clear`, `--permission-mode bypassPermi
 
 - One feature or one bug, built here in this session: just build it.
 - You are an orchestrator whose context is filling up: use `issue-loop:handing-over`.
+- The user asks you to create or start an orchestrator session: finish setup (steps 1 to 6 of "Setup, once per repo"), then start the orchestrator in the loop folder and hand it the loop as `issue-loop:handing-over` steps 1 to 5 say. Do not take the role yourself: a session outside the loop folder lacks the standing order in that folder's `CLAUDE.md`.
 - The repo has no CI, no deploy and no issues: there is nothing for the loop to hold on to. Say what is missing (see `references/setup.md`).
 
 ## The shape
