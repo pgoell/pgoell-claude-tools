@@ -32,6 +32,8 @@ Working directory: a `<topic-slug>/` directory under the current project unless 
 
 **Inputs:** the user's request and material, `references/audience-brief-template.md`, `references/time-budget.md`.
 
+**Material comes first.** When the request names results, figures, or data (for example "our Q3 results") and none is attached, ask for that material before question 1: the figures, documents, or source data the deck reports. If some is given, ask only for the named figures still missing. Skip this when the material is given, the request names no results or data, or no user is reachable. Never invent a figure: each one still missing is a named gap, written "none in material".
+
 **Process:** ask the user these questions one at a time, skipping any their material already answers:
 
 1. Who is the audience? Role, seniority, prior knowledge, and their objections, strongest first.
