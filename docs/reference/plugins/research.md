@@ -33,3 +33,17 @@ One skill that researches a complex topic and writes a sourced report. It plans 
 - Format: HTML by default. Ask for "a markdown research report" to get markdown for one run.
 - Path: `reports/<topic-slug>-<YYYY-MM-DD>/report.html` (or `report.md`). You can name another path.
 - Config: the skill ignores `.workbench/config.md` for format and path. It does honor that file's `## Design system` section, so a project-wide design system themes research reports too (see [workbench](/reference/plugins/workbench.md)). Applying a design system needs workbench 1.2.2 or later installed; without it, the skill says so and the report keeps the template's defaults.
+
+## Evals
+
+`plugins/research/evals/` holds 11 `claude plugin eval` cases that test when the skill fires. Cases 01 and 02 are triggers: a sourced investigation and a market comparison, where `research:research` must fire. Cases 21 to 23 are negatives (a concept question, a translation, a one-paragraph summary): neither `research:research` nor `anthropic-skills:deep-research` may fire.
+
+Cases 31 to 36 are near-misses. Cases 31 and 32 ask in the words of the anthropic-skills `deep-research` skill (a literature review; the history and trends of an industry): `research:research` must fire and `anthropic-skills:deep-research` must not. Cases 33 to 36 are plain web lookups (one fact, a current version, a docs page, a given URL): neither skill may fire, and an `llm` grader checks that the answer came straight back, with no plan, report or subagents. These four allow WebSearch and WebFetch. WebFetch is a gated tool that `allowed_tools` alone does not grant, so the run command below grants it with `--allow-tools WebFetch`; a run of these four needs network.
+
+No prompt uses the word "research", so the model must route on meaning. The graders match the full names `research:research` and `anthropic-skills:deep-research`, so a word in a call's args does not match. The `anthropic-skills:deep-research` graders pass on their own unless the eval run loads the anthropic-skills plugin. With that plugin loaded, cases 31 and 32 may fail and the run exit 1: a routing check picked `deep-research` for both, since its description names literature reviews and trends and the `research` description does not (#237). They may still pass, because `deep-research` asks for a subagent tool and these cases allow none.
+
+No one has run the suite yet; a run costs money, so the user decides when. Run from `plugins/research`:
+
+```bash
+claude plugin eval . --trust-plugin --tag core --runs 1 -j 4 --max-cost-usd 10 --no-publish --allow-tools WebFetch
+```
