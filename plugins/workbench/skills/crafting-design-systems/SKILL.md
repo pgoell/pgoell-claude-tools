@@ -87,6 +87,7 @@ Multi-slide presentations are not themed by design systems: the `presentations` 
 
 ## Bundled
 
+- `references/applying-a-design-system.md`: the one copy of the protocol producers follow to apply the active design system (resolve, locate, inline). Producers read it; edit it here, never copy it into a producer.
 - `references/starter-colors.css`: union of every variable above, populated with the templates' current values. Copy as the starting point for `colors.css`.
 - `references/example-design-system/`: a fully-populated twilight example (`manifest.md`, `colors.css`, `typography.css`). Read for shape reference; do not copy as the active system.
 
