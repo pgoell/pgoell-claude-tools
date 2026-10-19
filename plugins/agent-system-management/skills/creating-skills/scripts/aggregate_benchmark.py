@@ -89,9 +89,17 @@ def _read_obj(path: Path) -> dict | None:
     return data
 
 
+def _finite(value) -> bool:
+    """Whether a number is finite as a float (not NaN, Infinity or too big)."""
+    try:
+        return math.isfinite(float(value))
+    except OverflowError:
+        return False
+
+
 def _ok(value, kind, path, field: str) -> bool:
-    """Whether value has the kind; warns when not."""
-    if isinstance(value, kind) and not isinstance(value, bool):
+    """Whether value has the kind (a number also finite); warns when not."""
+    if isinstance(value, kind) and not isinstance(value, bool) and (kind is not NUM or _finite(value)):
         return True
     print(f"Warning: {path}: {field} is not {KIND_NAMES[kind]}, ignored")
     return False

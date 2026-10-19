@@ -15,6 +15,7 @@ No dependencies beyond the Python stdlib are required.
 import argparse
 import base64
 import json
+import math
 import mimetypes
 import os
 import re
@@ -76,9 +77,17 @@ def _read_obj(path: Path) -> dict | None:
     return data
 
 
+def _finite(value) -> bool:
+    """Whether a number is finite as a float (not NaN, Infinity or too big)."""
+    try:
+        return math.isfinite(float(value))
+    except OverflowError:
+        return False
+
+
 def _ok(value, kind, path, field: str) -> bool:
-    """Whether value has the kind; warns when not."""
-    if isinstance(value, kind) and not isinstance(value, bool):
+    """Whether value has the kind (a number also finite); warns when not."""
+    if isinstance(value, kind) and not isinstance(value, bool) and (kind is not NUM or _finite(value)):
         return True
     print(f"Warning: {path}: {field} is not {KIND_NAMES[kind]}, ignored")
     return False
@@ -207,24 +216,33 @@ def get_mime_type(path: Path) -> str:
 def find_runs(workspace: Path) -> list[dict]:
     """Recursively find directories that contain an outputs/ subdirectory."""
     runs: list[dict] = []
-    evals: dict[Path, tuple] = {}
-    _find_runs_recursive(workspace, workspace, runs, evals)
-    # Every eval-* folder holds an id, runs or not, as in the benchmark
-    for d in sorted(workspace.glob("eval-*")):
-        if d.is_dir():
-            _register_eval(d, evals)
-    # Eval ids by the same rule as scripts/aggregate_benchmark.py, over the
-    # evals in folder order; a run with no eval keeps None
-    folders = sorted(evals)
-    ids = dict(zip(folders, assign_eval_ids([(f, *evals[f][:2]) for f in folders])))
+    metas: dict[Path, tuple] = {}
+    _find_runs_recursive(workspace, workspace, runs, metas)
+    # Evals: the runs' eval-* folders, plus every eval-* folder in the
+    # workspace, runs or not, as in the benchmark
+    evals = {run["_eval"] for run in runs if run["_eval"] is not None}
+    evals.update(d for d in workspace.glob("eval-*") if d.is_dir())
+    # Eval ids by the same rule as scripts/aggregate_benchmark.py, per folder
+    # of evals (the benchmark reads one iteration folder), in folder order
+    ids: dict[Path, int] = {}
+    for parent in sorted({d.parent for d in evals}):
+        group = sorted(d for d in evals if d.parent == parent)
+        entries = []
+        for d in group:
+            meta = _folder_meta(d, metas)
+            m = EVAL_DIR_RE.match(d.name)
+            entries.append((d, meta[0] if meta else None, int(m.group(1)) if m else None))
+        ids.update(zip(group, assign_eval_ids(entries)))
     for run in runs:
-        run["eval_id"] = ids.get(run.pop("_eval"))
+        eval_dir = run.pop("_eval")
+        if eval_dir is not None:
+            run["eval_id"] = ids[eval_dir]
     # Runs without an eval_id sort last
     runs.sort(key=lambda r: (r["eval_id"] is None, r["eval_id"] or 0, r["id"]))
     return runs
 
 
-def _find_runs_recursive(root: Path, current: Path, runs: list[dict], evals: dict) -> None:
+def _find_runs_recursive(root: Path, current: Path, runs: list[dict], metas: dict) -> None:
     if not current.is_dir():
         return
 
@@ -235,12 +253,12 @@ def _find_runs_recursive(root: Path, current: Path, runs: list[dict], evals: dic
     )
     if run_dirs:
         for d in run_dirs:
-            _find_runs_recursive(root, d, runs, evals)
+            _find_runs_recursive(root, d, runs, metas)
         return
 
     outputs_dir = current / "outputs"
     if outputs_dir.is_dir():
-        run = build_run(root, current, evals)
+        run = build_run(root, current, metas)
         if run:
             runs.append(run)
         return
@@ -250,47 +268,43 @@ def _find_runs_recursive(root: Path, current: Path, runs: list[dict], evals: dic
         # A run-* folder that is not run-<n> (run-notes/) is never a run
         stray_run = child.name.startswith("run-") and not RUN_DIR_RE.match(child.name)
         if child.is_dir() and child.name not in skip and not stray_run:
-            _find_runs_recursive(root, child, runs, evals)
+            _find_runs_recursive(root, child, runs, metas)
 
 
-def find_eval(root: Path, run_dir: Path, evals: dict) -> Path | None:
-    """The run's eval folder: the first folder from run_dir up to root that
-    holds eval_metadata.json, else the nearest eval-* folder. Records its
-    (metadata id, folder id, prompt) in evals, read once per folder."""
-    eval_dir = None
+def _folder_meta(d: Path, metas: dict) -> tuple | None:
+    """d's eval_metadata.json as (int eval_id or None, prompt), read once per
+    folder; None when d has none."""
+    if d not in metas:
+        path = d / "eval_metadata.json"
+        meta = None
+        if path.exists():
+            meta_id, prompt = None, ""
+            metadata = _read_obj(path)
+            if metadata is not None:
+                meta_id = _field(metadata, "eval_id", int, None, path)
+                prompt = _field(metadata, "prompt", str, "", path)
+            meta = (meta_id, prompt)
+        metas[d] = meta
+    return metas[d]
+
+
+def build_run(root: Path, run_dir: Path, metas: dict) -> dict | None:
+    """Build a run dict with prompt, outputs, and grading data. _eval names
+    its eval: the nearest eval-* folder below root, whose id find_runs sets.
+    With none, eval_id is the first eval_metadata.json's int eval_id."""
+    # Climb from run_dir up to root: the first eval_metadata.json gives the
+    # prompt, the nearest eval-* folder is the eval
+    eval_dir = first = None
     for d in [run_dir, *run_dir.parents]:
-        if (d / "eval_metadata.json").exists():
+        if eval_dir is None and d != root and d.name.startswith("eval-"):
             eval_dir = d
-            break
-        if eval_dir is None and d.name.startswith("eval-"):
-            eval_dir = d
+        if first is None:
+            first = _folder_meta(d, metas)
         if d == root:
             break
+    eval_id, prompt = first or (None, "")
     if eval_dir is not None:
-        _register_eval(eval_dir, evals)
-    return eval_dir
-
-
-def _register_eval(eval_dir: Path, evals: dict) -> None:
-    """Record eval_dir's (metadata id, folder id, prompt) in evals, once."""
-    if eval_dir in evals:
-        return
-    meta_id, prompt = None, ""
-    path = eval_dir / "eval_metadata.json"
-    if path.exists():
-        metadata = _read_obj(path)
-        if metadata is not None:
-            meta_id = _field(metadata, "eval_id", int, None, path)
-            prompt = _field(metadata, "prompt", str, "", path)
-    m = EVAL_DIR_RE.match(eval_dir.name)
-    evals[eval_dir] = (meta_id, int(m.group(1)) if m else None, prompt)
-
-
-def build_run(root: Path, run_dir: Path, evals: dict) -> dict | None:
-    """Build a run dict with prompt, outputs, and grading data. Its eval_id
-    is None and _eval names its eval folder; find_runs sets the id."""
-    eval_dir = find_eval(root, run_dir, evals)
-    prompt = evals[eval_dir][2] if eval_dir is not None else ""
+        eval_id = None
 
     # Fall back to transcript.md
     if not prompt:
@@ -328,7 +342,7 @@ def build_run(root: Path, run_dir: Path, evals: dict) -> dict | None:
     return {
         "id": run_id,
         "prompt": prompt,
-        "eval_id": None,
+        "eval_id": eval_id,
         "outputs": output_files,
         "grading": grading,
         "_eval": eval_dir,
@@ -465,7 +479,8 @@ def generate_html(
     if benchmark:
         embedded["benchmark"] = benchmark
 
-    data_json = json.dumps(embedded)
+    # "<\/" so a "</script>" in any string cannot end the script block
+    data_json = json.dumps(embedded).replace("</", "<\\/")
 
     return template.replace("/*__EMBEDDED_DATA__*/", f"const EMBEDDED_DATA = {data_json};")
 

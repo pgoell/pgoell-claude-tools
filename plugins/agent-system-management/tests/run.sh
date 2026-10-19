@@ -7,9 +7,10 @@
 # without eval_metadata.json, an eval_id that is not an int (null, string,
 # missing, true, in a folder with or without an id), eval_metadata.json that
 # is not an object, unique eval ids (a taken folder id, a duplicate metadata
-# id), wrong-typed fields in eval_metadata.json, grading.json, timing.json
-# and the viewer's --benchmark file, files that cannot be read, and the
-# dash shown for a missing delta (main() with the delta taken out). AGG
+# id, an eval with no runs, a run outside any eval, two iterations),
+# wrong-typed or non-finite fields in eval_metadata.json, grading.json,
+# timing.json and the viewer's --benchmark file, files that cannot be read,
+# a "</script>" in the viewer's embedded data, and the dash shown for a missing delta (main() with the delta taken out). AGG
 # and VIEWER override the script paths (to
 # run the cases against another copy). No session, no network. Needs bash,
 # python3, jq.
@@ -300,6 +301,19 @@ echo '{"eval_id":7}' >"$T/norun/eval-1-a/eval_metadata.json"
 meta norun eval-7-b ""
 ok "unique id: eval without runs benchmark" "$(bids norun)" "8 8"
 ok "unique id: eval without runs viewer" "$(vids norun)" 8
+# a run outside any eval-* folder keeps its own metadata id and holds no id
+# from the evals
+mfix outside eval-3-a ""
+mkdir -p "$T/outside/extra/with_skill/run-1/outputs"
+echo x >"$T/outside/extra/with_skill/run-1/outputs/x.txt"
+grade "$T/outside/extra/with_skill/run-1" 1.0
+echo '{"eval_id":3}' >"$T/outside/extra/eval_metadata.json"
+ok "unique id: run outside an eval" "$(bids outside) $(vids outside)" "3 3 3,3"
+# ids are unique per folder of evals: two iterations may share an id
+for i in 1 2; do mfix iters "iteration-$i/eval-0-a" '{"eval_id":0,"prompt":"p"}'; done
+out=$(view iters)
+hasnt "unique id: per iteration no warning" "$out" "Warning"
+ok "unique id: per iteration viewer" "$(vq iters '[.runs[].eval_id]|join(",")')" 0,0
 
 # metadata fields: a non-string eval_name or prompt is dropped
 mfix mfields eval-1-a '{"eval_id":1,"eval_name":5,"prompt":7}'
@@ -355,6 +369,18 @@ hasnt "grading fields: user_notes_summary no crash" "$out" Traceback
 ok "grading fields: user_notes_summary" "$(q gnotes '.runs[0].notes|length')" 0
 gfix gunc '{"user_notes_summary":{"uncertainties":"abc","workarounds":["w"]}}'
 ok "grading fields: uncertainties" "$(q gunc '.runs[0].notes|join(",")')" w
+# a number must be finite: an int too big for a float, or NaN, is ignored
+big=1$(printf '0%.0s' {1..400})
+gfix ghuge "{\"summary\":{\"pass_rate\":$big}}"
+hasnt "grading fields: huge pass_rate no crash" "$out" Traceback
+ok "grading fields: huge pass_rate" "$(q ghuge '.runs[0].result.pass_rate == 0')" true
+gfix gnan '{"summary":{"pass_rate":NaN}}'
+ok "grading fields: NaN pass_rate" "$(grep -c NaN "$T/gnan/benchmark.json") $(q gnan '.runs[0].result.pass_rate == 0')" "0 true"
+ok "grading fields: NaN pass_rate viewer" "$(vq gnan '.runs[0].grading.summary.pass_rate')" 0
+
+# script tag: a "</script>" in embedded data cannot end the page's script
+gfix stag '{"expectations":[{"text":"a </script><b>","passed":true}]}'
+ok "script tag: escaped" "$(grep -c '</script><b>' "$T/stag.html") $(vq stag '.runs[0].grading.expectations[0].text')" "0 a </script><b>"
 
 # tfix <iteration> <timing.json text>: a graded run with that timing.json
 tfix() {
@@ -375,6 +401,9 @@ ok "timing fields: total_tokens" "$(q ttok '.runs[0].result.tokens')" 0
 tfix tms '{"duration_ms":"x"}'
 hasnt "timing fields: duration_ms no crash" "$out" Traceback
 ok "timing fields: duration_ms" "$(q tms '.runs[0].result.time_seconds == 0')" true
+tfix thuge "{\"duration_ms\":$big}"
+hasnt "timing fields: huge duration_ms no crash" "$out" Traceback
+ok "timing fields: huge duration_ms" "$(q thuge '.runs[0].result.time_seconds == 0')" true
 
 # bview <iteration> <benchmark.json text>: one viewer run, with --benchmark
 # pointing at that benchmark.json; keeps the output in $out

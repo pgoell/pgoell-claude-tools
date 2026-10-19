@@ -45,7 +45,7 @@ cut this skill to its core
 bash plugins/agent-system-management/tests/run.sh
 ```
 
-Last run 2026-10-19: 120 passed, 0 failed, on Python 3.12; both scripts parse on 3.11.
+Last run 2026-10-19: 130 passed, 0 failed, on Python 3.12; both scripts parse on 3.11.
 
 ## Credits
 
