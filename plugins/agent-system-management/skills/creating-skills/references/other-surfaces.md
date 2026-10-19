@@ -8,7 +8,7 @@ In Claude.ai, the core workflow is the same (draft → test → review → impro
 
 **Running test cases**: No subagents means no parallel execution. For each test case, read the skill's SKILL.md, then follow its instructions to accomplish the test prompt yourself. Do them one at a time. This is less rigorous than independent subagents (you wrote the skill and you're also running it, so you have full context), but it's a useful sanity check, and the human review step compensates. Skip the baseline runs, just use the skill to complete the task as requested.
 
-To check the leading words (SKILL.md Step 4) without subagents, write your plan and reasoning to `outputs/transcript.md` in each run's directory as you work, then grep those files for each leading word as Step 4 shows.
+To check the leading words (SKILL.md Step 4) without subagents, write your plan and reasoning to `<workspace>/iteration-<N>/eval-<ID>/with_skill/outputs/transcript.md` for each run as you work (keep the `with_skill/` level even without baselines, so Step 4's grep finds it), then grep those files for each leading word as Step 4 shows. You wrote the skill, so its words are already on your mind and the check fails less often than it should; treat a pass as weak evidence.
 
 **Reviewing results**: If you can't open a browser (e.g., Claude.ai's VM has no display, or you're on a remote server), skip the browser reviewer entirely. Instead, present results directly in the conversation. For each test case, show the prompt and the output. If the output is a file the user needs to see (like a .docx or .xlsx), save it to the filesystem and tell them where it is so they can download and inspect it. Ask for feedback inline: "How does this look? Anything you'd change?"
 

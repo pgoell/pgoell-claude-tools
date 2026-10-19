@@ -27,6 +27,8 @@ Of course, you should always be flexible and if the user is like "I don't need t
 
 Then after the skill is done (but again, the order is flexible), you can also run the skill description improver, which we have a whole separate script for, to optimize the triggering of the skill.
 
+On claude.ai or in Cowork, read `references/other-surfaces.md` before you start: it changes how you test, review, tune the description, and update an installed skill.
+
 Cool? Cool.
 
 ## Communicating with the user
@@ -224,7 +226,7 @@ Execute this task:
 - Input files: <eval files if any, or "none">
 - Save outputs to: <workspace>/iteration-<N>/eval-<ID>/with_skill/outputs/
 - Outputs to save: <what the user cares about, e.g., "the .docx file", "the final CSV">
-- Save a transcript of your plan, reasoning and tool calls to outputs/transcript.md
+- Save a transcript of your plan, reasoning and tool calls to: <workspace>/iteration-<N>/eval-<ID>/with_skill/outputs/transcript.md
 ```
 
 **Baseline run** (same prompt, but the baseline depends on context):
@@ -279,11 +281,11 @@ Once all runs are done:
    This produces `benchmark.json` and `benchmark.md` with pass_rate, time, and tokens for each configuration, with mean ± stddev and the delta. If generating benchmark.json manually, see `references/schemas.md` for the exact schema the viewer expects.
    Put each with_skill version before its baseline counterpart.
 
-3. **Check the leading words**: a skill steers through its leading words, the compact concepts its description and body lean on (see "Leading words" in `references/writing-great-skills.md`). Before you grep, list them: read the description and body and write down each such word (for example _tracer bullets_, _red_, _tight_). Then count each word in every with_skill run's transcript:
+3. **Check the leading words**: a skill steers through its leading words, the compact concepts its description and body lean on (see "Leading words" in `references/writing-great-skills.md`). Before you grep, list them: read the description and body and write down each such word (for example _tracer bullets_, _red_, _tight_). Leave out a word the eval prompt itself contains: a hit would only echo the prompt. Then count each word, as a whole word, in every with_skill run's transcript:
    ```bash
-   grep -c -i '<word>' <workspace>/iteration-N/*/with_skill/outputs/transcript.md
+   grep -c -i -w '<word>' <workspace>/iteration-N/*/with_skill/outputs/transcript.md
    ```
-   The transcript is the executor's written log of its plan and reasoning, not its raw hidden thinking. A leading word that is absent from a run's reasoning and plan is a steering failure, even when every assertion passes: the agent did not think with the word, so the skill did not steer that run. Record each miss in the analyst notes and fix it before the next iteration, per `references/writing-great-skills.md`: pick a stronger word, or anchor the word at the step where it should act.
+   The transcript is the executor's written log of its plan and reasoning, not its raw hidden thinking. A leading word that is absent from a run's reasoning and plan (a count of 0) is a steering failure, even when every assertion passes: the agent did not think with the word, so the skill did not steer that run. Write down each miss, hand the list to the analyst pass below, and fix it before the next iteration, per `references/writing-great-skills.md`: pick a stronger word, or anchor the word at the step where it should act.
 
 4. **Do an analyst pass**: read the benchmark data and surface patterns the aggregate stats might hide. See `agents/analyzer.md` (the "Analyzing Benchmark Results" section) for what to look for: things like assertions that always pass regardless of skill (non-discriminating), high-variance evals (possibly flaky), and time/token tradeoffs.
 
@@ -300,7 +302,7 @@ Once all runs are done:
 
    With no display (a remote box), pass `--static <output_path>` to write a standalone HTML file instead of starting a server; `references/other-surfaces.md` covers how `feedback.json` comes back then.
 
-   After the runs finish, build the viewer with `generate_review.py` and put it in front of the user before you judge the outputs yourself; it beats writing custom HTML.
+   After the runs finish, build the viewer with `generate_review.py` and put it in front of the user before you judge the quality of the outputs yourself; it beats writing custom HTML.
 
 6. **Tell the user** something like: "I've opened the results in your browser. There are two tabs: 'Outputs' lets you click through each test case and leave feedback, 'Benchmark' shows the quantitative comparison. When you're done, come back here and let me know."
 
@@ -407,7 +409,7 @@ This is optional, requires subagents, and most users won't need it. The human re
 
 ## Description Optimization
 
-The description field in SKILL.md frontmatter is the primary mechanism that determines whether Claude invokes a skill. After creating or improving a skill, offer to optimize the description for better triggering accuracy.
+The description field in SKILL.md frontmatter is the primary mechanism that determines whether Claude invokes a skill. After creating or improving a skill, offer to optimize the description for better triggering accuracy. The loop below needs `claude -p`; on claude.ai, check triggering by hand as `references/other-surfaces.md` says.
 
 Respect the length limits from the description guidance in "Write the SKILL.md" above, targeting the tightest platform the skill ships to (full details in `references/platform-mechanics.md`). Whatever the limit, put the key use case in the first sentence, since truncation cuts from the tail.
 
@@ -509,7 +511,7 @@ The references/ directory has additional documentation:
 - `references/writing-great-skills.md`: skill design vocabulary adapted from Matt Pocock's writing-great-skills (invocation and context load, information hierarchy, leading words, completion criteria, pruning, failure modes). Read it when drafting a new skill or diagnosing a misbehaving one.
 - `references/bulletproofing.md`: test-first hardening for discipline-enforcing skills, adapted from Jesse Vincent's writing-skills (baseline-before-writing, pressure scenarios, rationalization tables, the form-to-failure matrix, wording micro-tests, persuasion register). Read it when a skill enforces a rule agents might skip under pressure, or when an agent keeps rationalizing its way around one.
 - `references/cutting-skills.md`: trimming a skill to its behavioral core, adapted from swyx's skill-cutter (audit and cut modes, rule-force and content tables, gate check, trigger narrowing, report shape). Read it when the user asks to cut, shorten, or de-slop a skill, or to make it trigger less.
-- `references/other-surfaces.md`: what changes on claude.ai (no subagents) and in Cowork (no browser or display), how to update an installed skill there, and how to package and present a `.skill` file. Read it before running test cases when you lack subagents or a display, or when you have a `present_files` tool.
+- `references/other-surfaces.md`: what changes on claude.ai (no subagents) and in Cowork (no browser or display), how to update an installed skill there, and how to package and present a `.skill` file. Read it before you start on claude.ai or in Cowork, before running test cases when you lack subagents or a display, or when you have a `present_files` tool.
 - `references/marketplace-integration.md`: shipping a skill inside a plugin marketplace repo (convention discovery, manifest and marketplace registration, version bump discipline, structure and trigger-regression test scaffolds). Read it when the skill under construction lives in a repo that distributes plugins.
 
 ---
