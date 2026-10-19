@@ -56,7 +56,7 @@ If a subagent errors mid-run (for example "Overloaded"), it may have written fil
 2. If the partial work is mostly correct, continue in the main session rather than redispatching. The main session is usually cheaper than retrying when the agent already did the heavy edit.
 3. Include a brief "Continuing from subagent state" note in the next commit's body so the review trail is legible.
 
-If a subagent reports `DONE_WITH_CONCERNS` and the concern is in-scope (perf-budget regression, unfixed lint, missing test), fix it before committing, either in the main session or by re-dispatching with the gap added to the acceptance criteria. Do not carry the concern into the PR.
+If a subagent reports `DONE_WITH_CONCERNS` and the concern is in-scope (perf-budget regression, unfixed lint, missing test), fix it before committing, either in the main session or by re-dispatching with the gap added to the acceptance criteria. Do not carry the concern into the PR. On `DONE` or `DONE_WITH_CONCERNS`, the main session runs the verification commands itself before review, per `workbench:subagent-driven-development` Handling Agent Status.
 
 ## Slice-gate pausing (the `slices` gate)
 

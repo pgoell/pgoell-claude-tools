@@ -27,16 +27,16 @@ If the evidence does not prove the claim, report the gap instead of softening th
 
 ## Required Evidence
 
-| Claim                    | Required evidence                                               |
-| ------------------------ | --------------------------------------------------------------- |
-| Tests pass               | Fresh test output with a passing exit code and no failures      |
-| Lint is clean            | Fresh lint output with a passing exit code                      |
-| Build succeeds           | Fresh build output with a passing exit code                     |
-| Bug is fixed             | The original symptom or regression test now passes              |
-| Regression test is valid | Red, green, and restored-green evidence                         |
-| Agent completed work     | VCS diff plus relevant verification, not the agent report alone |
-| Requirements are met     | Re-read checklist or spec and verify each item                  |
-| PR is ready              | Local verification plus any required pre-PR checks              |
+| Claim                    | Required evidence                                                                                |
+| ------------------------ | ------------------------------------------------------------------------------------------------ |
+| Tests pass               | Fresh test output with a passing exit code and no failures                                       |
+| Lint is clean            | Fresh lint output with a passing exit code                                                       |
+| Build succeeds           | Fresh build output with a passing exit code                                                      |
+| Bug is fixed             | The original symptom or regression test now passes                                               |
+| Regression test is valid | Red, green, and restored-green evidence                                                          |
+| Agent completed work     | VCS diff plus the main session runs the verification commands itself, not the agent report alone |
+| Requirements are met     | Re-read checklist or spec and verify each item                                                   |
+| PR is ready              | Local verification plus any required pre-PR checks                                               |
 
 ## Red Flags
 
