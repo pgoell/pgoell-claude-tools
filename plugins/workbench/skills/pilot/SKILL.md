@@ -51,7 +51,7 @@ Pilot maintains a visible task list for the whole run and keeps it current. This
 - Keep exactly one item `in_progress` while work is active. Mark an item `completed` as soon as its step finishes.
 - Expand the task list dynamically when new work becomes known. After step 4 writes the implementation plan, add each slice as a task-list item nested by naming convention, for example `Step 5: Slice 2: <slice title>`.
 - Add discovered follow-up tasks when hooks, review gates, CI failures, or docs updates create real work. Do not add speculative items.
-- Before dispatching a subagent, mark the owned task in progress or add a concrete task-list item for that agent's assignment. When the subagent returns, update that item based on its result after the main session runs the verification commands itself.
+- Before dispatching a subagent, mark the owned task in progress or add a concrete task-list item for that agent's assignment. When the subagent returns, update that item based on its result; for an implementation agent, only after the main session runs the verification commands itself.
 - Keep the task list aligned with the committed or scratch plan. If the plan changes, update the task list in the same turn before executing the changed work.
 - In the end-of-turn summary, mention any task-list item that remains incomplete and why.
 

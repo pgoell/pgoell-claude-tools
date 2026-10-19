@@ -134,7 +134,7 @@ Each parallel agent prompt should include:
 
 - Read every returned summary before committing.
 - Inspect `git status` and `git diff`.
-- For each returned `DONE`, the main session runs the verification commands itself for that agent's brief before integration, not only the final full set.
+- For each returned `DONE` or `DONE_WITH_CONCERNS`, the main session runs the verification commands itself for that agent's brief before integration, not only the final full set.
 - Resolve conflicts in the main session.
 - Run the full relevant test set after all agent work lands.
 - If one agent's result changes another agent's assumptions, re-verify the affected task.
