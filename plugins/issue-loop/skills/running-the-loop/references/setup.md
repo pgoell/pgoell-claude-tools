@@ -24,7 +24,7 @@ Do not point `ALIVE_URL` at the front page. On the example project the front pag
 
 - `regression`: a PR of the last days brought it in. Runs first.
 - `bug`: the base branch already had it. Runs in batches.
-- `wish`: behaviour beyond what an issue asked. Waits for the user's `go`.
+- `wish`: behaviour beyond what an issue asked. Runs after the bugs; "not now" holds one back.
 - `test-debt`: a flaky or missing test. Worth a batch now and then.
 - the "not now" label (`later` on the example project): needs the user's decision. Never runs.
 

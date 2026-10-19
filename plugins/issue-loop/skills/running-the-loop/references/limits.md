@@ -20,7 +20,7 @@ The review's line: the loop is fast and honest, and its checks hold for logic.
 
 - Each task files 2 to 6 issues (3.7 on average, measured).
 - Feature tasks: 16 closed, 52 filed. Bug batches of five: 29 closed, 30 filed.
-- Most of what is filed are wishes. The bug queue can reach zero; the wish list never will. That is why wishes wait for the user's `go`.
+- Most of what is filed are wishes. The bug queue can reach zero; the wish list never will. That is why wishes run after bugs, and why the user's "not now" label is the brake.
 
 ## Cost and time
 
