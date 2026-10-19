@@ -54,7 +54,7 @@ When an answer opens a new gap (the purpose names a decision, but not by when), 
 
 The user may decline a question. Say once why that field changes the result and ask again. If they still decline, write the field as `open (user skipped)` and go on. When the user wants to skip all remaining questions, mark each empty field that way and go to Step 3. `research:running-research` makes those choices while it plans and lists them in `plan.md`.
 
-Do not guess a field and do not fill one with a default the user never chose; `open (user skipped)` is the only stand-in. The one exception is the output path: default `reports/{topic-slug}-{YYYY-MM-DD}/` (the date from `date +%F`), unless the user names another.
+Do not guess a field and do not fill one with a default the user never chose; `open (user skipped)` is the only stand-in. Two lines have defaults: the output path is `reports/{topic-slug}-{YYYY-MM-DD}/` (the date from `date +%F`) and Format is `html`, each unless the user names another.
 
 ### Step 3: Write brief.md
 
@@ -91,8 +91,8 @@ This skill does not plan, search the web, dispatch researchers, or write `plan.m
 
 ## Self-Healing
 
-- The user answers a question with "you decide": offer two or three concrete choices and ask them to pick one.
-- The user wants to skip the questions: say which fields are still empty and why each one changes the result, then ask for the most important one. If they still decline, mark the empty fields `open (user skipped)` as Step 2 says, write the brief and show it (Step 3 and Step 4).
+- The user answers one question with "you decide": offer two or three concrete choices and ask them to pick one.
+- The user wants to skip the questions ("just pick the rest"): say which fields are still empty and why each one changes the result, then ask for the most important one. If they still decline, mark the empty fields `open (user skipped)` as Step 2 says, write the brief and show it (Step 3 and Step 4).
 - Output folder not writable: suggest another path, ask the user.
 - An old `brief.md` already sits at the path: show it and ask whether to reuse it, change it, or pick a new path.
 
