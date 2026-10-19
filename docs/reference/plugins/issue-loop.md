@@ -37,7 +37,7 @@ Both skills start from their slash command or from a plain request ("run the iss
 | `rules.md`        | The brief every task gets.                                                                                                               |
 | `next.sh`         | Sends `/clear` and the brief to the implementer. Refuses while the implementer works or without the standing order.                      |
 | `wait.sh`         | Waits for the implementer's DONE or BLOCKED line, on its screen or in the file `notify.sh` writes, with a clock.                         |
-| `gate.sh`         | Pass or fail from outside: issues closed, PRs merged, live commit, clean tree, app up.                                                   |
+| `gate.sh`         | Pass or fail from outside: issues closed, PRs merged, every ticked box names a test, live commit, clean tree, app up.                    |
 | `grant.sh`        | Run by you in a terminal of your own, never by a session: writes your standing order into the sessions' instructions after you type yes. |
 | `driver-herdr.sh` | The only file that knows the terminal manager (herdr). Another manager needs five shell functions.                                       |
 

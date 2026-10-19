@@ -90,11 +90,11 @@ Return:
 `DONE`: the agent's own "passed" counts for nothing. Before spec review, the main session runs the verification commands itself: every command the brief names, run as shell commands in the main session.
 
 - No verification command in the brief: do not accept `DONE` with nothing run. Take the slice's test commands or acceptance criteria; failing those, the project's full relevant test set; failing that, ask the user for a command and wait for the answer; this slice does not go to spec review until then. Add the gap to the deviation list of Task Loop step 6, then run the command.
-- A command fails: treat the task as `DONE_WITH_CONCERNS`. Send the failing command, its exit code and its output back to the same agent; fix it in the main session only when the fix is a few lines. Run every command again; start spec review only when all pass. Still failing after that one fix round (one agent return or one main-session fix): handle as `BLOCKED`.
+- A command fails: treat the task as `DONE_WITH_CONCERNS`. Send the failing command, its exit code and its output back to the same agent (see Runtime Mapping); fix it in the main session only when the fix is a few lines. Run every command again; start spec review only when all pass. Still failing after that one fix round (one agent return or one main-session fix): handle as `BLOCKED`.
 
 `DONE_WITH_CONCERNS`: read the concerns. Fix in-scope correctness, lint, test, or scope concerns, then run every verification command as for `DONE` before review.
 
-`NEEDS_CONTEXT`: provide the missing context and continue with the same task.
+`NEEDS_CONTEXT`: provide the missing context and continue with the same task, in the same agent (see Runtime Mapping).
 
 `BLOCKED`: change something before retrying. Provide missing context, split the task, use a more capable model, or stop if the plan is wrong.
 
@@ -141,9 +141,11 @@ Each parallel agent prompt should include:
 
 ## Runtime Mapping
 
-Claude Code: use `Agent` with a focused prompt for implementation and review agents.
+Claude Code: use `Agent` with a focused prompt for implementation and review agents. To send work back to the same agent, use `SendMessage` with the agent's ID or name; it is a deferred tool, so load it first with `ToolSearch` query `select:SendMessage`.
 
-Codex: use `spawn_agent` for independent sidecar tasks when useful. For urgent blocking work, implement locally and preserve the same task loop. For delegated code edits, assign a disjoint write set and tell the worker not to revert others' changes.
+Codex: use `spawn_agent` for independent sidecar tasks when useful. For urgent blocking work, implement locally and preserve the same task loop. For delegated code edits, assign a disjoint write set and tell the worker not to revert others' changes. To send work back to the same agent, use `send_input` with the id `spawn_agent` returned (`followup_task` under multi-agent v2), then `wait`.
+
+No tool to continue an agent (Cursor): start a fresh agent with the original brief, the agent's last report and the feedback (for a failed command: the command, its exit code and its output). Tell it its earlier work is already in the tree. Its return counts as the same agent's return, also for the one fix round.
 
 ## Completion
 

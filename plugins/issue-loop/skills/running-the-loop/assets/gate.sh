@@ -2,8 +2,9 @@
 # usage: gate.sh <issue numbers...>
 # Pass or fail for the task that next.sh started last. Exit 0 only if all holds:
 # the issues are closed, every PR made since the task began is merged with no
-# open box, the live commit is the head of BASE, the implementer's checkout is
-# clean on BASE, and the live app answers. It reads; it changes nothing.
+# open box and every ticked box names its test (Test: or Proof: on its line),
+# the live commit is the head of BASE, the implementer's checkout is clean on
+# BASE, and the live app answers. It reads; it changes nothing.
 # Needs: gh (logged in), git, jq, curl, GNU date.
 . "$(dirname "$0")/lib.sh"
 start=$(cat "$S/task.start")
@@ -17,8 +18,12 @@ for p in $(gh pr list --state all --search "created:>=$start" --json number -q '
   state=$(gh pr view "$p" --json state -q .state)
   echo "PR $p $state $(gh pr view "$p" --json title -q .title)"
   [ "$state" = MERGED ] || no "PR $p not merged"
-  open=$(gh pr view "$p" --json body -q .body | grep -cE '^\s*- \[ \]')
+  body=$(gh pr view "$p" --json body -q .body)
+  open=$(grep -cE '^\s*- \[ \]' <<<"$body")
   [ "$open" = 0 ] || no "PR $p: $open open boxes"
+  # A box inside a fenced code block is an example, not a checklist line.
+  k=$(awk '/^[[:space:]]*```/ { f = !f; next } !f' <<<"$body" | grep -E '^\s*- \[[xX]\]' | grep -cvE 'Test:|Proof:')
+  [ "$k" = 0 ] || no "PR $p: $k ticked boxes name no test"
   gh pr view "$p" --json files -q '.files[].path' | grep -E "$MACHINE_FILES" | sed "s/^/TELL HUMAN: PR $p touched /"
 done
 head=$(git ls-remote origin "refs/heads/$BASE" | cut -f1)
