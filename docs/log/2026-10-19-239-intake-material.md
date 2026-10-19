@@ -1,0 +1,3 @@
+# 2026-10-19: Fix
+
+presentations 0.7.5, issue #239. When the request names results, figures, or data and none is attached, Step 1 of `designing-presentations` now asks for that material before question 1, and asks only for the named figures still missing when some is given. It skips the ask when the material is given, the request names no results or data, or no user is reachable. It never invents a figure: each one still missing stays a named gap, written "none in material". New eval cases 11 (`11-intake-asks-for-figures`, the issue's ask) and 12 (`12-intake-figures-attached`, a near miss with the figures attached) in `plugins/presentations/evals/`. No pages under `docs/` changed.
