@@ -98,7 +98,7 @@ Each researcher does iterative deep search on its cluster (round-by-round breadt
 4. Wait for all to complete. Check each output file yourself; do not trust the report:
    - The last line of the response must be `ARTIFACT-VERIFIED <sha256>`.
    - Compare that hash with your own: `sha256sum {OUTPUT_FILE} | cut -d' ' -f1`
-   - Count source lines: `grep -c '\[source:' {OUTPUT_FILE}`. The floor is 2 per sub-question in the cluster's plan.md block, which `sed -n '/^### Cluster: {CLUSTER_SLUG}$/,/^### Cluster: /p' {OUTPUT_PATH}/plan.md | grep -c '^- SQ'` counts. A gap-fill file's floor is 2.
+   - Count source lines that were read: `grep '\[source:' {OUTPUT_FILE} | grep -vc '\[inaccessible\]'`. The floor is 2 per sub-question in the cluster's plan.md block, which `sed -n '/^### Cluster: {CLUSTER_SLUG}$/,/^### Cluster: /p' {OUTPUT_PATH}/plan.md | grep -c '^- SQ'` counts. If that prints 0, the plan.md block does not match the Step 3 format: fix plan.md, do not pass the file. A gap-fill file's floor is 2.
 
 A check fails on `ARTIFACT-MISSING`, a hash mismatch, a missing or unparseable last line, or a count under the floor. Re-dispatch that researcher once; if it fails again, surface it to the user (often a bad cluster boundary). When you ran the researcher inline, there is no marker to parse; the count still runs.
 
@@ -113,7 +113,7 @@ A check fails on `ARTIFACT-MISSING`, a hash mismatch, a missing or unparseable l
 
 1. Read `synthesis-reviewer-prompt.md`.
 2. Inject: BRIEF, OUTPUT_PATH, ITERATION, REVIEWER_FEEDBACK (empty for normal flow; populated only when re-dispatched from cross-loop branch in Step 10).
-3. Dispatch via the host subagent tool. Wait for completion. In its sixth check, the reviewer fetches again up to 5 cited URLs (numbers first, then thesis pillars, after any URL the prior round left `rejected` or `unresolved`) and records each mark in the file's `REFETCH:` block.
+3. Dispatch via the host subagent tool. Wait for completion. In its sixth check, the reviewer fetches again up to 5 cited URLs (first any URL the prior round left `rejected` or `unresolved`, then numbers, then thesis pillars) and records each mark in the file's `REFETCH:` block.
 4. Read the verdict from agent response, or from `{OUTPUT_PATH}/research/synthesis-review-{N}.md` if response is unparseable.
 
 If verdict is PASS: continue to Step 8.
@@ -187,7 +187,7 @@ For any `content-gap-suspected` issues:
 2. Re-dispatch synthesis-reviewer (Step 6) with REVIEWER_FEEDBACK populated with the writer-reviewer's content-gap-suspected issue list. The next synthesis-review file is `synthesis-review-{prior-N+1}.md` (synthesis loop counter resumes monotonically).
 3. Branch on synthesis-reviewer verdict:
    - PASS → re-dispatch writer with prose-only feedback (drop the content-gap notes from the writer-reviewer's issue list). Return to Step 9.
-   - ISSUES → return to Step 7's classification logic (`evidence-gap` / `coverage` / `source-quality` route to gap-fill research; `logic` / `structure` route to re-synthesize). When the synthesis loop closes again, re-dispatch writer with the original prose feedback (if any) plus a fresh writer review. Return to Step 9.
+   - ISSUES → return to Step 7's classification logic (`evidence-gap` / `coverage` / `source-quality` route to gap-fill research; `logic` / `structure` route to re-synthesize; a rejected refetch claim takes both routes, as Step 7 says). When the synthesis loop closes again, re-dispatch writer with the original prose feedback (if any) plus a fresh writer review. Return to Step 9.
 
 ### Loop safeguards (Steps 9-10)
 
