@@ -80,7 +80,7 @@ containers/dev/             # Podman-first dev container (run-dev, egress proxy,
 
 One line per plugin: name, version, skills. Descriptions live in `docs/reference/plugins/<name>.md`. `upstream` marks an external git-URL entry, which has no version.
 
-- `atlassian` 2.0.7: `jira`, `confluence`
+- `atlassian` 2.0.8: `jira`, `confluence`
 - `google-workspace` 1.0.3: `gmail`, `calendar`
 - `research` 2.3.3: `research`, `running-research`
 - `writing` 3.1.4: `ghostwrite`, `coach`
