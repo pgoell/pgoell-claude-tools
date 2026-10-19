@@ -30,11 +30,12 @@ For each plan slice (or bounded task, when the plan is not slice-shaped):
 4. Tell the agent it is not alone in the codebase and must not revert edits made by others.
 5. Wait for the implementation agent to return.
 6. Record any deviations the agent returned in a running list for the whole plan execution.
-7. Run the spec compliance reviewer.
-8. Fix any spec gaps and re-review.
-9. Run the code quality reviewer.
-10. Fix any quality issues and re-review.
-11. Mark the slice complete only after both review gates pass.
+7. The main session runs the verification commands itself (see Handling Agent Status) before spec review.
+8. Run the spec compliance reviewer.
+9. Fix any spec gaps and re-review.
+10. Run the code quality reviewer.
+11. Fix any quality issues and re-review.
+12. Mark the slice complete only after both review gates pass.
 
 ## Two review gates
 
@@ -86,9 +87,12 @@ Return:
 
 ## Handling Agent Status
 
-`DONE`: proceed to spec compliance review.
+`DONE`: the agent's own "passed" counts for nothing. Before spec review, the main session runs the verification commands itself: every command the brief names, run as shell commands in the main session.
 
-`DONE_WITH_CONCERNS`: read the concerns. Fix in-scope correctness, lint, test, or scope concerns before review.
+- No verification command in the brief: do not accept `DONE` with nothing run. Take the slice's test commands or acceptance criteria; failing those, the project's full relevant test set; failing that, ask the user (your own `NEEDS_CONTEXT`). Add the gap to the deviation list of Task Loop step 6, then run the command.
+- A command fails: treat the task as `DONE_WITH_CONCERNS`. Send the failing command and its output back to the same agent, or fix it in the main session. Run every command again; start spec review only when all pass. Still failing after one fix round: handle as `BLOCKED`.
+
+`DONE_WITH_CONCERNS`: read the concerns. Fix in-scope correctness, lint, test, or scope concerns, then run every verification command as for `DONE` before review.
 
 `NEEDS_CONTEXT`: provide the missing context and continue with the same task.
 
@@ -130,6 +134,7 @@ Each parallel agent prompt should include:
 
 - Read every returned summary before committing.
 - Inspect `git status` and `git diff`.
+- For each returned `DONE`, the main session runs the verification commands itself for that agent's brief before integration, not only the final full set.
 - Resolve conflicts in the main session.
 - Run the full relevant test set after all agent work lands.
 - If one agent's result changes another agent's assumptions, re-verify the affected task.

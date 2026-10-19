@@ -83,7 +83,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `writing` 3.1.3: `ghostwrite`, `coach`
 - `runtime-bridge` 0.1.2: `claude-codex-bridge`
 - `agent-system-management` 0.7.5: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
-- `workbench` 1.2.3: `pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`
+- `workbench` 1.3.0: `pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`
 - `terminal` 0.1.1: `tmux`
 - `playground` 0.1.3: `playground`
 - `databricks` 0.3.2: `databricks-core`, `databricks-docs`
