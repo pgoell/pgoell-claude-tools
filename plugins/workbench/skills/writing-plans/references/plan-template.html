@@ -185,7 +185,7 @@
 
   #tasks .task :is(.signatures, .call-stack, .acceptance) { margin: 0 0 14px; }
   #tasks .task :is(.signatures, .call-stack, .acceptance) > .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
-  #tasks .task .signatures pre { margin: 4px 0 0; padding: 10px 12px; background: var(--bg); border: 1px solid var(--rule); border-radius: var(--r-sm); overflow-x: auto; }
+  #tasks .task :is(.signatures, .step-body) pre { margin: 4px 0 0; padding: 10px 12px; background: var(--bg); border: 1px solid var(--rule); border-radius: var(--r-sm); overflow-x: auto; }
   #tasks .task .acceptance { margin: 14px 0 0; padding-top: 10px; border-top: 1px solid var(--rule); }
   .tricky-kernel { font-family: var(--mono); font-size: 11px; padding: 1px 6px; border-radius: 4px; background: var(--warn-soft); color: var(--warn); }
   .order-note { color: var(--muted); font-size: 13.5px; font-style: italic; }
@@ -343,7 +343,7 @@
       <div class="meta">
         <span><strong>Date:</strong> 2026-05-08</span>
         <span><strong>Owner:</strong> Pascal Goellner</span>
-        <span class="pill status-active">Active</span>
+        <span class="pill status-draft">Draft</span>
         <span><a href="../specs/2026-05-08-task-comments-design.html">Source spec</a></span>
       </div>
     </header>
@@ -473,6 +473,7 @@ listComments(taskId: string): Promise&lt;Comment[]&gt;</pre>
             <span class="checkbox" aria-hidden="true"></span>
             <div class="step-body">
               <p>Commit.</p>
+              <code class="test-cmd">git add apps/api</code>
               <code class="test-cmd">git commit -m "feat(api): post and list task comments"</code>
             </div>
           </li>
@@ -505,6 +506,8 @@ listComments(taskId: string): Promise&lt;Comment[]&gt;</pre>
             <div class="step-body">
               <!-- The only place full code may appear. -->
               <p>Implement <code>encodeCursor</code>. <span class="tricky-kernel">tricky-kernel</span> The (created_at, id) tiebreak order is the design.</p>
+              <pre>const encodeCursor = (c: Comment): string =&gt;
+  btoa(`${c.created_at.toISOString()}|${c.id}`);</pre>
             </div>
           </li>
         </ol>
