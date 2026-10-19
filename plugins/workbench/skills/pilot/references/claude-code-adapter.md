@@ -41,7 +41,7 @@ Renaming one symbol, a one-line lint fix, a typo. Use a subagent if the work tou
 
 Each subagent prompt must include:
 
-- The slice it owns. Paste the whole slice from the plan: the `### Slice N` section (md) or the `<article class="task">` element (html), as `workbench:subagent-driven-development` Task Loop step 1 says.
+- The slice or bounded task it owns. Paste the whole of it from the plan: the `### Slice N` section (md, a bounded task's ordering note included) or the `<article class="task">` element (html), as `workbench:subagent-driven-development` Task Loop step 1 says.
 - Which files to touch.
 - Relevant commits that preceded it (one-line summary each).
 - Acceptance criteria: tests to run, lint to pass, project-specific rules from the profile that apply.
@@ -60,7 +60,7 @@ If a subagent reports `DONE_WITH_CONCERNS` and the concern is in-scope (perf-bud
 
 ## Slice-gate pausing (the `slices` gate)
 
-When the `slices` gate is active, pause after each slice's review gates pass: present the diff summary and end the turn so the user can respond. Do not simulate the user's approve or resteer decision and continue in the same turn; a real pause means the assistant message ends and the next slice does not start until the user's next message arrives.
+When the `slices` gate is active, pause after each slice's or bounded task's review gates pass: present the diff summary and end the turn so the user can respond. Do not simulate the user's approve or resteer decision and continue in the same turn; a real pause means the assistant message ends and the next slice or bounded task does not start until the user's next message arrives.
 
 ## CI polling shape (step 8)
 

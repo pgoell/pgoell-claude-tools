@@ -23,8 +23,8 @@ For html, write the skeleton of `references/plan-template.html` into the `.html`
 - The `## File Structure` file map goes in `#file-structure`: one tree line per file, with its job after it.
 - Medium lane: the `## Design` preamble goes in `<section id="design">`, right after `#summary`, as its `<dl>` entries Problem, Chosen approach, Key decisions and Out of scope. Remove the "Source spec" link from `header .meta`; there is no spec.
 - Large lane: delete `<section id="design">`. The `Spec: <path>` line becomes the "Source spec" link in `header .meta`, its `href` the spec's path relative to the plan's folder: `../specs/<file>` for sibling folders, `./<file>` when both sit in one folder (as under `don't commit`).
-- Slices: each slice is one `<article class="task">` in `#tasks`, its `.num` label "Slice 01" (two digits). A task that is not itself a slice keeps its place in that numbering and adds `p.order-note`. Its parts go in this order:
-  - The ordering note of a task that is not itself a slice: `<p class="order-note">`, first, before Files.
+- Slices: each slice is one `<article class="task">` in `#tasks`, its `.num` label "Slice 01" (two digits). A bounded task (see `## Slice Structure`) keeps its place in that numbering and adds `p.order-note`. Its parts go in this order:
+  - The ordering note of a bounded task: `<p class="order-note">`, first, before Files.
   - Files: one row per path in `.files`, labeled Create, Modify or Test.
   - Types and signatures: a `<pre>` in `.signatures`.
   - Call-stack sketch: `.diff-block` lines in `.call-stack`. Omit it or the signatures as `## Slice Structure` says.
@@ -67,7 +67,7 @@ Avoid broad steps that require the implementer to invent missing details. Precis
 
 ## Plan Document Header
 
-Every plan MUST start with this header:
+Every plan MUST start with this header. This is the md form; the html form's slots are in `## Path Resolution`.
 
 ```markdown
 # [Feature Name] Implementation Plan
@@ -100,9 +100,19 @@ In the large lane, skip this section. The plan instead opens with a one-line lin
 
 ## Slice Structure
 
-Order slices as vertical, end-to-end increments. The first slice is the tracer bullet: the thinnest path through the system that is demoable end to end. Each later slice adds one coherent capability and leaves the software demoable again. If a task is not itself a slice (a pure refactor precursor, a shared scaffold), state in one line why it is ordered where it is and which slice it unblocks.
+Order slices as vertical, end-to-end increments. The first slice is the tracer bullet: the thinnest path through the system that is demoable end to end. Each later slice adds one coherent capability and leaves the software demoable again. A bounded task is a plan task that is not itself a slice (a pure refactor precursor, a shared scaffold). It uses the same heading as a slice and keeps its place in the slice numbering. The first line under its heading is the ordering note: one line on why it sits there, naming the slice it unblocks. Then come the same parts as a slice, in the same order:
 
-Use this shape for each slice:
+```markdown
+### Slice 2: Extract the shared parser
+
+**Ordering note:** moves parsing out of `cli.py` before Slice 3 needs it twice; unblocks Slice 3.
+
+<!-- Files, signatures, steps and acceptance criteria follow, as in the slice shape below. -->
+```
+
+A bounded task keeps every slice part. For a pure refactor, the acceptance criteria name the existing tests that must still pass. Every rule in this skill about a slice holds for a bounded task too, unless a sentence says otherwise. Three do not: a bounded task need not add a capability or leave a demo, and it is never the tracer bullet. The tracer bullet is the first slice that is not a bounded task, and a bounded task leaves the existing tests passing instead of a demo.
+
+Use this shape for each slice. This is the md form; the html form's slots are in `## Path Resolution`.
 
 ````markdown
 ### Slice N: [end-to-end behavior]
@@ -151,7 +161,7 @@ git commit -m "type(scope): describe the change"
 **Acceptance criteria:** [the observable behavior the outer-loop test must prove for this slice to count as done]
 ````
 
-Omit "Types and signatures" or "Call-stack sketch" when a slice introduces no new functions or no control-flow change. Never omit Files, test commands, or acceptance criteria.
+Omit "Types and signatures" or "Call-stack sketch" when a slice introduces no new functions or no control-flow change. Never omit Files, test commands, or acceptance criteria, in a slice or a bounded task.
 
 The `tricky-kernel` flag is the only place a slice may embed complete code: mark the step `**tricky-kernel:** <one-line reason>` and reserve it for algorithms where the code shape itself is the design decision (a recursive-descent parser, a bit-packing routine, a concurrency primitive). Everywhere else, the signature and the acceptance criteria are the spec; the implementer writes the body during TDD's GREEN phase.
 
@@ -181,8 +191,8 @@ The reviewer checks:
 1. Spec-or-preamble coverage: each requirement in the source spec, or each decision in the plan's own design preamble (`## Design` in md, `#design` in html), maps to at least one slice.
 2. Placeholder scan: the plan contains none of the forbidden placeholder patterns.
 3. Name consistency: later slices use the same file names, function names, types, and command names introduced earlier.
-4. Testability: every slice has an exact test command and acceptance criteria naming the behavior the outer-loop test must prove.
-5. Slice ordering: the first slice is a tracer bullet, and each slice leaves the software demoable.
+4. Testability: every slice and bounded task has an exact test command and acceptance criteria naming the behavior the outer-loop test must prove.
+5. Slice ordering: the first slice that is not a bounded task is a tracer bullet, and each slice leaves the software demoable. Each bounded task's ordering note comes first (in md the `**Ordering note:**` line right under the heading, in html `p.order-note` right after the article's header, before Files) and names the slice it unblocks.
 6. Altitude: no full test or implementation code outside a `tricky-kernel` flag.
 
 Apply the reviewer's blocking findings inline. No re-review is required. Advisory recommendations do not block handoff unless they expose a real implementation risk.

@@ -25,11 +25,11 @@ Workbench 1.0.0 merged `autopilot` and `copilot` into one skill, `/workbench:pil
    Gates: none
    ```
 
-   | You used    | Write            | Pilot then                                                                                                      |
-   | ----------- | ---------------- | --------------------------------------------------------------------------------------------------------------- |
-   | `autopilot` | `Gates: none`    | runs the whole flow on its own                                                                                  |
-   | `copilot`   | `Gates: design`  | pauses for you to lead the brainstorm and approve the spec                                                      |
-   | either      | omit the section | uses the new default, `design, slices`: pauses for the design, then after each slice for you to review its diff |
+   | You used    | Write            | Pilot then                                                                                                                      |
+   | ----------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+   | `autopilot` | `Gates: none`    | runs the whole flow on its own                                                                                                  |
+   | `copilot`   | `Gates: design`  | pauses for you to lead the brainstorm and approve the spec                                                                      |
+   | either      | omit the section | uses the new default, `design, slices`: pauses for the design, then after each slice or bounded task for you to review its diff |
 
 For one run, a phrase in the prompt overrides the profile: "auto mode" or "no gates" means `none`, "co mode" means `design`.
 

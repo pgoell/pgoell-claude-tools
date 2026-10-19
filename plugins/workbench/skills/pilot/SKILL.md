@@ -5,7 +5,7 @@ description: Use when the user wants to ship a feature end to end with configura
 
 # Pilot: feature flow with composable human gates
 
-You are running the workbench pilot workflow. Pilot replaces autopilot and copilot with one orchestrator whose human gates come from the project profile's `Gates:` row: `none` runs the whole flow autonomously (the old autopilot behavior), `design` pauses for a human-driven brainstorm and spec (or combined-doc) approval while everything else stays automated (the old copilot behavior), and `slices` adds a pause after each implemented slice to review its diff before the next one starts. Bootstrap item 2 gives the default and the phrases that override the profile for one run.
+You are running the workbench pilot workflow, one orchestrator whose human gates come from the project profile's `Gates:` row. `none` runs the whole flow autonomously, `design` pauses for a human-driven brainstorm and spec (or combined-doc) approval while everything else stays automated, and `slices` adds a pause after each implemented slice to review its diff before the next one starts. Bootstrap item 2 gives the default and the phrases that override the profile for one run.
 
 ## Bootstrap
 
@@ -48,7 +48,7 @@ Pilot maintains a visible task list for the whole run and keeps it current. This
 - Create the task list immediately after bootstrap and before step 0. Use one top-level item per pilot step.
 - Use the runtime's task-list primitive. Claude Code: `TodoWrite`. Codex: `update_plan`.
 - Keep exactly one item `in_progress` while work is active. Mark an item `completed` as soon as its step finishes.
-- Expand the task list dynamically when new work becomes known. After step 4 writes the implementation plan, add each slice as a task-list item nested by naming convention, for example `Step 5: Slice 2: <slice title>`.
+- Expand the task list dynamically when new work becomes known. After step 4 writes the implementation plan, add each slice and each bounded task (see step 5) as a task-list item nested by naming convention, for example `Step 5: Slice 2: <slice title>`.
 - Add discovered follow-up tasks when hooks, review gates, CI failures, or docs updates create real work. Do not add speculative items.
 - Before dispatching a subagent, mark the owned task in progress or add a concrete task-list item for that agent's assignment. When the subagent returns, update that item based on its result; for an implementation agent, only after the main session runs the verification commands itself.
 - Keep the task list aligned with the committed or scratch plan. If the plan changes, update the task list in the same turn before executing the changed work.
@@ -110,11 +110,11 @@ If the profile's `## Required skills` table replaces this row with a different s
 
 Skip this step in the quick lane.
 
-**With the `design` gate active:** **first action:** invoke `workbench:brainstorming` via the `Skill` tool. This is a REAL interactive grilling, not an autonomous one. Drive the skill's "one question at a time" rhythm with the user: ask each question, wait for the user's answer, and let it shape the next question. Do not answer on the user's behalf; the user owns these decisions. In the medium lane, ask a few targeted questions feeding the combined doc's `## Design` preamble (see Step 4); in the large lane, walk the design tree depth-first and grill exhaustively toward a separate spec (see Step 3). Continue until the design concept converges and the user approves it. If the topic is too big for one spec, stop and help the user decompose it, then let the user pick which sub-topic to tackle first.
+**With the `design` gate active:** **first action:** invoke `workbench:brainstorming` via the `Skill` tool. This is a REAL interactive grilling, not an autonomous one. Drive the skill's "one question at a time" rhythm with the user: ask each question, wait for the user's answer, and let it shape the next question. Do not answer on the user's behalf. In the medium lane, ask a few targeted questions feeding the combined doc's `## Design` preamble (see Step 4); in the large lane, walk the design tree depth-first and grill exhaustively toward a separate spec (see Step 3). Continue until the design concept converges and the user approves it. If the topic is too big for one spec, stop and help the user decompose it, then let the user pick which sub-topic to tackle first.
 
-The brainstorming skill writes its own summary artifact (HTML by default, or per `.workbench/config.md`). Pilot does not commit that record; it is a record, not a deliverable.
+The brainstorming skill writes its own summary artifact (HTML by default, or per `.workbench/config.md`). Pilot does not commit that record.
 
-**Without the `design` gate:** do not invoke `workbench:brainstorming`. (This branch also applies under `Gates: slices`; only the design gate is absent there, and the slice gate still fires in step 5.) Instead write a short decision doc directly to `/tmp/<project-name>-pilot/decision.md`: topic, options considered, decisions, risks. No simulated Q&A, no format-verify grep. If the topic is too big for one spec, decompose it, record the chosen sub-topic and the reasoning in the deviation log, and continue with that sub-topic.
+**Without the `design` gate:** do not invoke `workbench:brainstorming`. (This includes `Gates: slices`; the slice gate still fires in step 5.) Instead write a short decision doc directly to `/tmp/<project-name>-pilot/decision.md`: topic, options considered, decisions, risks. No simulated Q&A, no format-verify grep. If the topic is too big for one spec, decompose it, record the chosen sub-topic and the reasoning in the deviation log, and continue with that sub-topic.
 
 `<project-name>` resolves through the bootstrap precedence chain (profile `## Project name` heading; otherwise repo dir basename).
 
@@ -152,11 +152,11 @@ If `Hooks.post_plan` is defined, run it now with `{{plan_path}}` substituted.
 
 ### Step 5: Execute the plan
 
-**First actions:** invoke `workbench:test-driven-development` via the `Skill` tool; in the medium and large lanes also invoke `workbench:subagent-driven-development` (in that order, both replaceable via the profile). TDD governs every implementation chunk; subagent-driven-development governs how slices run and covers safe parallel fanout (its `## Parallel dispatch` section). It is not invoked in the quick lane: it requires a plan, and the quick lane has none. Invoke the optional `ponytail:ponytail` only if it is installed and not already in context (`references/required-skills.md`, "Optional rows").
+**First actions:** invoke `workbench:test-driven-development` via the `Skill` tool; in the medium and large lanes also invoke `workbench:subagent-driven-development` (in that order, both replaceable via the profile). TDD governs every implementation chunk; subagent-driven-development governs how slices run and covers safe parallel fanout (its `## Parallel dispatch` section). It is not invoked in the quick lane, which has no plan. Invoke the optional `ponytail:ponytail` only if it is installed and not already in context (`references/required-skills.md`, "Optional rows").
 
 **Quick lane:** execute as one TDD-governed chunk in the main session, no plan document, no subagent task loop, no slice gate.
 
-**Medium and large lanes:** execute slice by slice, in plan order. Each slice is its own unit of work: implement it, run its verification (the test commands and acceptance criteria the plan states for that slice), and commit it before moving to the next slice.
+**Medium and large lanes:** execute slice by slice, in plan order. A bounded task (a plan task that is not itself a slice, such as a refactor precursor or a shared scaffold, which writing-plans marks with an ordering note) is a unit like a slice: it gets its own task-list item, its own verification and its own commit, and with the `slices` gate active pilot pauses after it as after a slice. In this step "slice" also means a bounded task unless a sentence says otherwise. Each slice is its own unit of work: implement it, run its verification (the test commands and acceptance criteria the plan states for that slice), and commit it before moving to the next slice.
 
 **With the `slices` gate active:** after a slice's own review gates pass (per `workbench:subagent-driven-development`), present the slice's diff summary to the user: files touched, key hunks, verification results. Wait for the user to approve or resteer before starting the next slice. **Without the `slices` gate,** move straight to the next slice.
 
@@ -164,7 +164,7 @@ If `Hooks.post_plan` is defined, run it now with `{{plan_path}}` substituted.
 
 Then:
 
-- Commit in logical chunks with Conventional Commits scopes matching the module, one commit per slice where practical.
+- Commit in logical chunks with Conventional Commits scopes matching the module, at least one commit per slice or bounded task (review fixes may add more).
 - Run `<task runner> <lint command>` and the relevant `<task runner> <test command>` before each commit.
 
 If `Hooks.post_implementation` is defined, run it now after the last implementation commit.
@@ -224,7 +224,7 @@ If the user explicitly says "don't merge" before or during the run, override `au
 
 ## Tone and reporting
 
-- Terse between tool calls. The user sees the PR diff; they don't need narration.
-- Pilot pauses for the user at every active gate: the `design` gate's brainstorm and spec (or combined-doc) approval, and the `slices` gate's per-slice diff review. At those gates, slow down and let the user drive. Everywhere else, keep moving.
+- Terse between tool calls; no narration.
+- Pilot pauses for the user at every active gate: the `design` gate's brainstorm and spec (or combined-doc) approval, and the `slices` gate's diff review after each slice or bounded task. At those gates, slow down and let the user drive. Everywhere else, keep moving.
 - End-of-turn summary: PR URL, one sentence on what changed, next step (usually "review when ready" or, for automerge, "merged at <commit>"). Also list any required skill that was unavailable in the runtime and therefore skipped. Also list every deviation-log entry, one line each, or state that there were no deviations; a deviation that changed user-visible behavior also belongs in the PR body's `## Summary`.
-- Pilot pauses only at active gates and at a true fork it cannot resolve; everywhere else it decides for itself, that is the point of composable gates.
+- Pilot pauses only at active gates and at a true fork it cannot resolve; everywhere else it decides for itself.
