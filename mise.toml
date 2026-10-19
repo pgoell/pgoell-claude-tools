@@ -38,11 +38,21 @@ fi
 '''
 
 [tasks.check-docs]
-description = "Validate documentation links and spelling"
+description = "Validate documentation links, spelling and prompt-file references"
 # docs/ links between its own pages bundle-relative (/reference/...), so it
 # gets its own lychee run rooted at docs/.
+# The last step fails on a backticked *-prompt.md or agents/*.md name that no
+# tracked file has (exact basename), since lychee checks links only.
 run = [
   "lychee README.md AGENTS.md plugins/ --offline --root-dir .",
   "lychee docs/ --offline --root-dir docs",
   "typos README.md AGENTS.md plugins/ docs/",
+  '''
+missing=$(git grep -ohE '`([A-Za-z0-9_./-]*-prompt|agents/[A-Za-z0-9_-]+)\.md`' -- README.md AGENTS.md plugins docs | tr -d '`' | sort -u | while read -r f; do b=$(basename "$f"); git ls-files "*/$b" "$b" | grep -q . || echo "$f"; done)
+if [ -n "$missing" ]; then
+  echo "Referenced prompt files that no tracked file has:"
+  echo "$missing"
+  exit 1
+fi
+''',
 ]
