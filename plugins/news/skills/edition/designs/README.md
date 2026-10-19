@@ -16,7 +16,8 @@ A folder counts as a design only when it holds `template.html.j2`.
   the CSS in three parts, `base.css.j2` (palette, page, masthead),
   `story.css.j2` (ornament, story parts) and `layout.css.j2` (lead, sections,
   the home region). Each template adds its own CSS between and after them, so
-  a change to a part shows in both designs.
+  a change to a part shows in both designs, and `tabbed` needs the
+  `heimatblatt/` folder to render.
 - `tabbed/sports.html.j2` draws the tournament tree and the league tables.
 - `briefing/style.css.j2` and `magazine/style.css.j2` hold each design's CSS
   below its palette; they share nothing with other designs.
