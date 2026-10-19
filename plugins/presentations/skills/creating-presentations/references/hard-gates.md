@@ -206,7 +206,7 @@ pdftoppm -png -r 96 deck.pdf slide
 
 produces equivalent per-slide images (console and network gates still need a live page).
 
-Headless Chrome's `--screenshot` flag sizes the window, not the viewport: `--window-size=1920,1080` yields a viewport about 993 px tall, which cuts off the bottom of every slide. Pass `--window-size=1920,1167` for a true 1920x1080 viewport, or set the viewport through a proper API as above.
+Headless Chrome's `--screenshot` flag sizes the viewport: pass `--window-size=1920,1080` for a 1920x1080 image of the whole slide, or set the viewport through a proper API as above.
 
 ## Output
 

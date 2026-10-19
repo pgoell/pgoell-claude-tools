@@ -307,7 +307,7 @@ CHROME = next((p for p in map(shutil.which, ("google-chrome", "chromium", "chrom
 
 def snap(query, slide, out):
     """Screenshot one slide of the served deck in headless Chrome."""
-    subprocess.run([CHROME, *os.environ.get("DECK_EDITOR_CHROME_ARGS", "").split(), "--headless", "--hide-scrollbars", "--window-size=1920,1167", "--virtual-time-budget=4000",
+    subprocess.run([CHROME, *os.environ.get("DECK_EDITOR_CHROME_ARGS", "").split(), "--headless", "--hide-scrollbars", "--window-size=1920,1080", "--virtual-time-budget=4000",
                     f"--screenshot={out}", f"http://127.0.0.1:{PORT}{DECK_URL}?{query}#{slide}"], capture_output=True, timeout=60)
     return out.exists()
 
