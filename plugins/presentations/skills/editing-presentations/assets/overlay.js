@@ -290,7 +290,7 @@
 
   // Text edit, reorder, free move and the panel chips (overlay-edit.js). They read and write the
   // selection state through these accessors, and add their listeners after the ones above.
-  const { buildTools } = DeckEdit({ stage, target, pos, slideOf, op, changed, $, state: {
+  const { buildTools } = DeckEditorTools({ stage, target, pos, slideOf, op, changed, $, state: {
     get sel() { return sel; }, set sel(v) { sel = v; },
     get editing() { return editing; }, set editing(v) { editing = v; },
     get dragged() { return dragged; }, set dragged(v) { dragged = v; },

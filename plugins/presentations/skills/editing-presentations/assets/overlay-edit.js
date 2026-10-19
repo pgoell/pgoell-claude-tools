@@ -1,9 +1,10 @@
 /* Deck editor: the direct edits on the slide. Loaded by server.py before
- * overlay.js, which calls DeckEdit once and keeps the selection state; state
- * reads and writes sel, editing, dragged and dropLine there. DeckEdit adds the
+ * overlay.js, which calls DeckEditorTools once and keeps the selection state;
+ * state reads and writes sel, editing, dragged and dropLine there. It adds the
  * text, reorder and free-move listeners, so overlay.js calls it after its own
- * pointer and key listeners, and returns buildTools for the panel chips. */
-window.DeckEdit = ({ stage, target, pos, slideOf, op, changed, $, state }) => {
+ * pointer and key listeners, and returns buildTools for the panel chips. The
+ * name must differ from the deck engine's globals (deck-edit.js owns DeckEdit). */
+window.DeckEditorTools = ({ stage, target, pos, slideOf, op, changed, $, state }) => {
   // Text: double-click, type, Enter or click away to save, Esc to cancel.
   window.addEventListener('dblclick', (e) => {
     const el = target(e);
