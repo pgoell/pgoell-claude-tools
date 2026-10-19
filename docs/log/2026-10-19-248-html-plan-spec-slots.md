@@ -1,0 +1,3 @@
+# 2026-10-19: Fix
+
+workbench 1.4.10, issue #248. The HTML plan template gives each slice a slot for every md slice part: a Test row in Files, types and signatures (`.signatures`), a call-stack sketch (`.call-stack`), acceptance criteria (`.acceptance`) and a `tricky-kernel` marker. Slices carry "Slice N" labels, a `p.order-note` holds the ordering note for work that is not a slice, and the full-SQL sample step is gone. `writing-plans` maps each slice part to its slot. The HTML spec template gains `#reference-artifacts` for the writing-spec Reference artifacts item. `reference/conventions/workbench-routing.md` says so.

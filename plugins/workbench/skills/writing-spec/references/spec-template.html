@@ -388,6 +388,7 @@
           <li><a href="#solution-overview">Solution overview</a></li>
           <li><a href="#user-stories">User stories</a></li>
           <li><a href="#implementation-decisions">Implementation decisions</a></li>
+          <li><a href="#reference-artifacts">Reference artifacts</a></li>
           <li><a href="#testing-decisions">Testing decisions</a></li>
           <li><a href="#out-of-scope">Out of scope</a></li>
           <li><a href="#risks">Risks</a></li>
@@ -405,8 +406,7 @@
           </p>
           <p>
             <span class="placeholder">[Cite the evidence that this is worth solving now: support tickets, recent
-            incidents, qualitative feedback, or measured friction.]</span> Without intervention, the cost compounds as
-            the team grows and the surface area expands.
+            incidents, qualitative feedback, or measured friction.]</span>
           </p>
         </section>
 
@@ -418,9 +418,8 @@
             them to downstream tooling through stable anchors.
           </p>
           <p>
-            The artifact is a self-contained HTML document. It renders in any browser without a build step, ships next
-            to the skill that produces it, and remains readable as plain source. Downstream consumers depend only on
-            the section anchors listed in the table of contents.
+            The artifact is a self-contained HTML document that renders without a build step. Downstream consumers
+            depend only on the section anchors in the table of contents.
           </p>
         </section>
 
@@ -486,7 +485,7 @@
           </div>
 
           <div class="subsection" id="module-decisions">
-            <h3>Module decisions</h3>
+            <h3>Modules and interfaces</h3>
             <div class="table-wrap">
               <table>
                 <thead>
@@ -500,12 +499,12 @@
                   <tr>
                     <td>Styling</td>
                     <td>Inline <code>&lt;style&gt;</code>, no external CSS</td>
-                    <td>Single file renders without a network or a build step.</td>
+                    <td>Renders offline. Rejected: shared stylesheet, which needs a network.</td>
                   </tr>
                   <tr>
-                    <td>Typography</td>
-                    <td>System font stack only</td>
-                    <td>Avoids font loading and works on every platform.</td>
+                    <td>Interface</td>
+                    <td>Consumers select sections by <code>id</code></td>
+                    <td>Stable anchors; no prose parsing.</td>
                   </tr>
                   <tr>
                     <td>Theme</td>
@@ -520,15 +519,33 @@
                 </tbody>
               </table>
             </div>
-            <p class="placeholder">[List the calls that you made about libraries, data shape, or external dependencies, and the alternative you rejected.]</p>
+            <p class="placeholder">[List module calls and the interfaces between modules, each with the alternative you rejected.]</p>
+          </div>
+        </section>
+
+        <!-- Delete this section and its toc entry when the discussion anchored on no artifact. -->
+        <section id="reference-artifacts">
+          <h2>Reference artifacts</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Path or URL</th><th>Imitate</th><th>Diverge</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>writing-plans/references/plan-template.html</code></td>
+                  <td>Sticky toc and inline styles.</td>
+                  <td>No JavaScript.</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
 
         <section id="testing-decisions">
           <h2>Testing decisions</h2>
           <p>
-            We verify the template through filesystem checks rather than rendered output. The checks run fast and stay
-            deterministic, and they catch the regressions that downstream consumers actually care about.
+            We verify the template through fast, deterministic filesystem checks rather than rendered output.
           </p>
           <ul>
             <li>The file is non-empty and starts with a valid HTML5 doctype or <code>&lt;html&gt;</code> tag.</li>
@@ -540,14 +557,11 @@
 
         <section id="out-of-scope">
           <h2>Out of scope</h2>
-          <p>
-            We name the boundaries of this spec so reviewers do not propose work that belongs in a follow-up.
-          </p>
+          <p class="placeholder">[One line per exclusion: what forces it out, or "cut for effort".]</p>
           <ul>
-            <li>JavaScript-driven interactivity such as live editing or collapsible TOC behaviour beyond CSS.</li>
-            <li>Server-side rendering or templating engines. The artifact is hand-edited HTML.</li>
-            <li>Localization. The template ships in English. <span class="placeholder">[Track translation as a separate
-              spec when needed.]</span></li>
+            <li>Live editing in the page: conflicts with the no-JavaScript decision.</li>
+            <li>Server-side rendering: a separate spec covers publishing.</li>
+            <li>Localization: cut for effort.</li>
           </ul>
         </section>
 
@@ -576,9 +590,8 @@
             <li>
               <p class="risk-title">Dark mode rendering reads poorly on some monitors.</p>
               <p>
-                The palette uses muted greens and warm neutrals tuned for both schemes, but contrast remains
-                environment-dependent. <span class="placeholder">[Mitigation: spot-check on at least one OLED panel
-                and one matte IPS panel before release.]</span>
+                Contrast depends on the panel. <span class="placeholder">[Mitigation: spot-check on an OLED and an
+                IPS panel before release.]</span>
               </p>
             </li>
           </ol>
