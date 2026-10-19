@@ -63,7 +63,7 @@ Profile schema: [profile-schema.md](../../../plugins/workbench/skills/pilot/refe
 | Brainstorm summaries | html           | `.workbench/brainstorms`   |
 | Debug reports        | html           | `.workbench/debug-reports` |
 
-File names follow `YYYY-MM-DD-<topic>-<artifact>.<ext>` (specs `YYYY-MM-DD-<topic>-design.<ext>`, plans `YYYY-MM-DD-<topic>.<ext>`). The HTML plan template has a Design section for the medium lane's design notes; a large-lane plan drops it, since the spec holds the design. Config schema: [config-schema.md](../../../plugins/workbench/skills/pilot/references/config-schema.md).
+File names: specs `YYYY-MM-DD-<topic>-design.<ext>`, plans `YYYY-MM-DD-<topic>.<ext>`. The HTML plan template has a Design section for the medium lane's design notes; a large-lane plan drops it, since the spec holds the design. Config schema: [config-schema.md](../../../plugins/workbench/skills/pilot/references/config-schema.md).
 
 ## Design systems
 

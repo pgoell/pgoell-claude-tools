@@ -119,7 +119,7 @@ Improvement pass: <always | on_learnings | off>
 
 ## Bootstrap precedence
 
-When the pilot skill needs project information, it resolves each field in this order:
+When the pilot skill needs project information, it resolves each field in this order (spec and plan paths excepted: they follow `config-schema.md` `## Resolution order`):
 
 1. Profile section in `.workbench/pilot.md`.
 2. Session context (`CLAUDE.md`, `AGENTS.md`, both already loaded into the agent).

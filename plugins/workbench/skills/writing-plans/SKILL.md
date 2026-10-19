@@ -17,7 +17,7 @@ Assume the implementer is a capable engineer with little project context. Give t
 
 Resolve the output format first (see `## Output Format`). Then resolve the plan folder `<paths.plans>` by the one order in `../pilot/references/config-schema.md` `## Resolution order`, and write `<paths.plans>/YYYY-MM-DD-<topic>.<ext>`, where `<ext>` is `md` or `html` per the format. If `<paths.plans>` is `don't commit`, write that file name under `/tmp/<project-name>-pilot/` and skip committing it, as that section says.
 
-For html, write the skeleton of `references/plan-template.html` into the `.html` file and replace all its sample content; for md, write markdown. In html, each part of the plan has a slot in the template:
+For html, write the skeleton of `references/plan-template.html` into the `.html` file and replace all its sample content; for md, write markdown. In html, these parts have a slot in the template (acceptance criteria, signatures and call-stack sketches have none yet, #248; put them as `<p>` or `<pre>` in the slice's `<article>`, around its `<ol class="steps">`):
 
 - `## Plan Document Header`: the title in the `<h1>` of `header.page-head`, the "For agentic workers" line as a `<p>` right after that `<h1>`, and Goal, Architecture and Tech Stack in `#summary`.
 - Medium lane: the `## Design` preamble goes in `<section id="design">`, right after `#summary`, as its `<dl>` entries Problem, Chosen approach, Key decisions and Out of scope. Remove the "Source spec" link from `header .meta`; there is no spec.
