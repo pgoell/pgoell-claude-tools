@@ -99,15 +99,18 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
 8. **Check the lead.** `uv run "${CLAUDE_SKILL_DIR}/scripts/refetch.py" ARGS`
    fetches the lead's URL again and prints the page text. Never ask here; this
    runs headless.
-   - Exit 1 means the lead is dead. Record its domain in
-     `NP/memory/source-failures.md` as the source-failure rule in Self-Healing
-     says, make the next most important story from a section in
-     `edition.lead_from` the lead (put the old lead back in its section or drop
-     it), and run refetch again. Swap at most twice, then go on with what you
+   - Exit 1 means the lead is dead. Append `- <date> <domain> <code>` to
+     `NP/memory/source-failures.md` (domain without port; code is the HTTP
+     status, or `refused` or `timeout`) and apply the Self-Healing rule on a
+     repeat failure. Drop the old lead. Make the most important story from a
+     section in `edition.lead_from` the lead (ties go to the earlier section
+     in `lead_from`), set its `section`, and leave out a section the swap
+     empties. Run refetch again. Swap at most twice, then go on with what you
      have and say so in the report.
    - Exit 0: check at least two of the lead's `key_facts` against the printed
-     text. When fewer than two hold, rewrite the facts and summary from that
-     text; when the text cannot carry the story, swap the lead as above.
+     text; a fact holds when the page states it, in any words. When fewer than
+     two hold, rewrite the facts and summary from that text; when the text
+     gives fewer than two facts for the story, swap the lead as above.
 9. **Validate.** `uv run "${CLAUDE_SKILL_DIR}/scripts/validate.py" "NP/<date>.json" --memory "NP/memory/stories.jsonl"`.
    Fix every error and run it again until it reports 0 errors. A repeated URL
    means drop the story or make it a real follow-up. It also fails on a
