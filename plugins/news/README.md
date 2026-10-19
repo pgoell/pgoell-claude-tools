@@ -91,9 +91,10 @@ sportschau.de, also only while an edition is being built.
 
 ## Setup
 
-Needs `uv` (the scripts are Python with inline dependencies) and Claude Code's
-`WebSearch` and `WebFetch` tools. To get a paper every morning, have cron run
-the wrapper at 06:00 Europe/Berlin with the vault path:
+Needs `uv` (the scripts are Python with inline dependencies) and the host
+agent's web tools: `WebSearch` and `WebFetch` in Claude Code; in Codex and
+Cursor, their own web search tool and `curl`. To get a paper every morning,
+have cron run the wrapper at 06:00 Europe/Berlin with the vault path:
 
 ```text
 0 6 * * * /path/to/plugins/news/scripts/cron-edition.sh /path/to/vault

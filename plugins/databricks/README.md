@@ -1,6 +1,6 @@
 # databricks plugin
 
-Skills for working with Databricks workspaces from a Claude Code or Codex host agent.
+Skills for working with Databricks workspaces from a Claude Code, Codex or Cursor host agent.
 
 ## Skills
 
