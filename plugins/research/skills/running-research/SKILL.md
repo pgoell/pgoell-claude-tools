@@ -60,6 +60,8 @@ mkdir -p {OUTPUT_PATH}/research
 
 YOU plan, not an agent. Decompose the brief into sub-questions and cluster them into coherent topics. As many clusters as the brief demands; each cluster should be deep enough to warrant a dedicated researcher. Cluster slugs must be unique and avoid colliding with reserved names (`synthesis`, `gap-N-*`, `*-review-*`). A slug must not start with `report`, `summary`, `findings` or `analysis` (see File Layout).
 
+A brief field that reads `open (user skipped)` is yours to choose. Pick what serves the rest of the brief, and list each choice under `## Open fields` in plan.md, so the user sees it. From here on, BRIEF holds the text of brief.md followed by that list.
+
 Write `{OUTPUT_PATH}/plan.md`:
 
 ```markdown
@@ -73,6 +75,10 @@ Audience: <audience>
 Purpose: <purpose>
 Deliverable: <deliverable>
 Deadline: <deadline>
+
+## Open fields
+
+- <field>: <your choice> (user skipped)
 
 ## Clusters
 
@@ -168,6 +174,8 @@ Update the progress list at every step so the user can inspect live status throu
 2. Inject: BRIEF, OUTPUT_PATH, TEMPLATE_PATH (path to report-template.md), REVIEWER_FEEDBACK (empty on first pass; populated on re-dispatch).
 3. Dispatch via the host subagent tool. Wait for completion.
 4. Verify `{OUTPUT_PATH}/draft.md` exists.
+
+BRIEF carries the `Deliverable:` line. The writer fits form, length and language to it, and the writer reviewer checks that fit.
 
 ### Step 8: Review report (iteration M)
 

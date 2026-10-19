@@ -32,7 +32,8 @@ Dispatched agent prompt:
     1. `{OUTPUT_PATH}/research/synthesis.md`: the canonical content the report
        should faithfully represent.
     2. `{OUTPUT_PATH}/draft.md`: the report under review.
-    3. `{TEMPLATE_PATH}`: the structure spec (Deep Mode section).
+    3. `{TEMPLATE_PATH}`: the structure spec (Deep Mode section), cut to the
+       brief's Deliverable.
     4. If iteration > 1: `{OUTPUT_PATH}/draft-review-{ITERATION-1}.md` (prior
        review). Reuse stable issue ids when the same issue persists.
 
@@ -51,11 +52,17 @@ Dispatched agent prompt:
 
     ### Check 2: Format (category: format)
 
-    Does the report contain all required sections from the Deep Mode template?
-    Is the structure correct?
+    Does the report fit the brief's `Deliverable:` line (form, length,
+    language)? Is the structure correct?
 
-    Issue per missing/misnamed section. Severity: critical for missing top-level
-    sections, minor for sub-section variations.
+    - Length and language: a report that runs past the Deliverable's length,
+      or is written in another language than it names, is critical.
+    - Sections: when the Deliverable calls for a full report, every top-level
+      Deep Mode section must be there; a missing one is critical. When it asks
+      for something shorter, the writer keeps only the sections that fit, so a
+      missing section is minor at most. References stays required either way.
+
+    Issue per missing/misnamed section. Sub-section variations are minor.
 
     ### Check 3: Prose Quality (category: prose)
 

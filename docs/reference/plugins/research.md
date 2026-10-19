@@ -12,6 +12,8 @@ Two skills that research a complex topic and write a sourced report. `research` 
 
 The split is on purpose. While `research` asks, it cannot see the plan, search and report steps, so it does not rush past the questions to start them. `running-research` stops and sends you back to `research` when it finds no approved brief.
 
+You may skip a question. After you hear once why it matters, the field goes into the brief as `open (user skipped)`; `running-research` makes that choice while it plans and lists it under `## Open fields` in `plan.md`. The report fits the brief's deliverable: a two-page summary gets only the sections that fit two pages, in the language the brief names, and the report review fails a draft that runs longer or uses another language.
+
 **Runtimes:** Claude Code, Codex, Cursor
 
 **Source:** vendored in `plugins/research/`; the plugin has no README of its own.
