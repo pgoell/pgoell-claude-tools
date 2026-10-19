@@ -17,7 +17,7 @@ No authentication required. Uses the host agent's web search and fetch or browse
 
 1. **Subagent dispatch when available and permitted**: dispatch researcher, synthesis, writer, and reviewer agents.
 2. **File read tools**: load the brief and prompt templates before dispatch.
-3. **Shell**: directory creation, file globbing, the `grep -x` check of Step 1, the `sha256sum` and `grep -c` checks of Step 3, and the `sha256sum` and `head -1` check of Step 4.
+3. **Shell**: directory creation, file globbing, the `grep -x` check of Step 1, the `sha256sum` and `grep -c` checks of Step 3, the `sha256sum` and `head -1` check of Step 4, and the `mv` and render checks of Step 10.
 4. **Progress list**: live loop bookkeeping.
 5. **Web search and fetch or browse tools**: researchers and the synthesis reviewer use them; the orchestrator uses them only if subagent dispatch fails.
 
@@ -212,7 +212,10 @@ Same as synthesis loop. Stall detection on consecutive identical id sets in `dra
 
 ### Step 10: Present
 
-Rename the passed draft with the shell: `mv {OUTPUT_PATH}/draft.md {OUTPUT_PATH}/report.md`. Then surface output path + brief summary: total iterations of each loop, final artifact paths, any minor (non-blocking) issues from the final reviews.
+1. Resolve the format once, by the order in Output Format: prompt override, then the brief's `Format:` line, then html.
+2. Rename the passed draft with the shell: `mv {OUTPUT_PATH}/draft.md {OUTPUT_PATH}/report.md`. For markdown, that is the report.
+3. For html, you (never a subagent) render `{OUTPUT_PATH}/report.html` from `report.md`: read `references/rendering-the-report.md` and follow it, checks and failure path included. `report.md` stays as the reviewed source.
+4. Surface a brief summary: total iterations of each loop, the final paths (`report.html` and `report.md`; `report.md` alone for markdown or a failed render), any minor (non-blocking) issues from the final reviews.
 
 ## File Layout (output directory)
 
@@ -226,46 +229,16 @@ Rename the passed draft with the shell: `mv {OUTPUT_PATH}/draft.md {OUTPUT_PATH}
 │   ├── synthesis.md              (overwritten each iteration)
 │   └── synthesis-review-{n}.md
 ├── draft.md                      (overwritten each iteration; renamed report.md in Step 10)
-└── draft-review-{n}.md
+├── draft-review-{n}.md
+├── report.md                     (the reviewed report; the deliverable for markdown, the source for html)
+└── report.html                   (html only: rendered from report.md in Step 10, the deliverable)
 ```
 
 Subagents never write a file named `report*`, `summary*`, `findings*` or `analysis*` with a `.md` extension: Claude Code refuses those writes from a subagent ("Subagents should return findings as text, not write report files"). That is why the writer writes `draft.md` and only the orchestrator, in Step 10, names it `report.md`.
 
-## Verdict Parsing
+## Verdicts and Markers
 
-Both reviewers return verdicts in this format:
-
-```
-VERDICT: PASS | ISSUES
-ISSUES:
-  - id: <stable-id>
-    severity: critical | minor
-    category: <category>
-    description: <one line>
-    location: <pointer>
-SUMMARY: <text>
-```
-
-A verdict of PASS with critical issues is malformed; re-dispatch the reviewer once with a format reminder. Stable ids enable stall detection: same id set in consecutive reviews means surface to user.
-
-Only the synthesis reviewer writes a `REFETCH:` block, after SUMMARY in `synthesis-review-{N}.md`. Its response stays the verdict line plus the issue id list.
-
-```
-REFETCH:
-  - url: <URL>
-    claim: <claim as synthesis.md states it>
-    mark: confirmed | rejected | unresolved
-    quote: "<short quote from the page>" (unresolved: the reason instead)
-```
-
-## Verification Markers
-
-These words are fixed. Every prompt that writes or reads them uses these spellings and no others.
-
-- `ARTIFACT-VERIFIED <sha256>`: last line of a researcher's response; the file is complete.
-- `ARTIFACT-MISSING <reason>`: last line of a researcher's response; the file is absent or partial.
-- `REFETCH:`: the block in `synthesis-review-{N}.md` that lists refetched URLs.
-- `confirmed`, `rejected`, `unresolved`: the mark per refetched URL. A `rejected` claim is a critical `source-quality` issue; an `unresolved` one is minor.
+Read `references/verdicts-and-markers.md` to parse a verdict (Steps 5, 8) or a researcher's last line (Step 3). Its words are fixed: every prompt uses those spellings and no others.
 
 ## Self-Healing
 
@@ -278,11 +251,12 @@ These words are fixed. Every prompt that writes or reads them uses these spellin
 - Stall detected: surface to user immediately. Don't auto-retry.
 - Check-in interval reached: pause, present status, await user choice.
 - Output dir not writable: suggest alternative path, ask user.
+- HTML template unreadable, or the render fails its check (fewer links than report.md, template sample text left): keep `report.md`, leave no partial `report.html`, tell the user (see `references/rendering-the-report.md`).
 
 ## Behavioral Guidelines
 
 - Never pass session history to agents. Construct each dispatch fresh from the template + injected values.
-- Each prompt template has placeholders. Researcher: BRIEF, OUTPUT_PATH, RECIPES_PATH, CLUSTER_SLUG, OUTPUT_FILE, TARGETED_GAP. Synthesis: BRIEF, OUTPUT_PATH, ITERATION, REVIEWER_FEEDBACK. Synthesis-reviewer: BRIEF, OUTPUT_PATH, ITERATION, REVIEWER_FEEDBACK (cross-loop only). Writer: BRIEF, OUTPUT_PATH, TEMPLATE_PATH, REVIEWER_FEEDBACK. Writer-reviewer: BRIEF, OUTPUT_PATH, TEMPLATE_PATH, ITERATION.
+- Each prompt template has placeholders; the "Inject" item of its step (3, 4, 5, 6, 7, 8) names every one.
 - Credentials/secrets never appear in templates or injected values.
 - See `report-template.md` for report structure (use Deep Mode section) and `research-recipes.md` for search patterns.
 
@@ -296,11 +270,11 @@ Override resolution order, highest precedence first:
 2. The `Format:` line of the approved `brief.md`.
 3. Per-skill hard-coded default (html).
 
-For format and path, `research:running-research` does not consult `.workbench/config.md`. It is in a different plugin and has no project-level config knob for those two axes; format and path are determined by per-invocation override, the brief, or the hard-coded default. (Design system selection is the exception: the cross-reference at the end of this section honors `.workbench/config.md` `## Design system` so a project-wide design-system pin affects research reports too.)
+For format and path, `research:running-research` ignores `.workbench/config.md` (another plugin's file): only the override, the brief or the default decide them. Design system selection is the exception: the section below honors `.workbench/config.md` `## Design system`, so a project-wide pin themes research reports too.
 
-Path: `{OUTPUT_PATH}/report.<ext>`, where `OUTPUT_PATH` is the brief's folder (default `reports/<topic-slug>-<YYYY-MM-DD>/`) and `<ext>` resolves from format.
+Path: `{OUTPUT_PATH}/report.<ext>`, where `OUTPUT_PATH` is the brief's folder (default `reports/<topic-slug>-<YYYY-MM-DD>/`) and `<ext>` resolves from format. html keeps `report.md` beside `report.html` as its source.
 
-When emitting HTML, follow `references/research-report-template.html` in this skill's directory. Read the template lazily. Do not introduce U+2014 or U+2013 codepoints in body copy; HTML entity forms are permitted.
+When emitting HTML, follow `references/research-report-template.html` in this skill's directory, as Step 10 and `references/rendering-the-report.md` say. Read the template lazily. Do not introduce U+2014 or U+2013 codepoints in body copy; HTML entity forms are permitted.
 
 For other HTML artifact types not covered by a workbench or research skill, see `workbench:crafting-html`.
 
