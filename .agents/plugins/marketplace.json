@@ -261,6 +261,22 @@
       }
     },
     {
+      "name": "file-size",
+      "source": {
+        "source": "local",
+        "path": "./plugins/file-size"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools",
+      "interface": {
+        "displayName": "File Size",
+        "shortDescription": "Cap authored files at 5000 tokens on commit, push and CI"
+      }
+    },
+    {
       "name": "ponytail",
       "source": {
         "source": "url",

@@ -1,0 +1,19 @@
+{
+  "name": "file-size",
+  "version": "0.1.0",
+  "description": "Cap every authored file in a repo at 5000 tokens (bytes/4), checked on commit, on push and in CI, with advice to split along deep modules.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "license": "MIT",
+  "keywords": [
+    "file-size",
+    "token-limit",
+    "lefthook",
+    "git-hooks",
+    "ci",
+    "deep-modules",
+    "claude-code",
+    "codex"
+  ]
+}

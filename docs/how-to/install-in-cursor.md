@@ -8,7 +8,7 @@ status: stable
 
 # Install in Cursor
 
-The repository is also a Cursor plugin marketplace: `.cursor-plugin/marketplace.json` at the root lists 16 plugins. Cursor offers `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, `news` and `insights`. Why the other plugins are missing is in [Runtimes](/reference/runtimes.md).
+The repository is also a Cursor plugin marketplace: `.cursor-plugin/marketplace.json` at the root lists 17 plugins. Cursor offers `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, `news`, `insights` and `file-size`. Why the other plugins are missing is in [Runtimes](/reference/runtimes.md).
 
 Pick one of three ways.
 

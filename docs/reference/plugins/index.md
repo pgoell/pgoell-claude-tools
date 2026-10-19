@@ -18,6 +18,7 @@ One page per plugin in the marketplace, in marketplace order. Each page names th
 - [diagrams](/reference/plugins/diagrams.md): validated, themeable architecture and workflow diagrams as HTML
 - [news](/reference/plugins/news.md): a personal daily newspaper in a kasten vault
 - [insights](/reference/plugins/insights.md): daily problems and fixes from your sessions, and what your agents did
+- [file-size](/reference/plugins/file-size.md): cap authored files at 5000 tokens on commit, on push and in CI
 - [issue-loop](/reference/plugins/issue-loop.md): an unattended build loop over a repo's GitHub issues
 - [prose-styles](/reference/plugins/prose-styles.md): four output styles for how the agent writes prose
 - [guards](/reference/plugins/guards.md): a hook that blocks shell commands known to fail
