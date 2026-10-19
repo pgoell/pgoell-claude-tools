@@ -60,7 +60,7 @@ Each family directory carries its `OFL.txt`, copied from the same package. Files
 
 ## Gaps
 
-- Still adapted from `default` (swap in this preset's variable blocks, then apply the fixed chrome and grid from the layout grammar): agenda (use the SectionDivider list with no section current), waterfall, table, comparison, 2x2 matrix, timeline, quote, capabilities.
+- Still adapted from `default` (copy the slide into this preset, where it links this preset's variable files, then apply the fixed chrome and grid from the layout grammar): agenda (use the SectionDivider list with no section current), waterfall, table, comparison, 2x2 matrix, timeline, quote, capabilities.
 - Report gaps still open for this voice: a dashboard of four to six tiles and an appendix divider. The Harvey-ball scorecard is now built.
 - Shortlist alternates not yet built: FromTo, ObservationImplication, StakeholderAsks, CostCurve, ConvergenceFunnel, FactsPerspectives, ApproachPhases, BarrierHeatmap, ContributionStack, and ProjectionBand.
 - No wordmark or `icons/` library: the preset serves a context, not a brand.
