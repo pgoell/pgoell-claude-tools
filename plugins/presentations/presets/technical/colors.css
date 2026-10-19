@@ -1,7 +1,7 @@
 /* ============================================================
    Technical preset, design tokens ("trace highlight" direction)
    ============================================================
-   Source of truth for every slide's embedded variable block.
+   Every slide links this file.
    Semantic layer only: this preset serves a context, not a
    brand. Slides read these names and nothing else.
 

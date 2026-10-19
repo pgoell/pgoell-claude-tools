@@ -16,7 +16,7 @@ Consulting-style decks read by or presented to decision makers: board papers, st
 - `typography.css`: IBM Plex Serif 600 for titles, IBM Plex Sans 400 and 600 for everything else, all vendored.
 - `guidelines.md`: voice, use, skeleton (margins, footer with page number, sticker), color, type, imagery, and layout coverage.
 - `language.md`: the ten wording rules with the analytical tone line, the facts rule, and before and after pairs.
-- `slides/`: 11 base layouts built from the layout grammar in `guidelines.md`, not adapted from `default`: TitleSlide, ExecSummarySlide, SectionDivider, ContentSlide, BarChartSlide, ChartTakeawaySlide, IssueTreeSlide, StatSlide, ScorecardSlide, ProcessSlide, ClosingSlide. They tell one consistent story (Kestrel depot review: €129M cost to serve, 3 depots at €40M, €22M added elsewhere, €18M net). Each embeds a synced copy of the variable files and makes no network request.
+- `slides/`: 11 base layouts built from the layout grammar in `guidelines.md`, not adapted from `default`: TitleSlide, ExecSummarySlide, SectionDivider, ContentSlide, BarChartSlide, ChartTakeawaySlide, IssueTreeSlide, StatSlide, ScorecardSlide, ProcessSlide, ClosingSlide. They tell one consistent story (Kestrel depot review: €129M cost to serve, 3 depots at €40M, €22M added elsewhere, €18M net). Each links the variable files and makes no network request.
   - GapToTargetSlide: after McKinsey's USPS 2010 slide 28; cost to serve 2021 to 2028 with an actual and forecast divider, no-action and planned-actions lines in two grays under a dashed 2028 target, the €18M gap shaded in the accent, and three line-keyed notes in columns 8 to 12 read in story order.
   - ChartTripletSlide: two slides in one file. The triplet follows BCG's Dallas 2016 slide 8 (and McKinsey's USPS slide 27): three 4-column panels, each a claim sub-headline, a rule, a unit line, and one small bar chart with one accent bar. The panel pair follows Dallas slides 13 and 20: two 6-column panels whose sub-headlines join by an ellipsis, rows aligned across both charts in the same depot order.
   - ScenarioFanSlide: after BCG's Dallas 2016 slide 9 and Bain's Con Edison 2018 summary p4; lettered levers in columns 1 to 4, a capacity history splitting into three dashed paths, a 2030 end column, a shaded over-capacity wedge with one callout, and the recommended path in the accent.
@@ -60,7 +60,7 @@ Each family directory carries its `OFL.txt`, copied from the same package. Files
 
 ## Gaps
 
-- Still adapted from `default` (swap in this preset's variable blocks, then apply the fixed chrome and grid from the layout grammar): agenda (use the SectionDivider list with no section current), waterfall, table, comparison, 2x2 matrix, timeline, quote, capabilities.
+- Still adapted from `default` (copy the slide into this preset, where it links this preset's variable files, then apply the fixed chrome and grid from the layout grammar): agenda (use the SectionDivider list with no section current), waterfall, table, comparison, 2x2 matrix, timeline, quote, capabilities.
 - Report gaps still open for this voice: a dashboard of four to six tiles and an appendix divider. The Harvey-ball scorecard is now built.
 - Shortlist alternates not yet built: FromTo, ObservationImplication, StakeholderAsks, CostCurve, ConvergenceFunnel, FactsPerspectives, ApproachPhases, BarrierHeatmap, ContributionStack, and ProjectionBand.
 - No wordmark or `icons/` library: the preset serves a context, not a brand.

@@ -17,9 +17,9 @@ presets/<name>/
   assets/         optional. Wordmarks and brand imagery. SVG preferred, it inlines as text.
     fonts/<family>/  optional. Vendored font files (woff2), unmodified, each family with its license as OFL.txt (or the family's own license file). Provenance and license go in the manifest.
   icons/          optional. Brand icon library as one SVG per icon, organized in subdirectories, with an index.tsv (one row per icon: path, name, variant, category, section, aliases, keywords, colors) and a README.md documenting search and usage. Monochrome icons use currentColor so CSS color recolors them; consumers grep the index, then inline the SVG. Icons come only from this library, never drawn freehand; a preset without one gets no icons.
-  slides/         optional. Example slides as self-contained HTML on a 1920x1080 canvas.
+  slides/         optional. Example slides as HTML on a 1920x1080 canvas that link the preset's variable files.
     index.tsv     required when slides/ exists. One row of tags per slide file, from the closed vocabulary in TAGS.md, so consumers can search every gallery by role, move, and form.
-  previews/       optional. One PNG per example slide (rendered at 1920x1080, stored at 1280x720), for browsing the gallery on GitHub. Regenerate whenever a slide changes.
+  previews/       optional. One PNG per example slide (rendered at 1920x1080, stored at 1280x720), for browsing the gallery on GitHub. Regenerate whenever a slide's rendering changes.
   README.md       optional. Showcase page that GitHub renders when browsing the preset directory. Inlines every preview, grouped by the role column of slides/index.tsv, with each row's summary as caption.
 ```
 
@@ -57,7 +57,7 @@ When the preset's `--accent` is too light for text, it declares `--accent-ink`, 
 ## Rules
 
 - Preset names are kebab-case and name the brand or context, for example `acme-corp` or `default`.
-- Example slides are self-contained: inline `<style>` opening with a synced copy of the preset's variable blocks (`colors.css`, plus `typography.css` when present, stay the source of truth), every color and font read from variables declared there, no network requests. The one permitted difference in the synced copy is the `../` prefix on `@font-face` URLs, because slides sit one level below `assets/`. Imagery either inlines (SVG as text, small rasters as base64) or, when inlining would force lossy recompression, stays at source quality in the preset's `assets/` and is referenced by relative path; slides open standalone from the preset directory either way.
+- Example slides link the preset's variable files: `<link rel="stylesheet" href="../colors.css">`, plus `../typography.css` when present, before the slide's inline `<style>`, which holds only the slide's own rules. Every color and font reads from variables declared in those files, and the slide makes no network requests. These links and relative paths into the preset's `assets/` are the only file references a slide makes; slides open standalone from the preset directory. Imagery either inlines (SVG as text, small rasters as base64) or, when inlining would force lossy recompression, stays at source quality in the preset's `assets/` and is referenced by relative path. A local preset whose slides still embed a copy of the variable files keeps working, but new slides link.
 - Example slides meet the type floors on the 1920x1080 canvas: body at least 36px, captions and chart labels at least 28px, footer and source line at least 24px, never shrunk to fit. These are starting points, checked in decks by hard gate H7.
 - Example slides carry no template chrome: no tracked uppercase eyebrows, accent-colored periods, italic accent words, mono micro labels, 01 / 02 numbering where nothing is a sequence, or middle-dot meta strings. The action title is the dominant heading. A source template that breaks a floor or uses chrome is rebuilt without it, and the manifest records the decision.
 - Official assets only. Wordmarks and logos come from a brand portal or files the user provides, never redrawn from memory.
