@@ -7,7 +7,7 @@ a tiny HTTP server. Feedback auto-saves to feedback.json in the workspace.
 
 Usage:
     python generate_review.py <workspace-path> [--port PORT] [--skill-name NAME]
-    python generate_review.py <workspace-path> --previous-feedback /path/to/old/feedback.json
+    python generate_review.py <workspace-path> --previous-workspace /path/to/old/iteration
 
 No dependencies beyond the Python stdlib are required.
 """
@@ -26,6 +26,9 @@ import webbrowser
 from functools import partial
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
+
+# A repeat run folder: run-<n>. Same constant in scripts/aggregate_benchmark.py.
+RUN_DIR_RE = re.compile(r"^run-(\d+)$")
 
 # Files to exclude from output listings
 METADATA_FILES = {"transcript.md", "user_notes.md", "metrics.json"}
@@ -61,12 +64,23 @@ def find_runs(workspace: Path) -> list[dict]:
     """Recursively find directories that contain an outputs/ subdirectory."""
     runs: list[dict] = []
     _find_runs_recursive(workspace, workspace, runs)
-    runs.sort(key=lambda r: (r.get("eval_id", float("inf")), r["id"]))
+    # Runs without an eval_id sort last
+    runs.sort(key=lambda r: (r["eval_id"] is None, r["eval_id"] or 0, r["id"]))
     return runs
 
 
 def _find_runs_recursive(root: Path, current: Path, runs: list[dict]) -> None:
     if not current.is_dir():
+        return
+
+    # A config dir with run-<n>/ folders: those are the runs, not current
+    run_dirs = sorted(
+        (d for d in current.iterdir() if d.is_dir() and RUN_DIR_RE.match(d.name)),
+        key=lambda d: int(RUN_DIR_RE.match(d.name).group(1)),
+    )
+    if run_dirs:
+        for d in run_dirs:
+            _find_runs_recursive(root, d, runs)
         return
 
     outputs_dir = current / "outputs"
@@ -78,7 +92,9 @@ def _find_runs_recursive(root: Path, current: Path, runs: list[dict]) -> None:
 
     skip = {"node_modules", ".git", "__pycache__", "skill", "inputs"}
     for child in sorted(current.iterdir()):
-        if child.is_dir() and child.name not in skip:
+        # A run-* folder that is not run-<n> (run-notes/) is never a run
+        stray_run = child.name.startswith("run-") and not RUN_DIR_RE.match(child.name)
+        if child.is_dir() and child.name not in skip and not stray_run:
             _find_runs_recursive(root, child, runs)
 
 
@@ -87,8 +103,9 @@ def build_run(root: Path, run_dir: Path) -> dict | None:
     prompt = ""
     eval_id = None
 
-    # Try eval_metadata.json
-    for candidate in [run_dir / "eval_metadata.json", run_dir.parent / "eval_metadata.json"]:
+    # eval_metadata.json: climb from run_dir up to root, first hit wins
+    for d in [run_dir, *run_dir.parents]:
+        candidate = d / "eval_metadata.json"
         if candidate.exists():
             try:
                 metadata = json.loads(candidate.read_text())
@@ -96,8 +113,9 @@ def build_run(root: Path, run_dir: Path) -> dict | None:
                 eval_id = metadata.get("eval_id")
             except (json.JSONDecodeError, OSError):
                 pass
-            if prompt:
-                break
+            break
+        if d == root:
+            break
 
     # Fall back to transcript.md
     if not prompt:
@@ -126,16 +144,14 @@ def build_run(root: Path, run_dir: Path) -> dict | None:
             if f.is_file() and f.name not in METADATA_FILES:
                 output_files.append(embed_file(f))
 
-    # Load grading if present
+    # Load grading if present: only the run dir's own grading.json
     grading = None
-    for candidate in [run_dir / "grading.json", run_dir.parent / "grading.json"]:
-        if candidate.exists():
-            try:
-                grading = json.loads(candidate.read_text())
-            except (json.JSONDecodeError, OSError):
-                pass
-            if grading:
-                break
+    grading_path = run_dir / "grading.json"
+    if grading_path.exists():
+        try:
+            grading = json.loads(grading_path.read_text())
+        except (json.JSONDecodeError, OSError):
+            pass
 
     return {
         "id": run_id,

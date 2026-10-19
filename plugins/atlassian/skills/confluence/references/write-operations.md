@@ -27,7 +27,7 @@ See `storage-format.md` in this folder for how to construct the body value.
 
 ## Update page
 
-**curl**: You MUST GET the page first to obtain the current version number, then PUT with `version.number + 1`.
+**curl**: You MUST GET the page first to obtain the current version number, then PUT with `version.number + 1`. The example below sends `2` for a page at version 1; replace it with the number you computed.
 
 ```bash
 # Step 1: GET current page (note the version number in the response)
@@ -50,7 +50,7 @@ curl -s -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
       "value": "<p>Updated content in storage format.</p>"
     },
     "version": {
-      "number": CURRENT_VERSION_PLUS_ONE
+      "number": 2
     }
   }'
 ```

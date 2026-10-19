@@ -16,6 +16,8 @@ Jira and Confluence skills for Atlassian Cloud. Both call the Atlassian REST API
 
 **Setup:** [Set up the atlassian plugin](/how-to/set-up-atlassian.md)
 
+**Tests:** `bash plugins/atlassian/tests/run.sh` parses every JSON body in the skills' examples (`json` code fences and curl `-d` bodies) with no network. Last run 2026-10-19: 30 bodies, 0 failed.
+
 ## Skills
 
 | Invocation              | What it does                                                                                                                          |

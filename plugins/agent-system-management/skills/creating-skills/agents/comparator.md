@@ -89,7 +89,7 @@ Be decisive - ties should be rare. One output is usually better, even if margina
 
 ### Step 7: Write Comparison Results
 
-Save results to a JSON file at the path specified (or `comparison.json` if not specified).
+Save results to a JSON file at the path specified (or `comparison.json` in the eval dir, `<skill>-workspace/iteration-<N>/eval-<id>-<name>/`, if not specified).
 
 ## Output Format
 

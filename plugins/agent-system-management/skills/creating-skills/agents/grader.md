@@ -198,7 +198,7 @@ Write a JSON file with this structure:
   - **failed**: Count of failed expectations
   - **total**: Total expectations evaluated
   - **pass_rate**: Fraction passed (0.0 to 1.0)
-- **execution_metrics**: Copied from executor's metrics.json (if available)
+- **execution_metrics**: Copied from executor's metrics.json, only when `{outputs_dir}/metrics.json` exists
   - **output_chars**: Total character count of output files (proxy for tokens)
   - **transcript_chars**: Character count of transcript
 - **timing**: Wall clock timing from timing.json (if available)
@@ -209,7 +209,7 @@ Write a JSON file with this structure:
   - **type**: "factual", "process", or "quality"
   - **verified**: Boolean - whether the claim holds
   - **evidence**: Supporting or contradicting evidence
-- **user_notes_summary**: Issues flagged by the executor
+- **user_notes_summary**: Issues flagged by the executor, only when `{outputs_dir}/user_notes.md` exists
   - **uncertainties**: Things the executor wasn't sure about
   - **needs_review**: Items requiring human attention
   - **workarounds**: Places where the skill didn't work as expected

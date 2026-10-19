@@ -16,7 +16,7 @@ You receive these parameters in your prompt:
 - **loser_skill_path**: Path to the skill that produced the losing output
 - **loser_transcript_path**: Path to the execution transcript for the loser
 - **comparison_result_path**: Path to the blind comparator's output JSON
-- **output_path**: Where to save the analysis results
+- **output_path**: Where to save the analysis results (`analysis.json` in the eval dir, `<skill>-workspace/iteration-<N>/eval-<id>-<name>/`)
 
 ## Process
 
@@ -209,7 +209,7 @@ You receive these parameters in your prompt:
 ### Step 1: Read Benchmark Data
 
 1. Read the benchmark.json containing all run results
-2. Note the configurations tested (with_skill, without_skill)
+2. Note the configurations tested: with_skill (or new_skill) against a baseline, which may be without_skill or old_skill
 3. Understand the run_summary aggregates already calculated
 
 ### Step 2: Analyze Per-Assertion Patterns
