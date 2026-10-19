@@ -264,12 +264,8 @@ For other HTML artifact types not covered by a workbench or research skill, see 
 
 ### Applying a design system
 
-Before emitting HTML, check for an active design system and inline its overrides into the artifact's `<style>` block:
+Before emitting HTML, check whether a design system is set: a per-prompt override (e.g., "render with the `brand-2026` design system"), else `.workbench/config.md` `## Design system` `Name:`. This is the one axis on which research honors `.workbench/config.md`; format and path ignore it, per the disclaimer above. If none is set, emit with the template's defaults.
 
-1. Resolve the design-system name: per-prompt override (e.g., "render with the `brand-2026` design system"), then `.workbench/config.md` `## Design system` `Name:`, then no override. (Format and path ignore `.workbench/config.md` per the disclaimer above; only the design-system axis honors it.)
-2. Locate the directory: `.workbench/design-systems/<name>/` (project scope), then `~/.claude/workbench/design-systems/<name>/` (user scope). If a name resolves but no directory is found at either scope, report the missing path to the user and emit with template defaults; do not fabricate a substitute.
-3. Inline `colors.css` (and `typography.css` if present) **after** the template's own `:root` declarations, so the design system's values win the cascade.
-4. For any referenced component, paste `components/<n>.html` markup and scoped style into the artifact body.
-5. For any referenced image, base64-encode (`base64 -w 0 <file>`) and inline as `data:image/<type>;base64,<payload>`. SVG is text and can be inlined directly. Use relative paths only when the artifact and the design system co-exist in the same git tree and the artifact will not travel.
+If one is set, read `references/applying-a-design-system.md` in the folder of the workbench plugin's `crafting-design-systems` skill, and follow it. That folder holds the skill's `SKILL.md`: on Claude Code, `<installPath>/skills/crafting-design-systems/`, with `installPath` taken from the `workbench@pgoell-claude-tools` entry in `~/.claude/plugins/installed_plugins.json`; on Codex and Cursor, the path their skill list shows for `crafting-design-systems`. If the workbench plugin is not installed, or its folder has no `references/applying-a-design-system.md` (workbench older than 1.2.2), tell the user the design system needs a current workbench plugin, and emit with the template's defaults.
 
 To create or edit a design system, see `workbench:crafting-design-systems`.

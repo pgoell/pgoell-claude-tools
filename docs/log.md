@@ -2,6 +2,8 @@
 
 ## 2026-10-19
 
+- **Fix**: workbench 1.2.2, research 2.1.6 (#163). The design-system protocol now lives once, in `crafting-design-systems/references/applying-a-design-system.md`. The five workbench producers and `research:research` keep an `### Applying a design system` section that points there when a design system is set. When the workbench plugin is not installed or older than 1.2.2, research tells the user and keeps the template's defaults. AGENTS.md, `explanation/html-producers-presets-and-themes.md`, `explanation/skill-design-patterns.md`, `reference/plugins/research.md` and `reference/plugins/workbench.md` say so. No other page under `docs/` changed.
+
 - **Fix**: agent-system-management 0.7.5 (#191, #192). `creating-skills`' `aggregate_benchmark.py` and `eval-viewer/generate_review.py` no longer crash on malformed input. Each field they read from `eval_metadata.json`, `grading.json`, `timing.json` and `benchmark.json` takes its default when missing, and its default plus one warning line when it has the wrong type, is not an object, or the file holds bad JSON or cannot be read. Eval ids are unique in both readers: a metadata `eval_id` first, then the folder number if no other eval holds it, else one past the largest id in use, so two evals never merge in `benchmark.json`. No other page under `docs/` changed.
 
 - **Fix**: agent-system-management 0.7.4 (#188, #189). `creating-skills`' `aggregate_benchmark.py` parses on Python 3.11 again: it no longer puts a backslash inside an f-string expression. Both it and `eval-viewer/generate_review.py` take the eval folder's number as the eval id when `eval_metadata.json` gives no int (missing, null, a string, a bool), so a bad id no longer crashes the sort. No other page under `docs/` changed.

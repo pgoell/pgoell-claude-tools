@@ -26,4 +26,4 @@ One skill that researches a complex topic and writes a sourced report. It plans 
 
 - Format: HTML by default. Ask for "a markdown research report" to get markdown for one run.
 - Path: `reports/<topic-slug>-<YYYY-MM-DD>/report.html` (or `report.md`). You can name another path.
-- Config: the skill ignores `.workbench/config.md` for format and path. It does honor that file's `## Design system` section, so a project-wide design system themes research reports too (see [workbench](/reference/plugins/workbench.md)).
+- Config: the skill ignores `.workbench/config.md` for format and path. It does honor that file's `## Design system` section, so a project-wide design system themes research reports too (see [workbench](/reference/plugins/workbench.md)). Applying a design system needs workbench 1.2.2 or later installed; without it, the skill says so and the report keeps the template's defaults.
