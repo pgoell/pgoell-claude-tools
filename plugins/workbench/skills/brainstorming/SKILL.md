@@ -27,7 +27,7 @@ The HARD-GATE above applies within both the medium and large lanes: no implement
 You MUST create a task for each of these items and complete them in order:
 
 1. **Explore project context**: dispatch a cost-efficient subagent to survey files, docs, and recent commits; use its summary as starting context.
-2. **Visualizing-options**: if the user's request already asks to see visuals in the browser (mockups, layout options to click), that request is the opt-in: invoke `workbench:visualizing-options` in this same turn and render what they asked for, with no offer message. Otherwise, if the topic will involve visual questions, offer it: mention `workbench:visualizing-options` in its own message, pointer only; the user opts in.
+2. **Visualizing-options**: if the user's request explicitly asks to see, render or click options in the browser ("show me three layouts in the browser", "mockups I can click in the browser"), that request is the opt-in: invoke `workbench:visualizing-options` in this same turn and render what they asked for, with no offer message. Otherwise, if the topic will involve visual questions, offer it: mention `workbench:visualizing-options` in its own message, pointer only; the user opts in.
 3. **Grill exhaustively until a shared design concept emerges**: walk the design tree depth-first, resolving each branch's dependencies before moving to the next.
 4. **Propose 2-3 approaches**: with trade-offs and your recommendation.
 5. **Present design**: in sections scaled to their complexity, get user approval after each section.
