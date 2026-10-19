@@ -21,7 +21,8 @@ for p in $(gh pr list --state all --search "created:>=$start" --json number -q '
   body=$(gh pr view "$p" --json body -q .body)
   open=$(grep -cE '^\s*- \[ \]' <<<"$body")
   [ "$open" = 0 ] || no "PR $p: $open open boxes"
-  k=$(grep -E '^\s*- \[[xX]\]' <<<"$body" | grep -cvE 'Test:|Proof:')
+  # A box inside a fenced code block is an example, not a checklist line.
+  k=$(awk '/^[[:space:]]*```/ { f = !f; next } !f' <<<"$body" | grep -E '^\s*- \[[xX]\]' | grep -cvE 'Test:|Proof:')
   [ "$k" = 0 ] || no "PR $p: $k ticked boxes name no test"
   gh pr view "$p" --json files -q '.files[].path' | grep -E "$MACHINE_FILES" | sed "s/^/TELL HUMAN: PR $p touched /"
 done

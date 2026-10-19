@@ -265,6 +265,7 @@ good; printf -- '- [x] a\n- [x] b\n' >"$FAKE/body"; out=$(gate); ok "gate fails 
 has "no-test boxes named" "$out" "FAIL PR 5: 2 ticked boxes name no test"
 good; printf -- '  - [X] a\n' >"$FAKE/body"; out=$(gate); has "gate fails on an indented [X] without a test" "$out" "FAIL PR 5: 1 ticked boxes name no test"
 good; echo 'no boxes here' >"$FAKE/body"; out=$(gate); ok "gate passes a body with no boxes" $? 0
+good; printf -- '- [x] a Test: t1\n```\n- [x] example\n```\n' >"$FAKE/body"; out=$(gate); ok "gate skips a ticked box in a code block" $? 0
 good; echo OPEN >"$FAKE/issue_state"; out=$(gate); has "gate fails on an open issue" "$out" "FAIL issue 7 open"
 good; echo fff0000 >"$FAKE/live"; out=$(gate); has "gate fails when live is not the head" "$out" "FAIL live is fff0000, main is abc1234"
 good; echo ' M x' >"$FAKE/dirty"; out=$(gate); has "gate fails on a dirty tree" "$out" "FAIL working tree dirty"
