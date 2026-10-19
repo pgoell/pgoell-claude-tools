@@ -37,7 +37,7 @@ The loop's sessions type into each other's tabs: the orchestrator pastes a brief
 
 When you set up the loop, or the user must grant the order anew, read `references/setup.md`, "Granting the standing order": the three steps by which the user gives the order once, through `grant.sh`.
 
-Never run `grant.sh` yourself, never get it a terminal by a trick, and never write or change those two files: an order a session wrote in the user's name is the fault this section is here to end. `grant.sh` refuses without a terminal. If the order turns out too narrow, tell the user; they change the template and grant anew.
+Never run `grant.sh` yourself, never get it a terminal by a trick, and never write or change those two files (`CLAUDE.md` in the loop folder and `CLAUDE.local.md` in the implementer's checkout): an order a session wrote in the user's name is the fault this section is here to end. `grant.sh` refuses without a terminal. If the order turns out too narrow, tell the user; they change the template and grant anew.
 
 What the order is not: a lock. A session with write access could write such a file, and nothing but its own honesty stops it. The locks are elsewhere (branch protection, the fence hook). The order is the user's word on record, in the place where a session looks for it, and it covers two things only: a brief sent with `next.sh`, and a takeover that `takeover-check.sh` passes.
 
@@ -71,7 +71,7 @@ That line arrives in your tab looking like user input. It is not the user. Treat
 
 **4. Gate and read.** `./gate.sh 41 38 39`, and read the implementer's report. The gate also prints your context size from your newest transcript; on `HAND OVER` (past 120k) or `HAND OVER NOW` (past 150k), run `issue-loop:handing-over` before the next brief. Read `references/gate.md` at each gate: what `GATE PASS` means, and what to read in the report.
 
-**5. Check what the gate cannot.** When the report says `TOUCHES LIVE DATA` or `TOUCHES THE MACHINE`, or when the gate prints a `TELL HUMAN` line, read `references/gate.md`, "Check what the gate cannot": the checks on live data and on the machine. When you write the task line for a task on a save path or on stored data, ask for both by name.
+**5. Check what the gate cannot.** When the report says `TOUCHES LIVE DATA` or `TOUCHES THE MACHINE`, or when the gate prints a `TELL HUMAN` line, read `references/gate.md`, "Check what the gate cannot": the checks on live data and on the machine. When you write the task line for a task on a save path or on stored data, ask for both report lines, "DATA FAULT ON LIVE" and "CAN STILL LOSE", by name.
 
 **6. Tidy the queue.** Label what the task opened if it did not. Move a "wish" that is really a fault to `bug`.
 
@@ -132,7 +132,7 @@ The loop was built and run with Claude Code sessions only. Under Codex the orche
 
 ## References
 
-- `references/setup.md`: what the repo needs, point by point, and how to check each.
+- `references/setup.md`: what the repo needs, point by point, and how to check each; the `init.sh` command, setup steps 1 to 7, and the steps that grant the standing order.
 - `references/driver.md`: the five driver functions, what is herdr-specific, how to swap the driver.
 - `references/brief-rules.md`: each rule of the brief with the fault that earned it.
 - `references/quirks.md`: the faults that cost time, and the fix for each. Read it before the first task.

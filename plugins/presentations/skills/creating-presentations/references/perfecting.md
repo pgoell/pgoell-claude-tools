@@ -30,7 +30,7 @@ Each round, in a `.deck-review/` directory next to the deck:
 2. **Review.** Dispatch one fresh judge subagent per soft dimension (narrative, clarity, visual, delivery), each given the screenshots first, then the constitution (including the V rules and flaw taxonomy), the deck source, and the probe notes, nothing else. Judges answer one yes/no item per rule per slide and never score overall; when a fix must be compared with the version before it, use the pairwise prompt with the order swapped.
 3. **Verify.** Every finding faces an adversarial verifier prompted to refute it. Refuted findings die into the ledger; blockers, and all findings in strict mode, get a three-verifier majority.
 4. **Fix.** The main session applies the smallest change that resolves each confirmed finding, hard-gate failures first. Never batch a speculative redesign into a fix round.
-5. **Repeat** from step 1 until the convergence rule terminates the loop.
+5. **Repeat** from step 1 until the stop rule in "When the loop stops" ends the loop.
 
 Prompts, schemas, the ledger format, and a Workflow script template for one round live in `references/review-loop.md`; read it before dispatching judges. Severity runs blocker, major, minor, nit; the default threshold is minor (nits are reported but do not block convergence), and strict mode (the user says "strict" or "no nits") drops the threshold to nit with three-verifier majorities throughout.
 
