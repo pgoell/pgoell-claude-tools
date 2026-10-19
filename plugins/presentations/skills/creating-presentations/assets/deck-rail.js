@@ -22,7 +22,7 @@
  *   setVisible(on)       the viewer's animated show/hide toggle
  *   setAspect()          follow the design size
  *   markSkip(i, on)      dim or undim one thumb
- *   destroy()
+ *   destroy()            undo enable(), on disconnect
  * It calls back stage._go(i, reason) and stage._fit(), and hands each
  * thumb to stage._edit.wireThumb(entry).
  */
@@ -216,11 +216,14 @@
       if (this.enabled || this.stage.hasAttribute('no-rail')) return;
       this.enabled = true;
       // Per-viewer preference, restored alongside rail width. Default on;
-      // only a stored '0' (from the TweaksPanel toggle) hides it.
-      this.visible = true;
-      try {
-        if (localStorage.getItem('deck-stage.railVisible') === '0') this.visible = false;
-      } catch (e) {}
+      // only a stored '0' (from the TweaksPanel toggle) hides it. A re-add
+      // keeps the value it had.
+      if (this.visible == null) {
+        this.visible = true;
+        try {
+          if (localStorage.getItem('deck-stage.railVisible') === '0') this.visible = false;
+        } catch (e) {}
+      }
       this._clones = new DeckThumbs(this.stage, this);
       // Build the rail now that it's enabled, slotchange already fired,
       // so render's early-return skipped the initial build.
@@ -229,10 +232,16 @@
       this.stage._fit();
     }
 
+    // Undoes enable(): the stage calls this on disconnect and enable()
+    // again on a re-add, which rebuilds the thumbs and their observers.
     destroy() {
       if (this._railAnimTimer) clearTimeout(this._railAnimTimer);
       if (this._scaleRaf) cancelAnimationFrame(this._scaleRaf);
+      this._scaleRaf = null;
       if (this._clones) this._clones.destroy();
+      (this.thumbs || []).forEach((t) => t.thumb.remove());
+      this.thumbs = [];
+      this.enabled = false;
     }
 
     _setWidth(px) {

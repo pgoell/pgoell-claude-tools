@@ -44,7 +44,7 @@
       "name": "workbench",
       "source": "./plugins/workbench",
       "description": "Personal Workbench skills for design and autonomous feature work.",
-      "version": "1.4.2"
+      "version": "1.4.3"
     },
     {
       "name": "terminal",
@@ -80,7 +80,7 @@
       "name": "presentations",
       "source": "./plugins/presentations",
       "description": "Presentation lifecycle skills: content design, HTML deck building with brand presets and a perfecting loop, a local deck editor, native PPTX export, and preset extraction.",
-      "version": "0.7.2"
+      "version": "0.7.3"
     },
     {
       "name": "diagrams",

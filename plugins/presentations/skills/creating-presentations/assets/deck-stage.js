@@ -165,7 +165,9 @@
       // next thumbnails, the rail has no business rendering inside those
       // (wrong scale, and it offsets the stage so the thumb shows a gutter).
       if (/[?&]_snthumb=/.test(location.search)) this.setAttribute('no-rail', '');
-      this._render();
+      // Build the shadow DOM once; a re-add keeps it and the slot, and the
+      // calls below re-arm what disconnectedCallback tore down.
+      if (!this._canvas) this._render();
       this._loadNotes();
       DeckPrint.syncPageRule(this.designWidth, this.designHeight);
       this._controls.connect();
