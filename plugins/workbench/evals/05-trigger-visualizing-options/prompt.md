@@ -6,4 +6,4 @@ allowed_tools: [Skill, Read, Glob, Grep]
 runs: 3
 ---
 
-We're redesigning the account settings page and I can't picture the options from text. Show me three layout options in the browser (say a sidebar, tabs, and one long page) so I can click the one I like.
+The design questions for the account settings page are settled; only the layout is open, and I can't picture it from text. Render three layout mockups in the browser now (a sidebar, tabs, and one long page) so I can click the one I like. No more questions first.
