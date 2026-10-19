@@ -14,9 +14,9 @@ Four things, plus a state word that the wait is built on.
 | `drv_start NAME CWD LABEL` | Start a Claude Code session with that name and working folder, in the permission mode from `loop.env`. Print a handle `drv_read` accepts       |
 | `drv_status NAME`          | Print `working`, `idle`, `done`, `blocked` or `unknown`; print `gone` when no session has the name                                             |
 
-`wait.sh` builds "wait for the DONE token" from `drv_wait`, `drv_read` and `drv_status`: it waits, reads the last 40 lines, looks for `DONE <token>` or `BLOCKED <token>` at the start of a line, and settles only when the state is no longer `working`. So a driver does not need to know about tokens.
+`wait.sh` builds "wait for the DONE token" from `drv_wait`, `drv_read` and `drv_status`: it waits, reads the last 40 lines and the first line of `task.notified`, looks for `DONE <token>` or `BLOCKED <token>` at the start of a line, and settles only when the state is no longer `working`. So a driver does not need to know about tokens.
 
-`notify.sh` is the one script the implementer runs. It calls `drv_send` with the name in `orch-name`, so a new driver needs nothing more for it, and no rule in the brief names the driver's own command.
+`notify.sh` is the one script the implementer runs. It writes its line to `task.notified` and calls `drv_send` with the name in `orch-name`, so a new driver needs nothing more for it, and no rule in the brief names the driver's own command.
 
 Three demands are easy to miss:
 

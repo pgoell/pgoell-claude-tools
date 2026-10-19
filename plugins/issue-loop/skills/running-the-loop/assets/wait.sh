@@ -2,7 +2,10 @@
 # usage: wait.sh "<token>", for example wait.sh "#210"
 # The token is the first word after DONE in the last line the task line asked for.
 # Run it in the background. It prints one word and exits:
-#   settled  (0) the report has "DONE <token>" or "BLOCKED <token>" and the session rests
+#   settled  (0) the report, or the file task.notified that notify.sh writes,
+#                has "DONE <token>" or "BLOCKED <token>" and the session
+#                rests. The file covers a scrolled-up pane that hides the
+#                report; next.sh removes it with the next task.
 #   TIMEOUT  (1) the task is older than TASK_LIMIT_MIN minutes. Said once per
 #                task: it leaves the file task.overrun, and while that file is
 #                there a new wait.sh watches on at the same pace with no limit.
@@ -19,7 +22,7 @@ tok=${1:?usage: wait.sh "<token>"}
 limit=$((${TASK_LIMIT_MIN:-100} * 60))
 alive="$S/task.alive"
 [ -e "$alive" ] || : >"$alive"
-has_token() { screen_tail "$IMPL" 40 | grep -E '^\s*(DONE|BLOCKED) ' | grep -qE " ${tok}([^0-9A-Za-z]|\$)"; }
+has_token() { { screen_tail "$IMPL" 40; head -1 "$S/task.notified" 2>/dev/null; } | grep -E '^\s*(DONE|BLOCKED) ' | grep -qE " ${tok}([^0-9A-Za-z]|\$)"; }
 while true; do
   age=$(($(date +%s) - $(date -d "$(cat "$S/task.start")" +%s)))
   [ "$age" -gt "$limit" ] && [ ! -e "$S/task.overrun" ] && { : >"$S/task.overrun"; echo TIMEOUT; exit 1; }

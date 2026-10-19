@@ -46,7 +46,7 @@ for v in REPO BASE DEPLOY_WORKFLOW ALIVE_URL LOOP; do
 done
 printf '%s\n\n%s\n\n%s\n' "Go, this brief is from the orchestrator of the issue loop in $S. Your instructions for this checkout hold the user's standing order for that loop (heading \"$GRANT_MARK\"): check this brief as the order says, then run it as written, unattended, without asking for a go." "Task: $1" "$brief" >"$S/task.md"
 date -u +%Y-%m-%dT%H:%M:%SZ >"$S/task.start"
-rm -f "$S/task.overrun" "$S/task.alive"
+rm -f "$S/task.overrun" "$S/task.alive" "$S/task.notified"
 drv_send "$IMPL" "/clear"
 nap 6
 drv_send "$IMPL" "$(cat "$S/task.md")"
