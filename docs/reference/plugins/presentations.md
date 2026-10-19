@@ -28,7 +28,7 @@ The whole life of a slide deck in one plugin: content design, an HTML deck with 
 | `/presentations:exporting-presentations-to-pptx` | Converts a finished HTML deck into a native, editable `.pptx` with real text boxes, autoshapes, embedded images and speaker notes, through a python-pptx generator written fresh for each deck.                             |
 | `/presentations:extracting-presets`              | Turns brand material (PPTX templates, PDF guidelines, example decks) into a reusable preset: colors, typography, assets and example slides rebuilt as HTML.                                                                 |
 
-The usual order: `designing-presentations` writes `deck.md`, `creating-presentations` renders it, `editing-presentations` opens it for changes by hand, and `exporting-presentations-to-pptx` produces the file when someone needs PowerPoint.
+The usual order: `designing-presentations` writes `deck.md`, `creating-presentations` renders it, `editing-presentations` opens it for changes by hand, and `exporting-presentations-to-pptx` produces the file when someone needs PowerPoint. A bare ask for a deck, with no `deck.md`, storyline or content, starts at `designing-presentations`, which asks for the material first; an ask with a `deck.md`, a settled storyline or its own content goes straight to `creating-presentations`.
 
 ## Presets
 

@@ -1,6 +1,6 @@
 ---
 name: designing-presentations
-description: Use when the user wants to design the content of a slide presentation, from audience brief through critiqued storyboard, before any slide is rendered. Produces a markdown deck.md with structured per-slide front-matter. Triggers on requests to plan a deck's storyline, storyboard a presentation, work out key messages, or audit the content of an existing deck.md. For rendering a deck.md as a styled HTML deck, see the creating-presentations skill.
+description: Use when the user wants to design the content of a slide presentation, from audience brief to critiqued storyboard, before any slide renders. Produces a deck.md with per-slide front-matter. Triggers on a bare ask for a deck with no deck.md, settled storyline or content to build from, such as "I need a deck about our Q3 results", and on requests to plan a storyline, storyboard a deck, work out key messages, or audit a deck.md. To render a deck.md as HTML, see the creating-presentations skill.
 ---
 
 # Designing Presentations
