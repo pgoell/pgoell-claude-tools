@@ -18,7 +18,7 @@ Claude Code skills name agent types such as `general-purpose` or `superpowers:co
 
 When a skill says to dispatch a named agent type:
 
-1. Find the prompt template the skill names (for example writing-plans' `plan-reviewer-prompt.md` or writing-spec's `spec-document-reviewer-prompt.md`).
+1. Find the prompt template the skill names, in that skill's own folder (for example `writing-plans/plan-reviewer-prompt.md` or `writing-spec/spec-document-reviewer-prompt.md`).
 2. Fill its placeholders.
 3. Pass the filled text as the `Task` prompt to a default subagent.
 

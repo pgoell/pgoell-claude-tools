@@ -33,8 +33,9 @@ from built-in roles (`default`, `explorer`, `worker`).
 
 When a skill says to dispatch a named agent type:
 
-1. Find the prompt template the skill names (e.g., writing-plans'
-   `plan-reviewer-prompt.md` or writing-spec's `spec-document-reviewer-prompt.md`)
+1. Find the prompt template the skill names, in that skill's own folder (e.g.,
+   `writing-plans/plan-reviewer-prompt.md` or
+   `writing-spec/spec-document-reviewer-prompt.md`)
 2. Read the prompt content
 3. Fill any template placeholders (`[PLAN_FILE_PATH]`, `[SPEC_FILE_PATH]`, etc.)
 4. Spawn a `worker` agent with the filled content as the `message`
