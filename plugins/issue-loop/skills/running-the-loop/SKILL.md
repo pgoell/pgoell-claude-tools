@@ -62,7 +62,7 @@ Never run `grant.sh` yourself, never get it a terminal by a trick, and never wri
 
 What the order is not: a lock. A session with write access could write such a file, and nothing but its own honesty stops it. The locks are elsewhere (branch protection, the fence hook). The order is the user's word on record, in the place where a session looks for it, and it covers two things only: a brief sent with `next.sh`, and a takeover that `takeover-check.sh` passes.
 
-**If you were started in the loop folder and told to take over**, your instructions hold the order and its checks. Run `./takeover-check.sh <your name> <the sender's name>`. On `TAKEOVER OK` take over without asking for a go. On anything else do nothing to the loop and ask the user.
+**If you were started in the loop folder and told to take over**, your instructions hold the order and its checks. Run `./takeover-check.sh <your name> <the sender's name>`. On `TAKEOVER OK` take over without asking for a go, and take the title `<project>-orchestrator-main` as the first message and `HANDOFF.md` say. On anything else do nothing to the loop and ask the user.
 
 ## One turn of the loop
 
