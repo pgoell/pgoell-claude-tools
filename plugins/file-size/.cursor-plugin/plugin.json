@@ -1,0 +1,23 @@
+{
+  "name": "file-size",
+  "displayName": "File Size",
+  "version": "0.1.0",
+  "description": "Cap every authored file in a repo at 5000 tokens (bytes/4), checked on commit, on push and in CI, with advice to split along deep modules.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "homepage": "https://github.com/pgoell/pgoell-claude-tools/tree/master/plugins/file-size",
+  "repository": "https://github.com/pgoell/pgoell-claude-tools",
+  "license": "MIT",
+  "keywords": [
+    "file-size",
+    "token-limit",
+    "lefthook",
+    "git-hooks",
+    "ci",
+    "deep-modules",
+    "claude-code",
+    "codex"
+  ],
+  "skills": "./skills/"
+}

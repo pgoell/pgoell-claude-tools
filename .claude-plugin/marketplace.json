@@ -125,6 +125,12 @@
       "version": "0.1.0"
     },
     {
+      "name": "file-size",
+      "source": "./plugins/file-size",
+      "description": "Cap every authored file in a repo at 5000 tokens (bytes/4), checked on commit, on push and in CI, with advice to split along deep modules.",
+      "version": "0.1.0"
+    },
+    {
       "name": "ponytail",
       "source": {
         "source": "url",

@@ -1,6 +1,6 @@
 # pgoell-claude-tools
 
-A plugin marketplace for Claude Code, Codex and Cursor. Its plugins ship skills, output styles and hooks. Each skill lives in one directory that all three runtimes share, so no skill is copied per runtime. The marketplace lists 25 plugins: 20 kept in this repository, 4 tracked from upstream repositories, and the `deprecated` archive of superseded skills, which the count includes.
+A plugin marketplace for Claude Code, Codex and Cursor. Its plugins ship skills, output styles and hooks. Each skill lives in one directory that all three runtimes share, so no skill is copied per runtime. The marketplace lists 26 plugins: 21 kept in this repository, 4 tracked from upstream repositories, and the `deprecated` archive of superseded skills, which the count includes.
 
 ## Install
 
@@ -44,6 +44,7 @@ Workflow:
 - [research](docs/reference/plugins/research.md): research a topic and write a sourced report.
 - [critique](docs/reference/plugins/critique.md): critique an idea from several independent angles.
 - [playground](docs/reference/plugins/playground.md): single-file HTML playgrounds with live preview.
+- [file-size](docs/reference/plugins/file-size.md): cap authored files at 5000 tokens on commit, push and CI.
 
 Writing and learning:
 

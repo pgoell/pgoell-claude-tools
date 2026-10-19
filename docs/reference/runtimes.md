@@ -8,7 +8,7 @@ status: stable
 
 # Runtimes
 
-Each runtime reads its own marketplace file: Claude Code reads `.claude-plugin/marketplace.json`, Codex reads `.agents/plugins/marketplace.json`, and Cursor reads `.cursor-plugin/marketplace.json`, which `mise run sync-cursor-manifests` generates from the other two. All 25 plugins ship to Claude Code; 18 ship to Codex and 16 to Cursor.
+Each runtime reads its own marketplace file: Claude Code reads `.claude-plugin/marketplace.json`, Codex reads `.agents/plugins/marketplace.json`, and Cursor reads `.cursor-plugin/marketplace.json`, which `mise run sync-cursor-manifests` generates from the other two. All 26 plugins ship to Claude Code; 19 ship to Codex and 17 to Cursor.
 
 | Plugin                                                                   | Claude Code | Codex | Cursor |
 | ------------------------------------------------------------------------ | ----------- | ----- | ------ |
@@ -28,6 +28,7 @@ Each runtime reads its own marketplace file: Claude Code reads `.claude-plugin/m
 | [diagrams](/reference/plugins/diagrams.md)                               | yes         | yes   | yes    |
 | [news](/reference/plugins/news.md)                                       | yes         | yes   | yes    |
 | [insights](/reference/plugins/insights.md)                               | yes         | yes   | yes    |
+| [file-size](/reference/plugins/file-size.md)                             | yes         | yes   | yes    |
 | [issue-loop](/reference/plugins/issue-loop.md)                           | yes         | no    | no     |
 | [prose-styles](/reference/plugins/prose-styles.md)                       | yes         | no    | no     |
 | [guards](/reference/plugins/guards.md)                                   | yes         | no    | no     |

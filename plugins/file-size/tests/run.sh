@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Tests mise-tasks/check-file-size in throwaway git repos. No network.
-# Run from the repo root: bash tests/check-file-size.sh
+# Tests the plugin's check-file-size script and its fallback pre-commit hook
+# in throwaway git repos. No network.
+# Run from the repo root: bash plugins/file-size/tests/run.sh
 set -uo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SCRIPT="$ROOT/mise-tasks/check-file-size"
+ASSETS="$(cd "$(dirname "$0")/../skills/setting-up-the-check/assets" && pwd)"
+SCRIPT="$ASSETS/check-file-size"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
@@ -25,13 +26,14 @@ mkfile() {
   head -c "$2" /dev/zero | tr '\0' a >"$1"
 }
 
-# Makes a fresh repo in $REPO with the script copied in.
+# Makes a fresh repo in $REPO with the script copied to scripts/, as the
+# skill does in a target repo.
 n=0
 fresh() {
   n=$((n + 1))
   REPO="$WORK/repo$n"
-  mkdir -p "$REPO/mise-tasks"
-  cp "$SCRIPT" "$REPO/mise-tasks/check-file-size" 2>/dev/null
+  mkdir -p "$REPO/scripts"
+  cp "$SCRIPT" "$REPO/scripts/check-file-size" 2>/dev/null
   cd "$REPO" || exit 1
   git init -q
   git config user.email test@example.com
@@ -40,9 +42,15 @@ fresh() {
 
 # Runs the script with the given arguments; sets RC and ERR.
 run() {
-  ERR="$(bash mise-tasks/check-file-size "$@" 2>&1 >/dev/null)"
+  ERR="$(bash scripts/check-file-size "$@" 2>&1 >/dev/null)"
   RC=$?
 }
+
+# Writes the repo's .file-size-excludes, one argument per line.
+excludes() { printf '%s\n' "$@" >.file-size-excludes; }
+
+passes() { [ "$RC" -eq 0 ] && [ -z "$ERR" ]; }
+reports() { grep -qF "file-size: $1 " <<<"$ERR"; }
 
 line() { printf 'file-size: %s is ~%s tokens (bytes/4); the limit is 5000.' "$1" "$2"; }
 
@@ -85,8 +93,12 @@ else
   bad "A4 guidance text matches word for word"
 fi
 
-# A5 excluded passes.
+# A5 excluded passes: binaries, license texts and mise.lock by default, the
+# rest through the repo's .file-size-excludes.
 fresh
+excludes '**/generated-*.mjs' 'plugins/diagrams/skills/creating-diagrams/engine/**' \
+  'plugins/agent-system-management/skills/creating-skills/eval-viewer/viewer.html' \
+  'plugins/workbench/skills/crafting-html/references/*.html' 'plugins/deprecated/**'
 excluded=(
   plugins/deprecated/x.md logo.png sub/dir/pic.png plugins/x/NOTICE
   plugins/x/LICENSE.txt mise.lock a/generated-y.mjs
@@ -99,16 +111,14 @@ mkfile big.md 20004
 git add -A
 run
 leaked=""
-for f in "${excluded[@]}"; do
-  grep -qF "file-size: $f " <<<"$ERR" && leaked="$leaked $f"
-done
-if [ "$RC" -eq 1 ] && [ -z "$leaked" ] && grep -qF "file-size: big.md " <<<"$ERR"; then
+for f in "${excluded[@]}"; do reports "$f" && leaked="$leaked $f"; done
+if [ "$RC" -eq 1 ] && [ -z "$leaked" ] && reports big.md; then
   ok "A5 excluded files not reported in full run"
 else
   bad "A5 excluded files not reported in full run (rc=$RC leaked:$leaked)"
 fi
 run "${excluded[@]}"
-if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then
+if passes; then
   ok "A5 excluded files as arguments pass"
 else
   bad "A5 excluded files as arguments pass (rc=$RC)"
@@ -117,7 +127,7 @@ fi
 leaked=""
 for f in "${excluded[@]}"; do
   run "$f"
-  [ "$RC" -eq 0 ] && [ -z "$ERR" ] || leaked="$leaked $f"
+  passes || leaked="$leaked $f"
 done
 if [ -z "$leaked" ]; then
   ok "A5 each excluded file as a lone argument passes"
@@ -125,13 +135,93 @@ else
   bad "A5 each excluded file as a lone argument passes (leaked:$leaked)"
 fi
 
-# A5 under passes, I1 boundary.
+# A3/I3 a repo glob in .file-size-excludes: absent from the defaults, so the
+# file fails until the repo lists it, in a bare run and as an argument.
+fresh
+mkfile plugins/deprecated/x.md 20004
+git add -A
+run
+if [ "$RC" -eq 1 ] && grep -qxF "$(line plugins/deprecated/x.md 5001)" <<<"$ERR"; then
+  ok "A3 plugins/deprecated/x.md fails a bare run on defaults alone"
+else
+  bad "A3 plugins/deprecated/x.md fails a bare run on defaults alone (rc=$RC)"
+fi
+run plugins/deprecated/x.md
+if [ "$RC" -eq 1 ] && reports plugins/deprecated/x.md; then
+  ok "A3 plugins/deprecated/x.md fails as an argument on defaults alone"
+else
+  bad "A3 plugins/deprecated/x.md fails as an argument on defaults alone (rc=$RC)"
+fi
+excludes 'plugins/deprecated/**'
+run
+if passes; then ok "I3 listed glob passes a bare run"; else bad "I3 listed glob passes a bare run (rc=$RC)"; fi
+run plugins/deprecated/x.md
+if passes; then ok "I3 listed glob passes as an argument"; else bad "I3 listed glob passes as an argument (rc=$RC)"; fi
+
+# I2 comment lines and blank lines in .file-size-excludes are skipped.
+fresh
+printf '%s\n' '# generated output' '' '   ' 'skip/**' '  # big.md' '# big.md' >.file-size-excludes
+mkfile skip/a.md 20004
+mkfile big.md 20004
+git add -A
+run
+if [ "$RC" -eq 1 ] && reports big.md && ! reports skip/a.md; then
+  ok "I2 comments and blank lines ignored, glob line applies"
+else
+  bad "I2 comments and blank lines ignored, glob line applies (rc=$RC)"
+fi
+
+# A3/I2 a missing .file-size-excludes means the generic defaults only.
+fresh
+lockfiles=(package-lock.json web/package-lock.json sub/mise.lock yarn.lock
+  pnpm-lock.yaml bun.lockb uv.lock poetry.lock Pipfile.lock Cargo.lock
+  Gemfile.lock composer.lock go.sum flake.lock)
+for f in "${lockfiles[@]}"; do mkfile "$f" 20004; done
+git add -A
+run
+if passes; then
+  ok "A3 big lockfiles pass with no excludes file"
+else
+  bad "A3 big lockfiles pass with no excludes file (rc=$RC)"
+fi
+mkfile x.md 20004
+git add -A
+run
+if [ "$RC" -eq 1 ] && grep -qxF "$(line x.md 5001)" <<<"$ERR" && ! reports package-lock.json; then
+  ok "A3 big x.md fails with no excludes file"
+else
+  bad "A3 big x.md fails with no excludes file (rc=$RC)"
+fi
+
+# I2 a run from a subdirectory reads the excludes file at the repo root.
+fresh
+excludes 'sub/gen/**'
+mkfile sub/gen/x.md 20004
+mkfile sub/deep.md 20004
+git add -A
+cd sub || exit 1
+ERR="$(bash ../scripts/check-file-size 2>&1 >/dev/null)"
+RC=$?
+if [ "$RC" -eq 1 ] && reports sub/deep.md && ! reports sub/gen/x.md; then
+  ok "I2 bare run from a subdirectory keeps the root excludes"
+else
+  bad "I2 bare run from a subdirectory keeps the root excludes (rc=$RC)"
+fi
+ERR="$(bash ../scripts/check-file-size gen/x.md 2>&1 >/dev/null)"
+RC=$?
+if passes; then
+  ok "I2 excluded argument from a subdirectory passes"
+else
+  bad "I2 excluded argument from a subdirectory passes (rc=$RC)"
+fi
+
+# A5/I1 under passes, boundary.
 fresh
 mkfile small.md 20000
 mkfile edge.md 20003
 git add -A
 run
-if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then
+if passes; then
   ok "A5/I1 20000 and 20003 bytes pass, clean run is silent"
 else
   bad "A5/I1 20000 and 20003 bytes pass, clean run is silent (rc=$RC)"
@@ -153,7 +243,7 @@ mkfile small.md 100
 git add -A
 mkfile small.md 20004
 run
-if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then
+if passes; then
   ok "I1 staged small, worktree big passes"
 else
   bad "I1 staged small, worktree big passes (rc=$RC)"
@@ -179,7 +269,7 @@ git commit -qm init
 mkfile small.md 20004
 git add -A
 run
-if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then
+if passes; then
   ok "I1 bare run sizes HEAD: committed small, staged big passes"
 else
   bad "I1 bare run sizes HEAD: committed small, staged big passes (rc=$RC)"
@@ -191,7 +281,7 @@ mkfile abig.md 20004
 mkfile 'a*.md' 100
 git add -A
 run 'a*.md'
-if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then
+if passes; then
   ok "I2 literal: argument 'a*.md' does not match abig.md"
 else
   bad "I2 literal: argument 'a*.md' does not match abig.md (rc=$RC)"
@@ -205,7 +295,7 @@ mkfile gone.md 30000
 git add -A
 rm gone.md
 run small.md
-if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then ok "I2 small.md argument passes"; else bad "I2 small.md argument passes (rc=$RC)"; fi
+if passes; then ok "I2 small.md argument passes"; else bad "I2 small.md argument passes (rc=$RC)"; fi
 run big.md
 if [ "$RC" -eq 1 ] && grep -qxF "$(line big.md 5001)" <<<"$ERR"; then ok "I2 big.md argument fails"; else bad "I2 big.md argument fails (rc=$RC)"; fi
 run gone.md
@@ -246,7 +336,7 @@ mkfile big.md 20004
 ln -s big.md link.md
 git add -A
 run
-if [ "$RC" -eq 1 ] && ! grep -qF "link.md" <<<"$ERR" && grep -qF "file-size: big.md " <<<"$ERR"; then
+if [ "$RC" -eq 1 ] && ! grep -qF "link.md" <<<"$ERR" && reports big.md; then
   ok "I5 symlink not reported"
 else
   bad "I5 symlink not reported (rc=$RC)"
@@ -272,7 +362,7 @@ if [ "$RC" -ne 0 ]; then ok "B1 path outside the repo fails"; else bad "B1 path 
 NOGIT="$WORK/nogit"
 mkdir -p "$NOGIT"
 cd "$NOGIT" || exit 1
-ERR="$(GIT_CEILING_DIRECTORIES="$WORK" bash "$REPO/mise-tasks/check-file-size" 2>&1 >/dev/null)"
+ERR="$(GIT_CEILING_DIRECTORIES="$WORK" bash "$REPO/scripts/check-file-size" 2>&1 >/dev/null)"
 RC=$?
 if [ "$RC" -ne 0 ]; then ok "B1 run outside a git repo fails"; else bad "B1 run outside a git repo fails (rc=$RC)"; fi
 
@@ -283,14 +373,14 @@ mkfile sub/deep.md 20004
 mkfile sub/pic.png 20004
 git add -A
 cd sub || exit 1
-ERR="$(bash ../mise-tasks/check-file-size deep.md 2>&1 >/dev/null)"
+ERR="$(bash ../scripts/check-file-size deep.md 2>&1 >/dev/null)"
 RC=$?
 if [ "$RC" -eq 1 ] && grep -qxF "$(line sub/deep.md 5001)" <<<"$ERR"; then
   ok "B2 relative argument from a subdirectory fails"
 else
   bad "B2 relative argument from a subdirectory fails (rc=$RC)"
 fi
-ERR="$(bash ../mise-tasks/check-file-size 2>&1 >/dev/null)"
+ERR="$(bash ../scripts/check-file-size 2>&1 >/dev/null)"
 RC=$?
 if [ "$RC" -eq 1 ] && grep -qxF "$(line big.md 5001)" <<<"$ERR" &&
   grep -qxF "$(line sub/deep.md 5001)" <<<"$ERR" && ! grep -qF "pic.png" <<<"$ERR"; then
@@ -298,12 +388,40 @@ if [ "$RC" -eq 1 ] && grep -qxF "$(line big.md 5001)" <<<"$ERR" &&
 else
   bad "B2 no-arg run from a subdirectory checks the whole repo, keeps excludes (rc=$RC)"
 fi
-ERR="$(bash ../mise-tasks/check-file-size pic.png 2>&1 >/dev/null)"
+ERR="$(bash ../scripts/check-file-size pic.png 2>&1 >/dev/null)"
 RC=$?
-if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then
+if passes; then
   ok "B2 excluded argument from a subdirectory passes"
 else
   bad "B2 excluded argument from a subdirectory passes (rc=$RC)"
+fi
+
+# A7/I5 the fallback pre-commit hook blocks an over-limit staged file without
+# lefthook. The big file sits under plugins/deprecated/, which only a repo's
+# own excludes may skip, and its name has a space to test the -z pipe.
+fresh
+mkdir -p .githooks
+cp "$ASSETS/pre-commit" .githooks/pre-commit
+git config core.hooksPath .githooks
+mkfile "plugins/deprecated/big file.md" 20004
+git add -A
+ERR="$(git commit -qm big 2>&1 >/dev/null)"
+RC=$?
+if [ "$RC" -ne 0 ] && ! git rev-parse -q --verify HEAD >/dev/null &&
+  grep -qxF "$(line "plugins/deprecated/big file.md" 5001)" <<<"$ERR"; then
+  ok "A7 pre-commit hook blocks an over-limit file"
+else
+  bad "A7 pre-commit hook blocks an over-limit file (rc=$RC)"
+fi
+git rm -q --cached "plugins/deprecated/big file.md"
+mkfile "small file.md" 100
+git add "small file.md"
+ERR="$(git commit -qm small 2>&1 >/dev/null)"
+RC=$?
+if [ "$RC" -eq 0 ] && git rev-parse -q --verify HEAD >/dev/null; then
+  ok "A7 pre-commit hook lets a small file through"
+else
+  bad "A7 pre-commit hook lets a small file through (rc=$RC)"
 fi
 
 echo "$pass passed, $fail failed"

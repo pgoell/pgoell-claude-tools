@@ -86,6 +86,11 @@
       "name": "insights",
       "source": "./plugins/insights",
       "description": "Find what went wrong in yesterday's Claude Code sessions and newspaper runs, with one concrete fix per problem on a page in a kasten vault."
+    },
+    {
+      "name": "file-size",
+      "source": "./plugins/file-size",
+      "description": "Cap every authored file in a repo at 5000 tokens (bytes/4), checked on commit, on push and in CI, with advice to split along deep modules."
     }
   ]
 }
