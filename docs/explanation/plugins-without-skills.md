@@ -38,7 +38,7 @@ Claude Code loads `plugins/<plugin>/output-styles/*.md` on its own and names eac
 `prose-styles` (2026-08) is the first and only case, and ships no `skills/` at all. Three consequences follow.
 
 1. Codex has no output styles, so the plugin is registered in `.claude-plugin/marketplace.json` only. Its `.codex-plugin/plugin.json` exists only because `check-plugin-versions` fails hard on a missing Codex manifest; it declares no `skills` path and is left out of `.agents/plugins/marketplace.json`.
-2. The new-plugin docs sites change in two places: no rows in `docs/reference/skills.md` (there are no skills), and `docs/reference/runtimes.md` says why Codex lacks the plugin. The other sites still apply: the README plugin count and line, the reference page, a setup how-to (picking a style is setup), the `docs/log.md` entry, and the plugin's line in AGENTS.md "Current Plugins".
+2. The new-plugin docs sites change in two places: no rows in `docs/reference/skills.md` (there are no skills), and `docs/reference/runtimes.md` says why Codex lacks the plugin. The other sites still apply: the README plugin count and line, the reference page, a setup how-to (picking a style is setup), the log file under `docs/log/`, and the plugin's line in AGENTS.md "Current Plugins".
 3. Every other convention still binds, because the files live here: the dash lint covers `output-styles/*.md`, the version lockstep covers the three version sites, and the frontmatter must parse as strict YAML.
 
 Add a future output style to `prose-styles` rather than starting a second styles plugin, unless the new set governs something other than prose.

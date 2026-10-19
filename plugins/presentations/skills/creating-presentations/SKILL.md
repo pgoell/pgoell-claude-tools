@@ -13,7 +13,7 @@ Building and perfecting are one lifecycle. A new deck flows top to bottom throug
 
 The decks themselves are dependency-free: self-contained HTML that opens from `file://`. Tools enter only for presenting and perfecting; check for them when those branches start.
 
-- A Chromium-based browser (Edge, Chrome, Arc) presents the deck: `BroadcastChannel` sync and the presenter's "Save to deck" (File System Access API) are Chromium-only. The same binary, headless, screenshots slides for the render check and the review loop: `chrome --headless --screenshot=slide.png --window-size=1920,1167 --hide-scrollbars <url>` (on Windows the preinstalled `msedge.exe` accepts the same flags). The window height is 1167, not 1080, because headless Chrome sizes the window and leaves a viewport about 993 px tall at 1080; 1167 gives a true 1920x1080 viewport.
+- A Chromium-based browser (Edge, Chrome, Arc) presents the deck: `BroadcastChannel` sync and the presenter's "Save to deck" (File System Access API) are Chromium-only. The same binary, headless, screenshots slides for the render check and the review loop: `chrome --headless --screenshot=slide.png --window-size=1920,1080 --hide-scrollbars <url>` (on Windows the preinstalled `msedge.exe` accepts the same flags). Headless Chrome sizes the viewport, so this gives a 1920x1080 image of the whole slide.
 - `uv` serves the deck over HTTP for the hard gates (`uv run python -m http.server 8123 --directory <deck-dir>`); webfonts and `BroadcastChannel` behave differently on `file://` origins.
 - The default render check and the perfecting loop need subagent dispatch (the Workflow tool, or the Agent tool as fallback) for its judges and verifiers. Context isolation is what keeps the loop honest; without subagents, offer the user a single-pass review and say so, rather than simulating the loop inline.
 
@@ -62,9 +62,9 @@ Emit decks that honor this structure, so the stage engine, the presenter view, t
 
 ## The stage engine
 
-This skill bundles the deck-stage engine in its `assets/` directory: `deck-stage.js`, `presenter.js`, and `presenter.html`. Copy them unmodified next to the deck; they are brand-neutral and carry no preset styling. `deck-stage.js` defines the `<deck-stage>` web component: CSS-transform scaling of the authored canvas to any viewport, keyboard navigation (arrows, Space, Home/End, number keys), a resizable thumbnail rail with drag-to-reorder and skip (each thumbnail is a live clone of its slide, styled by the deck's own CSS), a print stylesheet that lays one slide per page so Print to PDF just works, and slide hiding via `visibility` so iframe and video state survives navigation. Tooling that measures geometry (the review probes, the PPTX exporter) sets the `noscale` attribute on `<deck-stage>` to read authored-canvas pixels.
+This skill bundles the deck-stage engine in its `assets/` directory. The deck loads seven scripts: `deck-print.js`, `deck-controls.js`, `deck-thumbs.js`, `deck-edit.js`, `deck-rail.js`, `deck-stage.js`, and `presenter.js`. The presenter window is `presenter.html` with its sidecar files `presenter-view.css` and `presenter-notes.js`. Copy all ten files unmodified next to the deck; they are brand-neutral and carry no preset styling. `deck-stage.js` defines the `<deck-stage>` web component: CSS-transform scaling of the authored canvas to any viewport, keyboard navigation (arrows, Space, Home/End, number keys), a resizable thumbnail rail with drag-to-reorder and skip (each thumbnail is a live clone of its slide, styled by the deck's own CSS), a print stylesheet that lays one slide per page so Print to PDF just works, and slide hiding via `visibility` so iframe and video state survives navigation. Tooling that measures geometry (the review probes, the PPTX exporter) sets the `noscale` attribute on `<deck-stage>` to read authored-canvas pixels.
 
-Wire a deck like this:
+Wire a deck like this, with the scripts in this order: the five `deck-*` part files must load before `deck-stage.js`, which builds the element from them. A deck from an older engine (one `deck-stage.js`, no part files) keeps working as it is; to update it, copy all ten files and add the five part scripts, since the new `deck-stage.js` alone leaves the deck blank.
 
 ```html
 <style>deck-stage:not(:defined){visibility:hidden}</style>
@@ -72,6 +72,11 @@ Wire a deck like this:
   <section data-screen-label="01 Title">...</section>
   ...
 </deck-stage>
+<script src="deck-print.js"></script>
+<script src="deck-controls.js"></script>
+<script src="deck-thumbs.js"></script>
+<script src="deck-edit.js"></script>
+<script src="deck-rail.js"></script>
 <script src="deck-stage.js"></script>
 <script src="presenter.js"></script>
 ```
@@ -86,7 +91,7 @@ When a `deck.md` from the `designing-presentations` skill exists, it is the sour
 
 ## Output layout
 
-Multi-file is the shape for a deck that lives in a repo: `index.html`, the deck's own CSS file, the three engine files, and an `assets/` directory. Single-file is the shape for a deck that travels as one attachment (mail, Teams): inline the deck CSS, `deck-stage.js`, and `presenter.js` into the HTML, inline SVG as markup, and base64-encode raster images. Either shape opens from `file://` without a server. The presenter view needs the `presenter.html` sidecar next to the deck file, so a strictly single file has no presenter mode; when presenter mode matters for a traveling deck, ship the pair.
+Multi-file is the shape for a deck that lives in a repo: `index.html`, the deck's own CSS file, the ten engine files, and an `assets/` directory. Single-file is the shape for a deck that travels as one attachment (mail, Teams): inline the deck CSS into the HTML, inline each of the seven deck scripts as its own `<script>` block in the order above, inline SVG as markup, and base64-encode raster images. Either shape opens from `file://` without a server. The presenter view needs `presenter.html`, `presenter-view.css`, and `presenter-notes.js` next to the deck file, so a strictly single file has no presenter mode; when presenter mode matters for a traveling deck, ship the deck with those three files.
 
 ## Check the render
 

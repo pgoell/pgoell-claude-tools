@@ -65,7 +65,8 @@ plugins/
     README.md               # Required for ported plugins: overview with a Credits section
 docs/                       # User docs: a Diátaxis tree in OKF v0.2 (see ## Documentation)
   index.md                  # Documentation home, carries okf_version; read it first
-  log.md                    # Dated log of changes to the docs bundle
+  log.md                    # How the change log works; lists no entries
+  log/YYYY-MM-DD-<slug>.md  # One file per change to the docs bundle
   tutorials/  how-to/  reference/  explanation/   # One folder per Diátaxis type
   reference/plugins/<name>.md   # One page per marketplace entry, plus index.md
 dotclaude/                  # Versioned global ~/.claude/CLAUDE.md (symlinked into place); not a plugin
@@ -88,7 +89,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `databricks` 0.3.2: `databricks-core`, `databricks-docs`
 - `learning` 0.3.1: `quizzing-the-session`, `quizzing-a-topic`, `surveying-blind-spots`, `rebuilding-a-concept`
 - `critique` 0.1.2: `critiquing-ideas`
-- `presentations` 0.7.1: `designing-presentations`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
+- `presentations` 0.7.2: `designing-presentations`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
 - `diagrams` 0.1.1: `creating-diagrams`
 - `news` 0.9.1: `edition`, `feedback`, `tune`
 - `insights` 0.6.0: `digest`, `apply`, `activity`
@@ -110,10 +111,10 @@ Before you add a skill or plugin, read [docs/reference/conventions/developing-a-
 
 User docs live in `docs/`, a Diátaxis tree in Open Knowledge Format v0.2. Read `docs/index.md` first.
 
-- Every page except `index.md` and `log.md` starts with YAML frontmatter: `type`, `title`, `description`, `tags` (a list), `status`. `type` matches the folder: `Tutorial` (`tutorials/`), `How-to Guide` (`how-to/`), `Reference` (`reference/`), `Explanation` (`explanation/`). Quote a value that holds a colon-space.
+- Every page except `index.md`, `log.md` and `log/*.md` starts with YAML frontmatter: `type`, `title`, `description`, `tags` (a list), `status`. `type` matches the folder: `Tutorial` (`tutorials/`), `How-to Guide` (`how-to/`), `Reference` (`reference/`), `Explanation` (`explanation/`). Quote a value that holds a colon-space.
 - Folder `index.md` pages carry no frontmatter: an H1, one short paragraph, a bullet list of pages with one-line descriptions.
 - Links between docs pages are bundle-relative (`/reference/plugins/workbench.md`); links out of `docs/` are relative paths (`../../plugins/workbench/README.md`).
-- A new or changed page updates its folder's `index.md` and adds a dated entry to `docs/log.md`.
+- A new or changed page updates its folder's `index.md` and adds a new file under `docs/log/`, as `docs/log.md` says.
 - Skill rows: this repo's plugins go in `docs/reference/skills.md`, external git-URL plugins in `docs/reference/upstream-skills.md`.
 - No AI attribution on any page. The dash lint covers `docs/`: `grep -rnP '[\x{2014}\x{2013}]' docs/` must print nothing.
 - Docs describe the code as it is now. A PR that makes a page wrong fixes it in the same PR.

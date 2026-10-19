@@ -3,369 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Presenter view</title>
-<style>
-  :root {
-    --p-bg:         #0E1418;
-    --p-panel:      #161F25;
-    --p-panel-2:    #1B3139;     /* deep teal panel */
-    --p-border:     rgba(255,255,255,0.07);
-    --p-border-2:   rgba(255,255,255,0.14);
-    --p-fg:         #FAFAF7;
-    --p-fg-muted:   rgba(250,250,247,0.62);
-    --p-fg-subtle:  rgba(250,250,247,0.40);
-    --p-accent:     #86BC24;     /* accent green */
-    --p-partner:    #FF3621;     /* secondary accent */
-  }
-
-  html, body {
-    margin: 0;
-    height: 100%;
-    background: var(--p-bg);
-    color: var(--p-fg);
-    font-family: var(--font-sans);
-    overflow: hidden;
-  }
-
-  .app {
-    display: grid;
-    grid-template-rows: 56px 1fr 84px;
-    height: 100vh;
-  }
-
-  /* ─── Header ────────────────────────────────────────────────────── */
-  header {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    padding: 0 20px;
-    border-bottom: 1px solid var(--p-border);
-    background: var(--p-panel);
-  }
-  header .brand {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--p-fg-muted);
-  }
-  header .brand .dot {
-    width: 8px; height: 8px;
-    background: var(--p-accent);
-    border-radius: 999px;
-  }
-  header .spacer { flex: 1; }
-  header .stat {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    padding: 0 18px;
-    border-left: 1px solid var(--p-border);
-    height: 100%;
-  }
-  header .stat:first-of-type { border-left: 0; }
-  header .stat .k {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--p-fg-subtle);
-  }
-  header .stat .v {
-    font-family: var(--font-mono);
-    font-size: 22px;
-    font-weight: 500;
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-    color: var(--p-fg);
-  }
-  header .stat.timer .v { color: var(--p-accent); }
-  header .stat .reset {
-    appearance: none;
-    background: transparent;
-    border: 1px solid var(--p-border-2);
-    color: var(--p-fg-muted);
-    font: 500 10px/1 var(--font-sans);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 6px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-left: 4px;
-  }
-  header .stat .reset:hover { color: var(--p-fg); border-color: var(--p-fg-subtle); }
-
-  /* ─── Main ─────────────────────────────────────────────────────── */
-  main {
-    display: grid;
-    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
-    gap: 16px;
-    padding: 16px;
-    min-height: 0;
-  }
-
-  .col { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
-
-  .label {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--p-fg-subtle);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .label .marker {
-    width: 6px; height: 6px; border-radius: 999px;
-    background: var(--p-accent);
-  }
-  .label.next .marker { background: var(--p-partner); }
-
-  .preview {
-    position: relative;
-    aspect-ratio: 16 / 9;
-    background: #000;
-    border: 1px solid var(--p-border);
-    border-radius: 6px;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-  .preview.current { box-shadow: 0 0 0 1px var(--p-accent) inset; border-color: transparent; }
-  .preview iframe {
-    border: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    background: #fff;
-  }
-  .preview .end {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--p-fg-subtle);
-    background: var(--p-panel-2);
-    font: 500 14px/1.4 var(--font-sans);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  /* Notes panel, large readable type, scrolls. */
-  .notes-wrap {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    background: var(--p-panel);
-    border: 1px solid var(--p-border);
-    border-radius: 6px;
-  }
-  .notes-head {
-    padding: 12px 16px 4px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .notes-head .title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--p-fg);
-  }
-  .notes-head .num {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--p-fg-subtle);
-  }
-  .notes-head .actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .notes-btn {
-    appearance: none;
-    background: transparent;
-    border: 1px solid var(--p-border-2);
-    color: var(--p-fg-muted);
-    font: 500 10px/1 var(--font-sans);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 6px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .notes-btn:hover { color: var(--p-fg); border-color: var(--p-fg-subtle); }
-  .notes-btn:disabled { opacity: 0.35; cursor: default; }
-  .notes-btn.dirty {
-    background: var(--p-accent);
-    border-color: var(--p-accent);
-    color: #0F0B0B;
-  }
-  .notes {
-    flex: 1;
-    overflow-y: auto;
-    padding: 8px 16px 16px;
-    font-size: 22px;
-    line-height: 1.5;
-    color: var(--p-fg);
-    text-wrap: pretty;
-  }
-  .notes.empty {
-    color: var(--p-fg-subtle);
-    font-style: italic;
-    font-size: 16px;
-  }
-  .notes p { margin: 0 0 12px; }
-  .notes p:last-child { margin-bottom: 0; }
-  .notes ul, .notes ol { margin: 0 0 12px; padding-left: 26px; }
-  .notes li { margin: 3px 0; }
-  .notes h4, .notes h5, .notes h6 {
-    margin: 14px 0 6px;
-    font-size: 0.75em;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--p-fg-muted);
-  }
-  .notes code {
-    font-family: var(--font-mono);
-    font-size: 0.82em;
-    background: rgba(255,255,255,0.08);
-    padding: 1px 6px;
-    border-radius: 4px;
-  }
-  .notes::-webkit-scrollbar { width: 10px; }
-  .notes::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.14);
-    border-radius: 999px;
-    border: 2px solid transparent;
-    background-clip: content-box;
-  }
-  .notes-edit {
-    flex: 1;
-    min-height: 0;
-    display: none;
-    margin: 8px 16px 16px;
-    padding: 0;
-    background: transparent;
-    border: 0;
-    outline: none;
-    resize: none;
-    color: var(--p-fg);
-    font: 400 16px/1.6 var(--font-mono);
-  }
-
-  /* ─── Footer ───────────────────────────────────────────────────── */
-  footer {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0 16px;
-    border-top: 1px solid var(--p-border);
-    background: var(--p-panel);
-  }
-  .btn {
-    appearance: none;
-    background: transparent;
-    border: 1px solid var(--p-border-2);
-    color: var(--p-fg);
-    font: 500 13px/1 var(--font-sans);
-    padding: 12px 18px;
-    border-radius: 6px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
-  }
-  .btn:hover { background: rgba(255,255,255,0.06); border-color: var(--p-fg-subtle); }
-  .btn:active { background: rgba(255,255,255,0.1); }
-  .btn:disabled { opacity: 0.35; cursor: default; }
-  .btn .kbd {
-    font: 500 10px/1 var(--font-mono);
-    color: var(--p-fg-subtle);
-    background: rgba(255,255,255,0.08);
-    padding: 3px 6px;
-    border-radius: 3px;
-  }
-  .btn.primary {
-    background: var(--p-accent);
-    border-color: var(--p-accent);
-    color: #0F0B0B;
-  }
-  .btn.primary:hover { background: #93C82B; border-color: #93C82B; }
-  .btn.primary .kbd { background: rgba(0,0,0,0.18); color: rgba(15,11,11,0.7); }
-  .btn.warn { color: var(--p-partner); border-color: rgba(255,54,33,0.4); }
-  .btn.warn:hover { background: rgba(255,54,33,0.08); border-color: var(--p-partner); }
-  .spacer { flex: 1; }
-
-  /* Slide jump strip, a thin horizontal list, scrolls if needed */
-  .strip {
-    display: flex;
-    gap: 4px;
-    overflow-x: auto;
-    padding: 0 4px;
-    max-width: 460px;
-    scrollbar-width: none;
-  }
-  .strip::-webkit-scrollbar { display: none; }
-  .strip button {
-    appearance: none;
-    background: transparent;
-    border: 1px solid var(--p-border);
-    color: var(--p-fg-muted);
-    font: 500 11px/1 var(--font-mono);
-    width: 28px; height: 28px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-variant-numeric: tabular-nums;
-    flex-shrink: 0;
-  }
-  .strip button:hover { color: var(--p-fg); border-color: var(--p-border-2); }
-  .strip button[data-current] {
-    background: var(--p-accent);
-    border-color: var(--p-accent);
-    color: #0F0B0B;
-  }
-
-  /* ─── Disconnected state ───────────────────────────────────────── */
-  .toast {
-    position: fixed;
-    left: 50%;
-    bottom: 100px;
-    transform: translateX(-50%);
-    background: rgba(255,54,33,0.12);
-    border: 1px solid rgba(255,54,33,0.42);
-    color: #FFB6A8;
-    padding: 10px 14px;
-    border-radius: 6px;
-    font-size: 12px;
-    letter-spacing: 0.02em;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 180ms ease;
-    z-index: 100;
-  }
-  .toast[data-visible] { opacity: 1; }
-
-  /* Blackout, covers the presenter for total focus (rare, but supported) */
-  .blackout {
-    position: fixed; inset: 0;
-    background: #000;
-    z-index: 200;
-    display: none;
-    align-items: flex-end;
-    justify-content: center;
-    padding: 28px;
-    color: rgba(255,255,255,0.2);
-    font: 11px/1 ui-monospace,Menlo,Consolas,monospace;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .blackout[data-on] { display: flex; }
-</style>
+<link rel="stylesheet" href="presenter-view.css">
 </head>
 <body>
 
@@ -457,18 +95,7 @@
 <div class="toast" id="toast">Deck window closed, reopen and press P to reconnect.</div>
 <div class="blackout" id="blackout">Press B to resume</div>
 
-<style>
-  .kbd-inline {
-    display: inline-block;
-    font: 500 10px/1 var(--font-mono);
-    color: var(--p-fg);
-    background: rgba(255,255,255,0.08);
-    padding: 3px 5px;
-    border-radius: 3px;
-    margin: 0 2px;
-  }
-</style>
-
+<script src="presenter-notes.js"></script>
 <script>
 (() => {
   // --- URL params -------------------------------------------------------
@@ -502,8 +129,6 @@
 
   // --- State ------------------------------------------------------------
   let state = { index: 0, total: 0 };
-  let notes = [];
-  let notesJson = '';
   let timerStart = Date.now();
   let lastDeckPing = Date.now();
   let presenterBlackout = false;
@@ -511,69 +136,15 @@
   // every state ping, only when the target index actually changes.
   const lastNav = { cur: -1, next: -1 };
 
-  // Unsaved note edits, {slideIndex: text}, persisted to localStorage so
-  // nothing is lost across reloads until "Save to deck" writes them into
-  // the deck HTML file. The deck window reads the same key when it
-  // broadcasts notes (file:// pages share one localStorage origin).
-  const editsKey = channelName + '::notes-edits';
-  let overlay = {};
-  try {
-    const stored = JSON.parse(localStorage.getItem(editsKey) || 'null');
-    if (stored && typeof stored === 'object') overlay = stored;
-  } catch (e) {}
-  let editing = false;
-  let editSlide = -1;
-  let editTimer = null;
-
-  function applyOverlay(arr) {
-    const merged = arr.slice();
-    Object.keys(overlay).forEach((k) => {
-      const i = parseInt(k, 10);
-      if (i >= 0) merged[i] = String(overlay[k]);
-    });
-    return merged;
-  }
-
-  // --- Notes: lazy-load from the deck window (window.opener) so we have
-  //     them even if BroadcastChannel arrives later. Unreachable on file://
-  //     (opaque origins); the deck also sends notes over the channel. ----
-  // Notes are authored either as an array (0-indexed) or as an object keyed
-  // by 1-based slide number; normalize to the array shape.
-  function normalizeNotes(parsed) {
-    if (Array.isArray(parsed)) return parsed;
-    if (parsed && typeof parsed === 'object') {
-      const out = [];
-      Object.keys(parsed).forEach((k) => {
-        const n = parseInt(k, 10);
-        if (n >= 1) out[n - 1] = String(parsed[k]);
-      });
-      return out;
-    }
-    return [];
-  }
-
-  function loadNotesFromOpener() {
-    try {
-      const doc = window.opener && window.opener.document;
-      if (!doc) return false;
-      const tag = doc.getElementById('speaker-notes');
-      if (!tag) return false;
-      const parsed = normalizeNotes(JSON.parse(tag.textContent || '[]'));
-      if (parsed.length) { notes = applyOverlay(parsed); return true; }
-    } catch (e) {}
-    return false;
-  }
-  // Try repeatedly while the opener is still resolvable, handles the
-  // race where the popup opens before the deck's notes script has parsed.
-  if (!loadNotesFromOpener()) {
-    let tries = 0;
-    const iv = setInterval(() => {
-      if (loadNotesFromOpener() || ++tries > 20 || !window.opener || window.opener.closed) {
-        clearInterval(iv);
-        renderNotes();
-      }
-    }, 200);
-  }
+  // Speaker notes panel: display, editing and "Save to deck"
+  // (presenter-notes.js).
+  const notesPanel = PresenterNotes({
+    refs,
+    editsKey: channelName + '::notes-edits',
+    deckPath,
+    state: () => state,
+    channel: () => bc,
+  });
 
   // --- Iframe URLs ------------------------------------------------------
   function urlForSlide(n /* 1-indexed */) {
@@ -626,183 +197,6 @@
     // Not loaded yet: the load listener above delivers lastNav[role].
   }
 
-  // --- Markdown (display only; editing always shows the raw text) --------
-  function escapeHtml(s) {
-    return s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  }
-  function inlineMd(s) {
-    return escapeHtml(s)
-      .replace(/`([^`]+)`/g, '<code>$1</code>')
-      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*([^*]+)\*/g, '<em>$1</em>');
-  }
-  function renderMd(text) {
-    const out = [];
-    let list = null;
-    const closeList = () => { if (list) { out.push('</' + list + '>'); list = null; } };
-    text.split('\n').forEach((line) => {
-      const t = line.trim();
-      let m;
-      if ((m = t.match(/^[-*]\s+(.*)/))) {
-        if (list !== 'ul') { closeList(); out.push('<ul>'); list = 'ul'; }
-        out.push('<li>' + inlineMd(m[1]) + '</li>');
-      } else if ((m = t.match(/^\d+[.)]\s+(.*)/))) {
-        if (list !== 'ol') { closeList(); out.push('<ol>'); list = 'ol'; }
-        out.push('<li>' + inlineMd(m[1]) + '</li>');
-      } else if ((m = t.match(/^#{1,4}\s+(.*)/))) {
-        closeList();
-        out.push('<h4>' + inlineMd(m[1]) + '</h4>');
-      } else if (!t) {
-        closeList();
-      } else {
-        closeList();
-        out.push('<p>' + inlineMd(t) + '</p>');
-      }
-    });
-    closeList();
-    return out.join('');
-  }
-
-  // --- Render -----------------------------------------------------------
-  function renderNotes() {
-    refs.notesNum.textContent = state.total
-      ? 'Slide ' + (state.index + 1) + ' of ' + state.total
-      : '';
-    if (editing) {
-      // Only touch the textarea when the slide changed; rewriting .value on
-      // every heartbeat would jump the cursor mid-typing.
-      if (editSlide !== state.index) {
-        commitEditValue();
-        editSlide = state.index;
-        refs.notesEdit.value = notes[state.index] || '';
-      }
-      return;
-    }
-    const txt = (notes[state.index] || '').trim();
-    if (txt) {
-      refs.notes.innerHTML = renderMd(notes[state.index]);
-      refs.notes.classList.remove('empty');
-    } else {
-      refs.notes.textContent = 'No notes for this slide.';
-      refs.notes.classList.add('empty');
-    }
-  }
-
-  // --- Note editing -------------------------------------------------------
-  function updateDirty() {
-    const dirty = Object.keys(overlay).length > 0;
-    refs.saveBtn.classList.toggle('dirty', dirty);
-    if (!('showOpenFilePicker' in window)) {
-      refs.saveBtn.disabled = true;
-      refs.saveBtn.title = 'Saving to the file needs a Chromium browser';
-    } else {
-      refs.saveBtn.disabled = !dirty;
-    }
-  }
-
-  function storeEdit(i, text) {
-    if ((notes[i] || '') === text) return;
-    notes[i] = text;
-    overlay[String(i)] = text;
-    try { localStorage.setItem(editsKey, JSON.stringify(overlay)); } catch (e) {}
-    updateDirty();
-  }
-
-  function commitEditValue() {
-    clearTimeout(editTimer);
-    editTimer = null;
-    if (editSlide >= 0) storeEdit(editSlide, refs.notesEdit.value);
-  }
-
-  function setEditing(on) {
-    if (on === editing) return;
-    editing = on;
-    refs.editBtn.textContent = on ? 'Done' : 'Edit';
-    refs.notes.style.display = on ? 'none' : '';
-    refs.notesEdit.style.display = on ? 'block' : 'none';
-    if (on) {
-      editSlide = state.index;
-      refs.notesEdit.value = notes[state.index] || '';
-      refs.notesEdit.focus();
-    } else {
-      commitEditValue();
-      editSlide = -1;
-      renderNotes();
-    }
-  }
-
-  refs.editBtn.addEventListener('click', () => setEditing(!editing));
-  refs.notesEdit.addEventListener('input', () => {
-    clearTimeout(editTimer);
-    editTimer = setTimeout(commitEditValue, 300);
-  });
-  refs.notesEdit.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { e.preventDefault(); setEditing(false); }
-  });
-
-  // --- Save to deck: rewrite the #speaker-notes block in the deck HTML ---
-  // Pure string surgery so it can be exercised independently of the file
-  // picker. Notes are written as an object keyed by 1-based slide number
-  // (the shape the decks are authored with), skipping empty entries; "<" is
-  // escaped so note text can never terminate the script tag.
-  function rewriteDeckHtml(text, notesArr) {
-    const obj = {};
-    for (let i = 0; i < notesArr.length; i++) {
-      if ((notesArr[i] || '').trim()) obj[String(i + 1)] = notesArr[i];
-    }
-    const json = JSON.stringify(obj, null, 2).replace(/</g, '\\u003c');
-    const block = '<script type="application/json" id="speaker-notes">\n'
-      + json + '\n</' + 'script>';
-    const existing = /<script[^>]*\bid=["']speaker-notes["'][^>]*>[\s\S]*?<\/script>/;
-    if (existing.test(text)) return text.replace(existing, block);
-    const anchor = text.match(/<script[^>]*\bsrc=["'][^"']*deck-stage\.js["']/);
-    if (anchor) return text.slice(0, anchor.index) + block + '\n' + text.slice(anchor.index);
-    return text.replace(/<\/body>/i, block + '\n</body>');
-  }
-
-  let deckFileHandle = null;
-  async function saveToDeck() {
-    commitEditValue();
-    if (!Object.keys(overlay).length) return;
-    try {
-      if (!deckFileHandle) {
-        const picked = await window.showOpenFilePicker({
-          types: [{ description: 'Deck HTML', accept: { 'text/html': ['.html', '.htm'] } }],
-        });
-        const expected = decodeURIComponent(deckPath.split('/').pop());
-        if (picked[0].name !== expected
-            && !confirm('Picked "' + picked[0].name + '" but this presenter belongs to "'
-              + expected + '". Write the notes into it anyway?')) {
-          return;
-        }
-        deckFileHandle = picked[0];
-      }
-      const file = await deckFileHandle.getFile();
-      const text = await file.text();
-      if (text.indexOf('<deck-stage') === -1) {
-        alert('That file does not contain a <deck-stage> element. Pick the deck file: '
-          + decodeURIComponent(deckPath));
-        deckFileHandle = null;
-        return;
-      }
-      const w = await deckFileHandle.createWritable();
-      await w.write(rewriteDeckHtml(text, notes));
-      await w.close();
-      overlay = {};
-      try { localStorage.removeItem(editsKey); } catch (e) {}
-      updateDirty();
-      // Refresh the deck window's in-DOM notes tag so its broadcasts match
-      // the file now that the overlay is gone.
-      bc && bc.postMessage({ type: 'notes-set', notes: notes.slice() });
-      refs.saveBtn.textContent = 'Saved';
-      setTimeout(() => { refs.saveBtn.textContent = 'Save to deck'; }, 1600);
-    } catch (e) {
-      if (e && e.name === 'AbortError') return; // picker cancelled
-      alert('Save failed: ' + (e && e.message ? e.message : e));
-    }
-  }
-  refs.saveBtn.addEventListener('click', saveToDeck);
-
   function renderStrip() {
     if (refs.strip.childElementCount === state.total) {
       // Just update which is current, common case.
@@ -831,7 +225,7 @@
     refs.nextBtn.disabled = state.total > 0 && state.index >= state.total - 1;
     setFrame(refs.curFrame, state.index, 'cur');
     setFrame(refs.nextFrame, state.index + 1, 'next');
-    renderNotes();
+    notesPanel.render();
     renderStrip();
   }
 
@@ -867,13 +261,7 @@
         state = { index: newIndex, total: newTotal };
         if (changed) render();
       } else if (d.type === 'notes' && Array.isArray(d.notes)) {
-        // Notes arrive over the channel because window.opener.document is
-        // unreachable on file:// (opaque origins). Local unsaved edits win
-        // over whatever the deck broadcasts, and re-render only on change
-        // so the heartbeat's re-sends don't reset the notes scroll position.
-        const merged = applyOverlay(d.notes);
-        const j = JSON.stringify(merged);
-        if (j !== notesJson) { notesJson = j; notes = merged; renderNotes(); }
+        notesPanel.receive(d.notes);
       }
     });
     // Announce ourselves; the deck responds with state + notes. Repeated as a
@@ -916,7 +304,7 @@
     } else if (e.key === 't' || e.key === 'T') {
       e.preventDefault(); timerStart = Date.now(); tickTimer();
     } else if (e.key === 'e' || e.key === 'E') {
-      e.preventDefault(); setEditing(true);
+      e.preventDefault(); notesPanel.edit();
     } else if (e.key === '.' || e.key === 'k' || e.key === 'K') {
       // PowerPoint-style: . / K toggles a local-only blackout for the
       // presenter view (rare but handy if someone walks by).
@@ -955,8 +343,6 @@
   }, 3000);
 
   // --- Initial paint ----------------------------------------------------
-  notes = applyOverlay(notes);
-  updateDirty();
   render();
 })();
 </script>
