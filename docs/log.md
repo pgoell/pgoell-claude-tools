@@ -2,7 +2,7 @@
 
 ## 2026-10-19
 
-- **Fix**: workbench 1.2.3 (#195, #196). AGENTS.md and `explanation/skill-design-patterns.md` say a thin variant may ship its own `references/` beside the paths it reads from a sibling, as `writing:coach` and the workbench HTML producers do. Every stated count of `crafting-html`'s references now reads 20 reference examples plus an index (21 files): AGENTS.md, `crafting-html` and `crafting-design-systems` SKILL.md, and `explanation/html-producers-presets-and-themes.md`. No other page under `docs/` changed.
+- **Fix**: workbench 1.2.3 (#195, #196). AGENTS.md and `explanation/skill-design-patterns.md` say a thin variant may ship its own `references/` beside the paths it reads from a sibling, as `writing:coach` and the workbench HTML producers do. Every stated count of `crafting-html`'s references now agrees with 20 reference examples plus an index (21 files); the fix touched AGENTS.md, `crafting-html` and `crafting-design-systems` SKILL.md, and `explanation/html-producers-presets-and-themes.md`. No other page under `docs/` changed.
 
 - **Fix**: workbench 1.2.2, research 2.1.6 (#163). The design-system protocol now lives once, in `crafting-design-systems/references/applying-a-design-system.md`. The five workbench producers and `research:research` keep an `### Applying a design system` section that points there when a design system is set. When the workbench plugin is not installed or older than 1.2.2, research tells the user and keeps the template's defaults. AGENTS.md, `explanation/html-producers-presets-and-themes.md`, `explanation/skill-design-patterns.md`, `reference/plugins/research.md` and `reference/plugins/workbench.md` say so. No other page under `docs/` changed.
 
