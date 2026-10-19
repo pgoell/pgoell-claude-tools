@@ -44,9 +44,9 @@ Cover, scaling each section to its complexity:
 
 In html, fill the template this way:
 
-- `<title>` and `<h1>`: the feature name. The `<p>` under the `<h1>`: a one-sentence summary. `.meta`: Date the spec date, Status "Draft", Author the user, Source brainstorm the brainstorm summary's path (delete that pair when there is none).
+- `<title>`: "Spec, " and the feature name; `<h1>`: the feature name. The `<p>` under the `<h1>`: a one-sentence summary. `.meta`: Date the spec date, Status "Draft" in its `.status-pill`, Author the user (delete that pair when unknown), Source brainstorm the brainstorm summary's path (delete that pair when there is none).
 - Each Drafting item goes in its section: Problem `#problem`; Solution overview `#solution-overview`; User stories as `#user-stories` items; Implementation decisions `#implementation-decisions`, with file layout in `#file-structure` and modules and interfaces (user-facing ones such as CLI flags included) as rows of the `#module-decisions` table, the rejected alternative in the Rationale cell; Reference artifacts `#reference-artifacts` (delete it and its toc entry when there are none); Testing decisions `#testing-decisions`; Out of scope `#out-of-scope`; Risks `#risks`.
-- Delete the template's HTML comments, `.placeholder` spans and `placeholder` classes; replace all sample text.
+- Delete the template's HTML comments, `p.placeholder` instruction lines and `.placeholder` spans; replace all sample text. The lead `<p>` under the `<h1>` stays, without its `placeholder` class.
 
 Use `elements-of-style:writing-clearly-and-concisely` if available.
 

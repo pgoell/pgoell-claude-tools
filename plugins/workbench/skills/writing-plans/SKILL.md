@@ -19,19 +19,19 @@ Resolve the output format first (see `## Output Format`). Then resolve the plan 
 
 For html, write the skeleton of `references/plan-template.html` into the `.html` file and replace all its sample content; for md, write markdown. In html, each part of the plan has a slot in the template:
 
-- `## Plan Document Header`: the title in `<title>` and in the `<h1>` of `header.page-head`, the "For agentic workers" line as a `<p>` right after that `<h1>` (write the checkbox markup escaped, `&lt;span class="checkbox"&gt;`), and Goal, Architecture and Tech Stack in `#summary`. In `header .meta`, Date is the plan's date, Owner the user (delete that span when unknown), and the pill is `status-draft` "Draft".
-- The `## File Structure` file map goes in `#file-structure`.
+- `## Plan Document Header`: the title in `<title>`, the feature name alone in the `<h1>` of `header.page-head` (the eyebrow already says "Implementation Plan"), the "For agentic workers" line as a `<p>` right after that `<h1>` (write the checkbox markup escaped, `&lt;span class="checkbox"&gt;`), and Goal, Architecture and Tech Stack in `#summary`. In `header .meta`, Date is the plan's date, Owner the user (delete that span when unknown), and the pill is `status-draft` "Draft".
+- The `## File Structure` file map goes in `#file-structure`: one tree line per file, with its job after it.
 - Medium lane: the `## Design` preamble goes in `<section id="design">`, right after `#summary`, as its `<dl>` entries Problem, Chosen approach, Key decisions and Out of scope. Remove the "Source spec" link from `header .meta`; there is no spec.
 - Large lane: delete `<section id="design">`. The `Spec: <path>` line becomes the "Source spec" link in `header .meta`, its `href` the spec's path relative to the plan's folder: `../specs/<file>` for sibling folders, `./<file>` when both sit in one folder (as under `don't commit`).
 - Slices: each slice is one `<article class="task">` in `#tasks`, its `.num` label "Slice 01" (two digits). A task that is not itself a slice keeps its place in that numbering and adds `p.order-note`. Its parts go in this order:
+  - The ordering note of a task that is not itself a slice: `<p class="order-note">`, first, before Files.
   - Files: one row per path in `.files`, labeled Create, Modify or Test.
   - Types and signatures: a `<pre>` in `.signatures`.
   - Call-stack sketch: `.diff-block` lines in `.call-stack`. Omit it or the signatures as `## Slice Structure` says.
   - Steps: each step is one `<li>` in `<ol class="steps">`, starting with `<span class="checkbox" aria-hidden="true"></span>` and then the step text (such as the failing test's name and its assertion) in `<p>`s in `<div class="step-body">`, without a "Step N:" label (the template's CSS numbers the steps). This is the html form of `- [ ]`.
   - Run and Expected: `code.test-cmd` and `.expected` inside the step. The commit step has one `code.test-cmd` per command: `git add ...`, then `git commit -m ...`.
   - Acceptance criteria: `.acceptance`, after the steps.
-  - The `tricky-kernel` flag: `<span class="tricky-kernel">tricky-kernel</span>` in the step, then the one-line reason, then the complete code in a `<pre>` in that `.step-body`.
-  - The ordering note of a task that is not itself a slice: `<p class="order-note">`, after the header.
+  - The `tricky-kernel` flag: after the step text, a `<p>` of its own holding `<span class="tricky-kernel">tricky-kernel</span>` and the one-line reason, then the complete code in a `<pre>` in that `.step-body`.
 - `#testing` and `#commit-points` have no md counterpart. Fill them from the slices' test commands and commit messages; delete one only when nothing would go in it.
 - Delete the template's HTML comments, and start every checkbox without `done`.
 

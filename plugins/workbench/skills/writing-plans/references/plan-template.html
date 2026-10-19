@@ -67,18 +67,7 @@
   .page-head { display: grid; gap: 12px; padding-bottom: 20px; border-bottom: 1px solid var(--rule); margin-bottom: 32px; }
   .page-head .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
   .page-head .meta { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; color: var(--muted); align-items: center; }
-  .meta .pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 3px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-    background: var(--accent-soft);
-    color: var(--accent);
-    border: 1px solid var(--accent);
-  }
+  .meta .pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent); }
   .meta .pill.status-draft   { background: var(--warn-soft); color: var(--warn); border-color: var(--warn); }
   .meta .pill.status-active  { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
   .meta .pill.status-done    { background: var(--good-soft); color: var(--good); border-color: var(--good); }
@@ -193,42 +182,13 @@
   .steps { list-style: none; counter-reset: step; margin: 0; padding: 0; }
   .steps > li { counter-increment: step; display: grid; grid-template-columns: 28px 1fr; gap: 10px 12px; padding: 10px 0; border-top: 1px dashed var(--rule); }
   .steps > li:first-child { border-top: 0; padding-top: 4px; }
-  .steps .checkbox {
-    width: 18px;
-    height: 18px;
-    border: 1.5px solid var(--rule-strong);
-    border-radius: 4px;
-    background: var(--surface);
-    display: inline-block;
-    position: relative;
-    margin-top: 4px;
-    flex-shrink: 0;
-  }
+  .steps .checkbox { width: 18px; height: 18px; border: 1.5px solid var(--rule-strong); border-radius: 4px; background: var(--surface); display: inline-block; position: relative; margin-top: 4px; flex-shrink: 0; }
   .steps .checkbox.done { background: var(--good); border-color: var(--good); }
-  .steps .checkbox.done::after {
-    content: "";
-    position: absolute;
-    left: 4px;
-    top: 1px;
-    width: 6px;
-    height: 11px;
-    border: solid #fff;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-  }
+  .steps .checkbox.done::after { content: ""; position: absolute; left: 4px; top: 1px; width: 6px; height: 11px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
   .steps .step-body p:first-child { font-weight: 600; }
   .steps .step-body p:first-child::before { content: "Step " counter(step) ". "; color: var(--muted); font-weight: 600; }
 
-  .diff-block {
-    margin: 10px 0;
-    background: var(--code-bg);
-    color: var(--code-ink);
-    border-radius: var(--r-sm);
-    padding: 10px 0;
-    font-family: var(--mono);
-    font-size: 12.5px;
-    overflow-x: auto;
-  }
+  .diff-block { margin: 10px 0; background: var(--code-bg); color: var(--code-ink); border-radius: var(--r-sm); padding: 10px 0; font-family: var(--mono); font-size: 12.5px; overflow-x: auto; }
   .diff-block .line { display: block; padding: 1px 14px 1px 30px; white-space: pre; position: relative; }
   .diff-block .line::before { position: absolute; left: 10px; width: 14px; text-align: center; color: var(--muted); }
   .diff-block .add { background: rgba(31, 122, 61, 0.18); color: #b3e7c1; }
@@ -237,33 +197,14 @@
   .diff-block .del::before { content: "-"; color: #ee8a7c; }
   .diff-block .ctx::before { content: " "; }
 
-  .test-cmd {
-    display: block;
-    margin: 8px 0 4px;
-    padding: 8px 12px;
-    background: var(--code-bg);
-    color: var(--code-ink);
-    border-radius: var(--r-sm);
-    font-family: var(--mono);
-    font-size: 12.5px;
-    overflow-x: auto;
-    white-space: pre;
-  }
+  .test-cmd { display: block; margin: 8px 0 4px; padding: 8px 12px; background: var(--code-bg); color: var(--code-ink); border-radius: var(--r-sm); font-family: var(--mono); font-size: 12.5px; overflow-x: auto; white-space: pre; }
   .test-cmd::before { content: "$ "; color: var(--muted); user-select: none; }
   .expected { margin: 4px 0 0; padding-left: 12px; border-left: 3px solid var(--rule-strong); color: var(--muted); font-size: 13.5px; }
 
   /* ---------- testing table ---------- */
 
   #testing .table-wrap { overflow-x: auto; }
-  #testing table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--surface);
-    border: 1px solid var(--rule);
-    border-radius: var(--r-md);
-    overflow: hidden;
-    font-size: 14px;
-  }
+  #testing table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-md); overflow: hidden; font-size: 14px; }
   #testing th, #testing td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
   #testing th { background: var(--bg); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
   #testing tbody tr:last-child td { border-bottom: 0; }
@@ -273,19 +214,7 @@
 
   #commit-points ol { list-style: none; counter-reset: cmt; margin: 0; padding: 0; }
   #commit-points li { counter-increment: cmt; display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: center; margin-bottom: 12px; }
-  #commit-points li::before {
-    content: counter(cmt, decimal-leading-zero);
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--muted);
-    background: var(--rule);
-    border-radius: 999px;
-    width: 28px;
-    height: 28px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
+  #commit-points li::before { content: counter(cmt, decimal-leading-zero); font-family: var(--mono); font-size: 12px; color: var(--muted); background: var(--rule); border-radius: 999px; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; }
 
   .commit-msg {
     position: relative;
@@ -300,29 +229,8 @@
     white-space: pre-wrap;
     word-break: break-word;
   }
-  .commit-msg::after {
-    content: "copy";
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 4px 8px;
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--code-ink);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    cursor: pointer;
-    transition: background 120ms ease, color 120ms ease;
-  }
-  .commit-msg:hover::after {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-    content: "copy to clipboard";
-  }
+  .commit-msg::after { content: "copy"; position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.06); color: var(--code-ink); border: 1px solid rgba(255, 255, 255, 0.12); cursor: pointer; transition: background 120ms ease, color 120ms ease; }
+  .commit-msg:hover::after { background: var(--accent); color: #fff; border-color: var(--accent); content: "copy to clipboard"; }
 
   /* ---------- print ---------- */
 
@@ -340,6 +248,7 @@
     <header class="page-head" id="header">
       <span class="eyebrow">Implementation Plan</span>
       <h1>Comment threads on task cards</h1>
+      <p><strong>For agentic workers:</strong> use <code>workbench:test-driven-development</code>. Steps use <code>&lt;span class="checkbox"&gt;</code> for tracking.</p>
       <div class="meta">
         <span><strong>Date:</strong> 2026-05-08</span>
         <span><strong>Owner:</strong> Pascal Goellner</span>
@@ -355,21 +264,10 @@
         <dd>Let collaborators comment on a task card without leaving the board.</dd>
 
         <dt>Architecture</dt>
-        <dd>
-          <ul>
-            <li>New <code>comments</code> table joined to <code>tasks</code> by <code>task_id</code>.</li>
-            <li>Server-rendered list, enhanced in the browser for inline reply.</li>
-          </ul>
-        </dd>
+        <dd>A <code>comments</code> table keyed by <code>task_id</code>, served by a Fastify route.</dd>
 
         <dt>Tech stack</dt>
-        <dd>
-          <ul>
-            <li>Backend: Node 20, Fastify, Postgres 16, Knex migrations.</li>
-            <li>Frontend: TypeScript, Preact, Vitest, Playwright.</li>
-          </ul>
-        </dd>
-
+        <dd>Node 20, Fastify, Postgres 16, Vitest.</dd>
       </dl>
     </section>
 
@@ -378,21 +276,16 @@
       <h2>Design</h2>
       <dl>
         <dt>Problem</dt>
-        <dd>Collaborators discuss tasks in chat, so the reasons behind a change get lost.</dd>
+        <dd>Task discussion happens in chat and gets lost.</dd>
 
         <dt>Chosen approach</dt>
-        <dd>A flat comment list on each task card, loaded with the task.</dd>
+        <dd>A flat comment list on each task card.</dd>
 
         <dt>Key decisions</dt>
-        <dd>
-          <ul>
-            <li>One level of comments, no nested replies.</li>
-            <li>Comments go when their task goes (<code>ON DELETE CASCADE</code>).</li>
-          </ul>
-        </dd>
+        <dd>No nested replies.</dd>
 
         <dt>Out of scope</dt>
-        <dd>Notifications, reactions, threaded replies.</dd>
+        <dd>Notifications, reactions.</dd>
       </dl>
     </section>
 
@@ -403,11 +296,12 @@
         <summary>Backend <span class="tag">create</span><span class="tag modify">modify</span></summary>
         <pre class="tree">apps/api/
   src/
-    app.ts                (modify)
-    routes/comments.ts    (create)
-    services/cursor.ts    (create)
+    app.ts              (modify) registers routes
+    routes/comments.ts  (create) comment endpoints
+    services/cursor.ts  (create) keyset cursor
   test/
-    routes/comments.test.ts  (create)</pre>
+    routes/comments.test.ts  (create) route tests
+    cursor.test.ts           (create) cursor tests</pre>
       </details>
     </section>
 
@@ -447,9 +341,9 @@ listComments(taskId: string): Promise&lt;Comment[]&gt;</pre>
 
         <ol class="steps">
           <li>
-            <span class="checkbox done" aria-hidden="true"></span>
+            <span class="checkbox" aria-hidden="true"></span>
             <div class="step-body">
-              <p>Write the failing test: a POST returns 201 and a GET then lists that comment.</p>
+              <p>Write the failing test: POST returns 201, then GET lists the comment.</p>
             </div>
           </li>
 
@@ -465,7 +359,16 @@ listComments(taskId: string): Promise&lt;Comment[]&gt;</pre>
           <li>
             <span class="checkbox" aria-hidden="true"></span>
             <div class="step-body">
-              <p>Implement <code>createComment</code> and <code>listComments</code> per the signatures.</p>
+              <p>Implement both per the signatures.</p>
+            </div>
+          </li>
+
+          <li>
+            <span class="checkbox" aria-hidden="true"></span>
+            <div class="step-body">
+              <p>Run the test and confirm it passes.</p>
+              <code class="test-cmd">npm test -- routes/comments</code>
+              <div class="expected">Expected: PASS.</div>
             </div>
           </li>
 
@@ -492,11 +395,12 @@ listComments(taskId: string): Promise&lt;Comment[]&gt;</pre>
         </header>
 
         <!-- Only for a task that is not itself a slice. -->
-        <p class="order-note">Scaffold, not a slice: ordered here because Slice 03 (paging) needs it.</p>
+        <p class="order-note">Scaffold, not a slice: ordered here because a later paging slice needs it.</p>
 
         <div class="files">
           <ul>
             <li><span class="label">Create</span><code>apps/api/src/services/cursor.ts</code></li>
+            <li><span class="label">Test</span><code>apps/api/test/cursor.test.ts</code></li>
           </ul>
         </div>
 
@@ -505,9 +409,26 @@ listComments(taskId: string): Promise&lt;Comment[]&gt;</pre>
             <span class="checkbox" aria-hidden="true"></span>
             <div class="step-body">
               <!-- The only place full code may appear. -->
-              <p>Implement <code>encodeCursor</code>. <span class="tricky-kernel">tricky-kernel</span> The (created_at, id) tiebreak order is the design.</p>
+              <p>Implement <code>encodeCursor</code>.</p>
+              <p><span class="tricky-kernel">tricky-kernel</span> The (created_at, id) tiebreak order is the design.</p>
               <pre>const encodeCursor = (c: Comment): string =&gt;
   btoa(`${c.created_at.toISOString()}|${c.id}`);</pre>
+            </div>
+          </li>
+          <li>
+            <span class="checkbox" aria-hidden="true"></span>
+            <div class="step-body">
+              <p>Run the test.</p>
+              <code class="test-cmd">npm test -- cursor</code>
+              <div class="expected">Expected: PASS.</div>
+            </div>
+          </li>
+          <li>
+            <span class="checkbox" aria-hidden="true"></span>
+            <div class="step-body">
+              <p>Commit.</p>
+              <code class="test-cmd">git add apps/api</code>
+              <code class="test-cmd">git commit -m "feat(api): add keyset cursor helper"</code>
             </div>
           </li>
         </ol>
@@ -521,7 +442,6 @@ listComments(taskId: string): Promise&lt;Comment[]&gt;</pre>
 
     <section id="testing">
       <h2>Testing</h2>
-      <p>All must pass on CI before merge.</p>
       <div class="table-wrap">
         <table>
           <thead>
@@ -535,12 +455,12 @@ listComments(taskId: string): Promise&lt;Comment[]&gt;</pre>
             <tr>
               <td>API route</td>
               <td><code>npm test -- routes/comments</code></td>
-              <td>All pass.</td>
+              <td>PASS.</td>
             </tr>
             <tr>
-              <td>Lint and types</td>
-              <td><code>npm run lint &amp;&amp; npm run typecheck</code></td>
-              <td>Both report 0 errors, 0 warnings.</td>
+              <td>Cursor</td>
+              <td><code>npm test -- cursor</code></td>
+              <td>PASS.</td>
             </tr>
           </tbody>
         </table>
@@ -549,7 +469,6 @@ listComments(taskId: string): Promise&lt;Comment[]&gt;</pre>
 
     <section id="commit-points">
       <h2>Commit points</h2>
-      <p>Commits in order. Each one leaves the tests green.</p>
       <ol>
         <li><code class="commit-msg">feat(api): post and list task comments</code></li>
         <li><code class="commit-msg">feat(api): add keyset cursor helper</code></li>
