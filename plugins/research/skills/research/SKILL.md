@@ -17,7 +17,7 @@ No authentication required. Uses the host agent's web search and fetch or browse
 
 1. **Subagent dispatch when available and permitted**: dispatch researcher, synthesis, writer, and reviewer agents.
 2. **File read tools**: load prompt templates before dispatch.
-3. **Shell**: directory creation, date generation, file globbing, and the `sha256sum` and `grep -c` checks of Step 4.
+3. **Shell**: directory creation, date generation, file globbing, and the `sha256sum` and `grep -c` checks of Step 4, and the `sha256sum` and `head -1` check of Step 5.
 4. **Progress list**: live loop bookkeeping.
 5. **Web search and fetch or browse tools**: researchers and the synthesis reviewer use them; the orchestrator uses them only if subagent dispatch fails.
 
@@ -106,8 +106,10 @@ A check fails on `ARTIFACT-MISSING`, a hash mismatch, a missing or unparseable l
 
 1. Read `synthesis-prompt.md`.
 2. Inject: BRIEF, OUTPUT_PATH, ITERATION, REVIEWER_FEEDBACK (empty on first pass; populated on re-dispatch).
-3. Dispatch via the host subagent tool. Wait for completion.
-4. Verify `{OUTPUT_PATH}/research/synthesis.md` exists.
+3. Record the hash of the old file: `sha256sum {OUTPUT_PATH}/research/synthesis.md 2>/dev/null | cut -d' ' -f1` (prints nothing on iteration 1, when the file does not exist yet). Dispatch via the host subagent tool. Wait for completion.
+4. Check the file yourself; do not trust the report. `test -f {OUTPUT_PATH}/research/synthesis.md` must pass, `sha256sum {OUTPUT_PATH}/research/synthesis.md | cut -d' ' -f1` must differ from the hash you recorded, and `head -1 {OUTPUT_PATH}/research/synthesis.md` must print `# Synthesis (Iteration N)`, with N the ITERATION you injected.
+
+A check fails on a missing file, an unchanged hash, or a wrong first line. Re-dispatch synthesis once with the same inputs and run item 4 again against the hash from before the first dispatch (do not record a new one); if it fails again, tell the user which check failed and ask how to go on. Never go on to Step 6 with the old file.
 
 ### Step 6: Review synthesis (iteration N)
 
@@ -134,7 +136,7 @@ For each gap-fill issue:
 
 Then, once per round, not once per gap-fill: every round with a critical issue writes the synthesis again, whatever the mix of issues. A gap-fill file reaches the review only through synthesis.md, so never skip step 3:
 
-3. When every gap-fill file has passed its Step 4 check (or the user, asked after a second failure, said to go on without it), re-dispatch synthesis (Step 5 with ITERATION=N+1) once, with REVIEWER_FEEDBACK holding every critical issue of this round:
+3. When every gap-fill file has passed its Step 4 check (or the user, asked after a second failure, said to go on without it), re-dispatch synthesis (Step 5 with ITERATION=N+1) once per round (the retry on a failed Step 5 check still applies), with REVIEWER_FEEDBACK holding every critical issue of this round:
    - each gap-fill issue, with its gap-fill file path;
    - each rejected refetch claim, with the claim, the page quote from the `REFETCH:` block and the gap-fill file path, so the wrong claim leaves synthesis.md;
    - each `logic` or `structure` issue.
