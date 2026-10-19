@@ -1,6 +1,6 @@
 {
   "name": "research",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "Research complex topics and produce sourced reports.",
   "author": {
     "name": "Pascal Göllner"
@@ -30,7 +30,8 @@
     "defaultPrompt": [
       "Research this topic and write a report",
       "Investigate this market with sources",
-      "Deep dive on this technical question"
+      "Deep dive on this technical question",
+      "Review the literature on this question with sources"
     ],
     "brandColor": "#2563EB",
     "screenshots": []

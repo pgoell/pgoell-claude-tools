@@ -1,6 +1,6 @@
 ---
 name: research
-description: Use when the user wants a complex topic researched with sources, synthesis, review and a final report. This skill starts the job by pinning down the brief, one question at a time (topic, scope, audience, purpose, deliverable, deadline), writes brief.md, gets the user's approval, then hands over to research:running-research, which does the research and writes the report. Not for simple factual questions.
+description: Use when the user wants a topic investigated across many sources and written as a cited report, such as a literature or study review, the history and trends of a field, a market or industry analysis, or a comparison of options. Pins down the brief one question at a time, writes brief.md for approval, then hands over to research:running-research, which researches, synthesizes and writes the report under review gates. Not for one-fact lookups, concept questions, or text the user already gave.
 ---
 
 # Research Skill
