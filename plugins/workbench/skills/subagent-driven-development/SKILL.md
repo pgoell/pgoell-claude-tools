@@ -89,8 +89,8 @@ Return:
 
 `DONE`: the agent's own "passed" counts for nothing. Before spec review, the main session runs the verification commands itself: every command the brief names, run as shell commands in the main session.
 
-- No verification command in the brief: do not accept `DONE` with nothing run. Take the slice's test commands or acceptance criteria; failing those, the project's full relevant test set; failing that, ask the user (your own `NEEDS_CONTEXT`). Add the gap to the deviation list of Task Loop step 6, then run the command.
-- A command fails: treat the task as `DONE_WITH_CONCERNS`. Send the failing command and its output back to the same agent, or fix it in the main session. Run every command again; start spec review only when all pass. Still failing after one fix round: handle as `BLOCKED`.
+- No verification command in the brief: do not accept `DONE` with nothing run. Take the slice's test commands or acceptance criteria; failing those, the project's full relevant test set; failing that, ask the user for a command and wait for the answer; this slice does not go to spec review until then. Add the gap to the deviation list of Task Loop step 6, then run the command.
+- A command fails: treat the task as `DONE_WITH_CONCERNS`. Send the failing command, its exit code and its output back to the same agent; fix it in the main session only when the fix is a few lines. Run every command again; start spec review only when all pass. Still failing after that one fix round (one agent return or one main-session fix): handle as `BLOCKED`.
 
 `DONE_WITH_CONCERNS`: read the concerns. Fix in-scope correctness, lint, test, or scope concerns, then run every verification command as for `DONE` before review.
 
