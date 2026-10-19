@@ -15,13 +15,15 @@ Assume the implementer is a capable engineer with little project context. Give t
 
 ## Path Resolution
 
-Resolve the plan path in this order:
+Resolve the output format first (see `## Output Format`), then the plan path in this order:
 
 1. `.workbench/pilot.md` `Plans:` heading.
 2. Project `CLAUDE.md` or `AGENTS.md` plan-path convention.
-3. `.workbench/plans/YYYY-MM-DD-<feature-name>.md`.
+3. `.workbench/plans/YYYY-MM-DD-<feature-name>.<ext>`.
 
-If the resolved value is `don't commit`, write the plan to `/tmp/<project-name>-pilot/YYYY-MM-DD-<feature-name>.md` and skip committing it.
+If the resolved value is `don't commit`, write the plan to `/tmp/<project-name>-pilot/YYYY-MM-DD-<feature-name>.<ext>` and skip committing it. In every path, `<ext>` is `html` or `md` per the format resolved in `## Output Format`.
+
+For html, write the skeleton of `references/plan-template.html` into the `.html` file and replace all its sample content; for md, write markdown. In html, the `## Plan Document Header` goes in the template's slots: the title in the `<h1>` of `header.page-head`, the "For agentic workers" line as a `<p>` right after that `<h1>`, and Goal, Architecture and Tech Stack in `#summary`.
 
 ## Scope Check
 
@@ -197,7 +199,7 @@ Override resolution order, highest precedence first:
 2. `.workbench/config.md` `## Output formats` entry for `Plans:`. Schema documented in `plugins/workbench/skills/pilot/references/config-schema.md`.
 3. Per-skill hard-coded default (md).
 
-Path resolution order: `.workbench/pilot.md` `## Documentation paths` `Plans:` first; then `.workbench/config.md` `## Output paths` `Plans:`; then `.workbench/plans/` default. Path and format resolve independently.
+Path resolution order: `.workbench/pilot.md` `## Documentation paths` `Plans:` first; then `.workbench/config.md` `## Output paths` `Plans:`; then `.workbench/plans/` default. Path and format resolve independently; the file name takes its extension from the format, as `## Path Resolution` says.
 
 When emitting HTML, follow the structural skeleton in `references/plan-template.html` in this skill's directory. Read the template lazily, only when actually producing the artifact. Do not introduce U+2014 or U+2013 codepoints in body copy; HTML entity forms (`&mdash;`, `&#8212;`, `&ndash;`, `&#8211;`) are permitted.
 

@@ -1,0 +1,3 @@
+# 2026-10-19: Fix
+
+workbench 1.4.8, issue #243. `writing-spec` and `writing-plans` now name the spec and plan file with the extension of the resolved format (`YYYY-MM-DD-<topic>-design.<ext>` and `YYYY-MM-DD-<feature-name>.<ext>`, where `<ext>` is `html` or `md`), and the drafting step writes the html template's skeleton when the format is html. `pilot` Steps 3 and 4 name the same paths. Before, a `Specs: html` or `Plans: html` setting still gave a `.md` file name. No pages under `docs/` changed: `/reference/plugins/workbench.md` already gave the `YYYY-MM-DD-<topic>-<artifact>.<ext>` pattern, and the skills now match it.
