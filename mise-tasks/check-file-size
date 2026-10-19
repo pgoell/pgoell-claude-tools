@@ -23,23 +23,35 @@ EXCLUDES=(
   '**/LICENSE*' '**/NOTICE'
 )
 
-cd "$(git rev-parse --show-toplevel)"
+top=$(git rev-parse --show-toplevel)
 
+# The "top" magic anchors excludes at the repo root while arguments resolve
+# against the caller's directory.
 pathspecs=()
-for glob in "${EXCLUDES[@]}"; do pathspecs+=(":(exclude,glob)$glob"); done
+for glob in "${EXCLUDES[@]}"; do pathspecs+=(":(top,exclude,glob)$glob"); done
 
-if [ "$#" -eq 0 ]; then set -- .; fi
+if [ "$#" -eq 0 ]; then set -- ':(top)'; fi
+# git 2.43 drops a leading "**/" exclude when all arguments share a folder
+# prefix. ".git" at the root is never tracked, so this matches nothing and
+# only clears that prefix.
+set -- "$@" ':(top,literal).git'
+
+# A file, not a process substitution, so a git failure stops the script.
+list=$(mktemp)
+trap 'rm -f "$list"' EXIT
+git ls-files -z --full-name -- "$@" "${pathspecs[@]}" >"$list"
+cd "$top"
 
 failed=0
 while IFS= read -r -d '' path; do
   # Skip symlinks and paths deleted from the worktree.
   if [ -L "$path" ] || [ ! -f "$path" ]; then continue; fi
-  tokens=$(($(stat -c %s "$path") / 4))
+  tokens=$(($(wc -c <"$path") / 4))
   if [ "$tokens" -gt "$LIMIT" ]; then
     echo "file-size: $path is ~$tokens tokens (bytes/4); the limit is $LIMIT." >&2
     failed=1
   fi
-done < <(git ls-files -z -- "$@" "${pathspecs[@]}")
+done <"$list"
 
 if [ "$failed" -eq 0 ]; then exit 0; fi
 

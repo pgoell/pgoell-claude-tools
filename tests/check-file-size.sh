@@ -113,6 +113,17 @@ if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then
 else
   bad "A5 excluded files as arguments pass (rc=$RC)"
 fi
+# One argument alone gives git a common prefix, which once hid the excludes.
+leaked=""
+for f in "${excluded[@]}"; do
+  run "$f"
+  [ "$RC" -eq 0 ] && [ -z "$ERR" ] || leaked="$leaked $f"
+done
+if [ -z "$leaked" ]; then
+  ok "A5 each excluded file as a lone argument passes"
+else
+  bad "A5 each excluded file as a lone argument passes (leaked:$leaked)"
+fi
 
 # A5 under passes, I1 boundary.
 fresh
@@ -186,6 +197,49 @@ if [ "$RC" -eq 1 ] && grep -qxF "$(line forty.md 10000)" <<<"$ERR"; then
   ok "A2 40000 bytes is 10000 tokens"
 else
   bad "A2 40000 bytes is 10000 tokens (rc=$RC)"
+fi
+
+# B1 a failing git ls-files fails the check.
+fresh
+mkfile small.md 100
+git add -A
+run /etc/passwd
+if [ "$RC" -ne 0 ]; then ok "B1 path outside the repo fails"; else bad "B1 path outside the repo fails (rc=$RC)"; fi
+NOGIT="$WORK/nogit"
+mkdir -p "$NOGIT"
+cd "$NOGIT" || exit 1
+ERR="$(GIT_CEILING_DIRECTORIES="$WORK" bash "$REPO/mise-tasks/check-file-size" 2>&1 >/dev/null)"
+RC=$?
+if [ "$RC" -ne 0 ]; then ok "B1 run outside a git repo fails"; else bad "B1 run outside a git repo fails (rc=$RC)"; fi
+
+# B2 paths given from a subdirectory resolve against it.
+fresh
+mkfile big.md 20004
+mkfile sub/deep.md 20004
+mkfile sub/pic.png 20004
+git add -A
+cd sub || exit 1
+ERR="$(bash ../mise-tasks/check-file-size deep.md 2>&1 >/dev/null)"
+RC=$?
+if [ "$RC" -eq 1 ] && grep -qxF "$(line sub/deep.md 5001)" <<<"$ERR"; then
+  ok "B2 relative argument from a subdirectory fails"
+else
+  bad "B2 relative argument from a subdirectory fails (rc=$RC)"
+fi
+ERR="$(bash ../mise-tasks/check-file-size 2>&1 >/dev/null)"
+RC=$?
+if [ "$RC" -eq 1 ] && grep -qxF "$(line big.md 5001)" <<<"$ERR" &&
+  grep -qxF "$(line sub/deep.md 5001)" <<<"$ERR" && ! grep -qF "pic.png" <<<"$ERR"; then
+  ok "B2 no-arg run from a subdirectory checks the whole repo, keeps excludes"
+else
+  bad "B2 no-arg run from a subdirectory checks the whole repo, keeps excludes (rc=$RC)"
+fi
+ERR="$(bash ../mise-tasks/check-file-size pic.png 2>&1 >/dev/null)"
+RC=$?
+if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then
+  ok "B2 excluded argument from a subdirectory passes"
+else
+  bad "B2 excluded argument from a subdirectory passes (rc=$RC)"
 fi
 
 echo "$pass passed, $fail failed"
