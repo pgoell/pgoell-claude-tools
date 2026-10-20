@@ -6,6 +6,7 @@
 #   $STUB/send_fails  while it is there, drv_send fails
 #   $STUB/status   what drv_status prints (missing file: gone)
 #   $STUB/gone.NAME  while it is there, drv_status NAME prints gone
+#   $STUB/start_models  the SESSION_MODEL and ADVISOR_MODEL of the last drv_start, "model|advisor"
 drv_send() {
   printf '%s\t%s\n' "$1" "$(head -1 <<<"$2")" >>"$STUB/sent"
   printf '%s\n' "$2" >"$STUB/last"
@@ -15,4 +16,4 @@ drv_send() {
 drv_status() { [ ! -e "$STUB/gone.$1" ] && cat "$STUB/status" 2>/dev/null || echo gone; }
 drv_wait() { true; }
 drv_read() { tail -n "$2" "$STUB/screen" 2>/dev/null; }
-drv_start() { cat "$STUB/start_status" 2>/dev/null >"$STUB/status" || echo working >"$STUB/status"; echo "stub:p1"; }
+drv_start() { cat "$STUB/start_status" 2>/dev/null >"$STUB/status" || echo working >"$STUB/status"; printf '%s|%s\n' "${SESSION_MODEL:-}" "${ADVISOR_MODEL:-}" >"$STUB/start_models"; echo "stub:p1"; }

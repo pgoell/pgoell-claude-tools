@@ -97,7 +97,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `news` 0.9.5: `edition`, `feedback`, `tune`
 - `insights` 0.6.2: `digest`, `apply`, `activity`
 - `file-size` 0.1.0: `setting-up-the-check`
-- `issue-loop` 0.7.4: `running-the-loop`, `handing-over` (Claude Code only)
+- `issue-loop` 0.8.0: `running-the-loop`, `handing-over` (Claude Code only)
 - `prose-styles` 0.1.0: no skills; output styles `orwell`, `concise`, `ste`, `house` (Claude Code only)
 - `guards` 0.1.2: no skills; `PreToolUse` hook `pkill-self-match` (Claude Code only)
 - `session-title` 0.1.0: no skills; `SessionStart` hook `session-title` (Claude Code only)

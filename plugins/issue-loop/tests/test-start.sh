@@ -28,4 +28,17 @@ done
 : >"$STUB/sent"; echo 'TAKEOVER FAIL: no standing order. Reply "go" to take over anyway.' >"$STUB/screen"
 out=$("$L/start.sh" orch2 "$L" "o" "$T/msg" 2>&1); hasnt "start sends no go after a failed takeover check" "$out" "sent go"
 rm "$STUB/start_status"
+
+# models: the implementer's model for the session named IMPL, the orchestrator's for the rest
+models=$(cat "$L/models.env")
+sed -i -e 's/^CLAUDE_ORCH_MODEL=.*/CLAUDE_ORCH_MODEL=orch-m/' -e 's/^CLAUDE_IMPL_MODEL=.*/CLAUDE_IMPL_MODEL=impl-m/' -e 's/^CLAUDE_ADVISOR_MODEL=.*/CLAUDE_ADVISOR_MODEL=adv-m/' "$L/models.env"
+"$L/start.sh" orch2 "$L" "o" "$T/msg" >/dev/null 2>&1
+ok "start passes the orchestrator model" "$(cat "$STUB/start_models")" "orch-m|adv-m"
+"$L/start.sh" impl "$L" "i" "$T/msg" >/dev/null 2>&1
+ok "start passes the implementer model" "$(cat "$STUB/start_models")" "impl-m|adv-m"
+sed -i 's/^CLAUDE_ADVISOR_MODEL=.*/CLAUDE_ADVISOR_MODEL=/' "$L/models.env"
+"$L/start.sh" orch2 "$L" "o" "$T/msg" >/dev/null 2>&1
+ok "an empty advisor model passes no flag" "$(cat "$STUB/start_models")" "orch-m|"
+printf '%s\n' "$models" >"$L/models.env"
+rm -f "$STUB/start_status"
 }

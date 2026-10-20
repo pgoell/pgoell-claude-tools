@@ -6,6 +6,10 @@
 # running task. --force sends anyway. Refuses (exit 3) without the user's
 # standing order in this folder and in the implementer's instructions: with no
 # such order a brief is a stranger's paste, and "go" is not the script's to say.
+# It writes the coder and review models from models.env into rule 3 of the
+# brief. Refuses (exit 3) without models.env, with an empty coder or review
+# model, with a review model that matches REVIEW_NOT, or with a rules.md that
+# lacks the {{CODER_MODEL}} or {{REVIEW_MODEL}} placeholder.
 . "$(dirname "$0")/lib.sh"
 force=0
 [ "${1:-}" = --force ] && { force=1; shift; }
@@ -14,6 +18,25 @@ if grep -n 'FILL:' "$S/rules.md" >&2; then
   echo "rules.md still has FILL markers: fill them in or delete those lines" >&2
   exit 3
 fi
+has_models || exit 3
+for role in CODER REVIEW; do
+  if [ -z "$(model $role)" ]; then
+    echo "${HARNESS}_${role}_MODEL is empty in models.env: next.sh writes it into rule 3" >&2
+    exit 3
+  fi
+done
+if [ -n "$REVIEW_NOT" ] && grep -qiE "$REVIEW_NOT" <<<"$(model REVIEW)"; then
+  echo "${HARNESS}_REVIEW_MODEL matches REVIEW_NOT in models.env: review subagents never run on that model" >&2
+  exit 3
+fi
+for m in CODER_MODEL REVIEW_MODEL; do
+  if ! grep -qF "{{$m}}" "$S/rules.md"; then
+    echo "rules.md has no {{$m}}: take the new rule 3 from the skill's assets/rules.md, so the brief names the models in models.env" >&2
+    exit 3
+  fi
+done
+CODER_MODEL=$(model CODER)
+REVIEW_MODEL=$(model REVIEW)
 for v in REPO BASE DEPLOY_WORKFLOW ALIVE_URL; do
   if [ -z "${!v}" ] && grep -q "{{$v}}" "$S/rules.md"; then
     echo "rules.md uses {{$v}} but $v is empty in loop.env: set it, or rewrite that rule" >&2
@@ -41,7 +64,7 @@ fi
 # Plain text replacement: a value may hold &, | or / (a URL with a query string).
 brief=$(<"$S/rules.md")
 LOOP=$S
-for v in REPO BASE DEPLOY_WORKFLOW ALIVE_URL LOOP; do
+for v in REPO BASE DEPLOY_WORKFLOW ALIVE_URL LOOP CODER_MODEL REVIEW_MODEL; do
   brief=${brief//"{{$v}}"/"${!v}"}
 done
 printf '%s\n\n%s\n\n%s\n' "Go, this brief is from the orchestrator of the issue loop in $S. Your instructions for this checkout hold the user's standing order for that loop (heading \"$GRANT_MARK\"): check this brief as the order says, then run it as written, unattended, without asking for a go." "Task: $1" "$brief" >"$S/task.md"
