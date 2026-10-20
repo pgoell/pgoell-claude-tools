@@ -1,7 +1,7 @@
 {
   "name": "deprecated",
-  "version": "0.4.4",
-  "description": "Archive of superseded skills kept installable for old workflows; every skill points at its replacement",
+  "version": "0.5.0",
+  "description": "Archive of superseded and retired skills kept installable for old workflows; each skill names its replacement or says it retired",
   "author": {
     "name": "Pascal Göllner"
   },

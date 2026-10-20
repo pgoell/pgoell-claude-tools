@@ -5,8 +5,8 @@
 # than "fixed", since fixing them would break the illustration.
 exclude_path = [
   "plugins/research/skills/running-research/report-template.md",
-  "plugins/workbench/skills/brainstorming/references/brainstorm-summary-template.html",
-  "plugins/workbench/skills/writing-plans/references/plan-template.html",
+  "plugins/deprecated/skills/brainstorming/references/brainstorm-summary-template.html",
+  "plugins/deprecated/skills/writing-plans/references/plan-template.html",
   "plugins/deprecated/skills/tech-doc/style-presets/google/links.md",
   "plugins/deprecated/skills/tech-doc/style-presets/house/links.md",
   "plugins/deprecated/skills/tech-doc/style-presets/microsoft/links.md",

@@ -2,12 +2,10 @@ reports/
 .worktrees/
 docs/superpowers/
 notes/
-.workbench/
 .claude/*.lock
 plugins/databricks/references/research/
 plugins/presentations/evals/results/
 plugins/writing/evals/results/
-plugins/workbench/evals/results/
 plugins/insights/evals/results/
 plugins/news/evals/results/
 plugins/research/evals/results/

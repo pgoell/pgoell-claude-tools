@@ -25,3 +25,103 @@ Apache License 2.0: http://www.apache.org/licenses/LICENSE-2.0
 Adaptations are licensed under MIT (see LICENSE) where they qualify as
 original work; preserved upstream content remains under Apache 2.0.
 
+
+---
+
+The skills moved here from the retired workbench plugin in deprecated
+0.5.0 include content derived from the upstream Superpowers plugin by
+Jesse Vincent.
+
+Upstream: https://github.com/obra/superpowers
+Upstream version at fork time: 5.0.7
+Upstream license: MIT (text below)
+
+Files derived from upstream Superpowers (paths as they stand in this
+plugin; the workbench plugin had moved some of them between skills
+before the archive):
+
+  skills/brainstorming/SKILL.md
+  skills/visualizing-options/visual-companion.md
+  skills/visualizing-options/scripts/frame-template.html
+  skills/visualizing-options/scripts/helper.js
+  skills/visualizing-options/scripts/server.cjs
+  skills/visualizing-options/scripts/start-server.sh
+  skills/visualizing-options/scripts/stop-server.sh
+  skills/writing-spec/spec-document-reviewer-prompt.md
+  skills/using-workbench/references/using-superpowers-upstream.md
+  skills/verification-before-completion/SKILL.md
+  skills/writing-plans/SKILL.md
+  skills/test-driven-development/SKILL.md
+  skills/dispatching-parallel-agents/SKILL.md
+  skills/subagent-driven-development/SKILL.md
+  skills/systematic-debugging/SKILL.md
+  skills/systematic-debugging/four-phases.md
+  skills/systematic-debugging/root-cause-tracing.md
+  skills/systematic-debugging/defense-in-depth.md
+  skills/systematic-debugging/condition-based-waiting.md
+  skills/systematic-debugging/condition-based-waiting-example.ts
+  skills/systematic-debugging/find-polluter.sh
+
+The workbench plugin's hooks (hooks/hooks.json, hooks/run-hook.cmd,
+hooks/session-start), also derived from Superpowers, did not move: a
+frozen archive runs no SessionStart hook. Adaptations from upstream live
+in the git history of plugins/workbench/ and plugins/deprecated/.
+
+Upstream license text:
+
+  MIT License
+
+  Copyright (c) 2025 Jesse Vincent
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+---
+
+This plugin contains content derived from ThariqS/html-effectiveness
+(https://github.com/ThariqS/html-effectiveness, commit 5d64f68 at time
+of port), authored by Thariq Shihipar, moved here from the retired
+workbench plugin in deprecated 0.5.0:
+
+  - skills/crafting-html/SKILL.md (original work, not derived)
+  - skills/crafting-html/references/*.html (verbatim bodies except
+      U+2014 and U+2013 replaced with project-lint-compliant
+      punctuation; no semantic content changed)
+
+At commit 5d64f68 the upstream repository declared no license (GitHub
+API reported license: null, and the repo had no LICENSE file). Content
+is included under the upstream author's public publishing intent (the
+repository is the published gallery referenced from Thariq Shihipar's
+blog post on HTML effectiveness, with the explicit invitation
+"you can see a bunch here: https://thariqs.github.io/html-effectiveness").
+All rights to the original text remain with Thariq Shihipar.
+
+Upstream licensed the repository after the port. Commit cbc9cfc
+(2026-05-15) added an MIT LICENSE, "Copyright (c) 2026 Anthropic PBC".
+Commit 67ed672 (2026-05-18) switched it to Apache-2.0; it merged as
+0e8d447 (PR #5, "Switch to Apache-2.0"). The appendix of the Apache
+LICENSE names "Copyright 2026 Anthropic PBC". Upstream HTML files
+since then open with a comment that holds "Copyright 2026 Anthropic
+PBC" and "SPDX-License-Identifier: Apache-2.0".
+
+The files shipped here come from 5d64f68, before both changes, so the
+no-license shape above still fits them. The archive is frozen, so no
+refresh at a licensed upstream commit is planned.
+
+Adaptations to the crafting-html references (the punctuation
+substitution) are mechanical and add no original authorship.

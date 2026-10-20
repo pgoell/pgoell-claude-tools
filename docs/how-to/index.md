@@ -16,4 +16,3 @@ Recipes for jobs you already know you need. Each one assumes you have added the 
 - [Pick an output style](/how-to/pick-an-output-style.md): turn on a `prose-styles` style in Claude Code, and turn it off
 - [Set up ponytail](/how-to/set-up-ponytail.md): install the external plugin, what its hooks do, and how to set or stop its mode
 - [Set up the vercel plugin](/how-to/set-up-vercel.md): network access for the guideline skills and the Vercel CLI for deploys
-- [Move from autopilot or copilot to workbench pilot](/how-to/move-to-workbench-pilot.md): rename the profile and set the `Gates:` row

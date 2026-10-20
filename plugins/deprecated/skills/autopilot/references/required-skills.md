@@ -6,16 +6,16 @@ The universal table that the autopilot skill walks at the pre-PR audit. Profiles
 
 | Step   | Skill                                                 | Notes                                      |
 | ------ | ----------------------------------------------------- | ------------------------------------------ |
-| 0      | `workbench:using-workbench`                           | session-start meta, workbench-native fork  |
-| 2      | `workbench:brainstorming`                             | already ported into workbench              |
-| 3      | `workbench:writing-spec`                              | already ported into workbench              |
-| 4      | `workbench:writing-plans`                             | already ported into workbench              |
-| 5      | `workbench:test-driven-development`                   | ported into workbench                      |
+| 0      | `deprecated:using-workbench`                          | session-start meta, workbench-native fork  |
+| 2      | `deprecated:brainstorming`                            | already ported into workbench              |
+| 3      | `deprecated:writing-spec`                             | already ported into workbench              |
+| 4      | `deprecated:writing-plans`                            | already ported into workbench              |
+| 5      | `deprecated:test-driven-development`                  | ported into workbench                      |
 | 5      | `deprecated:dispatching-parallel-agents`              | governs safe fanout for independent tasks  |
-| 5      | `workbench:subagent-driven-development`               | governs plan execution with subagents      |
+| 5      | `deprecated:subagent-driven-development`              | governs plan execution with subagents      |
 | 6      | `agent-system-management:capturing-session-learnings` | cross-plugin                               |
 | 6      | `agent-system-management:improving-instructions`      | cross-plugin                               |
-| pre-PR | `workbench:verification-before-completion`            | verify before push and PR readiness claims |
+| pre-PR | `deprecated:verification-before-completion`           | verify before push and PR readiness claims |
 
 These are the rows shipped with Workbench. As more skills are ported into workbench, this table flips them to `workbench:*`.
 
@@ -41,10 +41,10 @@ A row whose `Action` column says `replaces <skill-id>` swaps which skill fulfill
 Example:
 
 ```md
-| 4 | my-project:writing-plans | replaces workbench:writing-plans |
+| 4 | my-project:writing-plans | replaces deprecated:writing-plans |
 ```
 
-This says "for step 4, audit `my-project:writing-plans` instead of `workbench:writing-plans`." The other six universal rows are unchanged.
+This says "for step 4, audit `my-project:writing-plans` instead of `deprecated:writing-plans`." The other six universal rows are unchanged.
 
 ### Additional
 

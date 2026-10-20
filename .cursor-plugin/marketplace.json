@@ -38,11 +38,6 @@
       "description": "Audit AGENTS.md / CLAUDE.md, capture session learnings, and create Claude Code, Codex and Cursor skills."
     },
     {
-      "name": "workbench",
-      "source": "./plugins/workbench",
-      "description": "Personal Workbench skills for design and autonomous feature work."
-    },
-    {
       "name": "terminal",
       "source": "./plugins/terminal",
       "description": "Control interactive terminal programs through tmux."

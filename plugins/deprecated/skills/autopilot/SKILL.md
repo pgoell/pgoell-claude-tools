@@ -1,11 +1,11 @@
 ---
 name: autopilot
-description: Deprecated, superseded by workbench:pilot. Formerly autopilot for autonomous feature shipping from brainstorm to PR using .workbench/autopilot.md.
+description: Deprecated and retired without replacement. Formerly autopilot for autonomous feature shipping from brainstorm to PR using .workbench/autopilot.md.
 ---
 
 # Autopilot: autonomous feature flow
 
-> **Deprecated.** Superseded by `workbench:pilot`, which replaces both autopilot and copilot with one orchestrator and composable human gates. This copy is archived and no longer maintained. The project profile is now `.workbench/pilot.md` (rename your `.workbench/autopilot.md`).
+> **Deprecated.** Retired without replacement. Its successor `deprecated:pilot` is archived too. This copy is archived and no longer maintained.
 
 You are running the workbench autopilot workflow. The user has opted into autonomous mode: make your own recommendations, do not pause for confirmation on routine choices, only stop if the topic is too large for a single spec (then decompose and ask which sub-topic to tackle first).
 
@@ -65,15 +65,15 @@ See `references/invariants.md` for the full list. Summary:
 
 Read `references/required-skills.md` for the full table and `replaces` / `additional` semantics. The pre-PR audit (after step 6, before step 7) walks the merged table.
 
-| Step   | Universal skill                                                                                                            |
-| ------ | -------------------------------------------------------------------------------------------------------------------------- |
-| 0      | `workbench:using-workbench`                                                                                                |
-| 2      | `workbench:brainstorming`                                                                                                  |
-| 3      | `workbench:writing-spec`                                                                                                   |
-| 4      | `workbench:writing-plans`                                                                                                  |
-| 5      | `workbench:test-driven-development`, `deprecated:dispatching-parallel-agents`, and `workbench:subagent-driven-development` |
-| 6      | `agent-system-management:capturing-session-learnings` and `agent-system-management:improving-instructions`                 |
-| pre-PR | `workbench:verification-before-completion`                                                                                 |
+| Step   | Universal skill                                                                                                              |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| 0      | `deprecated:using-workbench`                                                                                                 |
+| 2      | `deprecated:brainstorming`                                                                                                   |
+| 3      | `deprecated:writing-spec`                                                                                                    |
+| 4      | `deprecated:writing-plans`                                                                                                   |
+| 5      | `deprecated:test-driven-development`, `deprecated:dispatching-parallel-agents`, and `deprecated:subagent-driven-development` |
+| 6      | `agent-system-management:capturing-session-learnings` and `agent-system-management:improving-instructions`                   |
+| pre-PR | `deprecated:verification-before-completion`                                                                                  |
 
 If a listed skill is unavailable in the current runtime, say so explicitly in the end-of-turn summary and skip only that entry. Never silently drop a row.
 
@@ -87,7 +87,7 @@ This skill uses Claude Code tool names by default. If running on Codex, see `ref
 
 ### Step 0: Establish skill discipline
 
-**First action:** invoke `workbench:using-workbench` via the `Skill` tool. Nothing else happens until the skill returns.
+**First action:** invoke `deprecated:using-workbench` via the `Skill` tool. Nothing else happens until the skill returns.
 
 If the profile's `## Required skills` table replaces this row with a different skill, invoke that one instead.
 
@@ -101,7 +101,7 @@ If the profile's `## Required skills` table replaces this row with a different s
 
 ### Step 2: Brainstorm (sequential, self-answered)
 
-**First action:** wipe the scratch dir from any prior run, then invoke `workbench:brainstorming` via the `Skill` tool. Keep the skill's "one question at a time" rhythm, but self-answer each question instead of waiting for the user; autonomous mode removes the pause, not the sequencing.
+**First action:** wipe the scratch dir from any prior run, then invoke `deprecated:brainstorming` via the `Skill` tool. Keep the skill's "one question at a time" rhythm, but self-answer each question instead of waiting for the user; autonomous mode removes the pause, not the sequencing.
 
 ```bash
 rm -rf /tmp/<project-name>-brainstorm && mkdir -p /tmp/<project-name>-brainstorm
@@ -133,11 +133,11 @@ The first count must be greater than zero and match the number of questions answ
 
 ### Step 3: Write the spec
 
-**First action:** invoke `workbench:writing-spec` via the `Skill` tool. (If the profile replaces this row, invoke the replacement.)
+**First action:** invoke `deprecated:writing-spec` via the `Skill` tool. (If the profile replaces this row, invoke the replacement.)
 
 Then, following that skill's guidance:
 
-- Use the spec template that `workbench:brainstorming` surfaced in step 2.
+- Use the spec template that `deprecated:brainstorming` surfaced in step 2.
 - Path: `<paths.specs>/YYYY-MM-DD-<topic>-design.md`. `<paths.specs>` resolves through the bootstrap precedence chain.
 - If `<paths.specs>` is `don't commit`, write the spec under `/tmp/<project-name>-autopilot/` instead and do not commit it.
 - The skill runs the self-review subagent and the user approval gate; in autonomous mode self-answer the gate.
@@ -147,7 +147,7 @@ If `Hooks.post_spec` is defined in the profile, run it now with `{{spec_path}}` 
 
 ### Step 4: Write the implementation plan
 
-**First action:** invoke `workbench:writing-plans` via the `Skill` tool. (If the profile replaces this row, invoke the replacement.)
+**First action:** invoke `deprecated:writing-plans` via the `Skill` tool. (If the profile replaces this row, invoke the replacement.)
 
 Then:
 
@@ -160,7 +160,7 @@ If `Hooks.post_plan` is defined, run it now with `{{plan_path}}` substituted.
 
 ### Step 5: Execute the plan
 
-**First actions, in order:** invoke `workbench:test-driven-development`, then `deprecated:dispatching-parallel-agents`, then `workbench:subagent-driven-development`. All three via the `Skill` tool. (Replace any of them if the profile says so.) TDD governs every implementation chunk, dispatching-parallel-agents governs safe fanout, and subagent-driven-development governs how chunks run.
+**First actions, in order:** invoke `deprecated:test-driven-development`, then `deprecated:dispatching-parallel-agents`, then `deprecated:subagent-driven-development`. All three via the `Skill` tool. (Replace any of them if the profile says so.) TDD governs every implementation chunk, dispatching-parallel-agents governs safe fanout, and subagent-driven-development governs how chunks run.
 
 **Subagent dispatch (Claude Code):** see `references/claude-code-adapter.md` for the full pattern. Summary:
 
@@ -213,7 +213,7 @@ Then, **the orchestrator** updates the following inline (it does not delegate to
 
 ### Skill audit (between step 6 and step 7, blocking)
 
-**First action:** invoke `workbench:verification-before-completion` via the `Skill` tool. This governs the audit, push, and PR readiness claim.
+**First action:** invoke `deprecated:verification-before-completion` via the `Skill` tool. This governs the audit, push, and PR readiness claim.
 
 Re-read `references/required-skills.md` and the profile's `## Required skills` section. Walk every row in the merged table:
 

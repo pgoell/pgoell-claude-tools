@@ -58,7 +58,7 @@ Filenames within the directory follow `YYYY-MM-DD-<topic>-<artifact>.<ext>`, whe
 
 Per-prompt overrides take precedence over this file. Absence of the section means: use the template defaults (no overrides inlined). When the named directory is not found at either scope, the host agent reports the missing path and falls through to "no overrides".
 
-The full design-system contract (directory structure, per-template variable surface, component contract, image inlining recipe) is documented in `workbench:crafting-design-systems`.
+The full design-system contract (directory structure, per-template variable surface, component contract, image inlining recipe) is documented in `deprecated:crafting-design-systems`.
 
 ## Resolution order
 

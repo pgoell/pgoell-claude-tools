@@ -270,18 +270,6 @@ Override resolution order, highest precedence first:
 2. The `Format:` line of the approved `brief.md`.
 3. Per-skill hard-coded default (html).
 
-For format and path, `research:running-research` ignores `.workbench/config.md` (another plugin's file): only the override, the brief or the default decide them. Design system selection is the exception: the section below honors `.workbench/config.md` `## Design system`, so a project-wide pin themes research reports too.
-
 Path: `{OUTPUT_PATH}/report.<ext>`, where `OUTPUT_PATH` is the brief's folder (default `reports/<topic-slug>-<YYYY-MM-DD>/`) and `<ext>` resolves from format. html keeps `report.md` beside `report.html` as its source.
 
 When emitting HTML, follow `references/research-report-template.html` in this skill's directory, as Step 10 and `references/rendering-the-report.md` say. Read the template lazily. Do not introduce U+2014 or U+2013 codepoints in body copy; HTML entity forms are permitted.
-
-For other HTML artifact types not covered by a workbench or research skill, see `workbench:crafting-html`.
-
-### Applying a design system
-
-Before emitting HTML, check whether a design system is set: a per-prompt override (e.g., "render with the `brand-2026` design system"), else `.workbench/config.md` `## Design system` `Name:`. This is the one axis on which research honors `.workbench/config.md`; format and path ignore it, per the disclaimer above. If none is set, emit with the template's defaults.
-
-If one is set, read `references/applying-a-design-system.md` in the folder of the workbench plugin's `crafting-design-systems` skill, and follow it. That folder holds the skill's `SKILL.md`: on Claude Code, `<installPath>/skills/crafting-design-systems/`, with `installPath` taken from the `workbench@pgoell-claude-tools` entry in `~/.claude/plugins/installed_plugins.json`; on Codex and Cursor, the path their skill list shows for `crafting-design-systems`. If the workbench plugin is not installed, or its folder has no `references/applying-a-design-system.md` (workbench older than 1.2.2), tell the user the design system needs a current workbench plugin, and emit with the template's defaults.
-
-To create or edit a design system, see `workbench:crafting-design-systems`.

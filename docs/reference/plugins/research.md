@@ -38,7 +38,7 @@ You may skip a question. After you hear once why it matters, the field goes into
 - Format: the brief's `Format:` line, HTML unless you ask for markdown. Asking `running-research` for "a markdown research report" overrides the brief for one run.
 - Path: the brief's folder, `reports/<topic-slug>-<YYYY-MM-DD>/` by default, holding `brief.md` and later the report. You can name another folder while `research` asks its questions.
 - Files: the last step renames the reviewed draft to `report.md`. For HTML, the orchestrator then renders `report.html` from `report.md` with the bundled template, keeps every heading and link, and checks that no link or template sample text went missing; `report.html` is the report and `report.md` its markdown source. If the render fails its check, you get `report.md` alone and a note saying why. For markdown, `report.md` is the report.
-- Config: `running-research` ignores `.workbench/config.md` for format and path. It does honor that file's `## Design system` section, so a project-wide design system themes research reports too (see [workbench](/reference/plugins/workbench.md)). Applying a design system needs workbench 1.2.2 or later installed; without it, the skill says so and the report keeps the template's defaults.
+- Config: none. The prompt, then the brief, decide format and path; the report keeps the bundled template's styles.
 
 ## Evals
 

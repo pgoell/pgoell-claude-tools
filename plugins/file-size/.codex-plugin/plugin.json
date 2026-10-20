@@ -1,6 +1,6 @@
 {
   "name": "file-size",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Cap every authored file in a repo at 5000 tokens (bytes/4), checked on commit, on push and in CI, with advice to split along deep modules.",
   "author": {
     "name": "Pascal Göllner"

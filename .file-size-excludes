@@ -8,7 +8,6 @@
 # ported code, listed in docs/explanation/external-and-vendored-plugins.md
 plugins/diagrams/skills/creating-diagrams/engine/**
 plugins/agent-system-management/skills/creating-skills/eval-viewer/viewer.html
-plugins/workbench/skills/crafting-html/references/*.html
 
 # frozen archive
 plugins/deprecated/**

@@ -1,6 +1,6 @@
 # pgoell-claude-tools
 
-A plugin marketplace for Claude Code, Codex and Cursor. Its plugins ship skills, output styles and hooks. Each skill lives in one directory that all three runtimes share, so no skill is copied per runtime. The marketplace lists 26 plugins: 21 kept in this repository, 4 tracked from upstream repositories, and the `deprecated` archive of superseded skills, which the count includes.
+A plugin marketplace for Claude Code, Codex and Cursor. Its plugins ship skills, output styles and hooks. Each skill lives in one directory that all three runtimes share, so no skill is copied per runtime. The marketplace lists 25 plugins: 20 kept in this repository, 4 tracked from upstream repositories, and the `deprecated` archive of superseded skills, which the count includes.
 
 ## Install
 
@@ -11,7 +11,7 @@ A plugin marketplace for Claude Code, Codex and Cursor. Its plugins ship skills,
 /plugin install <plugin>@pgoell-claude-tools
 ```
 
-For example, `/plugin install workbench@pgoell-claude-tools`.
+For example, `/plugin install research@pgoell-claude-tools`.
 
 ### Codex
 
@@ -25,7 +25,7 @@ codex
 
 Import the repository as a team marketplace or copy a plugin folder; see [Install in Cursor](docs/how-to/install-in-cursor.md).
 
-Skills run as `/<plugin>:<skill>`, for example `/workbench:pilot`. Start with the [getting started tutorial](docs/tutorials/getting-started.md). Not every plugin reaches every runtime; [runtimes](docs/reference/runtimes.md) lists which go where and why.
+Skills run as `/<plugin>:<skill>`, for example `/research:research`. Start with the [getting started tutorial](docs/tutorials/getting-started.md). Not every plugin reaches every runtime; [runtimes](docs/reference/runtimes.md) lists which go where and why.
 
 ## Plugins
 
@@ -38,7 +38,6 @@ Work tools:
 
 Workflow:
 
-- [workbench](docs/reference/plugins/workbench.md): brainstorm, spec, plan, test-driven build and verify, run end to end by `pilot`.
 - [agent-system-management](docs/reference/plugins/agent-system-management.md): audit agent instructions, capture session learnings, create skills.
 - [runtime-bridge](docs/reference/plugins/runtime-bridge.md): align Claude Code and Codex project setup.
 - [research](docs/reference/plugins/research.md): research a topic and write a sourced report.

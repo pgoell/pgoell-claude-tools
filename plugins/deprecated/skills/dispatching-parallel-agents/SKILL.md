@@ -1,11 +1,11 @@
 ---
 name: dispatching-parallel-agents
-description: Deprecated, folded into workbench:subagent-driven-development. Formerly used when facing two or more independent tasks that could be worked on concurrently without shared state or sequential dependencies.
+description: Deprecated and retired without replacement. Formerly used when facing two or more independent tasks that could be worked on concurrently without shared state or sequential dependencies.
 ---
 
 # Dispatching Parallel Agents
 
-> **Deprecated.** Superseded by `workbench:subagent-driven-development`, whose `## Parallel dispatch` section now covers safe fanout to independent agents. This copy is archived and no longer maintained.
+> **Deprecated.** Retired without replacement. Its successor `deprecated:subagent-driven-development` is archived too. This copy is archived and no longer maintained.
 
 Delegate independent problem domains to separate agents so they can run concurrently while the main session coordinates scope, integration, and verification.
 

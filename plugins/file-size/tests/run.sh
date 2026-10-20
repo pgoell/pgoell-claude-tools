@@ -98,12 +98,11 @@ fi
 fresh
 excludes '**/generated-*.mjs' 'plugins/diagrams/skills/creating-diagrams/engine/**' \
   'plugins/agent-system-management/skills/creating-skills/eval-viewer/viewer.html' \
-  'plugins/workbench/skills/crafting-html/references/*.html' 'plugins/deprecated/**'
+  'plugins/deprecated/**'
 excluded=(
   plugins/deprecated/x.md logo.png sub/dir/pic.png plugins/x/NOTICE
   plugins/x/LICENSE.txt mise.lock a/generated-y.mjs
   plugins/diagrams/skills/creating-diagrams/engine/z.mjs
-  plugins/workbench/skills/crafting-html/references/01-a.html
   plugins/agent-system-management/skills/creating-skills/eval-viewer/viewer.html
 )
 for f in "${excluded[@]}"; do mkfile "$f" 20004; done
