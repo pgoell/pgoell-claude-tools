@@ -16,6 +16,20 @@ apply=0; [ "${2:-}" = --apply ] && apply=1
 S=$(cd "$1" 2>/dev/null && pwd -P) || { echo "no such folder: $1" >&2; exit 2; }
 [ -f "$S/loop.env" ] || { echo "no loop.env in $S: not a loop folder" >&2; exit 2; }
 [ -f "$STUB" ] || { echo "no stub.sh beside upgrade.sh" >&2; exit 2; }
+
+# The stubs run the plugin the way stub.sh resolves it: the newest installed
+# issue-loop, or the version loop.env pins. Refuses, writing nothing, when that
+# plugin cannot run a folder of stubs.
+v=$(. "$S/loop.env"; echo "${ISSUE_LOOP_VERSION:-latest}")
+reg="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/installed_plugins.json"
+root=$(jq -r '.plugins | to_entries[] | select(.key | startswith("issue-loop@")) | .value[].installPath' "$reg" 2>/dev/null | while read -r p; do printf '%s\t%s\n' "$(basename "$p")" "$p"; done | sort -V | tail -1 | cut -f2 || true)
+if [ -z "$root" ]; then echo "issue-loop: no installed issue-loop plugin in $reg; nothing written" >&2; exit 1; fi
+[ "$v" = latest ] || root="$(dirname "$root")/$v"
+if [ ! -d "$root" ]; then echo "issue-loop: no plugin folder $root (ISSUE_LOOP_VERSION=$v in $S/loop.env); nothing written" >&2; exit 1; fi
+if [ ! -f "$root/skills/running-the-loop/assets/rules.sh" ]; then
+  echo "the installed issue-loop ($root) is from before 0.9.0: update the plugin first (claude plugin update issue-loop), then run upgrade.sh again" >&2
+  exit 1
+fi
 # A rules.local.md that is the plugin's own template holds no answers: it counts as absent.
 if [ -f "$S/rules.md" ] && [ -f "$S/rules.local.md" ] && ! cmp -s "$S/rules.local.md" "$PL/rules.local.md"; then
   echo "$S has rules.md and a rules.local.md with answers: compare them by hand and keep one; upgrade.sh changes nothing" >&2

@@ -178,4 +178,18 @@ test_upgrade() {
   ok "brief check refuses: exit 1" "$st" 1
   has "brief check refuses: says so" "$out" "refused"
   ok "brief check refuses: nothing changed" "$(_up_snap "$bad")" "$pre"
+
+  # refusal: the registry names a 0.8.0 plugin with no rules.sh; the stubs could not run
+  local old=$T/up-old08 reg08=$T/claude08
+  mkdir -p "$old" "$reg08/plugins" "$T/cache08/0.8.0/skills/running-the-loop/assets"
+  cat "$pl/loop.env" >"$old/loop.env"
+  printf '%s\n' "$fixed" >"$old/rules.md"
+  printf '{"version":2,"plugins":{"issue-loop@pgoell-claude-tools":[{"scope":"user","installPath":"%s/cache08/0.8.0","version":"0.8.0"}]}}\n' "$T" >"$reg08/plugins/installed_plugins.json"
+  pre=$(_up_snap "$old")
+  out=$(CLAUDE_CONFIG_DIR=$reg08 "$sc/upgrade.sh" "$old" 2>&1); st=$?
+  ok "old plugin: dry run refused with exit 1" "$st" 1
+  has "old plugin: names the update" "$out" "is from before 0.9.0: update the plugin first (claude plugin update issue-loop), then run upgrade.sh again"
+  ok "old plugin: dry run changes no file" "$(_up_snap "$old")" "$pre"
+  out=$(CLAUDE_CONFIG_DIR=$reg08 "$sc/upgrade.sh" "$old" --apply 2>&1); ok "old plugin: apply refused with exit 1" "$?" 1
+  ok "old plugin: apply changes no file" "$(_up_snap "$old")" "$pre"
 }

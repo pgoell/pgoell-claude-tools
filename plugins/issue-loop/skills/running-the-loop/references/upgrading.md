@@ -4,6 +4,8 @@ From 0.9.0 a loop folder holds its data and eight stubs. A stub is one file, cop
 
 Any folder made before 0.9.0 needs one upgrade, whatever version made it, and a folder made by hand too. Run it between tasks: a `wait.sh` still running keeps its old file, since `upgrade.sh` replaces files by rename, and the next brief comes from the new `next.sh`.
 
+First update the plugin: `upgrade.sh` refuses while the installed issue-loop is older than 0.9.0. Then do the upgrade for every loop folder that still runs old scripts.
+
 1. A hand-made folder with no `loop.env` needs one first. Copy `assets/loop.env` into the folder and fill in the implementer's name and checkout.
 2. Run the upgrade as a dry run. The script is `scripts/upgrade.sh` in the plugin root, the folder that `next.sh` names in its exit-3 message. Outside a session, use `~/.claude/plugins/cache/pgoell-claude-tools/issue-loop/<version>/skills/running-the-loop/scripts/upgrade.sh`, with the version that `installed_plugins.json` names. In a session, use `${CLAUDE_SKILL_DIR}/scripts/upgrade.sh`:
 
@@ -29,9 +31,11 @@ Upgrade prints a warning when `next.sh` would refuse the result: a rule 3 kept w
 
 After the upgrade, edit `rules.local.md`, never `rules.md`. The orchestrator also rewrites the lines of `HANDOFF.md` that tell a successor to edit `rules.md` or to copy scripts. Upgrade never touches HANDOFF files.
 
+The folder's `CLAUDE.md` (the user's grant) may still say "task line plus rules.md". That is only words, and nothing fails because of it. Only the user may change it: they delete the order there and run `grant.sh` again. A session never edits it.
+
 Upgrade never touches `CLAUDE.md`, `CLAUDE.local.md`, the `HANDOFF` files, `ledger.tsv`, `orch-name`, the `task.*` files, or a custom driver. A custom driver stays where it is, and `DRIVER` in `loop.env` still names it.
 
-To go back, move the files in `before-upgrade/` back into the folder under their names, and delete the stubs and `rules.local.md`.
+To go back, delete the stubs and `rules.local.md`, then move the files in `before-upgrade/` back into the folder under their names.
 
 Rules kept whole: upgrade prints "rule N: kept whole" for each rule of yours that differs from the plugin's rule beyond its `FILL:` answers. That rule no longer takes plugin changes. To take the plugin's rule again, delete its `## N` section in `rules.local.md` and answer its `FILL:` marks again as `## N.K` sections.
 

@@ -80,6 +80,12 @@ has "a direct run says through the stub" "$out" "through the stub"
 
 printf '%s\n' "$good_reg" >"$regf"; printf '%s\n' "$good_env" >"$L/loop.env"
 
+# a task.plugin whose cached folder is pruned: the stub says so and runs the installed plugin
+printf '/nonexist/issue-loop/0.9.0\n' >"$L/task.plugin"
+good; out=$(gate); has "a gone task.plugin is named" "$out" "issue-loop: /nonexist/issue-loop/0.9.0 from task.plugin is gone; running the installed version"
+has "a gone task.plugin still runs the installed plugin" "$out" "GATE PASS"
+printf '%s\n' "$T/cache/0.9.0" >"$L/task.plugin"
+
 # the loop's lib.sh is a stub too: sourced, it loads the plugin's lib and sets S to the loop folder
 out=$(bash -c ". '$L/lib.sh' && type drv_read >/dev/null && echo ok" 2>&1); ok "sourced lib.sh loads the plugin's lib" "$out" ok
 out=$(bash -c ". '$L/lib.sh' && echo \"\$S\""); ok "sourced lib.sh sets S to the loop folder" "$out" "$(cd "$L" && pwd -P)"

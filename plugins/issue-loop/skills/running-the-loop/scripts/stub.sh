@@ -13,6 +13,11 @@ _il_stub() {
   _il_name=$(basename "$_il_self")
   _il_v=$(. "$_il_dir/loop.env"; echo "${ISSUE_LOOP_VERSION:-latest}")
   [ "$_il_name" != next.sh ] && [ -s "$_il_dir/task.plugin" ] && _il_root=$(head -1 "$_il_dir/task.plugin" || true)
+  # Claude Code may prune a cached version under a running task: then resolve as if there were no task.plugin
+  if [ -n "$_il_root" ] && [ ! -f "$_il_root/skills/running-the-loop/assets/$_il_name" ]; then
+    echo "issue-loop: $_il_root from task.plugin is gone; running the installed version" >&2
+    _il_root=
+  fi
   if [ -z "$_il_root" ]; then
     _il_reg="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/installed_plugins.json"
     # several entries (other scopes, other marketplaces): the newest version wins
