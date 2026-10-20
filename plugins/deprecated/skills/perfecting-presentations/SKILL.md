@@ -63,8 +63,8 @@ The loop driver is the main session; judging and verifying fan out to subagents.
 
 - `deprecated:crafting-presentations` renders the deck this skill perfects and documents the `<deck-stage>` engine and slide-type catalog.
 - `deprecated:presentations` designs the content; if review keeps finding narrative blockers, the deck likely needs a content pass there, not more polish rounds.
-- `workbench:crafting-design-systems` owns brand theming; constitution rules about brand assets should defer to the active design system.
-- `workbench:verification-before-completion` applies to the final claim: the dry-round evidence is the verification.
+- `deprecated:crafting-design-systems` owns brand theming; constitution rules about brand assets should defer to the active design system.
+- `deprecated:verification-before-completion` applies to the final claim: the dry-round evidence is the verification.
 
 ## Caveats
 

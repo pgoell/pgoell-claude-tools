@@ -59,10 +59,10 @@ Hooks:
 
 ## Required skills
 
-| Step | Skill                           | Action                           |
-| ---- | ------------------------------- | -------------------------------- |
-| 4    | my-project:writing-plans        | replaces workbench:writing-plans |
-| 6    | widgetshop:regenerate-changelog | additional                       |
+| Step | Skill                           | Action                            |
+| ---- | ------------------------------- | --------------------------------- |
+| 4    | my-project:writing-plans        | replaces deprecated:writing-plans |
+| 6    | widgetshop:regenerate-changelog | additional                        |
 
 ## Project-specific rules
 

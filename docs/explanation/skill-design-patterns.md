@@ -14,8 +14,6 @@ These rules shape how skills split into plugins and how they share files. [Skill
 
 Gmail and Calendar both sit under `google-workspace`; Jira and Confluence both sit under `atlassian`. A user installs a product family once and gets one skill per service in it.
 
-Workbench is the exception. Its skills (`pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`) are peer workflow and session-control steps, not separate services. They ship together but stay split so the agent, or pilot, can call each phase on its own.
-
 The `presentations` plugin follows the product-family rule. Its five skills (`designing-presentations`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`) are life-cycle phases of one product, a presentation, split so each phase triggers on its own.
 
 Terminal skills that depend on local Unix tools belong in the `terminal` plugin, so Windows users can skip them unless they use WSL.
@@ -32,7 +30,7 @@ The same day the user had the flag dropped again from all seven skills, with the
 
 ## Workflow skills are execution protocols
 
-When a user calls a workflow skill such as `workbench:pilot`, the agent follows its sequence as a procedure: branch setup, brainstorm, spec, plan, pressure test, implementation, and verification where they apply. The body is not loose advice to pick from. A skipped step is the failure these skills exist to prevent.
+When a user calls a workflow skill such as `research:research` or `issue-loop:running-the-loop`, the agent follows its steps as a procedure, in order. The body is not loose advice to pick from. A skipped step is the failure these skills exist to prevent.
 
 ## Agents for long-running, context-heavy operations (forward-looking, currently unused)
 
@@ -48,10 +46,10 @@ No plugin holds this shape now. `databricks` held it from PR #53 until 0.3.0. It
 
 A skill that is a thin variant of another in the same plugin may share the original's `references/` instead of copying them, by pointing every path at `../<sibling-skill>/references/<file>.md`.
 
-The first case was `workbench:copilot`, the human-in-the-loop variant of `workbench:autopilot` (steps 2 brainstorm and 3 spec stayed human-driven; steps 1 and 4 to 9 stayed autonomous). It shipped only `SKILL.md` and read autopilot's six shared docs (`profile-schema`, `example-project-profile`, `invariants`, `required-skills`, `claude-code-adapter`, `codex-adapter`) and the same `.workbench/autopilot.md` profile. Both retired into `workbench:pilot` at workbench 1.0.0 (see [The deprecated archive](/explanation/the-deprecated-archive.md)), so this case no longer exists live.
+The first case was `workbench:copilot`, the human-in-the-loop variant of `workbench:autopilot` (steps 2 brainstorm and 3 spec stayed human-driven; steps 1 and 4 to 9 stayed autonomous). It shipped only `SKILL.md` and read autopilot's six shared docs (`profile-schema`, `example-project-profile`, `invariants`, `required-skills`, `claude-code-adapter`, `codex-adapter`) and the same `.workbench/autopilot.md` profile. Both retired into `workbench:pilot` at workbench 1.0.0, and pilot itself into the archive in 2026-10 (see [The deprecated archive](/explanation/the-deprecated-archive.md)), so this case no longer exists live.
 
-One constraint makes it work: every shared path in the variant's `SKILL.md` carries the `../<sibling>/references/` prefix, because a bare `references/...` resolves against the variant's own folder. The variant may still ship its own `references/` for what it does not share; copilot shipped none, but both live cases below do. Prefer a self-contained orchestration `SKILL.md` that runs on one read over a thin redirect to the sibling's `SKILL.md`: a redirect hides the content behind a cross-reference and breaks when the sibling renumbers its steps. Share only when the docs are truly the same infrastructure used the same way; copy into the variant only what must differ.
+One constraint makes it work: every shared path in the variant's `SKILL.md` carries the `../<sibling>/references/` prefix, because a bare `references/...` resolves against the variant's own folder. The variant may still ship its own `references/` for what it does not share; copilot shipped none, but the live case below does. Prefer a self-contained orchestration `SKILL.md` that runs on one read over a thin redirect to the sibling's `SKILL.md`: a redirect hides the content behind a cross-reference and breaks when the sibling renumbers its steps. Share only when the docs are truly the same infrastructure used the same way; copy into the variant only what must differ.
 
-A narrower live case: `writing:coach` reads one file from its sibling, `../ghostwrite/references/pyramid-audits.md`, because both skills use the same audits (ghostwrite reports them on outlines, coach teaches from them) and a second copy would drift. The coach keeps its own `references/` for everything else.
+The live case: `writing:coach` reads one file from its sibling, `../ghostwrite/references/pyramid-audits.md`, because both skills use the same audits (ghostwrite reports them on outlines, coach teaches from them) and a second copy would drift. The coach keeps its own `references/` for everything else.
 
-The second live case is the design-system protocol. The five workbench HTML producers ship their own `references/` (their templates) and still read one shared file, `../crafting-design-systems/references/applying-a-design-system.md`, when a design system is set. Until workbench 1.2.2 each carried an identical inline copy, which could drift. `research:running-research` sits in another plugin, so it cannot use a sibling path; it finds the file through the installed workbench plugin and keeps its template's defaults when the file is missing.
+A second case, the design-system protocol that the workbench HTML producers read from `../crafting-design-systems/references/`, retired with workbench in 2026-10.

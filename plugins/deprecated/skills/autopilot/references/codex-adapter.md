@@ -9,12 +9,12 @@ This doc maps the autopilot skill's tool references to Codex equivalents. The au
 | `Skill`                         | `skill`                                                                                                          |
 | `Agent` (subagent)              | Codex's task or subagent equivalent if installed; otherwise sequential execution in the main session (see below) |
 | `Monitor`                       | `run_in_background` plus a polling loop, or Codex's monitoring primitive if present                              |
-| `Bash`, `Read`, `Write`, `Edit` | Equivalent Codex tools (see `references/codex-tools.md` of `workbench:using-workbench` for the broader table)    |
+| `Bash`, `Read`, `Write`, `Edit` | Equivalent Codex tools (see `references/codex-tools.md` of `deprecated:using-workbench` for the broader table)   |
 | `gh`                            | Same; invoked via the shell tool                                                                                 |
 
 ## Subagent strategy on Codex
 
-`workbench:subagent-driven-development` is best-effort on Codex. The autopilot expects a fresh subagent per plan task. If Codex's runtime exposes such a primitive, use it. If it does not, fall back to **sequential execution in the main session with explicit context-reset discipline**:
+`deprecated:subagent-driven-development` is best-effort on Codex. The autopilot expects a fresh subagent per plan task. If Codex's runtime exposes such a primitive, use it. If it does not, fall back to **sequential execution in the main session with explicit context-reset discipline**:
 
 1. Treat each plan task as its own logical scope.
 2. Before starting a task, write a one-line context-reset note: `--- starting task <n>: <title> ---`. This is for legibility, not behavior.
@@ -53,4 +53,4 @@ If Codex's subagent primitive errors, recover the same way as Claude Code: from 
 
 - `SKILL.md`: the autopilot orchestration.
 - `claude-code-adapter.md`: the Claude Code side.
-- `references/codex-tools.md` of `workbench:using-workbench`: broader Codex tool table.
+- `references/codex-tools.md` of `deprecated:using-workbench`: broader Codex tool table.

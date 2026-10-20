@@ -8,7 +8,7 @@ status: stable
 
 # Install in Cursor
 
-The repository is also a Cursor plugin marketplace: `.cursor-plugin/marketplace.json` at the root lists 17 plugins. Cursor offers `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `workbench`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, `news`, `insights` and `file-size`. Why the other plugins are missing is in [Runtimes](/reference/runtimes.md).
+The repository is also a Cursor plugin marketplace: `.cursor-plugin/marketplace.json` at the root lists 16 plugins. Cursor offers `atlassian`, `google-workspace`, `research`, `writing`, `runtime-bridge`, `agent-system-management`, `terminal`, `playground`, `databricks`, `learning`, `critique`, `presentations`, `diagrams`, `news`, `insights` and `file-size`. Why the other plugins are missing is in [Runtimes](/reference/runtimes.md).
 
 Pick one of three ways.
 
@@ -44,6 +44,6 @@ This needs a Cursor Teams or Enterprise plan.
 
 ## Check it worked
 
-The plugin's skills show up in Cursor's skill list. Ask for something one of them does, such as "brainstorm this feature with me" for `workbench`.
+The plugin's skills show up in Cursor's skill list. Ask for something one of them does, such as "research this topic for me" for `research`.
 
 Some plugins need more setup after install; see the [how-to index](/how-to/index.md). To pull new versions later, see [Update plugins](/how-to/update-plugins.md).

@@ -139,7 +139,6 @@ The fallback file has a theme toggle and SVG, PNG, and clipboard export, but no 
 
 - `presentations:creating-presentations` builds decks; export a diagram as SVG or PNG from the viewer's Export menu and place it on a slide, using a diagram theme derived from the same preset so the two match.
 - `presentations:extracting-presets` turns a PPTX template or brand guide into the preset this skill derives diagram themes from.
-- `workbench:crafting-html` covers standalone HTML artifacts that are not diagrams.
 
 ## Self-Healing
 

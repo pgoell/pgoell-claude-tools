@@ -23,7 +23,7 @@ The full set of sites:
 
 A plugin offered in Cursor also carries the version in `.cursor-plugin/plugin.json`, but `mise run sync-cursor-manifests` copies it from sites 1 to 3, so run that task after a bump and never edit the Cursor file. The Codex marketplace entry (`.agents/plugins/marketplace.json`) records no version.
 
-The bump is per pull request (per ship unit), not per commit. With `Squash: yes` in `.workbench/pilot.md`, several commits on one feature branch merge as one commit at one version, so a follow-up commit on a branch that already bumped does not bump again. Before bumping, run `git diff <base>..HEAD -- plugins/<plugin>/.claude-plugin/plugin.json plugins/<plugin>/.codex-plugin/plugin.json .claude-plugin/marketplace.json AGENTS.md` to see whether the branch already moved the version.
+The bump is per pull request (per ship unit), not per commit. With squash merges, several commits on one feature branch merge as one commit at one version, so a follow-up commit on a branch that already bumped does not bump again. Before bumping, run `git diff <base>..HEAD -- plugins/<plugin>/.claude-plugin/plugin.json plugins/<plugin>/.codex-plugin/plugin.json .claude-plugin/marketplace.json AGENTS.md` to see whether the branch already moved the version.
 
 A parallel branch can claim the same next number. Check open pull requests and local worktrees (`git worktree list`, then each worktree's uncommitted diff) for another branch that bumps the same plugin. In 2026-06 `feat/perfecting-presentations-skill` and `feat/deck-to-pptx-skill` both aimed at workbench 0.18.0. Whichever ships second bumps again before merge.
 
@@ -33,7 +33,7 @@ CI checks sites 1 to 3 and the generated Cursor manifest through the version-bum
 
 The README is a front page and the docs live in `docs/`, so a new plugin touches a fixed set of sites: the README plugin line and plugin count, the plugin's reference page plus its entries in the plugin index, `skills.md` and `runtimes.md`, a setup how-to only when the plugin needs setup (a missing page says there is no setup), the README install notes only when the install command differs, a dated log file under `docs/log/`, and the plugin's line in AGENTS.md "Current Plugins". Cursor needs `mise run sync-cursor-manifests` or an entry in that task's `EXCLUDE` list. This set comes on top of the version sites above, in the same commit.
 
-A new skill in an existing plugin usually needs only the plugin's reference page and `docs/reference/skills.md`, plus the log entry. Two more sites drift without a sound: the plugin's own `README.md` `## Skills` list, and, for workbench, the skill list inside the "One skill per service, one plugin per product family" rule in [Skill design patterns](/reference/conventions/skill-design-patterns.md). The copilot and exporting-decks-to-pptx additions both had to update that list. The workbench README had fallen eight skills behind before the 2026-06 exporting-decks-to-pptx pull request brought it current. Nothing tests either site.
+A new skill in an existing plugin usually needs only the plugin's reference page and `docs/reference/skills.md`, plus the log entry. One more site drifts without a sound: the plugin's own `README.md` `## Skills` list. The workbench README, before that plugin retired, had fallen eight skills behind until the 2026-06 exporting-decks-to-pptx pull request brought it current. Nothing tests that site.
 
 ## Why checks run by hand
 

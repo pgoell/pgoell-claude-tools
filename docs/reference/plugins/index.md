@@ -8,7 +8,6 @@ One page per plugin in the marketplace, in marketplace order. Each page names th
 - [writing](/reference/plugins/writing.md): a ghostwriter that drafts for you and a coach that teaches you to write
 - [runtime-bridge](/reference/plugins/runtime-bridge.md): align Claude Code and Codex project files
 - [agent-system-management](/reference/plugins/agent-system-management.md): audit instruction files, capture session learnings, build skills
-- [workbench](/reference/plugins/workbench.md): design dialogue, specs, plans, disciplined implementation and feature shipping
 - [terminal](/reference/plugins/terminal.md): drive interactive terminal programs through tmux
 - [playground](/reference/plugins/playground.md): single-file HTML playgrounds with controls and live preview
 - [databricks](/reference/plugins/databricks.md): Databricks CLI work and live docs lookups

@@ -6,7 +6,6 @@ Step 10 sends you here when the resolved format is html. You, the orchestrator, 
 
 - `{OUTPUT_PATH}/report.md`, in full.
 - `references/research-report-template.html` in this skill's folder, in full.
-- If a design system is set, the SKILL.md section "Applying a design system" says what to read and how it changes the template's styles. Apply it now; it never changes the content rules below.
 
 If you cannot read the template, stop here and go to section 5.
 
@@ -14,7 +13,7 @@ If you cannot read the template, stop here and go to section 5.
 
 Keep these parts of the template as they are:
 
-- The whole `<head>`: charset, viewport and the `<style>` block (changed only by a design system).
+- The whole `<head>`: charset, viewport and the `<style>` block.
 - The page frame: `div.page`, `nav.toc` with its `div.label`, `main`, `header.report-header` with `div.eyebrow` ("Research report") and `div.meta`.
 - The section pattern: `<section id="X" aria-labelledby="X-h">` with `<h2 id="X-h">`.
 - The class names the styles need: `#executive-summary`, `#methodology`, `ol.sources`, `li.source-entry`, `.source-body`, `.title`, `.ref`.

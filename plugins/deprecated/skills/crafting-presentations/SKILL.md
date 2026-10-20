@@ -11,7 +11,7 @@ Multi-slide HTML decks with deck-stage navigation, slide-type composition, and a
 
 ## When to use this skill
 
-Reach for `crafting-presentations` when the deck is more than two or three slides, when speaker notes will be presented live, or when the user wants a presenter-view sidecar window during a Teams, Zoom, or Meet share. For a quick one-off single-file slide deck without presenter mode, use `workbench:crafting-html` and its `references/09-slide-deck.html` template. For theming a deck to a brand, layer `workbench:crafting-design-systems` on top of this skill.
+Reach for `crafting-presentations` when the deck is more than two or three slides, when speaker notes will be presented live, or when the user wants a presenter-view sidecar window during a Teams, Zoom, or Meet share. For a quick one-off single-file slide deck without presenter mode, use `deprecated:crafting-html` and its `references/09-slide-deck.html` template. For theming a deck to a brand, layer `deprecated:crafting-design-systems` on top of this skill.
 
 If you have not yet designed the deck's _content_ (audience analysis, message structure, slide-by-slide storyboard, speaker notes), invoke `deprecated:presentations` first. It produces a `deck.md` you can pass to this skill as the source brief, then `crafting-presentations` handles the HTML rendering.
 
@@ -99,7 +99,7 @@ Before emitting HTML, check for an active design system and inline its overrides
 4. For any referenced component, paste `components/<name>.html` markup and scoped style into the deck slide where it belongs.
 5. For any referenced image, base64-encode (`base64 -w 0 <file>`) and inline as `data:image/<type>;base64,<payload>`. SVG is text and can be inlined directly. Use relative paths only when the deck and the design system co-exist in the same git tree and the deck will not travel.
 
-To create or edit a design system, see `workbench:crafting-design-systems`.
+To create or edit a design system, see `deprecated:crafting-design-systems`.
 
 ## CSS variable surface
 
@@ -107,10 +107,10 @@ The formerly bundled token sheet and deck stylesheet declared the `:root` variab
 
 ## Cross-references
 
-- `workbench:crafting-html` is the catch-all for non-presentation HTML artifacts and ships a simpler single-file `09-slide-deck.html` for quick one-off decks.
+- `deprecated:crafting-html` is the catch-all for non-presentation HTML artifacts and ships a simpler single-file `09-slide-deck.html` for quick one-off decks.
 - `deprecated:exporting-decks-to-pptx` converts a finished deck (single-file or multi-file) into a native, editable PowerPoint file.
-- `workbench:crafting-design-systems` is the theming layer. It supplies the CSS variable overrides this skill consumes.
-- `workbench:writing-spec`, `workbench:writing-plans`, `workbench:brainstorming`, `workbench:systematic-debugging`, and `research:research` are the other HTML producers in the wider plugin family, each with their own artifact shape.
+- `deprecated:crafting-design-systems` is the theming layer. It supplies the CSS variable overrides this skill consumes.
+- `deprecated:writing-spec`, `deprecated:writing-plans`, `deprecated:brainstorming`, `deprecated:systematic-debugging`, and `research:research` are the other HTML producers in the wider plugin family, each with their own artifact shape.
 
 ## Caveats
 

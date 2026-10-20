@@ -11,4 +11,3 @@ Why the marketplace is built the way it is. Read these when you want the reasons
 - [Ports and licenses](/explanation/ports-and-licenses.md): which files each upstream license shape needs, and the dash substitution rules for ports
 - [HTML producers, presets and themes](/explanation/html-producers-presets-and-themes.md): single-file producers, multi-file decks, exporters, presentations presets and diagram themes
 - [Skill design patterns](/explanation/skill-design-patterns.md): how skills group into plugins, workflow protocols, stubs, shared references and the unused agents slot
-- [Workbench routing and configuration](/explanation/workbench-routing.md): lighter-lane triage, optional required-skill rows, and how workbench resolves format, path and design system

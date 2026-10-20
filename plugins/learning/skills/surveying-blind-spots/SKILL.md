@@ -14,7 +14,7 @@ The user cannot ask about what they cannot name. Explore the target on their beh
 ## When NOT to invoke
 
 - The user wants to be taught and quizzed to mastery. Use `learning:quizzing-a-topic`.
-- The user is ready to converge a design through Q and A. Use `workbench:brainstorming`; this skill feeds it.
+- The user is ready to converge a design through Q and A. Skip this pass and work through the design with the user, one question at a time; this skill feeds that work.
 - The user wants a cited multi-source report. Use `research:research`.
 
 ## Scope the pass
@@ -48,4 +48,4 @@ Deliver in chat, ordered by how likely each item is to burn the user:
 4. Better prompts: two or three rewritten versions of the user's stated goal that bake in what the pass found, ready to paste into a fresh session.
 5. Open questions: what the pass could not resolve, and where the answer likely lives.
 
-Keep the briefing scannable. Close by offering, not forcing, the follow-ups: `learning:quizzing-a-topic` to verify understanding, or `workbench:brainstorming` to start converging a design.
+Keep the briefing scannable. Close by offering, not forcing, the follow-ups: `learning:quizzing-a-topic` to verify understanding, or working through the design with the user, one question at a time.

@@ -1,7 +1,7 @@
 {
   "name": "deprecated",
-  "version": "0.4.4",
-  "description": "Archive of superseded skills kept installable for old workflows; every skill points at its replacement",
+  "version": "0.5.0",
+  "description": "Archive of superseded and retired skills kept installable for old workflows; each skill names its replacement or says it retired",
   "author": {
     "name": "Pascal Göllner"
   },
@@ -14,7 +14,7 @@
   "interface": {
     "displayName": "Deprecated",
     "shortDescription": "Archive of superseded skills; prefer the replacements",
-    "longDescription": "Superseded skills moved out of their original plugins, kept installable so old workflows keep resolving. Each skill carries a deprecation banner naming its replacement in the presentations plugin, the workbench plugin (pilot, subagent-driven-development), or the writing plugin (ghostwrite, coach); terse-mode retires without replacement. Do not install alongside presentations, workbench, or writing unless you need the old skill names.",
+    "longDescription": "Superseded and retired skills moved out of their original plugins, kept installable so old workflows keep resolving. Each skill carries a deprecation banner naming its replacement in the presentations plugin, the writing plugin (ghostwrite, coach) or taste-skill, or saying it retired without replacement, as the whole former workbench plugin did. Do not install alongside presentations or writing unless you need the old skill names.",
     "developerName": "Pascal Göllner",
     "category": "Productivity",
     "capabilities": [

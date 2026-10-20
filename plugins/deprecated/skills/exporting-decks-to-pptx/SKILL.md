@@ -95,4 +95,4 @@ Reproduce the deck verbatim, with two exceptions: fix obvious typos and report e
 ## Cross-references
 
 - `deprecated:crafting-presentations` builds the deck-stage HTML decks this skill consumes.
-- `workbench:crafting-html` covers one-off single-file HTML artifacts, including its simpler `09-slide-deck.html` deck.
+- `deprecated:crafting-html` covers one-off single-file HTML artifacts, including its simpler `09-slide-deck.html` deck.

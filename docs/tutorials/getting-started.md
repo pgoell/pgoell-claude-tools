@@ -18,7 +18,7 @@ Start Claude Code in any folder and type:
 /plugin marketplace add pgoell/pgoell-claude-tools
 ```
 
-Claude Code now knows the 26 plugins in this repository, but none is installed yet.
+Claude Code now knows the 25 plugins in this repository, but none is installed yet.
 
 ## Install one plugin
 

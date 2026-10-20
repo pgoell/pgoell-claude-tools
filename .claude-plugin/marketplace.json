@@ -20,7 +20,7 @@
       "name": "research",
       "source": "./plugins/research",
       "description": "Research complex topics and produce sourced reports.",
-      "version": "2.3.3"
+      "version": "2.3.4"
     },
     {
       "name": "writing",
@@ -39,12 +39,6 @@
       "source": "./plugins/agent-system-management",
       "description": "Audit AGENTS.md / CLAUDE.md, capture session learnings, and create Claude Code, Codex and Cursor skills.",
       "version": "0.7.12"
-    },
-    {
-      "name": "workbench",
-      "source": "./plugins/workbench",
-      "description": "Personal Workbench skills for design and autonomous feature work.",
-      "version": "1.4.14"
     },
     {
       "name": "terminal",
@@ -68,7 +62,7 @@
       "name": "learning",
       "source": "./plugins/learning",
       "description": "Socratic teach-and-quiz skills plus a pre-work blind-spot survey, so you deeply understand a session, a topic, or an unfamiliar area.",
-      "version": "0.3.3"
+      "version": "0.3.4"
     },
     {
       "name": "critique",
@@ -86,7 +80,7 @@
       "name": "diagrams",
       "source": "./plugins/diagrams",
       "description": "Draw validated, themeable architecture and flow diagrams as interactive HTML.",
-      "version": "0.1.2"
+      "version": "0.1.3"
     },
     {
       "name": "news",
@@ -128,7 +122,7 @@
       "name": "file-size",
       "source": "./plugins/file-size",
       "description": "Cap every authored file in a repo at 5000 tokens (bytes/4), checked on commit, on push and in CI, with advice to split along deep modules.",
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "name": "ponytail",
@@ -167,8 +161,8 @@
     {
       "name": "deprecated",
       "source": "./plugins/deprecated",
-      "description": "Archive of superseded skills kept installable for old workflows; every skill points at its replacement.",
-      "version": "0.4.4"
+      "description": "Archive of superseded and retired skills kept installable for old workflows; each skill names its replacement or says it retired.",
+      "version": "0.5.0"
     }
   ]
 }

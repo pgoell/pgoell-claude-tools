@@ -17,7 +17,7 @@ Every change to a plugin in this repository bumps its version, so an update pick
 
    ```bash
    claude plugin marketplace update pgoell-claude-tools
-   claude plugin update workbench@pgoell-claude-tools
+   claude plugin update research@pgoell-claude-tools
    ```
 
    The refresh alone leaves installed plugins at their versions. Inside a session, `/plugin marketplace update pgoell-claude-tools` refreshes the listing, and the Installed tab of `/plugin` has **Update now** per plugin.

@@ -14,33 +14,36 @@ When a restructure replaces a skill, the old skill does not vanish. It moves int
 
 Each archived skill starts its description with "Deprecated, superseded by" and the replacement, and carries a one-line banner under its heading:
 
-> **Deprecated.** Superseded by `workbench:pilot` [...]. This copy is archived and no longer maintained.
+> **Deprecated.** Superseded by `writing:ghostwrite` [...]. This copy is archived and no longer maintained.
+
+A skill retired with nothing to replace it starts its description with "Deprecated and retired without replacement" and its banner says "Retired without replacement" instead.
 
 The skill is frozen. Nobody extends it or fixes it. Its references to its old siblings point inside `deprecated`, so the archive stays whole on its own.
 
-## The four batches
+## The batches
 
-| Batch   | Skill                         | Formerly in       | Replaced by                                                                            |
-| ------- | ----------------------------- | ----------------- | -------------------------------------------------------------------------------------- |
-| 2026-07 | `crafting-presentations`      | `workbench`       | `presentations:creating-presentations`                                                 |
-| 2026-07 | `perfecting-presentations`    | `workbench`       | `presentations:creating-presentations` (its perfecting phase)                          |
-| 2026-07 | `exporting-decks-to-pptx`     | `workbench`       | `presentations:exporting-presentations-to-pptx`                                        |
-| 2026-07 | `presentations`               | `writing`         | `presentations:designing-presentations`                                                |
-| 2026-08 | `autopilot`, `copilot`        | `workbench`       | `workbench:pilot`                                                                      |
-| 2026-08 | `dispatching-parallel-agents` | `workbench`       | `workbench:subagent-driven-development`                                                |
-| 2026-08 | `terse-mode`                  | `workbench`       | nothing, retired                                                                       |
-| 2026-09 | `writing`                     | `writing`         | `writing:ghostwrite` and `writing:coach`                                               |
-| 2026-09 | `pyramid`                     | `writing`         | `writing:ghostwrite` and `writing:coach`                                               |
-| 2026-09 | `tech-doc`                    | `writing`         | `writing:ghostwrite`                                                                   |
-| 2026-10 | `frontend-design`             | `frontend-design` | `taste-skill:taste-skill` in Claude Code, `taste-skill:design-taste-frontend` in Codex |
+| Batch   | Skill                                                                              | Formerly in       | Replaced by                                                                            |
+| ------- | ---------------------------------------------------------------------------------- | ----------------- | -------------------------------------------------------------------------------------- |
+| 2026-07 | `crafting-presentations`                                                           | `workbench`       | `presentations:creating-presentations`                                                 |
+| 2026-07 | `perfecting-presentations`                                                         | `workbench`       | `presentations:creating-presentations` (its perfecting phase)                          |
+| 2026-07 | `exporting-decks-to-pptx`                                                          | `workbench`       | `presentations:exporting-presentations-to-pptx`                                        |
+| 2026-07 | `presentations`                                                                    | `writing`         | `presentations:designing-presentations`                                                |
+| 2026-08 | `autopilot`, `copilot`                                                             | `workbench`       | `workbench:pilot`, archived too in 2026-10                                             |
+| 2026-08 | `dispatching-parallel-agents`                                                      | `workbench`       | `workbench:subagent-driven-development`, archived too in 2026-10                       |
+| 2026-08 | `terse-mode`                                                                       | `workbench`       | nothing, retired                                                                       |
+| 2026-09 | `writing`                                                                          | `writing`         | `writing:ghostwrite` and `writing:coach`                                               |
+| 2026-09 | `pyramid`                                                                          | `writing`         | `writing:ghostwrite` and `writing:coach`                                               |
+| 2026-09 | `tech-doc`                                                                         | `writing`         | `writing:ghostwrite`                                                                   |
+| 2026-10 | `frontend-design`                                                                  | `frontend-design` | `taste-skill:taste-skill` in Claude Code, `taste-skill:design-taste-frontend` in Codex |
+| 2026-10 | the 12 `workbench` skills (`pilot`, `brainstorming`, `crafting-html` and the rest) | `workbench`       | nothing, retired                                                                       |
 
-The 2026-10 batch retired a whole plugin. The archived `frontend-design` skill is an Anthropic Apache 2.0 port, so its `LICENSE` moved into `deprecated` with it, and a new `deprecated` `NOTICE` carries over its block of the old plugin's `NOTICE`.
+The 2026-10 batches retired two whole plugins. The archived `frontend-design` skill is an Anthropic Apache 2.0 port, so its `LICENSE` moved into `deprecated` with it, and a new `deprecated` `NOTICE` carries over its block of the old plugin's `NOTICE`. The `workbench` skills brought their Superpowers and html-effectiveness blocks the same way.
 
 ## When to install it
 
-Install `deprecated` only when something you rely on still calls an old skill name. Otherwise use the replacement. Installing it beside `presentations`, `workbench` or `writing` puts two skills for the same job in front of the agent, and it may pick the frozen one.
+Install `deprecated` only when something you rely on still calls an old skill name. Otherwise use the replacement. Installing it beside `presentations` or `writing` puts two skills for the same job in front of the agent, and it may pick the frozen one.
 
-Claude Code and Codex list the plugin; Cursor does not. For moving from `autopilot` or `copilot`, see [Move to workbench pilot](/how-to/move-to-workbench-pilot.md). The plugin's page is [deprecated](/reference/plugins/deprecated.md).
+Claude Code and Codex list the plugin; Cursor does not. The plugin's page is [deprecated](/reference/plugins/deprecated.md).
 
 ## The `deprecated` plugin is a registered, frozen archive
 
@@ -54,3 +57,4 @@ How each batch went:
 - **2026-08:** `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode` (from workbench 0.22.0, superseded by workbench 1.0.0). `autopilot` and `copilot` gave way to `workbench:pilot`, whose `Gates:` profile row picks the old autopilot or copilot behavior. `dispatching-parallel-agents` gave way to the `## Parallel dispatch` section of `workbench:subagent-driven-development`. `terse-mode` retired without replacement.
 - **2026-09:** `writing`, `pyramid`, `tech-doc` (from writing 2.0.0, superseded by writing 3.0.0). `writing` gave way to `writing:ghostwrite` (drafting) and `writing:coach` (learning to write), `pyramid` to the pyramid audits in `ghostwrite` and the Socratic structure drill in `coach`, and `tech-doc` to `ghostwrite`'s tech-doc route. Their kept parts (interview rules, throughline gate, pyramid audits, Diátaxis quadrants, reference schemas, three argument critics) were rewritten into the new skills' `references/`, not moved.
 - **2026-10:** `frontend-design` (the Anthropic Apache-2.0 port), superseded by the external `taste-skill:taste-skill` (in Codex, `taste-skill:design-taste-frontend`). The whole `frontend-design` plugin retired and left both marketplaces, so its `LICENSE` moved into `plugins/deprecated/` with the skill, and a new `plugins/deprecated/NOTICE` carries over the skill's block of the old `NOTICE` (the `emil-design-eng` block left with that port). That made `deprecated` the first archive to carry port attribution.
+- **2026-10, second batch:** all 12 `workbench` skills (`pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`, from workbench 1.4.14), retired without replacement. The owner no longer used them and found them a poor fit for current models. The whole `workbench` plugin left both marketplaces and Cursor. Its `SessionStart` hook and its trigger evals did not move, since a frozen archive must not inject context into every session; git history keeps both. That also left `autopilot`, `copilot` and `dispatching-parallel-agents` with no live successor, so their banners now say retired. The design-system layer went with `crafting-design-systems`: `research:running-research` no longer reads `.workbench/config.md` and keeps its template's styles.

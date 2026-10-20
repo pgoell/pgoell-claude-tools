@@ -137,7 +137,7 @@ The README is a front page; the docs live in `docs/`. A new plugin updates, in o
 
 Then run `mise run sync-cursor-manifests`, or add the plugin to that task's `EXCLUDE` list with a reason. These sites come on top of the version-bump sites (AGENTS.md "Every plugin change bumps version"), in the same commit.
 
-A new skill in an existing plugin updates `docs/reference/plugins/<plugin>.md`, `docs/reference/skills.md` (`docs/reference/upstream-skills.md` for an external git-URL entry), and adds a log file under `docs/log/`, plus two sites nothing tests: the plugin's own `README.md` `## Skills` list (if it has one) and, for workbench, the skill list in the "One skill per service" Design Decision in [Skill design patterns](/reference/conventions/skill-design-patterns.md). Check those by hand.
+A new skill in an existing plugin updates `docs/reference/plugins/<plugin>.md`, `docs/reference/skills.md` (`docs/reference/upstream-skills.md` for an external git-URL entry), and adds a log file under `docs/log/`, plus one site nothing tests: the plugin's own `README.md` `## Skills` list (if it has one). Check it by hand.
 
 ## Skills may ship code
 

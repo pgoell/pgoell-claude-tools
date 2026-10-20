@@ -7,5 +7,4 @@ Contributor rules that apply to one kind of task, moved out of [AGENTS.md](../..
 - [External and deprecated plugins](/reference/conventions/external-and-deprecated-plugins.md): git-URL marketplace entries, and the deprecated archive
 - [Skill design patterns](/reference/conventions/skill-design-patterns.md): how skills group into plugins, workflow protocols, stubs and shared references
 - [HTML producers, presets and themes](/reference/conventions/html-producers-presets-and-themes.md): HTML-writing skill shapes, presentations presets and diagram themes
-- [Workbench routing and configuration](/reference/conventions/workbench-routing.md): lane triage, `.workbench/config.md` resolution and optional required-skill rows
 - [Plugins without skills](/reference/conventions/plugins-without-skills.md): output styles and skill-less plugins

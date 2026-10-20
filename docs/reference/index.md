@@ -6,4 +6,4 @@ What each plugin ships, stated plainly. These pages describe what is there and d
 - [Upstream skills at a glance](/reference/upstream-skills.md): the same for the upstream plugins the marketplace points at by git URL
 - [Runtimes](/reference/runtimes.md): which plugin ships to Claude Code, Codex and Cursor, and why the absent ones are absent
 - [Plugins](/reference/plugins/index.md): one page per plugin, with its skills, runtimes, source and setup
-- [Conventions](/reference/conventions/index.md): contributor rules for one kind of task (adding a skill, porting, HTML producers, workbench routing and more)
+- [Conventions](/reference/conventions/index.md): contributor rules for one kind of task (adding a skill, porting, HTML producers and more)
