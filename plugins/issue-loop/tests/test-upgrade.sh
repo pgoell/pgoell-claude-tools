@@ -37,8 +37,8 @@ _up_pick() { printf '%s\n' "$1" | grep -F "  ./$2"; }
 test_upgrade() {
   local up=$T/up sc=$skill/scripts pl=$skill/assets
   local stubs="next.sh wait.sh gate.sh start.sh notify.sh grant.sh takeover-check.sh lib.sh"
-  local data="CLAUDE.md CLAUDE.local.md HANDOFF.md HANDOFF-2026-10-18-orch2.md hello.txt ledger.tsv orch-name task.md task.start standing-order.md models.env"
-  local n f pre post out st fixed loc nl bad
+  local data="CLAUDE.md CLAUDE.local.md HANDOFF.md HANDOFF-2026-10-18-orch2.md hello.txt ledger.tsv orch-name task.md task.start standing-order.md models.env driver-tmux.sh"
+  local n f pre post out st fixed loc nl bad ino got
   . "$pl/rules.sh"
 
   # the fixture: a folder as the 0.8 scripts left it
@@ -60,6 +60,8 @@ test_upgrade() {
   printf '%s\n' "task line" >"$up/task.md"
   printf '%s\n' "1700000000" >"$up/task.start"
   printf '%s\n' "the standing order" >"$up/standing-order.md"
+  printf '%s\n' "custom driver" >"$up/driver-tmux.sh"
+  ino=$(stat -c %i "$up/next.sh")
 
   # the dry run says what it would do and changes no file
   pre=$(_up_snap "$up")
@@ -76,11 +78,16 @@ test_upgrade() {
   # --apply
   out=$("$sc/upgrade.sh" "$up" --apply 2>&1); st=$?
   ok "apply exits 0" "$st" 0
+  hasnt "answered fixture: no warning" "$out" "warning:"
   for n in $stubs; do
     cmp -s "$up/$n" "$sc/stub.sh"; ok "$n is the stub" "$?" 0
     [ -x "$up/$n" ]; ok "$n is executable" "$?" 0
     ok "old $n in before-upgrade/" "$(cat "$up/before-upgrade/$n")" "old ${n%.sh}"
   done
+  got="$(stat -c %i "$up/before-upgrade/next.sh"):$([ "$(stat -c %i "$up/next.sh")" = "$ino" ] && echo same || echo new)"
+  ok "old next.sh moved by rename, not rewritten" "$got" "$ino:new"
+  ok "custom driver untouched" "$(cat "$up/driver-tmux.sh")" "custom driver"
+  [ -e "$up/driver-tmux.sh" ]; ok "custom driver still in the folder" "$?" 0
   ok "driver-herdr.sh moved" "$(cat "$up/before-upgrade/driver-herdr.sh")" "old driver-herdr"
   [ ! -e "$up/driver-herdr.sh" ]; ok "driver-herdr.sh gone from the folder" "$?" 0
   ok "rules.md is in before-upgrade/" "$(cat "$up/before-upgrade/rules.md")" "$fixed"
@@ -108,14 +115,46 @@ test_upgrade() {
   has "second run says nothing to change" "$out" "nothing to change"
   ok "second run changes no file" "$(_up_snap "$up")" "$pre"
 
-  # refusal: both rules files
+  # a rerun after a partial upgrade keeps the copies already in before-upgrade/
+  printf '%s\n' "first" >"$up/before-upgrade/next.sh"
+  printf '%s\n' "old next" >"$up/next.sh"
+  out=$("$sc/upgrade.sh" "$up" --apply 2>&1)
+  ok "rerun keeps the copy already in before-upgrade/" "$(cat "$up/before-upgrade/next.sh")" "first"
+  ok "rerun puts the second old copy at next.sh.2" "$(cat "$up/before-upgrade/next.sh.2")" "old next"
+
+  # a rules.local.md that is the plugin's template holds no answers: it is replaced
+  local tpl=$T/up-tpl
+  mkdir -p "$tpl"
+  cat "$pl/loop.env" >"$tpl/loop.env"
+  printf '%s\n' "$fixed" >"$tpl/rules.md"
+  cat "$pl/rules.local.md" >"$tpl/rules.local.md"
+  out=$("$sc/upgrade.sh" "$tpl" --apply 2>&1); st=$?
+  ok "template-only rules.local.md: exit 0" "$st" 0
+  ok "template-only rules.local.md is replaced by the answers" "$(assemble_rules "$pl/rules.md" "$tpl/rules.local.md")" "$fixed"
+  ok "old rules.md kept in before-upgrade/" "$(cat "$tpl/before-upgrade/rules.md")" "$fixed"
+
+  # a rule 3 that names a literal model word: the upgrade runs, the warning says next.sh will refuse
+  local warn=$T/up-warn r3old r3new
+  mkdir -p "$warn"
+  cat "$pl/loop.env" >"$warn/loop.env"
+  r3old="3. Who codes. Subagents of this loop code on {{CODER_MODEL}}, and review subagents run on {{REVIEW_MODEL}}. You plan, brief, review and integrate."
+  r3new="3. Who codes. Subagents of this loop code on the small model, and review on the small model. You plan, brief, review and integrate."
+  printf '%s\n' "${fixed/"$r3old"/"$r3new"}" >"$warn/rules.md"
+  out=$("$sc/upgrade.sh" "$warn" --apply 2>&1); st=$?
+  ok "warning does not change the exit code" "$st" 0
+  has "warning says next.sh will refuse" "$out" "warning: next.sh will refuse this folder until you fix rules.local.md:"
+  has "warning names rule 3" "$out" "rule 3 kept whole has no {{CODER_MODEL}}/{{REVIEW_MODEL}}"
+  has "models.env copy names the old rule 3" "$out" "check its values against the models your old rule 3 named"
+
+  # refusal: rules.md and a rules.local.md with answers
   local both=$T/up-both
   mkdir -p "$both"
   cat "$pl/loop.env" >"$both/loop.env"
   printf '%s\n' "old" >"$both/rules.md"
   printf '%s\n' "new" >"$both/rules.local.md"
   pre=$(_up_snap "$both")
-  "$sc/upgrade.sh" "$both" --apply >/dev/null 2>&1; ok "both rules files: exit 1" "$?" 1
+  out=$("$sc/upgrade.sh" "$both" --apply 2>&1); ok "both rules files: exit 1" "$?" 1
+  has "both rules files: says changes nothing" "$out" "compare them by hand and keep one; upgrade.sh changes nothing"
   ok "both rules files: nothing changed" "$(_up_snap "$both")" "$pre"
 
   # refusal: no loop.env

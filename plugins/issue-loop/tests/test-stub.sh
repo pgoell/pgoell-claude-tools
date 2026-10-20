@@ -2,7 +2,7 @@
 # the task's plugin, the NEWER PLUGIN line, and a plugin script run directly.
 # gate() and good() come from test-gate.sh and need test_gate to have run first.
 regf="$T/claude/plugins/installed_plugins.json"
-fake_version() { mkdir -p "$T/cache/$1/skills/running-the-loop/assets"; printf 'echo "%s"\n' "$2" >"$T/cache/$1/skills/running-the-loop/assets/gate.sh"; }
+fake_version() { mkdir -p "$T/cache/$1/skills/running-the-loop/assets"; printf 'echo "%s"\n' "$2" >"$T/cache/$1/skills/running-the-loop/assets/gate.sh"; : >"$T/cache/$1/skills/running-the-loop/assets/rules.sh"; }
 point_at() { printf '{"version":2,"plugins":{"issue-loop@pgoell-claude-tools":[{"scope":"user","installPath":"%s","version":"%s"}]}}\n' "$1" "$(basename "$1")" >"$regf"; }
 test_stub() {
 local good_reg good_env
@@ -22,6 +22,24 @@ printf '{"version":2,"plugins":{}}\n' >"$regf"
 out=$("$L/gate.sh" 2>&1); ok "no installed issue-loop exits 3" $? 3
 has "no installed issue-loop is named" "$out" "no installed issue-loop plugin in $regf"
 printf '%s\n' "$good_reg" >"$regf"
+
+# a folder from before 0.9.0 (gate.sh, no rules.sh) is refused, and nothing runs
+mkdir -p "$T/cache/0.8.8/skills/running-the-loop/assets"; printf 'echo "fake 0.8.8"\n' >"$T/cache/0.8.8/skills/running-the-loop/assets/gate.sh"
+printf '%s\nISSUE_LOOP_VERSION=0.8.8\n' "$good_env" >"$L/loop.env"
+out=$("$L/gate.sh" 2>&1); ok "a pin to a folder from before 0.9.0 exits 3" $? 3
+has "that refusal names the folder and the fix" "$out" "$T/cache/0.8.8 is from before 0.9.0 and cannot run a loop folder of stubs: pin 0.9.0 or later"
+hasnt "a folder from before 0.9.0 runs nothing" "$out" "fake 0.8.8"
+printf '%s\n' "$good_env" >"$L/loop.env"
+
+# two entries: the newer version wins, whichever is listed first
+printf '{"version":2,"plugins":{"issue-loop@proj":[{"scope":"project","installPath":"%s/cache/0.5.0","version":"0.5.0"}],"issue-loop@pgoell-claude-tools":[{"scope":"user","installPath":"%s/cache/0.9.0","version":"0.9.0"}]}}\n' "$T" "$T" >"$regf"
+out=$(bash -c ". '$L/lib.sh' && echo \"\$ISSUE_LOOP_ROOT\"" 2>&1); ok "with two entries the stub runs the newer one" "$out" "$T/cache/0.9.0"
+printf '%s\n' "$good_reg" >"$regf"
+
+# sourced under set -eu: loads, and with no registry says so and stops
+out=$(bash -c "set -eu; cd '$L'; . ./lib.sh; echo ok" 2>&1); ok "lib.sh sourced under set -eu loads" "$out" ok
+out=$(CLAUDE_CONFIG_DIR="$T/none" bash -c "set -eu; cd '$L'; . ./lib.sh; echo ok" 2>&1); ok "sourced with no registry stops with 3" $? 3
+has "sourced with no registry names the missing plugin" "$out" "no installed issue-loop plugin in $T/none/plugins/installed_plugins.json"
 
 printf 'old rules\n' >"$L/rules.md"
 out=$("$L/next.sh" "Fix #7" 2>&1); ok "next refuses a folder with a full rules.md" $? 3

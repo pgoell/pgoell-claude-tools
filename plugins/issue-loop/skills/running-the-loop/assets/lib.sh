@@ -22,8 +22,8 @@ has_models() {
 
 # installed_root: the folder of the installed issue-loop, from installed_plugins.json. Empty when none.
 installed_root() {
-  local reg="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/installed_plugins.json"
-  jq -r '[.plugins | to_entries[] | select(.key | startswith("issue-loop@")) | .value[0].installPath][0] // empty' "$reg" 2>/dev/null
+  local reg="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/installed_plugins.json" p
+  jq -r '.plugins | to_entries[] | select(.key | startswith("issue-loop@")) | .value[].installPath' "$reg" 2>/dev/null | while read -r p; do printf '%s\t%s\n' "$(basename "$p")" "$p"; done | sort -V | tail -1 | cut -f2 || true
 }
 
 # Sleep N seconds. LOOP_SLEEP_SCALE=0 turns every pause off (the tests use it).

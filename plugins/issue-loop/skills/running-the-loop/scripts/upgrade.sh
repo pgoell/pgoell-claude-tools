@@ -16,8 +16,9 @@ apply=0; [ "${2:-}" = --apply ] && apply=1
 S=$(cd "$1" 2>/dev/null && pwd -P) || { echo "no such folder: $1" >&2; exit 2; }
 [ -f "$S/loop.env" ] || { echo "no loop.env in $S: not a loop folder" >&2; exit 2; }
 [ -f "$STUB" ] || { echo "no stub.sh beside upgrade.sh" >&2; exit 2; }
-if [ -f "$S/rules.md" ] && [ -f "$S/rules.local.md" ]; then
-  echo "$S has both rules.md and rules.local.md: move the old rules.md away, then run again" >&2
+# A rules.local.md that is the plugin's own template holds no answers: it counts as absent.
+if [ -f "$S/rules.md" ] && [ -f "$S/rules.local.md" ] && ! cmp -s "$S/rules.local.md" "$PL/rules.local.md"; then
+  echo "$S has rules.md and a rules.local.md with answers: compare them by hand and keep one; upgrade.sh changes nothing" >&2
   exit 1
 fi
 steps=0 tmp=""
@@ -53,9 +54,13 @@ put() {
   mv "$S/.upgrade.tmp" "$2"
 }
 
-# keep NAME: moves NAME in the folder to before-upgrade/NAME.
+# keep NAME: moves NAME in the folder to before-upgrade/NAME. A copy already
+# there stays: the new one goes to NAME.2, NAME.3 and so on.
 keep() {
-  mkdir -p "$S/before-upgrade" && mv "$S/$1" "$S/before-upgrade/$1"
+  local dest=$S/before-upgrade/$1 i=2
+  mkdir -p "$S/before-upgrade" || return 1
+  while [ -e "$dest" ]; do dest=$S/before-upgrade/$1.$i; i=$((i + 1)); done
+  mv "$S/$1" "$dest"
 }
 
 # stub_in NAME: the stub takes NAME's place; an old copy goes to before-upgrade/.
@@ -96,8 +101,28 @@ if ! grep -q '^ISSUE_LOOP_VERSION=' "$S/loop.env"; then
 fi
 
 if [ ! -f "$S/models.env" ]; then
-  act "copy models.env from assets/ (check its values)" put "$PL/models.env" "$S/models.env"
+  act "copy models.env from assets/ (check its values against the models your old rule 3 named)" put "$PL/models.env" "$S/models.env"
 fi
+
+# check_result: the brief as next.sh will build it from the folder after this run.
+# Warns only: the exit code does not change.
+check_result() {
+  local src=$S/rules.local.md reasons="" text lack="" ph
+  [ -z "$tmp" ] || src=$tmp
+  reasons=$(missing_answers "$PL/rules.md" "$src")
+  if ! text=$(assemble_rules "$PL/rules.md" "$src"); then
+    reasons+="the rules.local.md does not parse"$'\n'
+  fi
+  for ph in '{{CODER_MODEL}}' '{{REVIEW_MODEL}}'; do
+    [[ $text == *"$ph"* ]] || lack=yes
+  done
+  if [ -n "$reasons" ] || [ -n "$lack" ]; then
+    echo "warning: next.sh will refuse this folder until you fix rules.local.md:"
+    [ -z "$reasons" ] || printf '%s\n' "$reasons"
+    [ -z "$lack" ] || echo "rule 3 kept whole has no {{CODER_MODEL}}/{{REVIEW_MODEL}}: put them in, or delete ## 3 to take the plugin's rule 3"
+  fi
+}
+check_result
 
 if [ $steps = 0 ]; then
   echo "nothing to change: $S is in the 0.9.0 shape"
