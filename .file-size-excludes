@@ -1,5 +1,5 @@
 # Repo-specific excludes for the file-size check, on top of the defaults in
-# plugins/file-size/skills/setting-up-the-check/assets/check-file-size.
+# plugins/structure/skills/setting-up-the-checks/assets/check-file-size.
 # One git glob per line, anchored at the repo root.
 
 # generated

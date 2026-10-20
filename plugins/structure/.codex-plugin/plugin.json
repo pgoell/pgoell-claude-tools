@@ -1,0 +1,40 @@
+{
+  "name": "structure",
+  "version": "0.2.0",
+  "description": "Keep a repo easy for agents to read: cap authored files at 5000 tokens, cap folders at 7 entries, warn Claude Code at edit time, and set up import boundaries between modules.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "license": "MIT",
+  "keywords": [
+    "file-size",
+    "fan-out",
+    "token-limit",
+    "import-boundaries",
+    "import-linter",
+    "dependency-cruiser",
+    "lefthook",
+    "git-hooks",
+    "ci",
+    "deep-modules",
+    "claude-code",
+    "codex"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Structure",
+    "shortDescription": "File size, folder fan-out and import boundaries for agents",
+    "longDescription": "Sets up structure checks in any repo. setting-up-the-checks copies two scripts to scripts/: check-file-size fails when an authored file passes 5000 tokens (bytes/4), check-fan-out fails when a folder holds more than 7 entries, with a baseline for today's overages and an excludes file. It wires both into lefthook pre-commit, pre-push and GitHub Actions, or plain git hooks, plus a Claude Code PostToolUse hook that runs them on each edited file. setting-up-import-boundaries writes per-repo import-linter contracts for Python and dependency-cruiser rules for TypeScript and wires them into lint and CI. Failures say how to split or group along deep modules.",
+    "developerName": "Pascal Göllner",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use $setting-up-the-checks to cap file size and folder fan-out in this repo",
+      "Use $setting-up-import-boundaries to enforce module layers here"
+    ],
+    "screenshots": []
+  }
+}

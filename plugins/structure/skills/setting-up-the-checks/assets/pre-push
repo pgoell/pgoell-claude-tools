@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Fails the push when a tracked file at HEAD passes the file-size limit.
+# Fails the push when a tracked file at HEAD passes the file-size limit or a
+# folder passes the fan-out limit.
 # Turn on once per clone: git config core.hooksPath .githooks
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 scripts/check-file-size
+scripts/check-fan-out --all

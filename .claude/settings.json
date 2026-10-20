@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR}\"/plugins/structure/skills/setting-up-the-checks/assets/structure-hook"
+          }
+        ]
+      }
+    ]
+  }
+}

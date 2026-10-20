@@ -11,6 +11,8 @@ pre-commit:
       run: mise exec -- jq empty {staged_files}
     - name: file-size
       run: mise-tasks/check-file-size {staged_files}
+    - name: fan-out
+      run: mise-tasks/check-fan-out {staged_files}
 
 commit-msg:
   jobs:

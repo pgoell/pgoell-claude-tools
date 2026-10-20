@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# Tests the plugin's check-file-size script and its fallback pre-commit hook
-# in throwaway git repos. No network.
-# Run from the repo root: bash plugins/file-size/tests/run.sh
+# Tests the plugin's check-file-size and check-fan-out scripts, the fallback
+# pre-commit hook and the Claude Code hook in throwaway git repos. No network.
+# Run from the repo root: bash plugins/structure/tests/run.sh
 set -uo pipefail
 
-ASSETS="$(cd "$(dirname "$0")/../skills/setting-up-the-check/assets" && pwd)"
+ASSETS="$(cd "$(dirname "$0")/../skills/setting-up-the-checks/assets" && pwd)"
 SCRIPT="$ASSETS/check-file-size"
+TESTS="$(cd "$(dirname "$0")" && pwd)"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
@@ -26,7 +27,7 @@ mkfile() {
   head -c "$2" /dev/zero | tr '\0' a >"$1"
 }
 
-# Makes a fresh repo in $REPO with the script copied to scripts/, as the
+# Makes a fresh repo in $REPO with the scripts copied to scripts/, as the
 # skill does in a target repo.
 n=0
 fresh() {
@@ -34,6 +35,7 @@ fresh() {
   REPO="$WORK/repo$n"
   mkdir -p "$REPO/scripts"
   cp "$SCRIPT" "$REPO/scripts/check-file-size" 2>/dev/null
+  cp "$ASSETS/check-fan-out" "$ASSETS/structure-hook" "$REPO/scripts/" 2>/dev/null
   cd "$REPO" || exit 1
   git init -q
   git config user.email test@example.com
@@ -422,6 +424,11 @@ if [ "$RC" -eq 0 ] && git rev-parse -q --verify HEAD >/dev/null; then
 else
   bad "A7 pre-commit hook lets a small file through (rc=$RC)"
 fi
+
+# shellcheck source=fan-out.sh
+. "$TESTS/fan-out.sh"
+# shellcheck source=hook.sh
+. "$TESTS/hook.sh"
 
 echo "$pass passed, $fail failed"
 [ "$fail" -eq 0 ]

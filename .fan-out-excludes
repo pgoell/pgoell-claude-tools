@@ -1,0 +1,12 @@
+# Folders the fan-out check skips, on top of the repo root and dot folders.
+# One git glob per line, anchored at the repo root, with a comment line above
+# it that says why.
+
+# one folder per marketplace entry
+plugins
+# one page per marketplace entry
+docs/reference/plugins
+# one file per docs change, by design (docs/log.md)
+docs/log
+# frozen archive
+plugins/deprecated/**

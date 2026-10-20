@@ -39,7 +39,7 @@ Claude Code resolves skill calls by `plugin:skill` (for example `/atlassian:jira
 
 The fully qualified form always works, whatever other marketplaces the user has installed. The short form `/<skill>` (such as `/jira`) works only when no other installed skill shares the name, which a doc cannot know, so docs never teach it. The 2026-05 README rewrite fixed 33 wrong `/pgoell-claude-tools:<skill>` examples that had piled up through copy and paste.
 
-The audit greps: `grep -rnE '/pgoell-claude-tools:[a-z]' README.md docs/` must print nothing, and `grep -rnE '/(atlassian|google-workspace|research|writing|runtime-bridge|agent-system-management|terminal|playground|databricks|learning|critique|presentations|diagrams|news|insights|file-size|issue-loop|ponytail|emil|vercel|taste-skill|deprecated):' docs/` should match at least once per plugin whose skills the doc names.
+The audit greps: `grep -rnE '/pgoell-claude-tools:[a-z]' README.md docs/` must print nothing, and `grep -rnE '/(atlassian|google-workspace|research|writing|runtime-bridge|agent-system-management|terminal|playground|databricks|learning|critique|presentations|diagrams|news|insights|structure|issue-loop|ponytail|emil|vercel|taste-skill|deprecated):' docs/` should match at least once per plugin whose skills the doc names.
 
 ## Em-dash lint and instruction text
 

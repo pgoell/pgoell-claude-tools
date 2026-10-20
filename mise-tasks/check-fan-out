@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+#MISE description="Fail when a folder holds more than 7 entries; checks the folders above the given paths, or every folder with --all"
+# Runs the structure plugin's script, so the check has one source. This
+# repo's own excludes are in .fan-out-excludes, its accepted overages in
+# .fan-out-baseline.
+exec "$(dirname "$0")/../plugins/structure/skills/setting-up-the-checks/assets/check-fan-out" "$@"

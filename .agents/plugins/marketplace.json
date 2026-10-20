@@ -245,10 +245,10 @@
       }
     },
     {
-      "name": "file-size",
+      "name": "structure",
       "source": {
         "source": "local",
-        "path": "./plugins/file-size"
+        "path": "./plugins/structure"
       },
       "policy": {
         "installation": "AVAILABLE",
@@ -256,8 +256,8 @@
       },
       "category": "Developer Tools",
       "interface": {
-        "displayName": "File Size",
-        "shortDescription": "Cap authored files at 5000 tokens on commit, push and CI"
+        "displayName": "Structure",
+        "shortDescription": "File size, folder fan-out and import boundaries for agents"
       }
     },
     {

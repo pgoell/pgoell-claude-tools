@@ -27,7 +27,7 @@ Each runtime reads its own marketplace file: Claude Code reads `.claude-plugin/m
 | [diagrams](/reference/plugins/diagrams.md)                               | yes         | yes   | yes    |
 | [news](/reference/plugins/news.md)                                       | yes         | yes   | yes    |
 | [insights](/reference/plugins/insights.md)                               | yes         | yes   | yes    |
-| [file-size](/reference/plugins/file-size.md)                             | yes         | yes   | yes    |
+| [structure](/reference/plugins/structure.md)                             | yes         | yes   | yes    |
 | [issue-loop](/reference/plugins/issue-loop.md)                           | yes         | no    | no     |
 | [prose-styles](/reference/plugins/prose-styles.md)                       | yes         | no    | no     |
 | [guards](/reference/plugins/guards.md)                                   | yes         | no    | no     |

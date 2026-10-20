@@ -55,7 +55,7 @@ plugins/
                             #   stub and after skills ship. plugins/databricks/references/research/
                             #   is gitignored and local-only: never force-add it.
     tests/                  # Optional self-contained check of shipped scripts, run by hand
-                            #   (issue-loop, insights, news, agent-system-management, file-size:
+                            #   (issue-loop, insights, news, agent-system-management, structure:
                             #   tests/run.sh with fakes or fixtures, no network;
                             #   presentations: tests/run.sh drives deck fixtures in headless Chrome;
                             #   atlassian: tests/run.sh parses the JSON bodies of its examples)
@@ -68,8 +68,8 @@ docs/                       # User docs: a Diátaxis tree in OKF v0.2 (see ## Do
   log/YYYY-MM-DD-<slug>.md  # One file per change to the docs bundle
   tutorials/  how-to/  reference/  explanation/   # One folder per Diátaxis type
   reference/plugins/<name>.md   # One page per marketplace entry, plus index.md
-mise-tasks/                 # Repo tasks; check-file-size runs the file-size plugin's script
-.file-size-excludes         # This repo's excludes for that check
+mise-tasks/                 # Repo tasks; check-* run the structure plugin's scripts
+.file-size-excludes  .fan-out-*   # This repo's settings for them
 dotclaude/                  # Versioned global ~/.claude/CLAUDE.md (symlinked into place); not a plugin
 containers/dev/             # Podman-first dev container (run-dev, egress proxy, README checklist)
 ```
@@ -93,7 +93,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `diagrams` 0.1.3: `creating-diagrams`
 - `news` 0.9.5: `edition`, `feedback`, `tune`
 - `insights` 0.6.2: `digest`, `apply`, `activity`
-- `file-size` 0.1.1: `setting-up-the-check`
+- `structure` 0.2.0: `setting-up-the-checks`, `setting-up-import-boundaries`
 - `issue-loop` 0.9.0: `running-the-loop`, `handing-over` (Claude Code only)
 - `prose-styles` 0.1.0: no skills; output styles `orwell`, `concise`, `ste`, `house` (Claude Code only)
 - `guards` 0.1.2: no skills; `PreToolUse` hook `pkill-self-match` (Claude Code only)
@@ -123,9 +123,10 @@ User docs live in `docs/`, a Diátaxis tree in Open Knowledge Format v0.2. Read 
 
 ## CI Checks
 
-`.github/workflows/pr-validation.yml` runs six checks on every PR against `master` (backed by `mise`, `lefthook`, and `mise-tasks/*`, also run locally on commit and push): formatting, JSON lint and file size, Conventional Commits, plugin version-bump lockstep, manifest schema validation (also fails when generated Cursor manifests drift or a `SKILL.md` sets `disable-model-invocation: true`), docs links and spelling over `README.md`, `AGENTS.md`, `plugins/` and `docs/` (also fails when a backticked prompt file name, `*-prompt.md` or `agents/*.md`, has no tracked file), and Cursor plugin validation. `gh pr view <pr> --json statusCheckRollup` returns these six jobs, not an empty array.
+`.github/workflows/pr-validation.yml` runs six checks on every PR against `master` (backed by `mise`, `lefthook`, and `mise-tasks/*`, also run locally on commit and push): formatting, JSON lint, file size and fan-out, Conventional Commits, plugin version-bump lockstep, manifest schema validation (also fails when generated Cursor manifests drift or a `SKILL.md` sets `disable-model-invocation: true`), docs links and spelling over `README.md`, `AGENTS.md`, `plugins/` and `docs/` (also fails when a backticked prompt file name, `*-prompt.md` or `agents/*.md`, has no tracked file), and Cursor plugin validation. `gh pr view <pr> --json statusCheckRollup` returns these six jobs, not an empty array.
 
-- **File size.** No authored file passes 5000 tokens (bytes/4). `mise-tasks/check-file-size` runs the file-size plugin's script on staged files on commit and on every tracked file in `mise run lint` (pre-push and the CI lint job). This repo's excludes (generated, ported, frozen) are in `.file-size-excludes`; the defaults (lockfiles, binaries, license texts) are in the script. Split an over-limit file along a deep module (Ousterhout: a small interface over much hidden work), never by line count or into pass-through wrappers.
+- **File size.** No authored file passes 5000 tokens (bytes/4). `mise-tasks/check-file-size` runs the structure plugin's script on staged files on commit and on every tracked file in `mise run lint` (pre-push and the CI lint job). This repo's excludes (generated, ported, frozen) are in `.file-size-excludes`; the defaults (lockfiles, binaries, license texts) are in the script. Split an over-limit file along a deep module (Ousterhout: a small interface over much hidden work), never by line count or into pass-through wrappers.
+- **Fan-out.** At most 7 entries per folder: `mise-tasks/check-fan-out` runs like file size, and on each edit. See [structure](docs/reference/plugins/structure.md).
 - Lefthook hooks run only where `lefthook install` ran (check `ls .git/hooks`; only sample files means nothing runs). So run `dprint fmt` on every markdown or JSON file you touched, plus the manual greps below, before committing.
 - Run `dprint check` bare from the repo root; a path argument makes it find no files.
 - PRs target `master` and merge as one squash commit; an agent stops once CI is green and leaves the merge to the owner. Branch names take a Conventional Commits type prefix (`feat/`, `fix/`, `docs/`, `chore/`, ...). Do not commit specs or plans. Run Python through `uv` (`uv run --with pyyaml python3 ...`), never bare `python`.
@@ -146,7 +147,7 @@ User docs live in `docs/`, a Diátaxis tree in Open Knowledge Format v0.2. Read 
 ### Repository conventions ([repo-conventions](docs/explanation/repo-conventions.md))
 
 - **Skills are self-contained.** A SKILL.md holds everything the agent needs to use the service, except reference docs it links to.
-- **Skill invocation syntax in docs is `/<plugin>:<skill>`, not `/<marketplace>:<skill>`.** Always use the fully qualified form (`/atlassian:jira`); never teach the short `/<skill>` form. `pgoell-claude-tools` appears only in `/plugin install <plugin>@pgoell-claude-tools` and `codex plugin marketplace add pgoell/pgoell-claude-tools`. Audit: `grep -rnE '/pgoell-claude-tools:[a-z]' README.md docs/` must print nothing; `grep -rnE '/(atlassian|google-workspace|research|writing|runtime-bridge|agent-system-management|terminal|playground|databricks|learning|critique|presentations|diagrams|news|insights|file-size|issue-loop|ponytail|emil|vercel|taste-skill|deprecated):' docs/` should match each plugin whose skills the doc names. Keep that list to the plugins with skills in `.claude-plugin/marketplace.json`.
+- **Skill invocation syntax in docs is `/<plugin>:<skill>`, not `/<marketplace>:<skill>`.** Always use the fully qualified form (`/atlassian:jira`); never teach the short `/<skill>` form. `pgoell-claude-tools` appears only in `/plugin install <plugin>@pgoell-claude-tools` and `codex plugin marketplace add pgoell/pgoell-claude-tools`. Audit: `grep -rnE '/pgoell-claude-tools:[a-z]' README.md docs/` must print nothing; `grep -rnE '/(atlassian|google-workspace|research|writing|runtime-bridge|agent-system-management|terminal|playground|databricks|learning|critique|presentations|diagrams|news|insights|structure|issue-loop|ponytail|emil|vercel|taste-skill|deprecated):' docs/` should match each plugin whose skills the doc names. Keep that list to the plugins with skills in `.claude-plugin/marketplace.json`.
 - **Em-dash lint and instruction text.** U+2014 and U+2013 are forbidden in every file: skills, `references/*.html`, vendored CSS and JS, root docs. In markdown, name them by codepoint, never as literals. Repo-wide check: `grep -rnP '[\x{2014}\x{2013}]' plugins/ README.md AGENTS.md`. It is not empty: 6 older tracked files (google-workspace recipes, the archived `visualizing-options` in `deprecated`, the frozen using-superpowers snapshot) are accepted debt, plus gitignored databricks research notes. So gate on changed files: `git diff <base>..HEAD --name-only | xargs grep -nP '[\x{2014}\x{2013}]'` must print nothing, and `README.md` and `AGENTS.md` stay clean. HTML body copy may use `&mdash;`, `&#8212;`, `&ndash;`, `&#8211;`. CSS and JS comments have no escape: substitute the character at port time.
 - **SKILL.md frontmatter `description:` must not contain a colon-space unless the whole value is quoted.** Frontmatter must be strict YAML; an unquoted colon-space fails with `mapping values are not allowed here`. Rephrase (`Examples:` becomes `For example`) or quote the whole value. Validate by hand: feed the frontmatter to `uv run --with pyyaml python3 -c 'import yaml,sys; yaml.safe_load(sys.stdin)'`.
 - **Lazy auth, never print secrets.** Never check auth up front: run the operation and diagnose auth failures in Self-Healing. Never print or echo credentials, tokens, or API keys; only test whether they are set (`test -n`).

@@ -119,10 +119,10 @@
       "version": "0.1.0"
     },
     {
-      "name": "file-size",
-      "source": "./plugins/file-size",
-      "description": "Cap every authored file in a repo at 5000 tokens (bytes/4), checked on commit, on push and in CI, with advice to split along deep modules.",
-      "version": "0.1.1"
+      "name": "structure",
+      "source": "./plugins/structure",
+      "description": "Keep a repo easy for agents to read: cap authored files at 5000 tokens, cap folders at 7 entries, warn Claude Code at edit time, and set up import boundaries between modules.",
+      "version": "0.2.0"
     },
     {
       "name": "ponytail",
