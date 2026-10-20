@@ -51,7 +51,7 @@ drv_send()   { tmux send-keys -t "$1" -l "$2"; tmux send-keys -t "$1" Enter; }
 drv_read()   { tmux capture-pane -p -J -t "$1" -S "-$2"; }
 drv_status() { tmux has-session -t "$1" 2>/dev/null || { echo gone; return; }; echo unknown; }
 drv_wait()   { sleep "$2"; }
-drv_start()  { tmux new-session -d -s "$1" -c "$2" "claude --permission-mode ${PERMISSION_MODE:-bypassPermissions} ${SESSION_MODEL:+--model $SESSION_MODEL} ${ADVISOR_MODEL:+--advisor $ADVISOR_MODEL}"; }
+drv_start()  { tmux new-session -d -s "$1" -c "$2" "claude --permission-mode ${PERMISSION_MODE:-bypassPermissions} ${SESSION_MODEL:+--model '$SESSION_MODEL'} ${ADVISOR_MODEL:+--advisor '$ADVISOR_MODEL'}"; }
 ```
 
 With that sketch `drv_status` cannot tell working from idle, so `wait.sh` settles as soon as the DONE line shows, and it never prints `ASKING`. A better tmux driver would read the screen for the session's own "working" mark.

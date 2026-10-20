@@ -28,6 +28,15 @@ refuse_reviewer() {
 refuse_reviewer "next refuses a haiku reviewer" haiku
 refuse_reviewer "next refuses claude-haiku-5-5 as reviewer" claude-haiku-5-5
 
+# a rules.md without the review placeholder is refused, and nothing is sent
+rules=$(cat "$L/rules.md")
+printf '%s\n' "${rules//'{{REVIEW_MODEL}}'/the default}" >"$L/rules.md"
+echo idle >"$STUB/status"; rm -f "$STUB/sent"
+out=$("$L/next.sh" --force "t" 2>&1); ok "next refuses a rules.md without the model placeholders" $? 3
+has "next names the missing placeholder" "$out" "{{REVIEW_MODEL}}"
+ok "nothing sent for a rules.md without the placeholders" "$(cat "$STUB/sent" 2>/dev/null)" ""
+printf '%s\n' "$rules" >"$L/rules.md"
+
 sed -i 's/^CLAUDE_CODER_MODEL=.*/CLAUDE_CODER_MODEL=/' "$L/models.env"
 echo idle >"$STUB/status"; rm -f "$STUB/sent"
 out=$("$L/next.sh" --force "t" 2>&1); ok "next refuses an empty coder model" $? 3

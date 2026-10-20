@@ -28,6 +28,10 @@ Why the order matters:
 1. Copy `gate.sh` anew from the skill's `assets/`. The new gate fails a ticked box that names no test after `Test:` or `Proof:` on its line.
 2. Take the new sentence of rule 5 from `assets/rules.md` into your `rules.md`.
 
+## Made by 0.7.1 to 0.7.4
+
+No list of its own: do the last section.
+
 ## Every folder made before 0.8.0
 
 Do these steps last, after the list for your folder's version.

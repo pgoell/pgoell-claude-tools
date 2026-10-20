@@ -8,7 +8,8 @@
 # such order a brief is a stranger's paste, and "go" is not the script's to say.
 # It writes the coder and review models from models.env into rule 3 of the
 # brief. Refuses (exit 3) without models.env, with an empty coder or review
-# model, or with a review model that matches REVIEW_NOT.
+# model, with a review model that matches REVIEW_NOT, or with a rules.md that
+# lacks the {{CODER_MODEL}} or {{REVIEW_MODEL}} placeholder.
 . "$(dirname "$0")/lib.sh"
 force=0
 [ "${1:-}" = --force ] && { force=1; shift; }
@@ -28,6 +29,12 @@ if [ -n "$REVIEW_NOT" ] && grep -qiE "$REVIEW_NOT" <<<"$(model REVIEW)"; then
   echo "${HARNESS}_REVIEW_MODEL matches REVIEW_NOT in models.env: review subagents never run on that model" >&2
   exit 3
 fi
+for m in CODER_MODEL REVIEW_MODEL; do
+  if ! grep -qF "{{$m}}" "$S/rules.md"; then
+    echo "rules.md has no {{$m}}: take the new rule 3 from the skill's assets/rules.md, so the brief names the models in models.env" >&2
+    exit 3
+  fi
+done
 CODER_MODEL=$(model CODER)
 REVIEW_MODEL=$(model REVIEW)
 for v in REPO BASE DEPLOY_WORKFLOW ALIVE_URL; do
