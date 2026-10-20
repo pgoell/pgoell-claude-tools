@@ -43,7 +43,7 @@ Workflow:
 - [research](docs/reference/plugins/research.md): research a topic and write a sourced report.
 - [critique](docs/reference/plugins/critique.md): critique an idea from several independent angles.
 - [playground](docs/reference/plugins/playground.md): single-file HTML playgrounds with live preview.
-- [file-size](docs/reference/plugins/file-size.md): cap authored files at 5000 tokens on commit, push and CI.
+- [structure](docs/reference/plugins/structure.md): cap file size and folder fan-out on commit, push, CI and edit, and set up import boundaries.
 
 Writing and learning:
 

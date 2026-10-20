@@ -1,9 +1,9 @@
 # Plain git hooks, without lefthook
 
-Git runs hooks from the repo top, so `scripts/check-file-size` resolves there. The templates:
+Git runs hooks from the repo top, so the `scripts/` paths resolve there. The templates:
 
-- `assets/pre-commit` sizes the staged files: `git diff --cached --name-only -z --diff-filter=d | xargs -0 -r scripts/check-file-size`.
-- `assets/pre-push` runs the bare check on every tracked file at HEAD.
+- `assets/pre-commit` runs both checks on the staged files.
+- `assets/pre-push` runs both checks on the whole repo.
 
 Find your case from step 1, and handle each hook (`pre-commit`, `pre-push`) on its own.
 
@@ -42,18 +42,20 @@ If `.githooks/<hook>` already exists, append the call line instead of copying ov
 
 ## The call lines
 
-When you append to a hook, add the line before any final `exit`, and keep `|| exit 1`: a hook without `set -e` would otherwise ignore the failure and let the commit through.
+When you append to a hook, add the lines before any final `exit`, and keep `|| exit 1`: a hook without `set -e` would otherwise ignore the failure and let the commit through.
 
 pre-commit:
 
 ```sh
 git diff --cached --name-only -z --diff-filter=d | xargs -0 -r scripts/check-file-size || exit 1
+git diff --cached --name-only -z --diff-filter=d | xargs -0 -r scripts/check-fan-out || exit 1
 ```
 
 pre-push:
 
 ```sh
 scripts/check-file-size || exit 1
+scripts/check-fan-out --all || exit 1
 ```
 
 ## Each clone

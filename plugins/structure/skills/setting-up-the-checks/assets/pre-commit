@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Fails the commit when a staged file passes the file-size limit.
+# Fails the commit when a staged file passes the file-size limit or a folder
+# it sits in passes the fan-out limit.
 # Turn on once per clone: git config core.hooksPath .githooks
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 git diff --cached --name-only -z --diff-filter=d | xargs -0 -r scripts/check-file-size
+git diff --cached --name-only -z --diff-filter=d | xargs -0 -r scripts/check-fan-out

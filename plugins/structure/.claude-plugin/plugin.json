@@ -1,0 +1,23 @@
+{
+  "name": "structure",
+  "version": "0.2.0",
+  "description": "Keep a repo easy for agents to read: cap authored files at 5000 tokens, cap folders at 7 entries, warn Claude Code at edit time, and set up import boundaries between modules.",
+  "author": {
+    "name": "Pascal Göllner"
+  },
+  "license": "MIT",
+  "keywords": [
+    "file-size",
+    "fan-out",
+    "token-limit",
+    "import-boundaries",
+    "import-linter",
+    "dependency-cruiser",
+    "lefthook",
+    "git-hooks",
+    "ci",
+    "deep-modules",
+    "claude-code",
+    "codex"
+  ]
+}

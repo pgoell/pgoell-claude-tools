@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 #MISE description="Fail when an authored file passes 5000 tokens (bytes/4); checks the given paths, or every tracked file"
-# Runs the file-size plugin's script, so the check has one source. This
+# Runs the structure plugin's script, so the check has one source. This
 # repo's own excludes are in .file-size-excludes.
-exec "$(dirname "$0")/../plugins/file-size/skills/setting-up-the-check/assets/check-file-size" "$@"
+exec "$(dirname "$0")/../plugins/structure/skills/setting-up-the-checks/assets/check-file-size" "$@"
