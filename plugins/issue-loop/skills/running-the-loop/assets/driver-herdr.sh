@@ -27,14 +27,16 @@ drv_read() {
 }
 
 # Start a Claude Code session NAME in a new tab with working folder CWD and tab
-# label LABEL, in the permission mode from loop.env. Print a handle that
-# drv_read accepts (here: the pane id).
+# label LABEL, in the permission mode from loop.env. It reads SESSION_MODEL and
+# ADVISOR_MODEL, which start.sh sets, and passes --model and --advisor only for
+# a value that is not empty. Print a handle that drv_read accepts (here: the
+# pane id).
 drv_start() {
   local pane
   pane=$(herdr tab create ${HERDR_WORKSPACE:+--workspace "$HERDR_WORKSPACE"} --cwd "$2" --label "$3" --no-focus |
     jq -r '[.. | .pane_id? | strings][0] // empty')
   [ -n "$pane" ] || { echo "no pane id from herdr tab create" >&2; return 1; }
   nap 5
-  herdr agent start "$1" --kind claude --pane "$pane" -- --permission-mode "${PERMISSION_MODE:-bypassPermissions}" >/dev/null || return 1
+  herdr agent start "$1" --kind claude --pane "$pane" -- --permission-mode "${PERMISSION_MODE:-bypassPermissions}" ${SESSION_MODEL:+--model "$SESSION_MODEL"} ${ADVISOR_MODEL:+--advisor "$ADVISOR_MODEL"} >/dev/null || return 1
   echo "$pane"
 }

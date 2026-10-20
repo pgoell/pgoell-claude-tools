@@ -125,7 +125,7 @@ At the first break between tasks past 120k tokens of context, or past 150k at an
 | Need                      | Claude Code                                    |
 | ------------------------- | ---------------------------------------------- |
 | background wait           | Bash with `run_in_background: true`            |
-| side by side source reads | Agent tool, default model                      |
+| side by side source reads | Agent tool                                     |
 | a second opinion          | advisor tool where present, else a fresh agent |
 
 The loop was built and run with Claude Code sessions only. Under Codex the orchestrator's part may work, but nobody has tried it, and the brief's `/clear` and permission mode are Claude Code's.

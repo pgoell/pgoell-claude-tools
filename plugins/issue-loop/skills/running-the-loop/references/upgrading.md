@@ -1,6 +1,6 @@
 # Upgrading an old loop folder
 
-`init.sh` never overwrites a file, so a loop folder keeps the scripts of the version that made it. Find the version that made the folder and follow its list, top to bottom: each list holds every script that folder needs anew. The README's "After an update to" notes on `/reload-plugins` and `HANDOFF.md` are about the running orchestrator, not the scripts; after the list, do each note for a version newer than the folder, oldest first.
+`init.sh` never overwrites a file, so a loop folder keeps the scripts of the version that made it. Find the version that made the folder and follow its list, top to bottom: each list holds every script that folder needs anew, and every folder made before 0.8.0 ends with the last section. The README's "After an update to" notes on `/reload-plugins` and `HANDOFF.md` are about the running orchestrator, not the scripts; after the list, do each note for a version newer than the folder, oldest first.
 
 Why the order matters:
 
@@ -27,3 +27,11 @@ Why the order matters:
 
 1. Copy `gate.sh` anew from the skill's `assets/`. The new gate fails a ticked box that names no test after `Test:` or `Proof:` on its line.
 2. Take the new sentence of rule 5 from `assets/rules.md` into your `rules.md`.
+
+## Every folder made before 0.8.0
+
+Do these steps last, after the list for your folder's version.
+
+1. Run `init.sh` on the folder again: it adds `models.env`. Check its values with the user.
+2. Copy `lib.sh`, `next.sh`, `start.sh` and `driver-herdr.sh` anew from the skill's `assets/`, all at once. The new `next.sh` and `start.sh` refuse without `models.env`; the old ones ignore it. A folder with its own driver adds the two flags to its `drv_start`, as `references/driver.md` shows.
+3. Take the new rule 3 from `assets/rules.md` into your `rules.md`.

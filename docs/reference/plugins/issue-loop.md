@@ -34,6 +34,7 @@ Both skills start from their slash command or from a plain request ("run the iss
 | File              | What it does                                                                                                                             |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | `loop.env`        | The settings: implementer name and checkout, base branch, deploy workflow, alive URL, driver, permission mode.                           |
+| `models.env`      | The model per role and per harness: sessions, implementing and review subagents, advisor. `start.sh` and `next.sh` read it.              |
 | `rules.md`        | The brief every task gets.                                                                                                               |
 | `next.sh`         | Sends `/clear` and the brief to the implementer. Refuses while the implementer works or without the standing order.                      |
 | `wait.sh`         | Waits for the implementer's DONE or BLOCKED line, on its screen or in the file `notify.sh` writes, with a clock.                         |
@@ -41,4 +42,4 @@ Both skills start from their slash command or from a plain request ("run the iss
 | `grant.sh`        | Run by you in a terminal of your own, never by a session: writes your standing order into the sessions' instructions after you type yes. |
 | `driver-herdr.sh` | The only file that knows the terminal manager (herdr). Another manager needs five shell functions.                                       |
 
-Sessions start with `--permission-mode bypassPermissions` by default; set `PERMISSION_MODE=auto` in `loop.env` for a loop that should ask. Read `skills/running-the-loop/references/limits.md` in the plugin before you rely on the loop: tests prove logic and not taste, and no check in the loop is a person who uses the product.
+Sessions start with `--permission-mode bypassPermissions` by default; set `PERMISSION_MODE=auto` in `loop.env` for a loop that should ask. `models.env` in the loop folder names the model for each role (orchestrator, implementer, coding and review subagents, advisor) in Claude Code; its Codex column is empty. Read `skills/running-the-loop/references/limits.md` in the plugin before you rely on the loop: tests prove logic and not taste, and no check in the loop is a person who uses the product.

@@ -7,9 +7,17 @@
 # order covers: the working folder is this loop folder, the order is in its
 # CLAUDE.md, and HANDOFF.md names the session as the successor. For any other
 # session (the implementer's hello, a side session) the answer is the user's.
-# Exit 5: a start dialog shows, nothing was sent. Exit 1: the session is gone.
+# The model comes from models.env: the implementer's model for the session
+# named IMPL in loop.env, the orchestrator's model for any other. The advisor
+# model goes in with --advisor for this session; an empty value passes no flag.
+# Exit 3: no models.env. Exit 5: a start dialog shows, nothing was sent. Exit 1:
+# the session is gone.
 . "$(dirname "$0")/lib.sh"
 [ $# = 4 ] || { echo "usage: start.sh <name> <cwd> <label> <message file>" >&2; exit 2; }
+has_models || exit 3
+[ "$1" = "$IMPL" ] && role=IMPL || role=ORCH
+SESSION_MODEL=$(model $role)
+ADVISOR_MODEL=$(model ADVISOR)
 handle=$(drv_start "$1" "$2" "$3") || { echo "start failed" >&2; exit 1; }
 nap 12
 # Look before the first send. A start dialog (folder trust, or any menu with

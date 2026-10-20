@@ -4,7 +4,17 @@
 # not depend on the link by which the folder was reached.
 S=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 . "$S/loop.env"
+# A folder made before 0.8.0 has no models.env; next.sh and start.sh refuse without it, the other scripts run.
+[ -f "$S/models.env" ] && . "$S/models.env"
 . "$S/$DRIVER"
+
+# The model for ROLE (ORCH, IMPL, CODER, REVIEW or ADVISOR) in the harness of models.env. Empty when unset.
+model() { local v="${HARNESS}_$1_MODEL"; echo "${!v:-}"; }
+
+# has_models: true when models.env is in the loop folder. Else says the fix on stderr.
+has_models() {
+  [ -f "$S/models.env" ] || { echo "no models.env in $S: copy it from the skill's assets/ and check its values" >&2; return 1; }
+}
 
 # Sleep N seconds. LOOP_SLEEP_SCALE=0 turns every pause off (the tests use it).
 nap() { sleep $(($1 * ${LOOP_SLEEP_SCALE:-1})); }

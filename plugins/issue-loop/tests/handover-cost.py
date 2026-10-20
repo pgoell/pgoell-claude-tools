@@ -22,7 +22,8 @@ import statistics
 import sys
 from datetime import datetime
 
-# Claude Opus 5.5 list prices, $ per token, as of 2026-10. Update with the model.
+# List prices of the orchestrator's model (CLAUDE_ORCH_MODEL in assets/models.env),
+# $ per token, as of 2026-10. Update with that model.
 READ = 0.20e-6  # cache read
 WRITE_5M = 5e-6  # cache write, 5-minute TTL (1.25x input)
 WRITE_1H = 8e-6  # cache write, 1-hour TTL (2x input)

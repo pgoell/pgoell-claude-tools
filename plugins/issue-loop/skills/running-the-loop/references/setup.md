@@ -49,9 +49,9 @@ Then make the loop folder, outside every checkout:
 "${CLAUDE_SKILL_DIR}/scripts/init.sh" ~/loops/<project>
 ```
 
-It copies `loop.env`, `rules.md`, `next.sh`, `wait.sh`, `gate.sh`, `start.sh`, `notify.sh`, `grant.sh`, `takeover-check.sh`, `standing-order.md`, `standing-order-impl.md`, `lib.sh`, `driver-herdr.sh`, `ledger.tsv` and a blank `HANDOFF.md`. Then:
+It copies `loop.env`, `models.env`, `rules.md`, `next.sh`, `wait.sh`, `gate.sh`, `start.sh`, `notify.sh`, `grant.sh`, `takeover-check.sh`, `standing-order.md`, `standing-order-impl.md`, `lib.sh`, `driver-herdr.sh`, `ledger.tsv` and a blank `HANDOFF.md`. Then:
 
-1. Edit `loop.env`: the implementer's session name, its checkout, the base branch, the deploy workflow, a URL that proves the app is alive.
+1. Edit `loop.env`: the implementer's session name, its checkout, the base branch, the deploy workflow, a URL that proves the app is alive. Check `models.env` with the user: the model per role in the Claude Code column.
 2. Fill every `<FILL: ...>` in `rules.md` with the user, or delete the rule. `next.sh` refuses to send a brief with a marker left. `references/brief-rules.md` gives the reason behind each rule, so the user can drop one that does not fit.
 3. Write the user's standing orders into `HANDOFF.md` as they give them. That file is your memory.
 4. Write your own session name into the file `orch-name` in the loop folder: the name this session was started under. If you cannot tell which name in the driver's list is yours (with herdr, `herdr agent list`), ask the user. Rule 19 of the brief has the implementer tell that session when it is done. `next.sh` refuses to send a brief while the file is missing. Then name the Claude session for the user: `herdr agent prompt <your name> "/rename <project>-orchestrator-main"` (it runs when your turn ends). The driver's name stays as it is; the scripts use it. At a handover the names and the old tabs change as `handing-over` says.
