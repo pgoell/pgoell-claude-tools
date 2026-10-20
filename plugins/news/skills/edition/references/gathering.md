@@ -18,6 +18,8 @@ Learned from the first sample edition (2026-10-07):
 - **The Bash tool runs zsh.** An unquoted `$u` stays one word, so `set -- $u`
   and `$cmd url` fail (curl exit 3). Loop with `while read -r name url; do ...; done`
   over a list, or write the loop to a file and run it with `bash file.sh`.
+- **Quote every URL.** In zsh an unquoted `?` or `*` is a glob, and no match
+  aborts the command.
 - **Search with the month and year.** "Gelnhausen Nachrichten Oktober 2026"
   beats "Gelnhausen Nachrichten". Do not search "tagesschau <date>": it returns
   TV listings; scrape `tagesschau.de/inland` and `/ausland` instead.

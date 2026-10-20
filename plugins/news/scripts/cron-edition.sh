@@ -14,6 +14,10 @@ VAULT="$(cd "$VAULT" && pwd)" || exit 1
 # a statusline hook calls on every prompt, in ~/.bun/bin.
 export PATH="$HOME/.local/bin:$HOME/.bun/bin:/usr/local/bin:/usr/bin:/bin"
 
+# Cron sets SHELL=/bin/sh, so Claude Code would pick zsh for its Bash tool;
+# zsh aborts a command on an unmatched ? or * (unquoted URLs). Use bash.
+export SHELL=/bin/bash
+
 LOG_DIR="${NEWS_LOG_DIR:-$HOME/.local/state/news}"
 mkdir -p "$LOG_DIR"
 DAY="$(TZ=Europe/Berlin date +%F)"

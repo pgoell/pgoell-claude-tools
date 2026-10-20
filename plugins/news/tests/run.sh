@@ -17,7 +17,7 @@ V="$T/vault"
 DAY=$(TZ=Europe/Berlin date +%F)
 mkdir -p "$V" "$T/home/.local/bin"
 # the fake records its args and writes the page at $PAGE unless NO_PAGE is set
-printf '%s\n' '#!/bin/bash' 'printf "%s\n" "$@" >"$HOME/args"' \
+printf '%s\n' '#!/bin/bash' 'printf "%s\n" "$@" >"$HOME/args"' 'echo "$SHELL" >"$HOME/shell"' \
   '[ -n "${NO_PAGE:-}" ] || { mkdir -p "$(dirname "$PAGE")"; echo page >"$PAGE"; }' >"$T/home/.local/bin/claude"
 chmod +x "$T/home/.local/bin/claude"
 cron() { env -u KASTEN_PERIODIC_PATH -u NEWS_PLUGIN_DIR HOME="$T/home" NEWS_LOG_DIR="$T/log" "$@" "$here/../scripts/cron-edition.sh" "$V"; }
@@ -26,6 +26,8 @@ cron() { env -u KASTEN_PERIODIC_PATH -u NEWS_PLUGIN_DIR HOME="$T/home" NEWS_LOG_
 cron KASTEN_PERIODIC_PATH=P PAGE="$V/P/05 Newspaper/$DAY.html"; ok "cron exit" $? 0
 has "cron skips permissions" "$(cat "$T/home/args")" "--dangerously-skip-permissions"
 has "cron passes the periodic folder" "$(cat "$T/home/args")" '--periodic "P"'
+# cron sets SHELL=/bin/sh; claude must see bash, or its Bash tool runs zsh
+cron SHELL=/bin/sh KASTEN_PERIODIC_PATH=P PAGE="$V/P/05 Newspaper/$DAY.html"; ok "cron hands claude bash" "$(cat "$T/home/shell")" /bin/bash
 rm "$V/P/05 Newspaper/"*.html
 cron KASTEN_PERIODIC_PATH=P PAGE="$V/P/05 Newspaper/$DAY.html" NO_PAGE=1; ok "cron exit with no page" $? 1
 # without the variable the wrapper looks in 01 Periodic
