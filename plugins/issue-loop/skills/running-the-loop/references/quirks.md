@@ -6,7 +6,7 @@ Each of these stopped the loop at least once. The scripts handle the first four,
 
 A long brief arrives as a pasted block, typed by another session. The implementer rightly gives it less weight than the user's own word, and the brief ends in a merge and a deploy. So it may refuse to act and ask for a typed go-ahead. A successor orchestrator does the same with the takeover message. On the example project the implementer asked in about one brief of four, and the first successor that was started by the plugin's own handover stopped and waited for the user.
 
-The cause was the plugin's: nothing the user had written told a session that this loop's sessions may order each other. The authority stood only in files that sessions wrote (`HANDOFF.md`, `rules.md`) and in the paste itself, and an opener like "this brief is mine" sits inside the paste, so it cannot vouch for itself. The session that asked was right.
+The cause was the plugin's: nothing the user had written told a session that this loop's sessions may order each other. The authority stood only in files that sessions wrote (`HANDOFF.md`, `rules.local.md`) and in the paste itself, and an opener like "this brief is mine" sits inside the paste, so it cannot vouch for itself. The session that asked was right.
 
 The cure is the standing order (`SKILL.md`, "The standing order"): the user grants the two cases once with `grant.sh`, the order is loaded as the session's own instructions, and the brief's first line and the takeover message point at it. The implementer can check a brief against `task.md` in the loop folder; a successor runs `takeover-check.sh`.
 

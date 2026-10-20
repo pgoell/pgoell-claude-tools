@@ -9,7 +9,7 @@
 set -u
 here=$(cd "$(dirname "$0")" && pwd)
 . "$here/lib.sh"
-for f in init next grant wait notify gate takeover start models skill-text; do . "$here/test-$f.sh"; done
+for f in init next grant wait notify gate stub takeover start models skill-text rules upgrade; do . "$here/test-$f.sh"; done
 
 test_init
 wire_stub
@@ -20,10 +20,13 @@ test_next_go_ahead
 test_wait
 test_notify
 test_gate
+test_stub
 test_takeover
 test_start
 test_models
 test_skill_text
+test_rules
+test_upgrade
 
 echo "$pass passed, $fail failed"
 [ $fail = 0 ]

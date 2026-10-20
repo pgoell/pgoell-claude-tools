@@ -1,41 +1,44 @@
-# Upgrading an old loop folder
+# Upgrading a loop folder
 
-`init.sh` never overwrites a file, so a loop folder keeps the scripts of the version that made it. Find the version that made the folder and follow its list, top to bottom: each list holds every script that folder needs anew, and every folder made before 0.8.0 ends with the last section. The README's "After an update to" notes on `/reload-plugins` and `HANDOFF.md` are about the running orchestrator, not the scripts; after the list, do each note for a version newer than the folder, oldest first.
+From 0.9.0 a loop folder holds its data and eight stubs. A stub is one file, copied under each script's name. It runs the same script from the installed plugin, so a plugin update reaches the folder with no copying. The loop's own rule answers live in `rules.local.md`, next to the plugin's rules.
 
-Why the order matters:
+Any folder made before 0.9.0 needs one upgrade, whatever version made it, and a folder made by hand too. Run it between tasks: a `wait.sh` still running keeps its old file, since `upgrade.sh` replaces files by rename, and the next brief comes from the new `next.sh`.
 
-- A folder from 0.2.0 or earlier has no standing order, so a brief or a takeover may wait for the user's go. The new `next.sh` refuses to send without the order, so copy `next.sh` and `start.sh` only after the user has run `grant.sh`; until then the old ones keep the loop going, with a go from the user now and then.
-- Copy the scripts a step names together, all or none. The old `next.sh` never removes `task.notified`, so a stale line could settle the next task's wait, and the old `notify.sh` never writes it (0.6.0 or earlier: a finished task with its pane scrolled up sits until `STALLED`). The new `wait.sh` with a 0.1.0 `next.sh` says `TIMEOUT` only once ever.
-- Take new rule text clause by clause: compare your `rules.md` with `assets/rules.md` and take each new or changed clause. Copying the whole file would drop your `FILL:` answers.
+First update the plugin: `upgrade.sh` refuses while the installed issue-loop is older than 0.9.0. Then do the upgrade for every loop folder that still runs old scripts.
 
-## Made by 0.1.0, 0.2.0, or by hand
+1. A hand-made folder with no `loop.env` needs one first. Copy `assets/loop.env` into the folder and fill in the implementer's name and checkout.
+2. Run the upgrade as a dry run. The script is `scripts/upgrade.sh` in the plugin root, the folder that `next.sh` names in its exit-3 message. Outside a session, use `~/.claude/plugins/cache/pgoell-claude-tools/issue-loop/<version>/skills/running-the-loop/scripts/upgrade.sh`, with the version that `installed_plugins.json` names. In a session, use `${CLAUDE_SKILL_DIR}/scripts/upgrade.sh`:
 
-1. A hand-made folder with no `loop.env` needs one first: `grant.sh` reads the implementer's name and checkout from it.
-2. Run `init.sh` on the folder again. It adds the files the folder lacks: `grant.sh`, `takeover-check.sh` and the two `standing-order` templates, and for a 0.1.0 folder `notify.sh`.
-3. Copy `lib.sh` and `driver-herdr.sh` anew from the skill's `assets/`.
-4. Go through "The standing order" in `SKILL.md` with the user, who then runs `grant.sh`. Start the implementer anew once, so that it reads the order.
-5. Copy `next.sh`, `start.sh`, `notify.sh` and `wait.sh` anew from `assets/`, all four at once.
-6. Copy `gate.sh` anew from `assets/`.
-7. Take the new clauses from `assets/rules.md` into your `rules.md`. For a 0.1.0 folder that includes rule 19.
+   ```bash
+   ~/.claude/plugins/cache/pgoell-claude-tools/issue-loop/<version>/skills/running-the-loop/scripts/upgrade.sh ~/loops/<project>
+   ```
 
-## Made by 0.3.0 to 0.6.0
+   Without a flag it prints what it would change and changes nothing.
+3. Check the plan with the user.
+4. Run the same command with `--apply`, once.
 
-1. Copy `lib.sh`, `start.sh`, `next.sh`, `notify.sh`, `wait.sh` and `gate.sh` anew from the skill's `assets/`, all at once. A folder from 0.3.x also copies `driver-herdr.sh` anew.
-2. Take the new clauses from `assets/rules.md` into your `rules.md`.
+The plan lists these changes:
 
-## Made by 0.6.1 to 0.7.0
+- Each script that a stub replaces, `lib.sh` included. The old file moves to `before-upgrade/`.
+- `driver-herdr.sh`. It moves to `before-upgrade/`, since the plugin's copy runs now.
+- An old full `rules.md`. Its `FILL:` answers go to `rules.local.md`, and the file moves to `before-upgrade/rules.md`. Before it writes, upgrade builds the brief from `rules.local.md` and compares it with the old `rules.md`. If they differ, it prints the difference and changes nothing.
+- `ISSUE_LOOP_VERSION=latest` in `loop.env`, if the line is missing.
+- `models.env`, if the folder has none. Check its values with the user.
 
-1. Copy `gate.sh` anew from the skill's `assets/`. The new gate fails a ticked box that names no test after `Test:` or `Proof:` on its line.
-2. Take the new sentence of rule 5 from `assets/rules.md` into your `rules.md`.
+A rerun keeps each earlier copy in `before-upgrade/` under a new name, `NAME.2` and so on. A second run on an upgraded folder changes nothing and says so.
 
-## Made by 0.7.1 to 0.7.4
+Upgrade prints a warning when `next.sh` would refuse the result: a rule 3 kept whole without `{{CODER_MODEL}}` or `{{REVIEW_MODEL}}`, or a `FILL:` without an answer. Fix that in `rules.local.md` before the next task.
 
-No list of its own: do the last section.
+After the upgrade, edit `rules.local.md`, never `rules.md`. The orchestrator also rewrites the lines of `HANDOFF.md` that tell a successor to edit `rules.md` or to copy scripts. Upgrade never touches HANDOFF files.
 
-## Every folder made before 0.8.0
+The folder's `CLAUDE.md` (the user's grant) may still say "task line plus rules.md". That is only words, and nothing fails because of it. Only the user may change it: they delete the order there and run `grant.sh` again. A session never edits it.
 
-Do these steps last, after the list for your folder's version.
+Upgrade never touches `CLAUDE.md`, `CLAUDE.local.md`, the `HANDOFF` files, `ledger.tsv`, `orch-name`, the `task.*` files, or a custom driver. A custom driver stays where it is, and `DRIVER` in `loop.env` still names it.
 
-1. Run `init.sh` on the folder again: it adds `models.env`. Check its values with the user.
-2. Copy `lib.sh`, `next.sh`, `start.sh` and `driver-herdr.sh` anew from the skill's `assets/`, all at once. The new `next.sh` and `start.sh` refuse without `models.env`; the old ones ignore it. A folder with its own driver adds the two flags to its `drv_start`, as `references/driver.md` shows.
-3. Take the new rule 3 from `assets/rules.md` into your `rules.md`.
+To go back, delete the stubs and `rules.local.md`, then move the files in `before-upgrade/` back into the folder under their names.
+
+Rules kept whole: upgrade prints "rule N: kept whole" for each rule of yours that differs from the plugin's rule beyond its `FILL:` answers. That rule no longer takes plugin changes. To take the plugin's rule again, delete its `## N` section in `rules.local.md` and answer its `FILL:` marks again as `## N.K` sections.
+
+Rolling back a bad release: set `ISSUE_LOOP_VERSION` in `loop.env` to an exact version of 0.9.0 or later, such as `0.9.0`. A pin to an older version is refused, since those versions cannot run a folder of stubs. That version's folder must still be in the plugin cache. Claude Code marks old versions with `.orphaned_at` and may remove them. A missing version makes the stub exit 3 and list the versions it found. Set `latest` to return to the newest. `next.sh` takes the version once per task, so a changed pin applies from the next task.
+
+A folder from 0.2.0 or earlier has no standing order. After the upgrade, the user runs `grant.sh` through its stub, in a terminal of their own, as `SKILL.md` describes. Until then `next.sh` refuses to send a brief.

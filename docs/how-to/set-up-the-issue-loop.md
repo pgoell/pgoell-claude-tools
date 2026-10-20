@@ -31,7 +31,7 @@ The full list, with a check for each, is [setup.md](../../plugins/issue-loop/ski
 
 1. Give the implementer a checkout of its own, which no other session uses.
 2. In a Claude Code session, run `/issue-loop:running-the-loop`. It checks the repository and makes the loop folder outside every checkout, such as `~/loops/<project>`.
-3. Fill in, with the orchestrator: `loop.env` (implementer session name, its checkout, base branch, deploy workflow, alive URL) and every `<FILL: ...>` mark in `rules.md` and `standing-order.md`.
+3. Fill in, with the orchestrator: `loop.env` (implementer session name, its checkout, base branch, deploy workflow, alive URL) and every `<FILL: ...>` mark in `standing-order.md`, and the answers to the plugin's `FILL` marks in `rules.local.md`.
 4. Start `claude` once in the loop folder yourself and accept the folder trust question. A successor orchestrator starts there later.
 5. Grant your standing order. In a terminal of your own, in the loop folder:
 

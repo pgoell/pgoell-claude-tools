@@ -29,17 +29,18 @@ Both skills start from their slash command or from a plain request ("run the iss
 
 ## The loop folder
 
-`scripts/init.sh <folder>` copies the script templates into a folder outside every checkout. The main ones:
+`scripts/init.sh <folder>` writes the data templates and eight stubs into a folder outside every checkout. A stub runs the same script from the installed plugin, so an update reaches the folder with no copying. The main ones:
 
 | File              | What it does                                                                                                                             |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | `loop.env`        | The settings: implementer name and checkout, base branch, deploy workflow, alive URL, driver, permission mode.                           |
 | `models.env`      | The model per role and per harness: sessions, implementing and review subagents, advisor. `start.sh` and `next.sh` read it.              |
-| `rules.md`        | The brief every task gets.                                                                                                               |
+| `rules.local.md`  | The loop's own answers to the plugin's rules: the `FILL` marks, and any rule of its own. The brief is the plugin's rules plus this file. |
 | `next.sh`         | Sends `/clear` and the brief to the implementer. Refuses while the implementer works or without the standing order.                      |
 | `wait.sh`         | Waits for the implementer's DONE or BLOCKED line, on its screen or in the file `notify.sh` writes, with a clock.                         |
 | `gate.sh`         | Pass or fail from outside: issues closed, PRs merged, every ticked box names a test, live commit, clean tree, app up.                    |
 | `grant.sh`        | Run by you in a terminal of your own, never by a session: writes your standing order into the sessions' instructions after you type yes. |
-| `driver-herdr.sh` | The only file that knows the terminal manager (herdr). Another manager needs five shell functions.                                       |
+| `lib.sh`          | A stub that loads the plugin's library, so `. ./lib.sh` works in the folder.                                                             |
+| `driver-herdr.sh` | Not copied: the herdr driver runs from the plugin. A custom driver is the one script a folder may hold, named by `DRIVER` in `loop.env`. |
 
 Sessions start with `--permission-mode bypassPermissions` by default; set `PERMISSION_MODE=auto` in `loop.env` for a loop that should ask. `models.env` in the loop folder names the model for each role (orchestrator, implementer, coding and review subagents, advisor) in Claude Code; its Codex column is empty. Read `skills/running-the-loop/references/limits.md` in the plugin before you rely on the loop: tests prove logic and not taste, and no check in the loop is a person who uses the product.

@@ -33,7 +33,7 @@ When you set up a new loop folder, read `references/setup.md`, "Setup, once per 
 
 ## The standing order
 
-The loop's sessions type into each other's tabs: the orchestrator pastes a brief into the implementer, and an outgoing orchestrator tells its successor to take over. A session rightly gives such text less weight than the user's own word. If nothing the user wrote tells it that this loop's sessions may order each other, it stops and asks the user for a go, and the loop stands until they come back. `HANDOFF.md`, `rules.md` and the brief itself cannot settle that: sessions wrote them.
+The loop's sessions type into each other's tabs: the orchestrator pastes a brief into the implementer, and an outgoing orchestrator tells its successor to take over. A session rightly gives such text less weight than the user's own word. If nothing the user wrote tells it that this loop's sessions may order each other, it stops and asks the user for a go, and the loop stands until they come back. `HANDOFF.md`, `rules.local.md` and the brief itself cannot settle that: sessions wrote them.
 
 When you set up the loop, or the user must grant the order anew, read `references/setup.md`, "Granting the standing order": the three steps by which the user gives the order once, through `grant.sh`.
 
@@ -141,7 +141,7 @@ The loop was built and run with Claude Code sessions only. Under Codex the orche
 - `references/gate.md`: what a gate pass means, and what to read in the report.
 - `references/queue.md`: the order of the queue, and how the brief learns.
 - `references/permission-mode.md`: the two kinds of question a session stops on, and the answer each gets.
-- `references/upgrading.md`: what to copy anew into a loop folder an older version made.
+- `references/upgrading.md`: how to bring a loop folder an older version made up to date, with `scripts/upgrade.sh`.
 - `references/self-healing.md`: each fault of a script, the driver or the notify line, and its fix.
 
 ## Self-Healing

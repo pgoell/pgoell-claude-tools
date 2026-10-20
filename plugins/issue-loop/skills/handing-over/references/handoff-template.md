@@ -29,7 +29,7 @@ The loop runs by `/issue-loop:running-the-loop`. A successor's first message sta
 Scripts in this folder: next.sh, wait.sh, gate.sh, start.sh, notify.sh, takeover-check.sh (see the skill). grant.sh is the user's: no session runs it. Local notes:
 
 - <What differs here from the skill: a changed time limit, an extra check, a driver quirk>
-- <Rules added to rules.md since the start, with the fault behind each>
+- <Rules added to rules.local.md since the start, with the fault behind each>
 
 ## After every task, here
 
@@ -62,7 +62,7 @@ Not for the loop: <issues that need the user, a real device, or a decision; say 
 
 1. Run `./takeover-check.sh <new name> <old name>` if you have not. After the outgoing orchestrator confirms, the file orch-name in this folder must hold your session name (<new name>): the implementer tells that name when a task is done.
 2. If the first message did not have you do it, rename yourself: `herdr agent prompt <new name> "/rename <project>-orchestrator-main"`.
-3. Read rules.md and the scripts in this folder.
+3. Read rules.local.md and loop.env in this folder; the scripts are stubs of the plugin's assets/ scripts.
 4. List the sessions and the open issues. Confirm the implementer's state.
 5. <If a task runs: start wait.sh for token X; the task began at <time> and wait.sh has <not> said TIMEOUT for it, so watch its age yourself. If not: send queue item 1 with next.sh, then start wait.sh.>
 6. Tell the user in three lines that you have taken over and what runs.

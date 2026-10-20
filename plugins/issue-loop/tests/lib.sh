@@ -13,7 +13,11 @@ L="$T/loop"
 wire_stub() {
 cp "$here/driver-stub.sh" "$L/"
 export STUB="$T/stub" LOOP_SLEEP_SCALE=0 FAKE="$T/fake"
-mkdir -p "$STUB" "$FAKE" "$T/bin" "$T/repo"
+mkdir -p "$STUB" "$FAKE" "$T/bin" "$T/repo" "$T/cache" "$T/claude/plugins"
+# the fake install: the installed issue-loop is this checkout's plugin folder
+ln -s "$(cd "$here/.." && pwd)" "$T/cache/0.9.0"
+printf '{"version":2,"plugins":{"issue-loop@pgoell-claude-tools":[{"scope":"user","installPath":"%s/cache/0.9.0","version":"0.9.0"}]}}\n' "$T" >"$T/claude/plugins/installed_plugins.json"
+export CLAUDE_CONFIG_DIR="$T/claude"
 sed -i -e 's|^DRIVER=.*|DRIVER=driver-stub.sh|' -e "s|^REPO=.*|REPO=$T/repo|" -e 's|^ALIVE_URL=.*|ALIVE_URL=https://app.example/alive|' "$L/loop.env"
 }
 

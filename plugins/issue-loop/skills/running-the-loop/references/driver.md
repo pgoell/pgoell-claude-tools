@@ -44,7 +44,7 @@ Also herdr-specific, and named as such where the skills mention them: tabs, pane
 
 ## Swapping the driver
 
-Copy `driver-herdr.sh` to `driver-<name>.sh`, rewrite the five functions, set `DRIVER=driver-<name>.sh` in `loop.env`. A tmux sketch, to show the size of the job (untested; its `drv_start` prints no handle, so add one):
+The herdr driver runs from the plugin, so a loop folder holds no copy of it. To swap it, copy `driver-herdr.sh` from the skill's `assets/` into the loop folder as `driver-<name>.sh`, rewrite the five functions, and set `DRIVER=driver-<name>.sh` in `loop.env`. `lib.sh` loads the driver file in the loop folder when there is one, and the plugin's own otherwise. A tmux sketch, to show the size of the job (untested; its `drv_start` prints no handle, so add one):
 
 ```bash
 drv_send()   { tmux send-keys -t "$1" -l "$2"; tmux send-keys -t "$1" Enter; }
