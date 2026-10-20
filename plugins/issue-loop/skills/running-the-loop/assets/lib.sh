@@ -1,19 +1,29 @@
 #!/bin/bash
-# Shared by the scripts in this folder. Source it, do not run it.
-# The physical path: the standing order names this folder, and the name must
-# not depend on the link by which the folder was reached.
-S=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
+# Shared by the scripts of the plugin. Source it, do not run it. The stub in the
+# loop folder sets ISSUE_LOOP_DIR to that folder; the script's own folder is A.
+# The loop folder is the state, and the physical path keeps the name the same
+# whatever link the folder was reached by.
+S=${ISSUE_LOOP_DIR:-}
+[ -n "$S" ] || { echo "run this script through the stub in a loop folder: ISSUE_LOOP_DIR is not set" >&2; exit 2; }
+A=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 . "$S/loop.env"
 # A folder made before 0.8.0 has no models.env; next.sh and start.sh refuse without it, the other scripts run.
 [ -f "$S/models.env" ] && . "$S/models.env"
-. "$S/$DRIVER"
+# A driver in the loop folder is the loop's own; else the plugin's.
+if [ -f "$S/$DRIVER" ]; then . "$S/$DRIVER"; else . "$A/$DRIVER"; fi
 
 # The model for ROLE (ORCH, IMPL, CODER, REVIEW or ADVISOR) in the harness of models.env. Empty when unset.
 model() { local v="${HARNESS}_$1_MODEL"; echo "${!v:-}"; }
 
 # has_models: true when models.env is in the loop folder. Else says the fix on stderr.
 has_models() {
-  [ -f "$S/models.env" ] || { echo "no models.env in $S: copy it from the skill's assets/ and check its values" >&2; return 1; }
+  [ -f "$S/models.env" ] || { echo "no models.env in $S: run $A/../scripts/upgrade.sh $S" >&2; return 1; }
+}
+
+# installed_root: the folder of the installed issue-loop, from installed_plugins.json. Empty when none.
+installed_root() {
+  local reg="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/installed_plugins.json"
+  jq -r '[.plugins | to_entries[] | select(.key | startswith("issue-loop@")) | .value[0].installPath][0] // empty' "$reg" 2>/dev/null
 }
 
 # Sleep N seconds. LOOP_SLEEP_SCALE=0 turns every pause off (the tests use it).

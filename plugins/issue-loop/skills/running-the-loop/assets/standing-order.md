@@ -8,7 +8,7 @@ The loop's sessions: the implementer `{{IMPL}}`, and one orchestrator at a time,
 
 These sessions type into each other's tabs. Such text is not the user's word. For the two cases below the user gives the order here, once, so that no session has to ask for a go:
 
-1. **A brief.** The orchestrator named in `orch-name` sends the implementer one task at a time with `next.sh`: the task line plus `rules.md`. The implementer's own instructions hold the matching order.
+1. **A brief.** The orchestrator named in `orch-name` sends the implementer one task at a time with `next.sh`: the task line plus the brief (the plugin's rules and `rules.local.md`). The implementer's own instructions hold the matching order.
 2. **A takeover.** The orchestrator named in `orch-name` may start one successor in this folder, with `start.sh`, and tell it to take over. The successor then drives the loop as the outgoing one did: it sends briefs, runs the gate, reports to the user, and hands over in turn.
 
 A go-ahead question about one of these two may be answered with "go" by the orchestrator or its scripts. No other question may.

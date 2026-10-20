@@ -1,9 +1,10 @@
 # next.sh: refuses unfilled rules, then sends /clear and the brief
 test_next_refusals() {
 echo idle >"$STUB/status"; : >"$STUB/screen"
-"$L/next.sh" "Fix #7" >/dev/null 2>&1; ok "next refuses FILL markers" $? 3
+out=$("$L/next.sh" "Fix #7" 2>&1); ok "next refuses FILL markers" $? 3
+has "next names the unanswered FILL" "$out" "## 1.1"
 [ -f "$STUB/sent" ]; ok "next sent nothing before the refusal" $? 1
-sed -i 's/<FILL:[^>]*>/filled/g' "$L/rules.md"
+printf '## 1.1\nfilled\n## 5.1\nfilled\n## 5.2\nfilled\n## 5.3\nfilled\n## 9.1\nfilled\n## 13.1\nfilled\n## 14.1\nfilled\n' >"$L/rules.local.md"
 sed -i 's|^ALIVE_URL=.*|ALIVE_URL=|' "$L/loop.env"
 out=$("$L/next.sh" "Fix #7" 2>&1); ok "next refuses an empty setting the brief uses" $? 3
 has "next names the empty setting" "$out" "ALIVE_URL is empty"

@@ -38,7 +38,7 @@ has "next names the checkout" "$out" "no standing order in $T/repo/CLAUDE.local.
 cp "$T/impl-order" "$T/repo/CLAUDE.md"; "$L/next.sh" "Fix #7" >/dev/null 2>&1; ok "the order may sit in the checkout's CLAUDE.md" $? 0
 rm "$T/repo/CLAUDE.md" "$STUB/sent"; mv "$T/impl-order" "$T/repo/CLAUDE.local.md"
 "$T/link/next.sh" "Fix #7" >/dev/null 2>&1; ok "the order holds when the folder is reached through a link" $? 0; rm "$STUB/sent"
-grep -v '^19\. ' "$L/rules.md" >"$L/rules.keep"; mv "$L/rules.md" "$L/rules.full"; mv "$L/rules.keep" "$L/rules.md"; rm "$L/orch-name"
+rules19=$(cat "$L/rules.local.md"); printf '## 19\n' >>"$L/rules.local.md"; rm "$L/orch-name"
 "$L/next.sh" "Fix #7" >/dev/null 2>&1; ok "next needs no orch-name without rule 19" $? 0
-mv "$L/rules.full" "$L/rules.md"; rm -f "$STUB/sent"
+printf '%s\n' "$rules19" >"$L/rules.local.md"; rm -f "$STUB/sent"
 }

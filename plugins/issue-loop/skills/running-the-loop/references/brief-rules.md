@@ -1,6 +1,6 @@
 # The brief, rule by rule
 
-`rules.md` in the loop folder is the brief every task gets, below the task line. Each rule is there because of a fault that happened. Drop a rule whose fault cannot happen in your repo; keep the ones marked **core**, since the scripts or the orchestrator's routine lean on them.
+The brief every task gets, below the task line, is the plugin's rules (`assets/rules.md`) with the loop's answers and rules from `rules.local.md` in the loop folder. Each rule is there because of a fault that happened. Drop a rule whose fault cannot happen in your repo with an empty `## N` in `rules.local.md`; keep the ones marked **core**, since the scripts or the orchestrator's routine lean on them.
 
 The numbers below come from the example project, a web app built by this loop over two days.
 
@@ -42,6 +42,6 @@ If you rewrite the brief for another kind of project, keep these:
 ## Changing the brief while the loop runs
 
 - A slip seen once goes into the next task line ("tell every subagent rule 4").
-- A slip seen twice, or a fault that reached live, becomes a rule or a clause in `rules.md`. It applies from the next task. Tell the user and note it in `HANDOFF.md`.
+- A slip seen twice, or a fault that reached live, becomes a rule or a clause in `rules.local.md`. It applies from the next task. Tell the user and note it in `HANDOFF.md`.
 - A rule that binds the user (who merges, what waits for them) changes only on their word. Write their words and the date into `HANDOFF.md`.
 - Rules in prose are weak. One of the brief's rules ("back up first") was checked by nothing, and the 60 minutes were self-reported. Where a rule matters, build a check: a gate script line, a CI job, a hook.

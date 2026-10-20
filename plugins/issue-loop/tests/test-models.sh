@@ -28,14 +28,14 @@ refuse_reviewer() {
 refuse_reviewer "next refuses a haiku reviewer" haiku
 refuse_reviewer "next refuses claude-haiku-5-5 as reviewer" claude-haiku-5-5
 
-# a rules.md without the review placeholder is refused, and nothing is sent
-rules=$(cat "$L/rules.md")
-printf '%s\n' "${rules//'{{REVIEW_MODEL}}'/the default}" >"$L/rules.md"
+# a brief without the review placeholder (rule 3 overridden in rules.local.md) is refused, and nothing is sent
+rules=$(cat "$L/rules.local.md")
+printf '## 3\n3. Who codes. Subagents implement on {{CODER_MODEL}}. Review subagents run on the default model.\n' >>"$L/rules.local.md"
 echo idle >"$STUB/status"; rm -f "$STUB/sent"
-out=$("$L/next.sh" --force "t" 2>&1); ok "next refuses a rules.md without the model placeholders" $? 3
+out=$("$L/next.sh" --force "t" 2>&1); ok "next refuses a brief without the model placeholders" $? 3
 has "next names the missing placeholder" "$out" "{{REVIEW_MODEL}}"
-ok "nothing sent for a rules.md without the placeholders" "$(cat "$STUB/sent" 2>/dev/null)" ""
-printf '%s\n' "$rules" >"$L/rules.md"
+ok "nothing sent for a brief without the placeholders" "$(cat "$STUB/sent" 2>/dev/null)" ""
+printf '%s\n' "$rules" >"$L/rules.local.md"
 
 sed -i 's/^CLAUDE_CODER_MODEL=.*/CLAUDE_CODER_MODEL=/' "$L/models.env"
 echo idle >"$STUB/status"; rm -f "$STUB/sent"
@@ -52,7 +52,7 @@ has "next says no models.env" "$out" "no models.env"
 ok "nothing sent without models.env" "$(cat "$STUB/sent" 2>/dev/null)" ""
 out=$("$L/start.sh" orch2 "$L" "o" "$T/msg" 2>&1); ok "start refuses without models.env" $? 3
 has "start says no models.env" "$out" "no models.env"
-out=$(bash -c ". '$L/lib.sh' && echo ok" 2>&1); ok "lib.sh loads without models.env" "$out" "ok"
+out=$(bash -c "ISSUE_LOOP_DIR='$L' . '$skill/assets/lib.sh' && echo ok" 2>&1); ok "lib.sh loads without models.env" "$out" "ok"
 mv "$T/models.env.aside" "$L/models.env"
 
 # only models.env and this file name a model

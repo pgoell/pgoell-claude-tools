@@ -4,7 +4,8 @@
 # the issues are closed, every PR made since the task began is merged with no
 # open box and every ticked box names its test (Test: or Proof: on its line),
 # the live commit is the head of BASE, the implementer's checkout is clean on
-# BASE, and the live app answers. It reads; it changes nothing.
+# BASE, and the live app answers. It reads; it changes nothing. A newer installed
+# plugin gets a NEWER PLUGIN line, which never fails the gate.
 # Needs: gh (logged in), git, jq, curl, GNU date.
 . "$(dirname "$0")/lib.sh"
 start=$(cat "$S/task.start")
@@ -50,6 +51,15 @@ if [ "${ctx:-0}" -gt 150000 ] 2>/dev/null; then
   echo "HAND OVER NOW: past 150k. Run issue-loop:handing-over before the next brief."
 elif [ "${ctx:-0}" -gt 120000 ] 2>/dev/null; then
   echo "HAND OVER: past 120k, and this is a break between tasks. Run issue-loop:handing-over before the next brief."
+fi
+# A newer issue-loop installed than the one this task ran: say so, never fail.
+inst=$(installed_root)
+ib=$(basename "$inst")
+rb=$(basename "$ISSUE_LOOP_ROOT")
+if [ -n "$inst" ] && [ "$ib" != "$rb" ] && [ "$(printf '%s\n' "$ib" "$rb" | sort -V | tail -1)" = "$ib" ]; then
+  hold=" The next next.sh takes it up."
+  [ "${ISSUE_LOOP_VERSION:-latest}" = latest ] || hold=" ISSUE_LOOP_VERSION=$ISSUE_LOOP_VERSION in loop.env holds the loop back."
+  echo "NEWER PLUGIN: issue-loop $ib is installed, this task ran $rb.$hold"
 fi
 [ $bad = 0 ] && echo "GATE PASS" || echo "GATE FAIL"
 exit $bad
