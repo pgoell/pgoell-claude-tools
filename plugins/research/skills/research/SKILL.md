@@ -5,7 +5,7 @@ description: Use when a topic needs many sources and a cited or comprehensive na
 
 # Research Skill
 
-Clarify a research ask into an approved brief. This skill asks, writes `brief.md` and hands over. It does not plan, search or write the report; `research:running-research` does that once the user calls it.
+Clarify a research ask into an approved brief. This skill asks, writes `brief.md` and hands over. It does not plan, search or write the report; `research:running-research` does that once the brief is approved.
 
 ---
 
@@ -85,9 +85,9 @@ When the user approves, change the line `Status: draft` to `Status: approved`. `
 
 ### Step 5: Hand over
 
-Your terminal step is to recommend the next skill: tell the user to run `/research:running-research`, and give the path to `brief.md`. Do NOT invoke it yourself.
+Once the brief says `Status: approved`, invoke `research:running-research` yourself with the path to `brief.md`; the approval is the go. Only if the user says to run it later, give the path and stop.
 
-This skill does not plan, search the web, dispatch researchers, or write `plan.md`, research notes or the report. Those belong to `research:running-research`, which reads the approved brief in its first step. Stop once you have recommended it.
+This skill does not plan, search the web, dispatch researchers, or write `plan.md`, research notes or the report. Those belong to `research:running-research`, which reads the approved brief in its first step.
 
 ## Self-Healing
 
