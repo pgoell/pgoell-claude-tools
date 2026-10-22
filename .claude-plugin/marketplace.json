@@ -20,7 +20,7 @@
       "name": "research",
       "source": "./plugins/research",
       "description": "Research complex topics and produce sourced reports.",
-      "version": "2.3.4"
+      "version": "2.3.5"
     },
     {
       "name": "writing",

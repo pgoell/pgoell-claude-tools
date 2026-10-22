@@ -8,7 +8,7 @@ status: stable
 
 # research
 
-Two skills that research a complex topic and write a sourced report. `research` asks one question at a time until the brief is complete (topic, scope, audience, purpose, deliverable, deadline), writes `brief.md`, waits for your approval and recommends the next skill. You then call `running-research`: it plans the work as clusters of questions, sends researcher subagents to search each cluster until new rounds add nothing, synthesizes the findings, and runs review gates before the final report.
+Two skills that research a complex topic and write a sourced report. `research` asks one question at a time until the brief is complete (topic, scope, audience, purpose, deliverable, deadline), writes `brief.md`, waits for your approval and then starts `running-research` itself (say "later" to stop at the brief). `running-research` plans the work as clusters of questions, sends researcher subagents to search each cluster until new rounds add nothing, synthesizes the findings, and runs review gates before the final report.
 
 The split is on purpose. While `research` asks, it cannot see the plan, search and report steps, so it does not rush past the questions to start them. `running-research` stops and sends you back to `research` when it finds no approved brief.
 
@@ -24,7 +24,7 @@ You may skip a question. After you hear once why it matters, the field goes into
 
 | Invocation                   | What it does                                                                                                                  |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `/research:research`         | Ask one question at a time, write `brief.md`, get your approval, and recommend `/research:running-research`. Plans nothing.   |
+| `/research:research`         | Ask one question at a time, write `brief.md`, get your approval, then start `/research:running-research`. Plans nothing.      |
 | `/research:running-research` | From the approved `brief.md`: plan the investigation, gather sources, synthesize, review the conclusions, and write a report. |
 
 ## How it checks its own work
