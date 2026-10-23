@@ -22,7 +22,7 @@ from pathlib import Path
 import jinja2
 
 sys.path.append(str(Path(__file__).resolve().parents[2] / "digest" / "scripts"))
-from common import BERLIN, analysed_day, base_parser  # noqa: E402
+from common import BERLIN, analysed_day, base_parser, kasten_layer  # noqa: E402
 
 ACTIVITY = "07 Activity"
 TEMPLATE = Path(__file__).resolve().parent.parent / "references" / "page.html.j2"
@@ -121,7 +121,7 @@ def main() -> None:
     env.filters["tokens"] = lambda n: "n/a" if n is None else f"{n / 1e6:.1f}M" if n >= 1e6 else f"{n / 1e3:.0f}k"
     env.filters["usd"] = lambda n: "n/a" if n is None else f"${n:,.2f}"
     out = folder / f"{day.isoformat()}.html"
-    out.write_text(env.get_template(TEMPLATE.name).render(page=page, view=view))
+    out.write_text(env.get_template(TEMPLATE.name).render(page=page, view=view, kasten_layer=kasten_layer()))
     print(f"rendered {out}: {len(page['needs'])} need you, {len(view['shipped'])} repos shipped, {len(page['repos'])} repos in churn")
 
 

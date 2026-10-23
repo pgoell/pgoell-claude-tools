@@ -1,36 +1,21 @@
 {#- Heimatblatt family, part 1 of 3: palette, dark mode, page, newsprint grain, masthead. -#}
+/* Colours and faces come from kasten's tokens, so light and dark follow kasten's theme. */
 :root{
-  --paper:#f5efe3;
-  --paper-2:#ede4d2;
-  --ink:#2b2520;
-  --ink-soft:#4a4038;
-  --muted:#7a6e62;
-  --rule:#cfc2ab;
-  --accent:#9c3b24;
-  --local:#3f5a3c;
-  --local-bg:#ebe6d3;
-  --update-bg:#f3e1d2;
-  --font-head:"Zilla Slab", "Rockwell", Georgia, serif;
-  --font-body:"Literata", Georgia, "Times New Roman", serif;
-  --font-mono:ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --grain-opacity:.07;
+  --paper:var(--k-paper);
+  --paper-2:var(--k-surface);
+  --ink:var(--k-ink);
+  --ink-soft:var(--k-ink-soft);
+  --muted:var(--k-muted);
+  --rule:var(--k-rule);
+  --accent:var(--k-danger);
+  --local:var(--k-ok);
+  --local-bg:var(--k-surface);
+  --update-bg:color-mix(in srgb, var(--k-warn) 14%, transparent);
+  --font-head:var(--k-serif);
+  --font-body:var(--k-serif);
+  --font-mono:var(--k-mono);
+  --grain-opacity:.06;
   --photo:sepia(.18) saturate(.82) contrast(1.03);
-}
-@media (prefers-color-scheme: dark){
-  :root{
-    --paper:#1c1916;
-    --paper-2:#25211c;
-    --ink:#ece3d2;
-    --ink-soft:#d3c7b3;
-    --muted:#9d907f;
-    --rule:#40382f;
-    --accent:#e08a68;
-    --local:#a9c39b;
-    --local-bg:#212219;
-    --update-bg:#33241c;
-    --grain-opacity:.05;
-    --photo:sepia(.2) saturate(.75) brightness(.86) contrast(1.05);
-  }
 }
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}

@@ -26,11 +26,12 @@ from zoneinfo import ZoneInfo
 
 import jinja2
 import yaml
-from common import DESIGNS, base_parser, newspaper_dir, today
+from common import DESIGNS, SKILL_DIR, base_parser, newspaper_dir, today
 
 CHANGE = re.compile(r"^- (\d{4}-\d{2}-\d{2}): (.+)$")
 FALLBACK = "plain"
 BERLIN = ZoneInfo("Europe/Berlin")
+KASTEN_THEME = SKILL_DIR / "references" / "kasten-theme.css"
 
 
 def published(value: str) -> str:
@@ -51,6 +52,29 @@ def berlin(moment: datetime) -> str:
 
 def stories(edition: dict) -> list[dict]:
     return [edition["lead"], *(s for sec in edition.get("sections", []) for s in sec.get("stories", []))]
+
+
+def kasten_layer() -> str:
+    """Kasten's tokens as a fallback layer for a page opened outside kasten.
+
+    Kasten injects its own kasten-theme.css unlayered, and unlayered rules win, so
+    inside kasten this layer is overridden. The palette blocks are left out.
+    """
+    css = KASTEN_THEME.read_text()
+    light = re.search(r"^:root \{\n(.*?)^\}", css, re.S | re.M).group(1)
+    dark = re.search(r'^\[data-theme="dark"\] \{\n(.*?)^\}', css, re.S | re.M).group(1)
+
+    def lines(block: str, indent: str) -> str:
+        return "".join(f"{indent}{line.strip()}\n" for line in block.splitlines() if line.strip())
+
+    return (
+        "@layer kasten-fallback {\n"
+        "  :root {\n" + lines(light, "    ") + "  }\n"
+        '  @media (prefers-color-scheme: dark) {\n    :root:not([data-theme="light"]) {\n'
+        + lines(dark, "      ") + "    }\n  }\n"
+        '  [data-theme="dark"] {\n' + lines(dark, "    ") + "  }\n"
+        "}\n"
+    )
 
 
 def recent_feedback(changelog: Path, count: int = 3) -> list[str]:
@@ -83,7 +107,7 @@ def main() -> None:
         story["published_display"] = published(story["published"])
 
     env = jinja2.Environment(loader=jinja2.FileSystemLoader([DESIGNS / design, DESIGNS]), autoescape=True)
-    html = env.get_template("template.html.j2").render(edition=edition)
+    html = env.get_template("template.html.j2").render(edition=edition, kasten_layer=kasten_layer())
     out = args.out or folder / f"{day}.html"
     out.write_text(html)
     print(f"rendered {out} with design {design!r}")
