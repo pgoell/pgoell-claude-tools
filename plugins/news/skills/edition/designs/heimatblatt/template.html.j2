@@ -26,13 +26,15 @@
 <style>
 {% include 'heimatblatt/base.css.j2' %}
 .nav{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 22px;margin:12px 0 0;padding:0 0 12px;
-  font-family:var(--font-head);font-size:15px;border-bottom:1px solid var(--rule)}
+  font-family:var(--k-sans);font-size:15px;border-bottom:1px solid var(--rule)}
 .nav a{text-decoration:none;color:var(--ink-soft)}
 .nav a:hover{color:var(--accent)}
 .nav a.home{color:var(--local);font-weight:600}
 
 {% include 'heimatblatt/story.css.j2' %}
 {% include 'heimatblatt/layout.css.j2' %}
+/* The meta line is interface text, so it sets in the sans face, not the newspaper serif. */
+.meta{font-family:var(--k-sans)}
 .also h4,.briefs h2{font-family:var(--font-head);font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--local);margin:0 0 8px}
 .also ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:6px 32px}
 .also li{font-family:var(--font-head);font-size:16px;line-height:1.35;padding-left:16px;position:relative}
@@ -77,7 +79,7 @@
   .grid > .story + .story::before{display:none}
   .grid > .story{padding:0 0 22px;margin-bottom:22px;border-bottom:1px solid var(--rule)}
   .grid > .story:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0}
-  .region{padding:20px 16px 22px;margin-left:-4px;margin-right:-4px;outline-offset:3px}
+  .region{padding:20px 16px 22px;margin-left:-4px;margin-right:-4px}
   .region .emblem{width:64px}
   .locals .story{grid-template-columns:96px minmax(0,1fr);gap:0 14px}
   .locals .pic{grid-row:1}
