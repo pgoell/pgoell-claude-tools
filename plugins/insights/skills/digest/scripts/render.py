@@ -18,7 +18,7 @@ import sys
 from datetime import date, datetime, timedelta
 
 import jinja2
-from common import BERLIN, TEMPLATE, WINDOW, analysed_day, base_parser, insights_dir, read_jsonl
+from common import BERLIN, TEMPLATE, WINDOW, analysed_day, base_parser, insights_dir, kasten_layer, read_jsonl
 
 STATUSES = ("doc", "rec", "new", "fade")
 ACTIONS = ("Opens a PR", "Adds a todo", "Adds a feedback line", "Watch only")
@@ -137,7 +137,7 @@ def main() -> None:
 
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE.parent), autoescape=True)
     out = folder / f"{day.isoformat()}.html"
-    out.write_text(env.get_template(TEMPLATE.name).render(page=page))
+    out.write_text(env.get_template(TEMPLATE.name).render(page=page, kasten_layer=kasten_layer()))
     print(f"rendered {out}: {n} problems, {len(page['seen'])} seen, {len(page['applied'])} applied lately")
 
 

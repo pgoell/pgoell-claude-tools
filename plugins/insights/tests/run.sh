@@ -153,6 +153,28 @@ has "page has the summary" "$H" "1 PR: seven."
 has "page names the missing source" "$H" "Unavailable on this run: vault."
 hasnt "page loads nothing from outside" "$H" "<link"
 
+# theme: the activity page opts in, keeps colour and fonts in tokens outside the fallback layer, and stacks below 640 px
+css_outside() { awk '/<style>/{s=1} /^@layer kasten-fallback/{skip=1} s && !skip{print} skip && /^\}$/{skip=0} /<\/style>/{s=0}' "$1" >"$T/outside.css"; }
+css_outside "$V/01 Periodic/07 Activity/$D.html"
+has "activity opts in to the theme" "$H" '<meta name="kasten-theme" content="tokens">'
+ok "activity: no hex outside the fallback layer" "$(grep -c '#[0-9a-fA-F]\{3,8\}' "$T/outside.css")" 0
+ok "activity: no rgb() outside the fallback layer" "$(grep -c 'rgb(' "$T/outside.css")" 0
+ok "activity: no quoted font family outside the fallback layer" "$(grep -c 'font[^;]*"' "$T/outside.css")" 0
+has "activity: one column below 640 px" "$(cat "$T/outside.css")" "@media (max-width: 639px)"
+
+# digest render: one problem from a fixture in its own vault, the same theme checks on its page
+DV="$T/digest-vault"
+mkdir -p "$DV/01 Periodic/06 Insights"
+jq -n '{date:"2026-10-09",window:["2026-09-26","2026-10-09"],scope:{main_sessions:3,subagent_files:1,newspaper_runs:1,projects:2},problems:[{id:"p1",fingerprint:"f1",group:"dev",status:"new",kind:"Tool error",title:"A test problem",yesterday:2,series:[0,0,0,0,0,0,0,0,0,0,0,0,1,2],projects:["app"],what:"Something failed.",why:"Because a test.",verified:true,fix:[["d","old line"],["a","new line"]],destination:"CLAUDE.md",action:"Adds a todo",evidence:["s-app"]}],seen:[]}' >"$DV/01 Periodic/06 Insights/$D.json"
+out=$(uv run -q "$here/../skills/digest/scripts/render.py" --vault "$DV" --date "$D" 2>&1); ok "digest render exit" $? 0
+has "digest render counts the problem" "$out" "1 problems"
+css_outside "$DV/01 Periodic/06 Insights/$D.html"
+has "digest opts in to the theme" "$(cat "$DV/01 Periodic/06 Insights/$D.html")" '<meta name="kasten-theme" content="tokens">'
+ok "digest: no hex outside the fallback layer" "$(grep -c '#[0-9a-fA-F]\{3,8\}' "$T/outside.css")" 0
+ok "digest: no rgb() outside the fallback layer" "$(grep -c 'rgb(' "$T/outside.css")" 0
+ok "digest: no quoted font family outside the fallback layer" "$(grep -c 'font[^;]*"' "$T/outside.css")" 0
+has "digest: one column below 640 px" "$(cat "$T/outside.css")" "@media (max-width: 639px)"
+
 # link_daily: one block above the first heading, replaced on a second run, the rest untouched
 link() { uv run -q "$scripts/link_daily.py" "${args[@]}" --note-day 2026-10-10 >/dev/null 2>&1; }
 note_file="$V/01 Periodic/00 Daily/2026-10-10.md"
