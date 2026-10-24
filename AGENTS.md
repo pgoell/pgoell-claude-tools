@@ -87,7 +87,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `terminal` 0.1.1: `tmux`
 - `playground` 0.1.3: `playground`
 - `databricks` 0.3.3: `databricks-core`, `databricks-docs`
-- `learning` 0.3.4: `quizzing-the-session`, `quizzing-a-topic`, `surveying-blind-spots`, `rebuilding-a-concept`
+- `learning` 0.4.0: `quizzing-the-session`, `quizzing-a-topic`, `surveying-blind-spots`, `rebuilding-a-concept`
 - `critique` 0.1.3: `critiquing-ideas`
 - `presentations` 0.7.7: `designing-presentations`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
 - `diagrams` 0.1.3: `creating-diagrams`
