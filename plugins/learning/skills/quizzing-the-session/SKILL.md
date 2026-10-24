@@ -44,14 +44,14 @@ Run this loop, one checklist item at a time, top to bottom:
 2. **Fill the gaps.** Correct misconceptions and add what is missing. Show real code from the `git diff` when it helps; offer to step through it or use the debugger.
 3. **Drill the why.** Ask "why" repeatedly. Why this approach and not the alternative? Why does this edge case matter? Surface understanding is recognizing the what; mastery is being able to defend the why.
 4. **Quiz the item** (see Quiz mechanics).
-5. **Gate on mastery.** Do not advance to the next checklist item until the current one is demonstrated. If the user stumbles, do not hand over the answer: give the smallest hint that could unblock them, then let them try again. Still stuck? Give a slightly bigger hint. Re-teach the item in full only after three hints fail or when the user asks for it, then re-quiz it.
+5. **Gate on mastery.** Do not advance to the next checklist item until the current one is demonstrated. If the user stumbles, do not hand over the answer: give the smallest hint that could unblock them, then let them try again. Still stuck? Give a slightly bigger hint each time. Count hints per item. Re-teach the item in full only after three hints fail or when the user asks for it, then re-quiz it.
 6. **Finish gate.** Do not declare the session done until every checklist item is demonstrated. The point is mastery of the whole, not coverage.
 
 ## Quiz mechanics
 
 - Use `AskUserQuestion` for the multiple-choice rungs: 2 to 4 options, exactly one correct.
 - **Shuffle the correct option's position** across questions, and never reveal which option is correct in the question text, the labels, or the descriptions. No "(correct)" tells, no leading phrasing.
-- Reveal the correct answer and the explanation only in the message **after** the user submits, never before.
+- Reveal the correct answer and the explanation only in the message **after** the user submits, never before. After a wrong pick, say it is wrong but hold the answer back: give a hint and ask the same question again (see Gate on mastery).
 - For "restate your understanding", the open-answer rung, and other open-ended prompts, ask in prose. `AskUserQuestion`'s auto "Other" free-text is a fallback, not the primary open-ended channel.
 - Quiz incrementally: one item at a time, woven into the loop, not batched at the end.
 - Escalate difficulty **within each item** before marking it mastered: start with recall, move to application, then to an edge case or "what would break if" question. Ask these rungs as multiple choice. The last rung is an open answer: with no options, ask the user to explain the item in their own words, as they would to a colleague without the AI. Multiple choice tests recognition; this tests understanding. Judge the answer yourself: say what holds and what is missing, and treat a gap as a stumble. Only when the user clears the edge-case rung and the open answer is the item mastered.
@@ -76,4 +76,4 @@ Keep a live markdown doc so the user can follow along:
 
 ## Platform notes
 
-`AskUserQuestion` is the Claude Code tool name. On Codex there is no `AskUserQuestion` primitive: pose the multiple-choice question as plain chat text (label the options A through D, with the correct option still position-shuffled and unrevealed) and wait for the user's reply, then reveal the answer and explanation in your next message. The open-answer rung is plain prose on both runtimes. The teaching loop and gates are identical on both runtimes.
+`AskUserQuestion` is the Claude Code tool name. On Codex there is no `AskUserQuestion` primitive: pose the multiple-choice question as plain chat text (label the options A through D, with the correct option still position-shuffled and unrevealed) and wait for the user's reply, then reply in your next message as Quiz mechanics says. The open-answer rung is plain prose on both runtimes. The teaching loop and gates are identical on both runtimes.
