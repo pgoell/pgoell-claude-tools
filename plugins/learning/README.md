@@ -9,7 +9,7 @@ Skills that teach the human: Socratic teach-and-quiz loops that verify you deepl
 - `/learning:surveying-blind-spots`: A pre-work blind-spot pass over a codebase area or field you do not know. Surfaces unknown unknowns, gotchas, and dead ends, then hands you rewritten prompts that bake in what it found. A briefing, not a quiz.
 - `/learning:rebuilding-a-concept`: Learn a concept by rebuilding it from the problem that forced it, then breaking your version with counterexamples and repairing it. The textbook version comes last, as a comparison. Works for maths and for designs such as data models or architecture patterns.
 
-The two quizzing skills have the assistant assess what you already know, fill the gaps, and quiz you item by item (multiple-choice via AskUserQuestion, with the correct option shuffled and hidden until you submit). The session never finishes until you have demonstrated you understand every item.
+The two quizzing skills have the assistant assess what you already know, fill the gaps, and quiz you item by item: multiple choice via AskUserQuestion for the early rungs, with the correct option shuffled and hidden until you submit, and a last check where you explain the item in your own words, with no options. When you get stuck, you get the smallest hint that could help, not the answer; a full re-teach comes only after three hints fail or when you ask. The session never finishes until you have demonstrated you understand every item.
 
 ## Inspiration
 
