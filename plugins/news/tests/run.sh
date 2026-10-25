@@ -80,5 +80,20 @@ edition "http://127.0.0.1:$port/paywall.html" 2026-10-18 2026-10-13
 out=$(refetch); ok "refetch paywall exit" $? 0
 has "refetch paywall prints og:description" "$out" "og:description: The bridge cost twelve million euros and took two years."
 
+# render: heimatblatt opts in to kasten's theme, keeps colour and fonts in tokens, and stacks below 640 px
+printf 'design: heimatblatt\n' >"$NP/config/design.yaml"
+edition https://example.org/bridge 2026-10-18 2026-10-13T09:00:00+02:00
+out=$(uv run -q "$S/render.py" --vault "$RV" --date 2026-10-19 --out "$T/news.html" 2>&1); ok "render exit" $? 0
+has "render names the design" "$out" "design 'heimatblatt'"
+has "page opts in to kasten's theme" "$(cat "$T/news.html")" '<meta name="kasten-theme" content="tokens">'
+ok "page loads no fonts" "$(grep -c 'fonts.googleapis' "$T/news.html")" 0
+# the CSS outside the fallback layer: from the first <style> to the layer, then after the layer
+awk '/<style>/{s=1} /^@layer kasten-fallback/{skip=1} s && !skip{print} skip && /^\}$/{skip=0} /<\/style>/{s=0}' "$T/news.html" >"$T/news-css.txt"
+ok "no hex outside the fallback layer" "$(grep -c '#[0-9a-fA-F]\{3,8\}' "$T/news-css.txt")" 0
+ok "no rgb() outside the fallback layer" "$(grep -c 'rgb(' "$T/news-css.txt")" 0
+ok "no quoted font family outside the fallback layer" "$(grep -c 'font[^;]*"' "$T/news-css.txt")" 0
+has "one column below 640 px" "$(cat "$T/news-css.txt")" "@media (max-width:639px)"
+has "fallback layer has the dark tokens" "$(cat "$T/news.html")" '@media (prefers-color-scheme: dark) {'
+
 echo "$pass passed, $fail failed"
 [ "$fail" -eq 0 ]

@@ -6,6 +6,7 @@ works under `uv run` without packaging. Stdlib only.
 
 import argparse
 import json
+import re
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -13,6 +14,7 @@ from zoneinfo import ZoneInfo
 SKILL_DIR = Path(__file__).resolve().parent.parent
 DEFAULTS = SKILL_DIR / "references" / "defaults"
 TEMPLATE = SKILL_DIR / "references" / "page.html.j2"
+KASTEN_THEME = SKILL_DIR / "references" / "kasten-theme.css"
 
 BERLIN = ZoneInfo("Europe/Berlin")
 PERIODIC = "01 Periodic"
@@ -43,6 +45,29 @@ def analysed_day(args: argparse.Namespace) -> date:
 
 def insights_dir(vault: Path, periodic: str) -> Path:
     return vault / periodic / INSIGHTS
+
+
+def kasten_layer() -> str:
+    """Kasten's tokens as a fallback layer for a page opened outside kasten.
+
+    Kasten injects its own kasten-theme.css unlayered, and unlayered rules win, so
+    inside kasten this layer is overridden. The palette blocks are left out.
+    """
+    css = KASTEN_THEME.read_text()
+    light = re.search(r"^:root \{\n(.*?)^\}", css, re.S | re.M).group(1)
+    dark = re.search(r'^\[data-theme="dark"\] \{\n(.*?)^\}', css, re.S | re.M).group(1)
+
+    def lines(block: str, indent: str) -> str:
+        return "".join(f"{indent}{line.strip()}\n" for line in block.splitlines() if line.strip())
+
+    return (
+        "@layer kasten-fallback {\n"
+        "  :root {\n" + lines(light, "    ") + "  }\n"
+        '  @media (prefers-color-scheme: dark) {\n    :root:not([data-theme="light"]) {\n'
+        + lines(dark, "      ") + "    }\n  }\n"
+        '  [data-theme="dark"] {\n' + lines(dark, "    ") + "  }\n"
+        "}\n"
+    )
 
 
 def read_jsonl(path: Path) -> list[dict]:
