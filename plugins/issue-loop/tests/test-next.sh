@@ -38,6 +38,8 @@ has "the brief names the review model" "$(cat "$L/task.md")" "run on $review"
 grep -v '^ALIVE_URL=' "$L/loop.env" >"$L/loop.env.new" && mv "$L/loop.env.new" "$L/loop.env"
 echo "ALIVE_URL='https://app.example/alive?a=1&b=2|c/d'" >>"$L/loop.env"
 "$L/next.sh" --force "t" >/dev/null
+out=$("$L/next.sh" --force "t. Never read a saved CI log, no sed" 2>&1); ok "next sends a task line that bans a tool" $? 0
+has "next warns on a tool ban" "$out" "WARN: the task line bans a tool"
 has "a URL with & and | survives" "$(cat "$L/task.md")" "curl -fsS https://app.example/alive?a=1&b=2|c/d answers"
 rm "$STUB/status"; "$L/next.sh" "t" >/dev/null 2>&1; ok "next refuses a gone implementer" $? 1
 }
