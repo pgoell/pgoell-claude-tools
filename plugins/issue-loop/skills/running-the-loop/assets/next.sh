@@ -12,12 +12,16 @@
 # It writes the coder and review models from models.env into rule 3 of the
 # brief. Refuses (exit 3) without models.env, with an empty coder or review
 # model, with a review model that matches REVIEW_NOT, or with a brief that
-# lacks the {{CODER_MODEL}} or {{REVIEW_MODEL}} placeholder.
+# lacks the {{CODER_MODEL}} or {{REVIEW_MODEL}} placeholder. Warns, never
+# refuses, when the task line bans a tool: rule 4 says the brief bans none.
 . "$(dirname "$0")/lib.sh"
 . "$A/rules.sh"
 force=0
 [ "${1:-}" = --force ] && { force=1; shift; }
 [ -n "${1:-}" ] || { echo 'usage: next.sh [--force] "<task line>"' >&2; exit 2; }
+case "${1,,}" in
+  *'no sed'*|*'no heredoc'*|*'never read a saved'*|*'edit tool only'*) echo "WARN: the task line bans a tool; rule 4 says the brief bans none" >&2 ;;
+esac
 if [ -f "$S/rules.md" ]; then
   echo "this folder still has a full rules.md from before 0.9.0: run $A/../scripts/upgrade.sh $S (a dry run), then again with --apply" >&2
   exit 3
