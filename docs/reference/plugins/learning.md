@@ -25,7 +25,7 @@ Skills that teach the human rather than do the work: two teach-and-quiz loops, a
 | `/learning:surveying-blind-spots` | Before you start in a codebase area or field you do not know, survey your unknown unknowns, gotchas and dead ends, then hand you rewritten prompts. A briefing, not a quiz.                                        |
 | `/learning:rebuilding-a-concept`  | Start from the problem that forced a concept, sketch your own fix, break it with counterexamples, repair it, and only then compare with the textbook version. Works for maths and for designs such as data models. |
 
-The quizzing skills ask multiple-choice questions through the host's question tool, with the right answer shuffled and hidden until you submit. They do not finish until you have shown you understand every item.
+The quizzing skills ask multiple-choice questions through the host's question tool, with the right answer shuffled and hidden until you submit, and end each item with an open question you answer in your own words. When you get stuck, you get the smallest hint that could help, then a slightly bigger one; a full re-teach comes only after three hints fail or when you ask. They do not finish until you have shown you understand every item.
 
 ## Evals
 

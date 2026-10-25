@@ -87,14 +87,14 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `terminal` 0.1.1: `tmux`
 - `playground` 0.1.3: `playground`
 - `databricks` 0.3.3: `databricks-core`, `databricks-docs`
-- `learning` 0.3.4: `quizzing-the-session`, `quizzing-a-topic`, `surveying-blind-spots`, `rebuilding-a-concept`
+- `learning` 0.4.0: `quizzing-the-session`, `quizzing-a-topic`, `surveying-blind-spots`, `rebuilding-a-concept`
 - `critique` 0.1.3: `critiquing-ideas`
 - `presentations` 0.7.7: `designing-presentations`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
 - `diagrams` 0.1.3: `creating-diagrams`
 - `news` 0.10.0: `edition`, `feedback`, `tune`
 - `insights` 0.7.0: `digest`, `apply`, `activity`
 - `structure` 0.2.0: `setting-up-the-checks`, `setting-up-import-boundaries`
-- `issue-loop` 0.9.1: `running-the-loop`, `handing-over` (Claude Code only)
+- `issue-loop` 0.9.2: `running-the-loop`, `handing-over` (Claude Code only)
 - `prose-styles` 0.1.0: no skills; output styles `orwell`, `concise`, `ste`, `house` (Claude Code only)
 - `guards` 0.1.2: no skills; `PreToolUse` hook `pkill-self-match` (Claude Code only)
 - `session-title` 0.1.0: no skills; `SessionStart` hook `session-title` (Claude Code only)

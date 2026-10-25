@@ -47,7 +47,7 @@ What the order is not: a lock. A session with write access could write such a fi
 
 Run every script from the loop folder (`cd <loop folder> && ...` in each call).
 
-**1. Write the task line.** Name the issues. Say which must hold first. Say "one PR". Add what the last task taught you. End with the exact last line. A task line that works:
+**1. Write the task line.** Name the issues. Say which must hold first. Say "one PR". Add what the last task taught you about the code or the issue. Never a ban on a tool, a command or a way of working, and never an earlier task line's bans: rule 4 says the brief bans none. End with the exact last line. A task line that works:
 
 > Three issues in ONE PR: #41, #38, #39. Read each with gh issue view N --json title,body,comments. #41 is a regression: do it first, it must hold, and name the PR that brought it in. For #38 and #39 add a test that fails before your fix and passes after. Where the parts touch different files, run subagents side by side. Last line of your report exactly: DONE #41 #38 #39
 

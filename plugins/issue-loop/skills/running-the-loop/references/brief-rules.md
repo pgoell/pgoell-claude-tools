@@ -41,7 +41,7 @@ If you rewrite the brief for another kind of project, keep these:
 
 ## Changing the brief while the loop runs
 
-- A slip seen once goes into the next task line ("tell every subagent rule 5").
+- A slip seen once: name the rule it broke in the next task line ("rule 5: one test while working"), never a ban on a tool or a command.
 - A slip seen twice, or a fault that reached live, becomes a rule or a clause in `rules.local.md`. It applies from the next task. Tell the user and note it in `HANDOFF.md`.
 - A rule that binds the user (who merges, what waits for them) changes only on their word. Write their words and the date into `HANDOFF.md`.
 - Rules in prose are weak. One of the brief's rules ("back up first") was checked by nothing, and the 60 minutes were self-reported. Where a rule matters, build a check: a gate script line, a CI job, a hook.

@@ -62,7 +62,7 @@
       "name": "learning",
       "source": "./plugins/learning",
       "description": "Socratic teach-and-quiz skills plus a pre-work blind-spot survey, so you deeply understand a session, a topic, or an unfamiliar area.",
-      "version": "0.3.4"
+      "version": "0.4.0"
     },
     {
       "name": "critique",
@@ -98,7 +98,7 @@
       "name": "issue-loop",
       "source": "./plugins/issue-loop",
       "description": "Run an unattended build loop: one orchestrator session drives one implementer session through a repo's GitHub issues, one merged and deployed PR per task, with a gate between tasks.",
-      "version": "0.9.1"
+      "version": "0.9.2"
     },
     {
       "name": "prose-styles",
