@@ -1,6 +1,6 @@
 ---
 name: designing-presentations
-description: Use when the user wants to design the content of a slide presentation, from audience brief to critiqued storyboard, before any slide renders. Produces a deck.md with per-slide front-matter. Triggers on a bare ask for a deck with no deck.md, settled storyline or content to build from, such as "I need a deck about our Q3 results", and on requests to plan a storyline, storyboard a deck, work out key messages, or audit a deck.md. To render a deck.md as HTML, see the creating-presentations skill.
+description: Use when the user wants to design the content of a slide presentation, from audience brief to critiqued storyboard, before any slide renders. Produces a deck.md with per-slide front-matter. Triggers on a bare ask for a deck with no deck.md, settled storyline or content to build from, such as "I need a deck about our Q3 results", and on requests to plan a storyline, storyboard a deck, work out key messages, or audit a deck.md. Building it is building-pptx-decks or creating-presentations.
 ---
 
 # Designing Presentations
@@ -24,7 +24,7 @@ Nothing to install: filesystem operations only. The skill reads templates from i
 
 Five phases, each writing its own artifact to the working directory. File presence determines state: a phase is complete iff its artifact file exists and is non-empty. The user may resume at any later phase if the upstream artifacts are present.
 
-Working directory: a `<topic-slug>/` directory under the current project unless the user names one. The rendered HTML deck later lives in the same directory, so design artifacts and render stay together. The topic slug comes from the user's intake (Phase 1) and is kebab-cased.
+Working directory: a `<topic-slug>/` directory under the current project unless the user names one. The built deck later lives in the same directory, so design artifacts and deck stay together. The topic slug comes from the user's intake (Phase 1) and is kebab-cased.
 
 ### Step 1: Intake
 
@@ -159,7 +159,7 @@ Format: **markdown only**. There is no HTML output mode for this skill; renderin
 - **Slide count band breached deliberately.** The audit checklist flags the breach; if the user accepts (for example a deliberately dense training deck), record the override in `audit-report.md` under a "User overrides" heading so reviewers can see the deviation is intentional.
 - **Governing-idea sentence too long.** If the Phase 1 governing idea is longer than 20 words, ask the user to shorten before proceeding; long governing ideas almost always indicate the audience or scope is muddled.
 - **Genre mismatch.** If genre and length combine implausibly (for example a 5-minute training session), surface the mismatch at Phase 1 and ask whether the user meant a pitch or a quick demo.
-- **Dash discipline.** This skill body, the bundled references, and every artifact the skill writes contain no U+2014 (em-dash) or U+2013 (en-dash) characters; the deck builder's typography lint enforces the same rule on rendered decks, so copy written here survives rendering unchanged.
+- **Dash discipline.** This skill body, its references, and every artifact it writes contain no U+2014 (em-dash) or U+2013 (en-dash) characters; the deck builders' lint enforces the same rule, so copy written here survives the build unchanged.
 
 ## Key Principles
 

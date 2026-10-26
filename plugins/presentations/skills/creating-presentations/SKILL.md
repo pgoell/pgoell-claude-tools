@@ -1,11 +1,11 @@
 ---
 name: creating-presentations
-description: Use when the user wants an HTML presentation styled from a brand preset, built from a deck.md, a settled storyline, or content they give (notes, figures, bullets), or wants an existing deck reviewed, audited, or polished until done. Includes a presenter view for live sharing. A bare deck ask with nothing to build from goes to designing-presentations first. For hand edits in the browser, see the editing-presentations skill; for editable PowerPoint, see the exporting-presentations-to-pptx skill.
+description: Use when the user wants the deck as HTML (a browser deck, an .html file, a presenter view), styled from a brand preset and built from a deck.md, a settled storyline, or their content, or an HTML deck reviewed or polished. A deck with no format named is PowerPoint, see building-pptx-decks; a bare ask with nothing to build from goes to designing-presentations. For hand edits see editing-presentations; for a PowerPoint copy of an HTML deck, exporting-presentations-to-pptx.
 ---
 
 # Creating Presentations
 
-Multi-slide HTML decks styled from a brand preset, presented straight from the browser through a bundled deck-stage engine, and reviewed to done through a strict convergence loop. HTML is the working medium: fast to iterate, diffable, and exportable to native PowerPoint later without a redesign pass.
+Multi-slide HTML decks styled from a brand preset, presented straight from the browser through a bundled deck-stage engine, and reviewed to done through a strict convergence loop. This is the HTML route, taken when the user asks for HTML, a browser deck or the presenter view; a deck with no format named is built as PowerPoint by `building-pptx-decks`. An HTML deck converts to PowerPoint later with `exporting-presentations-to-pptx`.
 
 Building and perfecting are one lifecycle. A new deck flows top to bottom through the sections below: resolve the preset, choose a visual direction, compose, then check the render. A bare ask with no `deck.md` and nothing to compose from leaves this skill before the preset step: run `designing-presentations` first, as "Composing the deck" says. The render check runs after every build without asking. A deck that already exists and only needs review enters directly at "Perfecting the deck". The perfecting loop is opt-in: it burns subagent tokens every round, so it starts only when the user asks for it or accepts the offer.
 

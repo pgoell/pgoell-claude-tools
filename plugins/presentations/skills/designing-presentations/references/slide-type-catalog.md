@@ -1,6 +1,6 @@
 # Slide Type Catalog
 
-The eight content-side slide types used by this skill. Each type is a role in the argument, not a visual template. Rendering happens later in the `creating-presentations` skill; see the mapping at the bottom of this file.
+The eight content-side slide types used by this skill. Each type is a role in the argument, not a visual template. Rendering happens later in `building-pptx-decks` (PowerPoint) or `creating-presentations` (HTML); see the mapping at the bottom of this file.
 
 A deck does not need every type, and types may repeat. A typical 12-slide deck uses 1 Title, 6 to 8 Decision or Evidence slides, 0 to 2 Transformations, 1 Closing, and any number of Appendix slides referenced from Q and A. Agenda and SectionDivider are opt-in by length (see their entries).
 

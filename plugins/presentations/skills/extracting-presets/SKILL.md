@@ -5,7 +5,7 @@ description: Use when the user wants to create or extend a client preset from ex
 
 # Extracting Presets
 
-Turn client brand material into a preset: the pack of CSS variables, assets, and example slides that the `creating-presentations` skill consumes. The point of extraction is reuse. A slide rebuilt once in clean HTML gets adapted into every future deck for that client, so fidelity and self-containment matter more than speed.
+Turn client brand material into a preset: the pack of CSS variables, assets, and example slides that `building-pptx-decks` (PowerPoint) and `creating-presentations` (HTML) consume. The point of extraction is reuse. A slide rebuilt once in clean HTML gets adapted into every future deck for that client, so fidelity and self-containment matter more than speed.
 
 The preset contract (directory shape, rules, selection semantics) lives in `../../presets/README.md` at the plugin root. Read it before writing any preset file; this skill describes the workflow, the contract file defines the output.
 
@@ -36,7 +36,7 @@ Copy this checklist into the response and tick items off as they complete:
 - [ ] 2. Extract palette, typography, expression, and copy guidance into colors.css / typography.css / guidelines.md / language.md
 - [ ] 3. Choose slides to build (shortlist from decks; a lone color guide means one palette specimen)
 - [ ] 4. Build each chosen slide as HTML that links the preset's variable files
-- [ ] 5. Collect assets and note licensing
+- [ ] 5. Collect assets and note licensing; keep a PPTX source for the PowerPoint route
 - [ ] 6. Write manifest.md
 - [ ] 7. Verify every slide passes the contract
 - [ ] 8. Place under .pgoell/presentations/presets/<name>/ (or contribute it as a bundled preset)
@@ -85,6 +85,8 @@ Tag each rebuilt slide: add one row to the preset's `slides/index.tsv` (create i
 
 Prefer SVG, it inlines as text. Small rasters (logos, badges) base64-inline. Photographic imagery keeps its source quality: when inlining would force lossy recompression, keep the original file in `assets/` and have the slide reference it by relative path (`../assets/<file>`), noting the choice in the manifest; the slide still opens standalone from the preset directory. Compressing a source photo until it squeezes inline trades away exactly the fidelity the preset exists to keep. Record font licensing in the manifest when the brand typeface is licensed rather than free; the deck skill must know whether it can embed the font or must fall back. An open-licensed brand face is vendored as unmodified woff2 files with its license under `assets/fonts/<family>/`, declared by `@font-face` in `typography.css`, with provenance (source, version, license, Reserved Font Name) in the manifest; never subset a family that carries a Reserved Font Name.
 
+Decks leave this plugin as PowerPoint by default (`building-pptx-decks`), and a client's own template beats any rebuild of it. When the source includes a PPTX or POTX template, keep it in the preset as `pptx/template.pptx` (or `.potx`), unmodified, and write `pptx/layouts.md`: a table from content-side `slide_type` and proof object to the template's layout names, read off `pptx_tool.py layouts` (in `../building-pptx-decks/assets/`) and the step 1 render. Do this for local presets only; a client template never ships in a bundled preset. Record in `typography.css` the fonts PowerPoint should name, from the theme's `a:fontScheme`: `--pptx-font-head` and `--pptx-font-body` (and `--pptx-font-mono` when the brand has one). When the brand face is a webfont recipients will not have installed, set them to the Office font the brand guide names as fallback, or ask.
+
 Official logo and wordmark downloads need their own care; follow [references/brand-marks.md](references/brand-marks.md). An icon library file extracts into `icons/` per [references/icon-libraries.md](references/icon-libraries.md).
 
 ### 6. Write the manifest
@@ -101,7 +103,7 @@ The contract checks are mechanical; verification is also visual. Screenshot ever
 
 ### 8. Place the preset
 
-The default home for a new preset is `.pgoell/presentations/presets/<name>/` at the working repo root: it is user-owned, consumed by `creating-presentations` alongside the bundled presets, and requires no plugin change. Only when the user explicitly wants the preset shipped with the plugin does it go into `presets/<name>/` at the plugin root (`../../presets/` relative to this skill's directory); that is a plugin change and needs the plugin version bumped per the marketplace repo's lockstep rules.
+The default home for a new preset is `.pgoell/presentations/presets/<name>/` at the working repo root: it is user-owned, consumed by `building-pptx-decks` and `creating-presentations` alongside the bundled presets, and requires no plugin change. Only when the user explicitly wants the preset shipped with the plugin does it go into `presets/<name>/` at the plugin root (`../../presets/` relative to this skill's directory); that is a plugin change and needs the plugin version bumped per the marketplace repo's lockstep rules.
 
 ## Extending an existing preset
 
@@ -109,5 +111,6 @@ When the user wants an existing preset extended (a new slide worth keeping, anot
 
 ## Cross-references
 
-- The `creating-presentations` skill consumes the presets this skill produces.
-- The `exporting-presentations-to-pptx` skill converts finished HTML decks back to PowerPoint; its EMU and point conversions are also useful when measuring a source PPTX during extraction.
+- The `creating-presentations` skill consumes the presets this skill produces as HTML.
+- The `building-pptx-decks` skill consumes presets as PowerPoint: it maps the preset onto the Office theme, or fills the kept `pptx/template.pptx` through `pptx/layouts.md`.
+- The `exporting-presentations-to-pptx` skill converts finished HTML decks to PowerPoint; at 1920 px wide, one px is 6350 EMU and half a point, which also helps when measuring a source PPTX.

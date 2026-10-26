@@ -14,7 +14,7 @@ These rules shape how skills split into plugins and how they share files. [Skill
 
 Gmail and Calendar both sit under `google-workspace`; Jira and Confluence both sit under `atlassian`. A user installs a product family once and gets one skill per service in it.
 
-The `presentations` plugin follows the product-family rule. Its five skills (`designing-presentations`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`) are life-cycle phases of one product, a presentation, split so each phase triggers on its own.
+The `presentations` plugin follows the product-family rule. Its six skills (`designing-presentations`, `building-pptx-decks`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`) are life-cycle phases of one product, a presentation, split so each phase triggers on its own.
 
 Terminal skills that depend on local Unix tools belong in the `terminal` plugin, so Windows users can skip them unless they use WSL.
 
