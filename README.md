@@ -48,7 +48,7 @@ Workflow:
 Writing and learning:
 
 - [writing](docs/reference/plugins/writing.md): ghostwrite from your own facts, or get coached to write it yourself.
-- [learning](docs/reference/plugins/learning.md): Socratic quizzes and a blind-spot survey before new work.
+- [learning](docs/reference/plugins/learning.md): adaptive teaching, concept rebuilding and practice with durable records and optional Kasten integration.
 
 Decks and diagrams:
 

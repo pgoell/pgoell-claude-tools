@@ -64,13 +64,21 @@ Run these five steps in order. Keep turns short and wait for the user at each st
 
 Beyond maths, the same loop for a data model: "orders keep showing the wrong price after a product changes; fix it" leads the user to snapshot prices, counterexamples about refunds and currency push the repair, and only then do you show the real schema.
 
-## The running notes doc
+## The persistent learning record
 
-Keep a short markdown doc so the user can see the path:
+Read [learning-record.md](../quizzing-a-topic/references/learning-record.md) and
+[storage.md](../quizzing-a-topic/references/storage.md) before starting. Apply
+their retrieval, record and storage rules, including early checkpoints. Keep the
+problem, each version of the learner's rule, the counterexamples, repairs,
+explicit assumptions and canonical comparison in that record. Give claims
+stable target IDs and link every meaningful attempt to them.
 
-- Path: `/tmp/learning-<concept-slug>/rebuild.md`, where `<concept-slug>` is a lowercased kebab-case slug of the concept.
-- Announce the path when you create it.
-- Record the problem, each version of the user's rule, each counterexample with the move made, the list of assumptions made explicit, and the step 5 comparison.
+Preserve the learner's original model separately from source-supported claims.
+A repaired rule reached with a supplied counterexample or hint is assisted
+evidence, not an independent discovery or proof of retention. Keep the earlier
+wrong model in the history. On stop, save the current rule and next action with
+the work marked incomplete. Offer `learning:practicing-a-topic` for later use in
+new situations; do not force another loop.
 
 ## Platform notes
 
