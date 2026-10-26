@@ -1,7 +1,7 @@
 {
   "name": "learning",
-  "version": "0.4.0",
-  "description": "Socratic teach-and-quiz skills that verify you deeply understand a session or a topic.",
+  "version": "0.5.0",
+  "description": "Adaptive teaching, concept rebuilding and practice with persistent learner evidence and optional Kasten integration.",
   "author": {
     "name": "Pascal Göllner"
   },
@@ -20,17 +20,19 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Learning",
-    "shortDescription": "Get taught and quizzed to mastery",
-    "longDescription": "Two Socratic tutoring skills: quiz yourself on the current session's work, or on any topic you name. The assistant builds a must-understand checklist, teaches the gaps, and quizzes you item by item until you demonstrate mastery.",
+    "shortDescription": "Learn, practice and retain evidence of understanding",
+    "longDescription": "Teach and quiz a topic or session, rebuild a concept, survey blind spots, and practice prior learning with varied cues. Portable session records preserve learner models, hints and independent performance, with optional Kasten storage.",
     "developerName": "Pascal Göllner",
     "category": "Productivity",
     "capabilities": [
-      "Interactive"
+      "Interactive",
+      "Write"
     ],
     "defaultPrompt": [
       "Quiz me on what we just did this session",
       "Teach me about Kafka consumer groups and test my understanding",
-      "Make sure I actually understand the change we just made"
+      "Make sure I actually understand the change we just made",
+      "Practice attention from my previous learning record using new situations"
     ],
     "screenshots": []
   }

@@ -61,8 +61,8 @@
     {
       "name": "learning",
       "source": "./plugins/learning",
-      "description": "Socratic teach-and-quiz skills plus a pre-work blind-spot survey, so you deeply understand a session, a topic, or an unfamiliar area.",
-      "version": "0.4.0"
+      "description": "Adaptive teaching, concept rebuilding and practice with durable learning records and optional Kasten integration.",
+      "version": "0.5.0"
     },
     {
       "name": "critique",

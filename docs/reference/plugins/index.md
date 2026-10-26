@@ -11,7 +11,7 @@ One page per plugin in the marketplace, in marketplace order. Each page names th
 - [terminal](/reference/plugins/terminal.md): drive interactive terminal programs through tmux
 - [playground](/reference/plugins/playground.md): single-file HTML playgrounds with controls and live preview
 - [databricks](/reference/plugins/databricks.md): Databricks CLI work and live docs lookups
-- [learning](/reference/plugins/learning.md): skills that teach you, by quiz, survey and rebuilding a concept
+- [learning](/reference/plugins/learning.md): adaptive teaching, concept rebuilding and practice with durable records
 - [critique](/reference/plugins/critique.md): critique an idea from several independent angles
 - [presentations](/reference/plugins/presentations.md): design, build, edit and export slide decks, styled by presets
 - [diagrams](/reference/plugins/diagrams.md): validated, themeable architecture and workflow diagrams as HTML
