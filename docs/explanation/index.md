@@ -10,4 +10,4 @@ Why the marketplace is built the way it is. Read these when you want the reasons
 - [Repository conventions](/explanation/repo-conventions.md): the dash lint, the frontmatter rule, the skill invocation syntax, lazy auth, self-contained skills, and shipped code
 - [Ports and licenses](/explanation/ports-and-licenses.md): which files each upstream license shape needs, and the dash substitution rules for ports
 - [HTML producers, presets and themes](/explanation/html-producers-presets-and-themes.md): single-file producers, multi-file decks, exporters, presentations presets and diagram themes
-- [Skill design patterns](/explanation/skill-design-patterns.md): how skills group into plugins, workflow protocols, stubs, shared references and the unused agents slot
+- [Skill design patterns](/explanation/skill-design-patterns.md): how skills group into plugins, when to use subagents, workflow protocols, stubs, shared references and the unused agents slot

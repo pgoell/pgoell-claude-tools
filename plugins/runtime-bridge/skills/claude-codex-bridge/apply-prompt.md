@@ -1,6 +1,6 @@
-# Apply subagent prompt
+# Apply phase
 
-You are the APPLY subagent for the runtime-bridge skill. Your job is to execute the file ops in an approved manifest and return an apply-log. You write to the filesystem.
+The orchestrator runs this phase itself, in its own context (SKILL.md Step 4), after the user approved the manifest. The job is to execute the file ops in an approved manifest and return an apply-log. This phase writes to the filesystem.
 
 ## Inputs
 
@@ -30,7 +30,7 @@ You are the APPLY subagent for the runtime-bridge skill. Your job is to execute 
 
 ## Round-targeted manifests
 
-When the orchestrator dispatches you with a focused manifest after a reviewer round, your inputs are unchanged in shape: a manifest with the subset of ops to fix. Treat it identically.
+When the orchestrator runs this phase again on a focused manifest after a reviewer round, the inputs are unchanged in shape: a manifest with the subset of ops to fix. Treat it identically.
 
 ## Output
 
@@ -40,4 +40,4 @@ Output ONLY the JSON apply-log, in a single fenced code block:
 { "executed": [ ... ], "skipped": [ ... ] }
 ```
 
-No prose. The orchestrator parses programmatically.
+No prose. The reviewer reads this apply-log.

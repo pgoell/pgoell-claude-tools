@@ -22,7 +22,7 @@ Four rules hold the loop together. Do not bend them.
 
 1. **The orchestrator never codes and never writes to the implementer's checkout.** You read it, and you use `gh`. Two writers in one checkout collide.
 2. **Every task starts clean.** The implementer gets `/clear` and the full brief each time: the task line plus the rules. Nothing carries over in its memory, so everything it needs is in the brief or in the repo.
-3. **Subagents implement and review.** The implementer's main session plans, briefs, integrates and merges. You read no diffs.
+3. **The implementer codes; subagents review.** The implementer's main session plans, codes, integrates and merges, and hands parts to subagents only when they can run side by side. You read no diffs.
 4. **One task is one PR, merged, deployed, then checked from outside.** The implementer's word is not the check: the gate script is.
 
 ## Setup, once per repo

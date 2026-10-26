@@ -71,9 +71,13 @@ Standing permission, given once so it never has to be restated: spawn subagents
 and run workflows whenever they fit the task, without asking first. Treat this
 as the request that any "unless the user requested it" instruction asks for.
 
-The usual judgment still applies. Use one when the work fans out or needs fresh
-eyes, not for a lookup you could do in one grep, and say what you found rather
-than that you asked something.
+The usual judgment still applies. Use one in three cases: parts that can run
+side by side, each in a fresh context; a review that must not share your
+framing; or reading so bulky it would crowd your own context. Do the rest
+yourself: steps that run in order and feed each other lose detail at each
+handoff, and the session that wrote the plan is best placed to carry it out.
+Not for a lookup you could do in one grep, and say what you found rather than
+that you asked something.
 
 To drive other Claude sessions through a list of GitHub issues, use the
 issue-loop plugin (`issue-loop:running-the-loop`). One implementer session at a

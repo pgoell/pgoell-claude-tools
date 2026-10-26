@@ -1,7 +1,7 @@
 ---
 type: Explanation
 title: Skill design patterns
-description: How skills are grouped into plugins, why workflow skills run as protocols, and the patterns for stubs, shared references and the unused agents slot.
+description: How skills are grouped into plugins, when a skill should use subagents, why workflow skills run as protocols, and the patterns for stubs, shared references and the unused agents slot.
 tags: [skills, plugins, patterns, contributors]
 status: stable
 ---
@@ -31,6 +31,14 @@ The same day the user had the flag dropped again from all seven skills, with the
 ## Workflow skills are execution protocols
 
 When a user calls a workflow skill such as `research:research` or `issue-loop:running-the-loop`, the agent follows its steps as a procedure, in order. The body is not loose advice to pick from. A skipped step is the failure these skills exist to prevent.
+
+## Subagents only for parallel work, independent review, or context that would not fit
+
+Each handoff to a subagent loses detail: the subagent sees a brief, not the plan behind it, and the main session sees a summary, not the work. Newer models carry long, many-step tasks in one context, and skills and tool search load reference text only when needed, so the context limits that once justified a split come up less often. Anthropic's write-up, [When to fold subagents into your main agent loop](https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop) (2026-10), found one agent with skills often beat a set of subagents on quality, cost and speed.
+
+A subagent still earns its place in three cases. Parts that run side by side need their own fresh contexts (`news` gatherers, `research` researchers). A check must not share the author's framing, or it agrees too easily (`critique` frames, `presentations` judges, the bridge reviewer, `issue-loop` review). And a main context that would measurably degrade can hand off bulky reading.
+
+Steps that run in order and feed each other are the first to fold. In 2026-10 `runtime-bridge` moved its scout and apply phases into the main session, and `issue-loop` let the implementer's main session code, after its own log showed it edited in 17 of 22 tasks under a rule that said subagents code. The write-up warns that a fold can quietly break a process that worked, so fold one at a time and compare runs before and after. `research:running-research` keeps its synthesis and writer subagents until such a comparison is done: its review loops have no fixed limit, and the orchestrator's context would grow each round.
 
 ## Agents for long-running, context-heavy operations (forward-looking, currently unused)
 
