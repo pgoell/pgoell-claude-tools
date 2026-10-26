@@ -73,8 +73,8 @@
     {
       "name": "presentations",
       "source": "./plugins/presentations",
-      "description": "Presentation lifecycle skills: content design, HTML deck building with brand presets and a perfecting loop, a local deck editor, native PPTX export, and preset extraction.",
-      "version": "0.7.7"
+      "description": "Presentation lifecycle skills: content design, native PowerPoint decks from brand presets or client templates, HTML decks with a perfecting loop, a local deck editor, PPTX export of HTML decks, and preset extraction.",
+      "version": "0.8.0"
     },
     {
       "name": "diagrams",

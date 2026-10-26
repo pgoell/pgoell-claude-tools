@@ -1,7 +1,7 @@
 {
   "name": "presentations",
-  "version": "0.7.7",
-  "description": "Design, build, review, export, and theme multi-slide HTML presentations with brand presets",
+  "version": "0.8.0",
+  "description": "Design and build slide decks as native PowerPoint or HTML, styled from brand presets",
   "author": { "name": "Pascal Göllner" },
   "license": "MIT",
   "keywords": ["presentations", "slides", "deck", "pptx", "presets", "presenter"]

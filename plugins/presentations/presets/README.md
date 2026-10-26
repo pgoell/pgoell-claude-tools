@@ -11,7 +11,7 @@ A preset packages one brand or context for reuse: colors, typography, assets, an
 presets/<name>/
   manifest.md     required. The preset's single home for provenance: who the preset serves, sources and their dates, coverage, extraction decisions, gaps, and one direction line naming the generic default the preset's look avoids. All other preset files carry rules and values only.
   colors.css      required. :root CSS custom properties for colors (including the chart group below), font sizes, and layout grid tokens, plus optional variant scopes (for example .dark or .inverse) that override the semantic variables.
-  typography.css  optional. :root font stack overrides, plus @font-face rules for vendored fonts that point at assets/fonts/ by relative path.
+  typography.css  optional. :root font stack overrides, plus @font-face rules for vendored fonts that point at assets/fonts/ by relative path. May declare --pptx-font-head, --pptx-font-body and --pptx-font-mono: the installed fonts a PowerPoint build names in place of the webfonts.
   guidelines.md   optional. Brand expression guidance with no variable to ride on: personality attributes, tone of voice, imagery rules, and a `## Layout grammar` section. Consumers read it before composing slides and review finished slides against it.
   language.md     optional. A positive style contract for slide copy: what good copy does (everyday words, active voice, one claim per title with its proof inside), before/after title rewrites, the anti-fabrication rule (never add a fact, figure, name, or arithmetic the source lacks), plus brand terminology, citations, and required legal language. Consumers apply it to every written surface and honor its legal elements, which can dictate footer content and back-cover legal blocks. A preset without one falls back to default/language.md.
   assets/         optional. Wordmarks and brand imagery. SVG preferred, it inlines as text.
@@ -20,6 +20,7 @@ presets/<name>/
   slides/         optional. Example slides as HTML on a 1920x1080 canvas that link the preset's variable files.
     index.tsv     required when slides/ exists. One row of tags per slide file, from the closed vocabulary in TAGS.md, so consumers can search every gallery by role, move, and form.
   previews/       optional. One PNG per example slide (rendered at 1920x1080, stored at 1280x720), for browsing the gallery on GitHub. Regenerate whenever a slide's rendering changes.
+  pptx/           optional, local presets only. template.pptx (or .potx), the client's own PowerPoint template kept unmodified, and layouts.md, a table from slide_type and proof object to the template's layout names. building-pptx-decks fills this template instead of drawing a deck from the tokens.
   README.md       optional. Showcase page that GitHub renders when browsing the preset directory. Inlines every preview, grouped by the role column of slides/index.tsv, with each row's summary as caption.
 ```
 
@@ -92,4 +93,4 @@ Each bundled preset has a `README.md` with a rendered preview of every example s
 
 A `deck.md` with `deck_mode: keynote` points to `keynote`; `reading` and `briefing` point to `analytical` or `editorial`.
 
-Presets are created and extended by the `extracting-presets` skill and consumed by the `creating-presentations` skill.
+Presets are created and extended by the `extracting-presets` skill and consumed by `building-pptx-decks` (PowerPoint, the default) and `creating-presentations` (HTML).
