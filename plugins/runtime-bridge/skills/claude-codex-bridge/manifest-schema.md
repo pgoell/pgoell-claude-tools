@@ -1,6 +1,6 @@
 # Runtime-bridge manifest schema
 
-The scout subagent returns a manifest matching this JSON schema. The apply subagent consumes it and writes an apply-log. The reviewer subagent consumes both manifest and apply-log and writes a verdict.
+The scout phase returns a manifest matching this JSON schema. The apply phase consumes it and writes an apply-log. The reviewer subagent consumes both manifest and apply-log and writes a verdict.
 
 ## Manifest (from scout)
 

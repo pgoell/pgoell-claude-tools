@@ -45,7 +45,7 @@ Found by the review. Each looked like a check and stopped nothing.
 | The 60 minute rule                     | Self-reported                                                             | `wait.sh` reads the clock                                  |
 | "0 open boxes"                         | Looked at the newest PR only                                              | `gate.sh` reads every PR since the task began              |
 | The DONE match                         | Any line that began with DONE                                             | `wait.sh` wants this task's token                          |
-| "Subagents code"                       | The main session edited in 17 of 22 tasks                                 | nothing; a few lines are allowed, watch "Slips"            |
+| "Subagents code"                       | The main session edited in 17 of 22 tasks                                 | rule 3 now has the main session code (issue-loop 0.10.0)   |
 
 What held from the start: required checks, and a deploy only from a green base branch (24 merges, 0 red deploys).
 

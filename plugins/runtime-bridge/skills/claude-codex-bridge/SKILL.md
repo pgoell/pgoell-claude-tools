@@ -15,28 +15,28 @@ No authentication required. Operates on the local filesystem only. Never makes n
 
 ## Tool Preference
 
-1. Subagent dispatch (when available and permitted) for scout, apply, reviewer phases.
+1. Subagent dispatch (when available and permitted) for the reviewer phase only. You run scout and apply yourself: they run in order, each feeds the next, and the files they read are small, so a subagent would only add a handoff. The reviewer stays a fresh subagent so it checks work it did not do.
 2. File read tools for loading prompt templates and reading project files.
 3. Shell for filesystem operations (`ln -s`, `mkdir -p`, `find`, `stat`).
 4. User confirmation tool for the manifest approval gate and policy decisions.
 
 ## Platform Adaptation
 
-| Capability             | Claude Code                                                 | Codex                              |
-| ---------------------- | ----------------------------------------------------------- | ---------------------------------- |
-| Subagent dispatch      | Agent tool, prompt = `read(<phase>-prompt.md)` + scope vars | `spawn_agent` with the same prompt |
-| User confirmation      | AskUserQuestion                                             | `ask_user` / built-in approval     |
-| File ops (apply phase) | Write, Edit, Bash (`ln -s`)                                 | shell tool                         |
-| File reads             | Read                                                        | shell reads (`cat`, `sed`, etc.)   |
-| Shell                  | Bash                                                        | shell command tool                 |
+| Capability             | Claude Code                                                  | Codex                              |
+| ---------------------- | ------------------------------------------------------------ | ---------------------------------- |
+| Reviewer dispatch      | Agent tool, prompt = `read(reviewer-prompt.md)` + scope vars | `spawn_agent` with the same prompt |
+| User confirmation      | AskUserQuestion                                              | `ask_user` / built-in approval     |
+| File ops (apply phase) | Write, Edit, Bash (`ln -s`)                                  | shell tool                         |
+| File reads             | Read                                                         | shell reads (`cat`, `sed`, etc.)   |
+| Shell                  | Bash                                                         | shell command tool                 |
 
-Cursor: dispatch subagents with the `Task` tool and the same prompt.
+Cursor: dispatch the reviewer with the `Task` tool and the same prompt.
 
-When subagent dispatch is unavailable (no `Agent`, `spawn_agent` or `Task` tool) for the current request, run each phase inline in the orchestrator. Tell the user runtime/context cost has changed.
+When subagent dispatch is unavailable (no `Agent`, `spawn_agent` or `Task` tool) for the current request, run the reviewer inline too, and say in the final report that the review was not independent of the apply.
 
 ## Workflow
 
-**Prompt file location (MUST check before every phase dispatch):**
+**Prompt file location (MUST check before every phase):**
 
 Before reading any phase prompt file, run:
 
@@ -50,15 +50,15 @@ If the output is a non-empty path, read ALL prompt files (`scout-prompt.md`, `ap
 
 If the user hasn't specified, ask one consolidated question: target directory (default: cwd) and dry-run vs full execution. Skip if both are obvious from context.
 
-### Step 2: Dispatch SCOUT
+### Step 2: Run SCOUT
 
-Read `scout-prompt.md`. Dispatch as a subagent with arguments:
+Read `scout-prompt.md` and follow it yourself, read-only, with these inputs:
 
 - `repo_root`: absolute path to the project root.
 - `recipes_path`: absolute path to `port-recipes.md`.
 - `schema_path`: absolute path to `manifest-schema.md`.
 
-Scout returns a JSON manifest matching `manifest-schema.md`. Validate it parses (use `jq empty` or equivalent). If invalid, surface the error to the user; do not continue.
+Scout produces a JSON manifest matching `manifest-schema.md`. Validate it parses (use `jq empty` or equivalent). If invalid, fix it once; if it still fails, surface the error to the user and do not continue.
 
 ### Step 3: Present manifest, get approval
 
@@ -78,19 +78,19 @@ If dry-run: stop here. Print the manifest summary as the final report.
 
 Otherwise: ask the user to approve the full op set. If approved, continue. If declined, stop.
 
-### Step 4: Dispatch APPLY
+### Step 4: Run APPLY
 
-Read `apply-prompt.md`. Dispatch as a subagent with arguments:
+Read `apply-prompt.md` and follow it yourself with these inputs:
 
 - `manifest`: the approved manifest (with any user drift selections applied).
 - `recipes_path`: absolute path to `port-recipes.md`.
 - `repo_root`: absolute path.
 
-Apply returns a JSON apply-log matching `manifest-schema.md`. Validate it parses.
+Apply produces a JSON apply-log matching `manifest-schema.md`. Validate it parses.
 
 ### Step 5: Dispatch REVIEWER
 
-Read `reviewer-prompt.md`. Dispatch as a subagent with arguments:
+Read `reviewer-prompt.md`. Dispatch it as a fresh subagent, with no conversation history, and these arguments:
 
 - `manifest`: the same manifest apply consumed.
 - `apply_log`: what apply returned.
@@ -109,7 +109,7 @@ If verdict has issues, classify:
 - Same issue (same kind + same op_index) appears two rounds in a row: STOP. Stalling.
 - Issue requires user decision (drift the user already chose canonical for; translation key with no defensible default): STOP. Surface to user.
 - Issue requires action apply cannot perform (mark project trusted in Codex; install a missing plugin): STOP. Surface to user.
-- Otherwise (mechanical, in-scope): construct a focused manifest containing only the affected ops + the reviewer's `suggested_fix` text. Dispatch APPLY again with this focused manifest. Then dispatch REVIEWER again. Track issues across rounds for the stalling check.
+- Otherwise (mechanical, in-scope): construct a focused manifest containing only the affected ops + the reviewer's `suggested_fix` text. Run APPLY again yourself on this focused manifest. Then dispatch a fresh REVIEWER again. Track issues across rounds for the stalling check.
 
 No fixed iteration cap. Loop until pass or break condition.
 
@@ -136,10 +136,10 @@ Print to user:
 
 ## Self-Healing
 
-- Manifest fails to parse: surface the raw scout output to the user; suggest re-running.
+- Manifest fails to parse twice: surface the raw scout output to the user; suggest re-running.
 - Apply errors on a specific op (e.g. `EACCES`): logged in apply-log, reviewer surfaces as `missing`, orchestrator stops with outstanding issue.
 - Reviewer disagrees with apply but issue kind is unclear: surface verbatim; user decides.
-- Subagent dispatch unavailable: run phases inline. Manifest, apply, and review are still produced; user still sees the two checkpoints.
+- Subagent dispatch unavailable: run the reviewer inline. Manifest, apply, and review are still produced; the user still sees the two checkpoints, and the report says the review was not independent.
 
 ## Behavioral Guidelines
 

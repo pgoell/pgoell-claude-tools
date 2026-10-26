@@ -1,0 +1,3 @@
+# 2026-10-26: Update
+
+runtime-bridge 0.2.0, issue-loop 0.10.0. Following Anthropic's write-up on folding subagents into the main agent loop. `claude-codex-bridge` runs its scout and apply phases in the main session; only the reviewer stays a fresh subagent. issue-loop rule 3 has the implementer's main session code, and hands parts to subagents only when they touch different files and can run side by side; review subagents stay. New rule "Subagents only for parallel work, independent review, or context that would not fit". Changed `reference/plugins/runtime-bridge.md`, `reference/conventions/skill-design-patterns.md` and `explanation/skill-design-patterns.md`.

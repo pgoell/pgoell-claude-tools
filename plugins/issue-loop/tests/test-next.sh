@@ -32,7 +32,7 @@ has "task.md names notify.sh in the loop folder" "$(cat "$L/task.md")" "run: \"$
 hasnt "task.md has no placeholder left" "$(cat "$L/task.md")" "{{"
 coder=$(sed -n 's/^CLAUDE_CODER_MODEL=//p' "$L/models.env")
 review=$(sed -n 's/^CLAUDE_REVIEW_MODEL=//p' "$L/models.env")
-has "the brief names the coder model" "$(cat "$L/task.md")" "Subagents implement on $coder"
+has "the brief names the coder model" "$(cat "$L/task.md")" "on $coder (Agent tool"
 has "the brief names the review model" "$(cat "$L/task.md")" "run on $review"
 "$L/next.sh" >/dev/null 2>&1; ok "next without a task line" $? 2
 grep -v '^ALIVE_URL=' "$L/loop.env" >"$L/loop.env.new" && mv "$L/loop.env.new" "$L/loop.env"

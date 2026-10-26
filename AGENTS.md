@@ -82,7 +82,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `google-workspace` 1.0.3: `gmail`, `calendar`
 - `research` 2.3.5: `research`, `running-research`
 - `writing` 3.1.4: `ghostwrite`, `coach`
-- `runtime-bridge` 0.1.3: `claude-codex-bridge`
+- `runtime-bridge` 0.2.0: `claude-codex-bridge`
 - `agent-system-management` 0.7.12: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
 - `terminal` 0.1.1: `tmux`
 - `playground` 0.1.3: `playground`
@@ -94,7 +94,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `news` 0.10.0: `edition`, `feedback`, `tune`
 - `insights` 0.7.0: `digest`, `apply`, `activity`
 - `structure` 0.2.0: `setting-up-the-checks`, `setting-up-import-boundaries`
-- `issue-loop` 0.9.2: `running-the-loop`, `handing-over` (Claude Code only)
+- `issue-loop` 0.10.0: `running-the-loop`, `handing-over` (Claude Code only)
 - `prose-styles` 0.1.0: no skills; output styles `orwell`, `concise`, `ste`, `house` (Claude Code only)
 - `guards` 0.1.2: no skills; `PreToolUse` hook `pkill-self-match` (Claude Code only)
 - `session-title` 0.1.0: no skills; `SessionStart` hook `session-title` (Claude Code only)

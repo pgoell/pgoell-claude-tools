@@ -18,6 +18,6 @@ One skill that aligns a project's Claude Code and Codex CLI configuration in bot
 
 ## Skills
 
-| Invocation                            | What it does                                                                                                                                                                                                                                      |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/runtime-bridge:claude-codex-bridge` | Align project instruction files, settings, hooks, agents and plugin availability across Claude Code and Codex. A scout subagent builds a manifest, you approve it, an apply phase writes the files, and a reviewer checks them. Offers a dry run. |
+| Invocation                            | What it does                                                                                                                                                                                                                                                                              |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/runtime-bridge:claude-codex-bridge` | Align project instruction files, settings, hooks, agents and plugin availability across Claude Code and Codex. The main session scouts the project and builds a manifest, you approve it, the main session writes the files, and a fresh reviewer subagent checks them. Offers a dry run. |

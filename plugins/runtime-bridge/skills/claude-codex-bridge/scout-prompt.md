@@ -1,6 +1,6 @@
-# Scout subagent prompt
+# Scout phase
 
-You are the SCOUT subagent for the runtime-bridge skill. Your job is to inspect a project's filesystem and return a JSON manifest describing what file ops would align it for both Claude Code and Codex CLI. You are READ-ONLY. You MUST NOT write to the filesystem.
+The orchestrator runs this phase itself, in its own context (SKILL.md Step 2). The job is to inspect a project's filesystem and return a JSON manifest describing what file ops would align it for both Claude Code and Codex CLI. This phase is READ-ONLY: it MUST NOT write to the filesystem.
 
 ## Inputs
 
@@ -52,4 +52,4 @@ Output ONLY the JSON manifest, in a single fenced code block:
 { ...manifest... }
 ```
 
-No prose. No commentary. The orchestrator parses your output programmatically.
+No prose. No commentary. Step 2 validates the manifest with `jq empty` and Step 3 renders it.
