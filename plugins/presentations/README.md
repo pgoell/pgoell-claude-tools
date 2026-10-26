@@ -2,6 +2,10 @@
 
 Skills covering the full presentation lifecycle: content design, native PowerPoint decks (the default), HTML decks with an integrated perfecting loop and presenter view, a local deck editor, PowerPoint export of HTML decks, and brand preset extraction.
 
+![How the presentations plugin builds a deck: the default PowerPoint route, the client template route, and the HTML route](diagrams/routes.gif)
+
+The diagram's source is [diagrams/routes.workflow.json](diagrams/routes.workflow.json), drawn with `/diagrams:creating-diagrams`; deliver it again to get the interactive HTML viewer.
+
 ## Skills
 
 | Skill                             | What it does                                                                                                                                                                                                                        |

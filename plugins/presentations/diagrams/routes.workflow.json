@@ -1,0 +1,304 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "How the presentations plugin builds a deck",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "legend": {
+      "mode": "auto",
+      "entries": {
+        "frontend": {
+          "label": "Deliverable"
+        },
+        "backend": {
+          "label": "Skill"
+        },
+        "database": {
+          "label": "File or preset"
+        },
+        "security": {
+          "label": "Checks"
+        },
+        "external": {
+          "label": "Your input"
+        }
+      }
+    },
+    "views": [
+      {
+        "id": "default-route",
+        "label": "Default: PowerPoint",
+        "focus": [
+          "ask",
+          "design",
+          "deckmd",
+          "build",
+          "check",
+          "pptx"
+        ],
+        "note": "A request becomes a deck.md, then a structured, checked .pptx."
+      },
+      {
+        "id": "client-template",
+        "label": "Client template",
+        "focus": [
+          "tmpl",
+          "extract",
+          "preset",
+          "build"
+        ],
+        "note": "Extract a client template once; later decks are filled into it."
+      },
+      {
+        "id": "html-route",
+        "label": "HTML on request",
+        "focus": [
+          "deckmd",
+          "creating",
+          "editing",
+          "export",
+          "pptx"
+        ],
+        "note": "An HTML deck with presenter view, edited by hand, exported when needed."
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "content",
+      "label": "Content"
+    },
+    {
+      "id": "html",
+      "label": "HTML (on request)"
+    },
+    {
+      "id": "pptx",
+      "label": "PowerPoint (default)"
+    },
+    {
+      "id": "style",
+      "label": "Style"
+    }
+  ],
+  "mainPath": [
+    "ask",
+    "design",
+    "deckmd",
+    "build",
+    "check",
+    "pptx"
+  ],
+  "nodes": [
+    {
+      "id": "ask",
+      "lane": "content",
+      "col": 0,
+      "type": "external",
+      "label": "Your request",
+      "sublabel": "idea, notes or figures",
+      "width": 170
+    },
+    {
+      "id": "design",
+      "lane": "content",
+      "col": 1,
+      "type": "backend",
+      "label": "Design content",
+      "sublabel": "designing-presentations",
+      "width": 170
+    },
+    {
+      "id": "deckmd",
+      "lane": "content",
+      "col": 2,
+      "type": "database",
+      "label": "deck.md",
+      "sublabel": "the hand-off contract",
+      "width": 170
+    },
+    {
+      "id": "build",
+      "lane": "pptx",
+      "col": 3,
+      "type": "backend",
+      "label": "Build the PowerPoint",
+      "sublabel": "building-pptx-decks",
+      "tag": "build, fill or edit",
+      "width": 170
+    },
+    {
+      "id": "check",
+      "lane": "pptx",
+      "col": 4,
+      "type": "security",
+      "label": "Checks",
+      "sublabel": "structure, text, render",
+      "width": 170
+    },
+    {
+      "id": "pptx",
+      "lane": "pptx",
+      "col": 5,
+      "type": "frontend",
+      "label": "deck.pptx",
+      "sublabel": "native and editable",
+      "width": 170
+    },
+    {
+      "id": "creating",
+      "lane": "html",
+      "col": 3,
+      "type": "backend",
+      "label": "Build HTML deck",
+      "sublabel": "creating-presentations",
+      "width": 170
+    },
+    {
+      "id": "editing",
+      "lane": "html",
+      "col": 4,
+      "type": "backend",
+      "label": "Edit by hand",
+      "sublabel": "editing-presentations",
+      "width": 170
+    },
+    {
+      "id": "export",
+      "lane": "html",
+      "col": 5,
+      "type": "backend",
+      "label": "Export to .pptx",
+      "sublabel": "exporting-...-to-pptx",
+      "width": 170
+    },
+    {
+      "id": "tmpl",
+      "lane": "style",
+      "col": 0,
+      "type": "external",
+      "label": "Client template",
+      "sublabel": ".pptx or brand guide",
+      "width": 170
+    },
+    {
+      "id": "extract",
+      "lane": "style",
+      "col": 1,
+      "type": "backend",
+      "label": "Extract preset",
+      "sublabel": "extracting-presets",
+      "width": 170
+    },
+    {
+      "id": "preset",
+      "lane": "style",
+      "col": 2,
+      "type": "database",
+      "label": "Preset",
+      "sublabel": "tokens, layouts, template",
+      "width": 170
+    }
+  ],
+  "edges": [
+    {
+      "id": "ask-design",
+      "from": "ask",
+      "to": "design",
+      "variant": "default"
+    },
+    {
+      "id": "design-deckmd",
+      "from": "design",
+      "to": "deckmd",
+      "variant": "default"
+    },
+    {
+      "id": "deckmd-build",
+      "from": "deckmd",
+      "to": "build",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "left"
+    },
+    {
+      "id": "build-check",
+      "from": "build",
+      "to": "check",
+      "variant": "emphasis"
+    },
+    {
+      "id": "check-pptx",
+      "from": "check",
+      "to": "pptx",
+      "variant": "emphasis"
+    },
+    {
+      "id": "deckmd-creating",
+      "from": "deckmd",
+      "to": "creating",
+      "variant": "dashed",
+      "role": "branch",
+      "fromSide": "right",
+      "toSide": "top"
+    },
+    {
+      "id": "creating-editing",
+      "from": "creating",
+      "to": "editing",
+      "variant": "dashed"
+    },
+    {
+      "id": "editing-export",
+      "from": "editing",
+      "to": "export",
+      "variant": "dashed"
+    },
+    {
+      "id": "export-pptx",
+      "from": "export",
+      "to": "pptx",
+      "variant": "dashed"
+    },
+    {
+      "id": "tmpl-extract",
+      "from": "tmpl",
+      "to": "extract",
+      "variant": "default"
+    },
+    {
+      "id": "extract-preset",
+      "from": "extract",
+      "to": "preset",
+      "variant": "default"
+    },
+    {
+      "id": "preset-build",
+      "from": "preset",
+      "to": "build",
+      "label": "theme, layouts",
+      "variant": "default",
+      "fromSide": "top",
+      "toSide": "bottom"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Short cuts",
+      "items": [
+        "Content or a storyline in hand: straight to building-pptx-decks",
+        "An existing .pptx to change: edited in place, never rebuilt"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Every .pptx is checked",
+      "items": [
+        "pptx_check.py, text read-back and copy lint",
+        "Type floors and a LibreOffice render per slide"
+      ]
+    }
+  ]
+}
