@@ -20,7 +20,7 @@ On the host:
 In the repository:
 
 - Open issues as the queue, each saying what "done" means.
-- The labels `bug`, `regression`, `wish`, `test-debt`, and one for "not now" (`gh label create <name>`).
+- The labels `bug`, `regression`, `wish`, `test-debt`, and one for "not now" (`gh label create <name>`). Optionally one for "run next", such as `priority`, to move an issue up the queue.
 - CI as a required check on the newest commit of a PR (branch protection: require branches to be up to date).
 - A deploy workflow the loop can check, a URL that answers only when the live app works, and a command that undoes a bad deploy.
 - A test suite that runs in minutes.

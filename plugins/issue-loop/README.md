@@ -33,7 +33,7 @@ The orchestrator adds one file by hand: `orch-name`, with its own session name, 
 
 - Claude Code sessions in a terminal manager the orchestrator can drive. The bundled driver is for herdr; another manager needs five shell functions (`skills/running-the-loop/references/driver.md`).
 - `gh` (logged in), `git`, `jq`, `curl`, `timeout` and GNU `date`.
-- In the repo: issues as the queue; labels `bug`, `regression`, `wish`, `test-debt` and one for "not now"; CI as a required check on the newest commit of a PR; a deploy that can be checked from outside; a way back. `skills/running-the-loop/references/setup.md` has the list with a check for each point.
+- In the repo: issues as the queue; labels `bug`, `regression`, `wish`, `test-debt` and one for "not now", optionally one for "run next" (`priority`); CI as a required check on the newest commit of a PR; a deploy that can be checked from outside; a way back. `skills/running-the-loop/references/setup.md` has the list with a check for each point.
 - A checkout for the implementer that no other session works in.
 - The loop folder trusted once by you: start `claude` in it and accept the folder trust question. The loop never accepts it for you.
 - Your standing order, once per loop (next section).
