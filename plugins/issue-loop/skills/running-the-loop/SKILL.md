@@ -27,7 +27,7 @@ Four rules hold the loop together. Do not bend them.
 
 ## Setup, once per repo
 
-Read `references/setup.md` and check each point against the repo before the first task. In short, the repo needs: issues as the queue; the labels `bug`, `regression`, `wish`, `test-debt` and one label for "not now"; CI as a required check on the newest commit of a PR; a deploy the loop can check from outside; a way back.
+Read `references/setup.md` and check each point against the repo before the first task. In short, the repo needs: issues as the queue; the labels `bug`, `regression`, `wish`, `test-debt` and one label for "not now", and optionally one for "run next"; CI as a required check on the newest commit of a PR; a deploy the loop can check from outside; a way back.
 
 When you set up a new loop folder, read `references/setup.md`, "Setup, once per repo": the `init.sh` command, setup steps 1 to 7, and what to do on a host with no herdr.
 
@@ -89,7 +89,7 @@ Say bad news as plainly as good news: over the time box, an unreviewed commit, a
 
 ## What runs next
 
-A feature task opens more issues than it closes; a bug batch about breaks even. So bugs first, or the queue only grows.
+A feature task opens more issues than it closes; a bug batch about breaks even. So bugs first, or the queue only grows. The one thing ahead of the bugs, after the last task's own faults, is what the user labelled "run next".
 
 Read `references/queue.md` each time you pick a task: the order of the queue, and how the brief learns.
 

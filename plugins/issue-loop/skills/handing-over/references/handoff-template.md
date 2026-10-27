@@ -12,7 +12,7 @@ The loop runs by `/issue-loop:running-the-loop`. A successor's first message sta
 
 - <What the loop is for and the bar: "their words">
 - <Order of the queue, if they changed the default>
-- <Labels that never run>
+- <Labels that never run, and the "run next" label if the repo has one>
 - <What they approved for good, for example who merges PRs on the machine's own files>
 - <What they do not want raised again>
 - <How they want reports: length, language, device they read on>

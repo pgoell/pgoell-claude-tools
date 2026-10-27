@@ -27,6 +27,7 @@ Do not point `ALIVE_URL` at the front page. On the example project the front pag
 - `wish`: behaviour beyond what an issue asked. Runs after the bugs; "not now" holds one back.
 - `test-debt`: a flaky or missing test. Worth a batch now and then.
 - the "not now" label (`later` on the example project): needs the user's decision. Never runs.
+- the "run next" label (`priority` on most repos), optional: the user's way to move an issue up. Runs after the last task's own faults and leftovers, before the bugs. `references/queue.md` has the order.
 
 ## Worth building early, as the loop's own first tasks
 
