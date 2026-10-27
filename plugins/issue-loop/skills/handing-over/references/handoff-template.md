@@ -30,6 +30,7 @@ Scripts in this folder: next.sh, wait.sh, gate.sh, start.sh, notify.sh, takeover
 
 - <What differs here from the skill: a changed time limit, an extra check, a driver quirk>
 - <Rules added to rules.local.md since the start, with the fault behind each>
+- No list of clauses every brief carries and no ban on a tool or a command: rule 4 says the brief bans none, and next.sh refuses a task line with one.
 
 ## After every task, here
 
