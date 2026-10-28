@@ -8,7 +8,8 @@
 # with `; true` after it. Over 14 days this host logged 83 such exits, 44 of
 # them from `pkill -f`. A pattern whose first letter sits in a bracket class
 # (`'[u]vicorn app'`) still matches the process but no longer matches its own
-# text, so it passes.
+# text. A pattern passes only when it does not match the command's own text: a
+# bracketed '[u]vicorn app' passes alone, but not beside a later 'uvicorn app'.
 #
 # The same self-match makes `until ! pgrep -f 'capture.sh'; do sleep 5; done`
 # wait forever: pgrep always finds the shell running the loop. A one-shot
@@ -16,6 +17,7 @@
 #
 # Fails open: a command shlex cannot parse (stray quote, heredoc) passes.
 import json
+import re
 import shlex
 import sys
 
@@ -30,8 +32,8 @@ LONG_WITH_VALUE = {
 PKILL_REASON = (
     "Blocked: `pkill -f {pattern}` also matches the `bash -c` running this "
     "command, so it kills your own shell (exit 144). Instead, stop the process "
-    "by port with `fuser -k <port>/tcp`, or bracket the first letter of the "
-    "pattern so it cannot match itself: `pkill -f '[{first}]{rest}'`."
+    "by port with `fuser -k <port>/tcp`, or run the pkill in a Bash call of its "
+    "own with the first letter bracketed: `pkill -f '[{first}]{rest}'`."
 )
 
 PGREP_REASON = (
@@ -57,14 +59,14 @@ def segments(command):
 
 
 def self_matching_pattern(args):
-    """Return the pattern when these pkill or pgrep args use -f with an unbracketed pattern."""
+    """Return the pattern when these pkill or pgrep args use -f."""
     full = False
     tokens = iter(args)
     for token in tokens:
         if token == "--":
             # Everything after `--` is the pattern, even when it starts with `-`.
             token = next(tokens, None)
-            return token if full and token and not token.startswith("[") else None
+            return token if full and token else None
         if token == "--full":
             full = True
         elif token in LONG_WITH_VALUE:
@@ -76,8 +78,16 @@ def self_matching_pattern(args):
             if token[-1] in SHORT_WITH_VALUE:
                 next(tokens, None)
         else:
-            return token if full and not token.startswith("[") else None
+            return token if full else None
     return None
+
+
+def own_text_matches(pattern, command):
+    """True when the pattern matches the command's own text, so it hits the bash -c running it."""
+    try:
+        return re.search(pattern, command) is not None
+    except re.error:
+        return False
 
 
 def main():
@@ -95,7 +105,7 @@ def main():
             if name != "pkill" and not (name == "pgrep" and in_loop):
                 continue
             pattern = self_matching_pattern(part[i + 1 :])
-            if pattern:
+            if pattern and own_text_matches(pattern, command):
                 reason = (PKILL_REASON if name == "pkill" else PGREP_REASON).format(
                     pattern=shlex.quote(pattern), first=pattern[0], rest=pattern[1:]
                 )

@@ -15,8 +15,8 @@ Claude Code runs each Bash call through a `bash -c` whose command line holds the
 The deny message offers two fixes:
 
 - Stop the process by port: `fuser -k 8765/tcp`.
-- Bracket the first letter of the pattern: `pkill -f '[u]vicorn app:app'`. The class still matches the process, but the text `[u]vicorn` does not match itself.
+- Bracket the first letter of the pattern and run the `pkill` in a Bash call of its own: `pkill -f '[u]vicorn app:app'`. The class still matches the process, but the text `[u]vicorn` does not match itself. A later plain mention in the same call, such as `pkill -f '[p]ytest x' ; pytest x`, matches the pattern again, so the hook blocks it too: it tests each pattern against the command's own text.
 
 The hook also blocks `pgrep -f <pattern>` with a plain pattern when it sits in an `until` or `while` condition, such as `until ! pgrep -f 'capture.sh'; do sleep 5; done`. The `bash -c` running the loop holds the pattern too, so `pgrep` always finds it and the loop never ends. One such loop ran on through a 3-hour capture. The fix is the same bracket: `until ! pgrep -f '[c]apture.sh'`.
 
-`pkill` or `pgrep` without `-f`, bracketed patterns, a one-shot `pgrep -f` outside a loop condition, and every other command pass through untouched. A command the hook cannot parse also passes.
+`pkill` or `pgrep` without `-f`, a pattern that does not match the command's own text (a bracketed pattern on its own), a one-shot `pgrep -f` outside a loop condition, and every other command pass through untouched. A command the hook cannot parse also passes.
