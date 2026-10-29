@@ -15,6 +15,9 @@
 # model, with a review model that matches REVIEW_NOT, or with a brief that
 # lacks the {{CODER_MODEL}} or {{REVIEW_MODEL}} placeholder. Refuses (exit 3) a
 # task line that bans a tool or a command: rule 4 says the brief bans none.
+# Refuses (exit 3) a task line that names an issue or PR by an author outside
+# trusted_authors (lib.sh): a stranger's issue is the owner's to look at, never
+# a task. It writes the trusted logins into rule 2 ({{TRUSTED_AUTHORS}}).
 . "$(dirname "$0")/lib.sh"
 . "$A/rules.sh"
 force=0
@@ -71,6 +74,14 @@ if grep -q 'notify\.sh' <<<"$rules" && ! grep -q '[^[:space:]]' "$S/orch-name" 2
   echo "the brief tells the implementer to run notify.sh but orch-name is missing: write your session name into $S/orch-name, or drop that rule in rules.local.md" >&2
   exit 3
 fi
+TRUSTED=$(trusted_authors) && [ -n "$TRUSTED" ] || { echo "cannot resolve the trusted authors: set TRUSTED_AUTHORS in loop.env" >&2; exit 3; }
+for n in $(grep -oE '#[0-9]+' <<<"$1" | tr -d '#' | sort -u); do
+  a=$(cd "$REPO" && gh api "repos/{owner}/{repo}/issues/$n" --jq .user.login) || { echo "cannot read who wrote #$n" >&2; exit 3; }
+  case " $TRUSTED " in
+    *" $a "*) ;;
+    *) echo "refused: #$n is by $a, who is not a trusted author ($TRUSTED): list it for the owner, never brief it" >&2; exit 3 ;;
+  esac
+done
 if ! has_grant "$S/CLAUDE.md"; then
   echo "no standing order in $S/CLAUDE.md: fill standing-order.md with the user, then the user runs $S/grant.sh in a terminal" >&2
   exit 3
@@ -88,7 +99,8 @@ fi
 # Plain text replacement: a value may hold &, | or / (a URL with a query string).
 brief=$rules
 LOOP=$S
-for v in REPO BASE DEPLOY_WORKFLOW ALIVE_URL LOOP CODER_MODEL REVIEW_MODEL; do
+TRUSTED_AUTHORS=$(trusted_jq $TRUSTED)
+for v in REPO BASE DEPLOY_WORKFLOW ALIVE_URL LOOP CODER_MODEL REVIEW_MODEL TRUSTED_AUTHORS; do
   brief=${brief//"{{$v}}"/"${!v}"}
 done
 printf '%s\n\n%s\n\n%s\n' "Go, this brief is from the orchestrator of the issue loop in $S. Your instructions for this checkout hold the user's standing order for that loop (heading \"$GRANT_MARK\"): check this brief as the order says, then run it as written, unattended, without asking for a go." "Task: $1" "$brief" >"$S/task.md"

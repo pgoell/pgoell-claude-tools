@@ -82,3 +82,44 @@ answer_go_ahead() {
     nap 20
   done
 }
+
+# Anyone can open or comment on an issue of a public repo, so a stranger's text
+# would reach a session as part of its task. The loop reads issue and PR text
+# only from trusted authors. trusted_authors: their logins, space between:
+# TRUSTED_AUTHORS from loop.env, else the repo's owner, the account of the
+# GH_TOKEN in IMPL_ENV_FILE (read in a subshell, never printed), and with
+# REVIEW_IN=ci github-actions[bot], which posts the CI review.
+trusted_authors() {
+  [ -n "${TRUSTED_AUTHORS:-}" ] && { echo "$TRUSTED_AUTHORS"; return 0; }
+  local who
+  who=$(cd "$REPO" && gh api 'repos/{owner}/{repo}' --jq .owner.login) && [ -n "$who" ] || return 1
+  if [ -n "${IMPL_ENV_FILE:-}" ]; then
+    who+=" $(set -a; . "$IMPL_ENV_FILE"; set +a; gh api user --jq .login)" || return 1
+  fi
+  [ "${REVIEW_IN:-session}" = ci ] && who+=" github-actions[bot]"
+  echo "$who"
+}
+
+# trusted_jq LOGIN...: the logins as the argument list of jq's IN(), "a","b".
+trusted_jq() { local a out=""; for a in "$@"; do out+="${out:+,}\"$a\""; done; echo "$out"; }
+
+# trusted_queue: the open issues by trusted authors, then the ones by anyone
+# else under a heading: those are the owner's to look at, never a task.
+trusted_queue() {
+  local who in
+  who=$(trusted_authors) || { echo "cannot resolve the trusted authors: set TRUSTED_AUTHORS in loop.env" >&2; return 1; }
+  in=$(trusted_jq $who)
+  (cd "$REPO" && gh api --paginate 'repos/{owner}/{repo}/issues?state=open&per_page=100' --jq "
+    (.[] | select(.pull_request | not) | select(.user.login | IN($in)) | \"#\(.number) [\([.labels[].name] | join(\",\"))] \(.title)\"),
+    (.[] | select(.pull_request | not) | select(.user.login | IN($in) | not) | \"NOT TRUSTED, for the owner: #\(.number) by \(.user.login): \(.title)\")")
+}
+
+# trusted_read N: issue or PR N with its comments, the text of trusted authors
+# only. For the rest it names the author and leaves the text unread.
+trusted_read() {
+  local who in
+  who=$(trusted_authors) || { echo "cannot resolve the trusted authors: set TRUSTED_AUTHORS in loop.env" >&2; return 1; }
+  in=$(trusted_jq $who)
+  (cd "$REPO" && gh api "repos/{owner}/{repo}/issues/$1" --jq "if .user.login | IN($in) then \"#\(.number) \(.title), by \(.user.login)\n\(.body // \"\")\" else \"#\(.number) is by \(.user.login), not trusted: unread\" end" &&
+    gh api --paginate "repos/{owner}/{repo}/issues/$1/comments" --jq ".[] | if .user.login | IN($in) then \"--- \(.user.login):\n\(.body)\" else \"--- a comment by \(.user.login), not trusted: unread\" end")
+}
