@@ -23,7 +23,12 @@ for p in $(gh pr list --state all --search "created:>=$start" --json number -q '
   open=$(grep -cE '^\s*- \[ \]' <<<"$body")
   [ "$open" = 0 ] || no "PR $p: $open open boxes"
   # A box inside a fenced code block is an example, not a checklist line.
-  k=$(awk '/^[[:space:]]*```/ { f = !f; next } !f' <<<"$body" | grep -E '^\s*- \[[xX]\]' | grep -cvE 'Test:|Proof:')
+  # A box's test may sit on its own line or on the indented lines under it.
+  k=$(awk '/^[[:space:]]*```/ { f = !f; next } f { next }
+    /^[[:space:]]*- \[[xX]\]/ { if (b && !t) n++; b = 1; t = /Test:|Proof:/; next }
+    b && /^[[:space:]]+[^[:space:]]/ && !/^[[:space:]]*- / { if (/Test:|Proof:/) t = 1; next }
+    { if (b && !t) n++; b = 0 }
+    END { if (b && !t) n++; print n + 0 }' <<<"$body")
   [ "$k" = 0 ] || no "PR $p: $k ticked boxes name no test"
   gh pr view "$p" --json files -q '.files[].path' | grep -E "$MACHINE_FILES" | sed "s/^/TELL HUMAN: PR $p touched /"
 done
