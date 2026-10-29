@@ -46,6 +46,10 @@ Write the minimum code that solves the problem. Nothing speculative.
 - No error handling for impossible scenarios.
 - If you write 200 lines and it could be 50, rewrite it.
 
+## Docs versus code
+
+When a repo's docs and its code disagree, follow the conventions in the code, except when refactoring. In your final reply, list each mismatch you found between the docs and the code.
+
 ## Infrastructure as code
 
 Every change to infrastructure or a platform goes through code in a repo (Terraform, Databricks Asset Bundles, scripts), never by hand. If the user says to apply by hand for now, add a todo to codify it.
