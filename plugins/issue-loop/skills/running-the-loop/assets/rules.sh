@@ -1,7 +1,7 @@
 #!/bin/bash
 # Sourced by next.sh, upgrade.sh and the tests. Source it, do not run it.
-# It builds the brief's rules: the plugin's rules.md plus the loop's own
-# rules.local.md. Every global here starts with _rl_, so the script that
+# It builds the brief's rules: the plugin's rules.md, the review overlay
+# rules-ci.md when the loop reviews in CI, and the loop's own rules.local.md. Every global here starts with _rl_, so the script that
 # sources it keeps its own names.
 _rl_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
@@ -57,17 +57,24 @@ _rl_local() {
   _rl_put "$sec" "$body"
 }
 
-# _rl_build TEMPLATE LOCAL: sets _rl_hdr and _rl_rule with every FILL answered
-# from LOCAL. _rl_missing gets one "## N.K   <FILL: ...>" line per FILL still open.
+# _rl_build TEMPLATE LOCAL...: sets _rl_hdr and _rl_rule with every FILL answered.
+# Each LOCAL is a file in the form of rules.local.md, laid over the rules in
+# order, so a later file wins (next.sh passes the review overlay, then the
+# loop's own file). _rl_missing gets one "## N.K   <FILL: ...>" line per FILL still open.
 _rl_build() {
-  local n k m rest out ans
+  local n k m rest out ans f
   local re='(<FILL:[^>]*>)'
+  local -A all=()
   _rl_split "$1" || return 1
-  _rl_local "$2" || return 1
-  if [ -n "${_rl_whole[0]+x}" ]; then _rl_hdr=${_rl_whole[0]}; fi
-  for ((n = 1; n < 1000; n++)); do
-    [ -n "${_rl_whole[$n]+x}" ] || continue
-    if [ -z "${_rl_whole[$n]}" ]; then unset "_rl_rule[$n]"; else _rl_rule[$n]=${_rl_whole[$n]}; fi
+  shift
+  for f in "$@"; do
+    _rl_local "$f" || return 1
+    if [ -n "${_rl_whole[0]+x}" ]; then _rl_hdr=${_rl_whole[0]}; fi
+    for ((n = 1; n < 1000; n++)); do
+      [ -n "${_rl_whole[$n]+x}" ] || continue
+      if [ -z "${_rl_whole[$n]}" ]; then unset "_rl_rule[$n]"; else _rl_rule[$n]=${_rl_whole[$n]}; fi
+    done
+    for k in "${!_rl_ans[@]}"; do all[$k]=${_rl_ans[$k]}; done
   done
   _rl_missing=""
   for ((n = 1; n < 1000; n++)); do
@@ -76,7 +83,7 @@ _rl_build() {
     while [[ $rest =~ $re ]]; do
       m=${BASH_REMATCH[1]}; k=$((k + 1))
       out+=${rest%%"$m"*}
-      ans=${_rl_ans[$n.$k]:-}
+      ans=${all[$n.$k]:-}
       if [ -n "$ans" ]; then out+=$ans; else out+=$m; _rl_missing+="## $n.$k   $m"$'\n'; fi
       rest=${rest#*"$m"}
     done
@@ -84,11 +91,11 @@ _rl_build() {
   done
 }
 
-# assemble_rules TEMPLATE LOCAL: the header, a blank line, then every rule in
+# assemble_rules TEMPLATE LOCAL...: the header, a blank line, then every rule in
 # number order, one blank line apart. FILL markers stay in it when unanswered.
 assemble_rules() {
   local n sep=""
-  _rl_build "$1" "$2" || return 1
+  _rl_build "$@" || return 1
   printf '%s\n\n' "$_rl_hdr"
   for ((n = 1; n < 1000; n++)); do
     [ -n "${_rl_rule[$n]+x}" ] || continue
@@ -96,9 +103,9 @@ assemble_rules() {
   done
 }
 
-# missing_answers TEMPLATE LOCAL: one line per FILL with no answer, nothing when all are answered.
+# missing_answers TEMPLATE LOCAL...: one line per FILL with no answer, nothing when all are answered.
 missing_answers() {
-  _rl_build "$1" "$2" || return 1
+  _rl_build "$@" || return 1
   printf '%s' "$_rl_missing"
 }
 

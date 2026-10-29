@@ -29,14 +29,20 @@ drv_read() {
 # Start a Claude Code session NAME in a new tab with working folder CWD and tab
 # label LABEL, in the permission mode from loop.env. It reads SESSION_MODEL and
 # ADVISOR_MODEL, which start.sh sets, and passes --model and --advisor only for
-# a value that is not empty. Print a handle that drv_read accepts (here: the
-# pane id).
+# a value that is not empty. SESSION_ENV_FILE, when start.sh sets it, is a file
+# of KEY=value lines that the tab's shell loads before claude starts, so only
+# that session gets them; the path goes through the pane, never the values.
+# Print a handle that drv_read accepts (here: the pane id).
 drv_start() {
   local pane
   pane=$(herdr tab create ${HERDR_WORKSPACE:+--workspace "$HERDR_WORKSPACE"} --cwd "$2" --label "$3" --no-focus |
     jq -r '[.. | .pane_id? | strings][0] // empty')
   [ -n "$pane" ] || { echo "no pane id from herdr tab create" >&2; return 1; }
   nap 5
+  if [ -n "${SESSION_ENV_FILE:-}" ]; then
+    herdr pane run "$pane" "set -a; . $(printf %q "$SESSION_ENV_FILE"); set +a" >/dev/null || return 1
+    nap 2
+  fi
   herdr agent start "$1" --kind claude --pane "$pane" -- --permission-mode "${PERMISSION_MODE:-bypassPermissions}" ${SESSION_MODEL:+--model "$SESSION_MODEL"} ${ADVISOR_MODEL:+--advisor "$ADVISOR_MODEL"} >/dev/null || return 1
   echo "$pane"
 }

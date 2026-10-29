@@ -1,10 +1,10 @@
 #!/bin/bash
-# usage: notify.sh "DONE #210"   or   notify.sh "BLOCKED #210: reason"
+# usage: notify.sh "DONE #210", notify.sh "BLOCKED #210: reason" or notify.sh "HELD #210: reason"
 # The implementer runs this once, as its last tool call before the final
 # report. It types one line, "impl settled: <your words>", into the
 # orchestrator's session, whose name is in the file orch-name in this folder.
 # Only the first line counts, cut to 200 characters with control characters
-# dropped, and it must begin with DONE or BLOCKED. It sends nothing while the
+# dropped, and it must begin with DONE, BLOCKED or HELD. It sends nothing while the
 # orchestrator sits on a question: the Enter would answer that question.
 # Good words also go to the file task.notified, sent or not: wait.sh reads it
 # when the implementer's screen hides the DONE line.
@@ -13,7 +13,7 @@
 # failed send).
 . "$(dirname "$0")/lib.sh"
 line=$(tr -d '\000-\011\013-\037\177' <<<"${1:-}" | head -1 | cut -c1-200)
-grep -qE '^(DONE|BLOCKED) ' <<<"$line" || { echo 'usage: notify.sh "DONE #N" or "BLOCKED #N: reason"' >&2; exit 2; }
+grep -qE '^(DONE|BLOCKED|HELD) ' <<<"$line" || { echo 'usage: notify.sh "DONE #N", "BLOCKED #N: reason" or "HELD #N: reason"' >&2; exit 2; }
 printf '%s\n' "$line" >"$S/task.notified"
 orch=$(head -1 "$S/orch-name" 2>/dev/null | tr -d '[:space:]')
 [ -n "$orch" ] || { echo "no orchestrator name in $S/orch-name: nothing sent" >&2; exit 1; }

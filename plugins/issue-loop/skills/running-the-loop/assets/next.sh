@@ -3,7 +3,8 @@
 # Clears the implementer, sends it the task line plus the brief, answers the
 # go-ahead question, and prints the implementer's state. It must say working.
 # The brief is the plugin's assets/rules.md plus this folder's rules.local.md
-# (the loop's own answers and rules, see rules.sh). Refuses (exit 3) a folder
+# (the loop's own answers and rules, see rules.sh), with rules-ci.md between
+# them when loop.env says REVIEW_IN=ci. Refuses (exit 3) a folder
 # that still has a full rules.md from before 0.9.0, and names upgrade.sh.
 # Refuses (exit 4) while the implementer works: /clear would destroy the
 # running task. --force sends anyway. Refuses (exit 3) without the user's
@@ -27,8 +28,15 @@ if [ -f "$S/rules.md" ]; then
   echo "this folder still has a full rules.md from before 0.9.0: run $A/../scripts/upgrade.sh $S (a dry run), then again with --apply" >&2
   exit 3
 fi
-rules=$(assemble_rules "$A/rules.md" "$S/rules.local.md") || exit 3
-missing=$(missing_answers "$A/rules.md" "$S/rules.local.md")
+# REVIEW_IN=ci in loop.env lays rules-ci.md over rules 7, 15 and 16: the
+# review runs in CI, and a PR that waits for the owner ends with HELD.
+case ${REVIEW_IN:-session} in
+  session) layers=("$S/rules.local.md") ;;
+  ci) layers=("$A/rules-ci.md" "$S/rules.local.md") ;;
+  *) echo "REVIEW_IN=$REVIEW_IN in loop.env: say session or ci" >&2; exit 3 ;;
+esac
+rules=$(assemble_rules "$A/rules.md" "${layers[@]}") || exit 3
+missing=$(missing_answers "$A/rules.md" "${layers[@]}")
 if [ -n "$missing" ]; then
   echo "rules.local.md has no answer for:" >&2
   echo "$missing" >&2

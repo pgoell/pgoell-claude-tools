@@ -6,19 +6,35 @@
 # the live commit is the head of BASE, the implementer's checkout is clean on
 # BASE, and the live app answers. It reads; it changes nothing. A newer installed
 # plugin gets a NEWER PLUGIN line, which never fails the gate.
+# A task that ended with HELD (its PR waits for the owner's review) gets GATE
+# HELD, exit 0, in place of GATE PASS: the held PR is open with auto-merge on and
+# no check that fails or runs, and its issues may stay open. The HELD line is
+# read where wait.sh reads the DONE line: task.notified and the screen.
 # Needs: gh (logged in), git, jq, curl, GNU date.
 . "$(dirname "$0")/lib.sh"
 start=$(cat "$S/task.start")
 cd "$REPO" || exit 2
 bad=0
 no() { echo "FAIL $*"; bad=1; }
+held=0 nheld=0
+{ head -1 "$S/task.notified" 2>/dev/null; screen_tail "$IMPL" 40; } | grep -qE '^\s*HELD ' && held=1
 for n in "$@"; do
-  [ "$(gh issue view "$n" --json state -q .state)" = CLOSED ] || no "issue $n open"
+  if [ "$(gh issue view "$n" --json state -q .state)" != CLOSED ]; then
+    if [ $held = 1 ]; then echo "issue $n open: it closes when the held PR lands"; else no "issue $n open"; fi
+  fi
 done
 for p in $(gh pr list --state all --search "created:>=$start" --json number -q '.[].number'); do
   state=$(gh pr view "$p" --json state -q .state)
   echo "PR $p $state $(gh pr view "$p" --json title -q .title)"
-  [ "$state" = MERGED ] || no "PR $p not merged"
+  if [ $held = 1 ] && [ "$state" = OPEN ]; then
+    nheld=$((nheld + 1))
+    echo "HELD PR $p: waits for the owner's review"
+    [ -n "$(gh pr view "$p" --json autoMergeRequest -q '.autoMergeRequest // empty')" ] || no "PR $p held without auto-merge"
+    gh pr checks "$p" --json name,bucket -q '.[] | select(.bucket != "pass" and .bucket != "skipping") | "\(.name) \(.bucket)"' |
+      while read -r c; do echo "FAIL PR $p held with check $c"; done | grep . && bad=1
+  else
+    [ "$state" = MERGED ] || no "PR $p not merged"
+  fi
   body=$(gh pr view "$p" --json body -q .body)
   open=$(grep -cE '^\s*- \[ \]' <<<"$body")
   [ "$open" = 0 ] || no "PR $p: $open open boxes"
@@ -32,6 +48,7 @@ for p in $(gh pr list --state all --search "created:>=$start" --json number -q '
   [ "$k" = 0 ] || no "PR $p: $k ticked boxes name no test"
   gh pr view "$p" --json files -q '.files[].path' | grep -E "$MACHINE_FILES" | sed "s/^/TELL HUMAN: PR $p touched /"
 done
+[ $held = 0 ] || [ $nheld -gt 0 ] || no "the task ended with HELD but no PR of it is open"
 head=$(git ls-remote origin "refs/heads/$BASE" | cut -f1)
 if [ -n "$DEPLOY_WORKFLOW" ]; then
   live=$(gh run list --workflow "$DEPLOY_WORKFLOW" -L 5 --json headSha,conclusion -q '[.[]|select(.conclusion=="success")][0].headSha')
@@ -66,5 +83,5 @@ if [ -n "$inst" ] && [ "$ib" != "$rb" ] && [ "$(printf '%s\n' "$ib" "$rb" | sort
   [ "${ISSUE_LOOP_VERSION:-latest}" = latest ] || hold=" ISSUE_LOOP_VERSION=$ISSUE_LOOP_VERSION in loop.env holds the loop back."
   echo "NEWER PLUGIN: issue-loop $ib is installed, this task ran $rb.$hold"
 fi
-[ $bad = 0 ] && echo "GATE PASS" || echo "GATE FAIL"
+if [ $bad = 1 ]; then echo "GATE FAIL"; elif [ $held = 1 ]; then echo "GATE HELD"; else echo "GATE PASS"; fi
 exit $bad

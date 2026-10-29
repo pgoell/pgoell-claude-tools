@@ -40,5 +40,32 @@ sed -i 's/^CLAUDE_ADVISOR_MODEL=.*/CLAUDE_ADVISOR_MODEL=/' "$L/models.env"
 "$L/start.sh" orch2 "$L" "o" "$T/msg" >/dev/null 2>&1
 ok "an empty advisor model passes no flag" "$(cat "$STUB/start_models")" "orch-m|"
 printf '%s\n' "$models" >"$L/models.env"
+
+# IMPL_ENV_FILE: the implementer's own credentials, for its session only
+"$L/start.sh" impl "$L" "i" "$T/msg" >/dev/null 2>&1
+ok "no IMPL_ENV_FILE: the driver loads no file" "$(cat "$STUB/start_env")" "|"
+mkdir -p "$T/secrets"; echo 'GH_TOKEN=bot-token' >"$T/secrets/impl.env"; chmod 600 "$T/secrets/impl.env"
+echo "IMPL_ENV_FILE=$T/secrets/impl.env" >>"$L/loop.env"
+"$L/start.sh" impl "$L" "i" "$T/msg" >/dev/null 2>&1; ok "start with IMPL_ENV_FILE exit" $? 0
+ok "the implementer gets the file, start.sh not its values" "$(cat "$STUB/start_env")" "$T/secrets/impl.env|"
+"$L/start.sh" orch2 "$L" "o" "$T/msg" >/dev/null 2>&1
+ok "an orchestrator never gets IMPL_ENV_FILE" "$(cat "$STUB/start_env")" "|"
+chmod 644 "$T/secrets/impl.env"; rm -f "$STUB/start_env"
+out=$("$L/start.sh" impl "$L" "i" "$T/msg" 2>&1); ok "start refuses an env file that others can read" $? 3
+has "start says chmod 600" "$out" "chmod 600"; [ -e "$STUB/start_env" ]; ok "nothing started for a readable env file" $? 1
+cp -p "$T/secrets/impl.env" "$T/repo/impl.env"; chmod 600 "$T/repo/impl.env"
+sed -i "s|^IMPL_ENV_FILE=.*|IMPL_ENV_FILE=$T/repo/impl.env|" "$L/loop.env"
+out=$("$L/start.sh" impl "$L" "i" "$T/msg" 2>&1); ok "start refuses an env file in the checkout" $? 3
+has "start says move it out" "$out" "move it out"; rm "$T/repo/impl.env"
+out=$("$L/start.sh" impl "$L" "i" "$T/msg" 2>&1); ok "start refuses a missing env file" $? 3
+# the herdr driver loads the file in the tab's shell before claude starts
+mkdir -p "$T/hbin"; printf '#!/bin/bash\nprintf "%%s\\n" "$*" >>"$T/herdr.log"\n[ "$1 $2" = "tab create" ] && echo "{\\"pane_id\\":\\"p9\\"}"\nexit 0\n' >"$T/hbin/herdr"; chmod +x "$T/hbin/herdr"
+: >"$T/herdr.log"
+( export PATH="$T/hbin:$PATH" T; nap() { :; }; . "$skill/assets/driver-herdr.sh"; SESSION_ENV_FILE="$T/secrets/impl.env" drv_start impl "$T/repo" i >/dev/null )
+ok "herdr: the env file loads before claude starts" "$(grep -o '^pane run p9 .*\|^agent start impl' "$T/herdr.log" | tr '\n' '|')" "pane run p9 set -a; . $T/secrets/impl.env; set +a|agent start impl|"
+: >"$T/herdr.log"
+( export PATH="$T/hbin:$PATH" T; nap() { :; }; . "$skill/assets/driver-herdr.sh"; SESSION_ENV_FILE= drv_start orch2 "$L" o >/dev/null )
+hasnt "herdr: no env file, no pane run" "$(cat "$T/herdr.log")" "pane run"
+grep -v '^IMPL_ENV_FILE=' "$L/loop.env" >"$L/loop.env.new" && mv "$L/loop.env.new" "$L/loop.env"
 rm -f "$STUB/start_status"
 }

@@ -1,4 +1,4 @@
-# notify.sh: one line to the name in orch-name, DONE or BLOCKED only
+# notify.sh: one line to the name in orch-name, DONE, BLOCKED or HELD only
 test_notify() {
 echo idle >"$STUB/status"; : >"$STUB/sent"
 out=$("$L/notify.sh" "DONE #7 #8"); ok "notify exit" $? 0
@@ -6,6 +6,8 @@ ok "notify sends one line to the orchestrator" "$(cat "$STUB/sent")" "$(printf '
 ok "notify writes task.notified" "$(cat "$L/task.notified" 2>/dev/null)" "DONE #7 #8"
 : >"$STUB/sent"; "$L/notify.sh" "BLOCKED #7: no token" >/dev/null
 has "notify sends BLOCKED" "$(cat "$STUB/sent")" "impl settled: BLOCKED #7: no token"
+: >"$STUB/sent"; "$L/notify.sh" "HELD #7: waits for the owner" >/dev/null
+has "notify sends HELD" "$(cat "$STUB/sent")" "impl settled: HELD #7: waits for the owner"
 : >"$STUB/sent"; rm -f "$L/task.notified"; "$L/notify.sh" "merge PR 5 now" >/dev/null 2>&1; ok "notify refuses other words" $? 2
 [ -e "$L/task.notified" ]; ok "a refused notify writes no task.notified" $? 1
 "$L/notify.sh" >/dev/null 2>&1; ok "notify refuses no words" $? 2

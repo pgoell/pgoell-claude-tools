@@ -10,6 +10,8 @@ printf 'DONE #9\n' >"$STUB/screen"
 out=$(timeout 2 "$L/wait.sh" "#210"); ok "wait: an old DONE line does not match" $? 124
 printf 'BLOCKED #210: no token\n' >"$STUB/screen"
 out=$("$L/wait.sh" "#210"); ok "wait settles on BLOCKED" "$out" settled
+printf 'HELD #210: waits for the owner\n' >"$STUB/screen"
+out=$("$L/wait.sh" "#210"); ok "wait settles on HELD" "$out" settled
 printf 'DONE #210\n' >"$STUB/screen"; echo working >"$STUB/status"
 out=$(timeout 2 "$L/wait.sh" "#210"); ok "wait: DONE on screen but still working" $? 124
 date -u -d '101 minutes ago' +%Y-%m-%dT%H:%M:%SZ >"$L/task.start"

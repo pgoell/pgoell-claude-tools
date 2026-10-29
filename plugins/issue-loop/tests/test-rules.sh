@@ -34,6 +34,19 @@ test_rules() {
   out=$(assemble_rules "$tpl" "$d/special.md")
   has "answer keeps & | / \\ and {{BASE}}" "$out" 'a & b | c / d \ e {{BASE}}'
 
+  local ci=$skill/assets/rules-ci.md
+  out=$(assemble_rules "$tpl" "$ci" "$d/all.md")
+  ok "the CI overlay adds no FILL" "$(missing_answers "$tpl" "$ci" "$d/all.md")" ""
+  has "the CI overlay replaces rule 7" "$out" "7. The review runs in CI."
+  has "the CI overlay replaces rule 16" "$out" "16. The machine's own parts wait for the owner."
+  has "the CI overlay keeps the loop's answers" "$out" "every runtime"
+  ok "the CI overlay holds rules 7, 15 and 16 only" "$(grep -E '^## ' "$ci" | tr '\n' ' ')" "## 7 ## 15 ## 16 "
+  hasnt "the CI overlay names no label" "$(cat "$ci")" "label"
+  printf '%s\n' "## 7" "7. Our own review." >"$d/own7.md"
+  out=$(assemble_rules "$tpl" "$ci" "$d/own7.md")
+  has "a loop's own ## 7 beats the overlay" "$out" "7. Our own review."
+  has "the overlay still gives rule 15" "$out" "so the CI review reads them"
+
   plus=${tpl_text/"It does not cover the rest of the product."/"It does not cover the rest of the product. A new plugin sentence."}
   ok "the copy of rules.md changed" "$([ "$plus" != "$tpl_text" ]; echo $?)" 0
   printf '%s\n' "$plus" >"$d/plus.md"
