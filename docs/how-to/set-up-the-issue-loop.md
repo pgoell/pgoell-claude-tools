@@ -42,7 +42,7 @@ The full list, with a check for each, is [setup.md](../../plugins/issue-loop/ski
    It prints the order, asks you to type `yes`, then writes `CLAUDE.md` in the loop folder and `CLAUDE.local.md` in the implementer's checkout (kept out of git). With it, a brief or a handover no longer waits for your go. No session may run this script for you; it refuses without a terminal.
 6. Let the orchestrator start the implementer (`./start.sh`) and send the first brief.
 
-Sessions start with permissions skipped (`claude --permission-mode bypassPermissions`), the default in `loop.env`. Set `PERMISSION_MODE=auto` there for a loop whose sessions should ask.
+Sessions start with permissions skipped (`claude --permission-mode bypassPermissions`), the default in `loop.env`. Set `PERMISSION_MODE=auto` there for a loop whose sessions should ask. For a repo that reviews its PRs in CI, set `REVIEW_IN=ci` there too, and give the implementer a bot account's token through `IMPL_ENV_FILE`, so you can approve its PRs; the plugin's `references/setup.md`, "Review in CI", has the steps.
 
 ## Check it worked
 
