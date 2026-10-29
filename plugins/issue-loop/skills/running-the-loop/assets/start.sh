@@ -10,7 +10,11 @@
 # The model comes from models.env: the implementer's model for the session
 # named IMPL in loop.env, the orchestrator's model for any other. The advisor
 # model goes in with --advisor for this session; an empty value passes no flag.
-# Exit 3: no models.env. Exit 5: a start dialog shows, nothing was sent. Exit 1:
+# IMPL_ENV_FILE in loop.env, when set, names a file of KEY=value lines (such
+# as GH_TOKEN for a bot account) that the driver loads into the implementer's
+# shell before claude starts: the implementer's environment only, never this
+# script's or the orchestrator's. Exit 3: that file is missing, is not mode 600,
+# or sits in the implementer's checkout. Exit 3: no models.env. Exit 5: a start dialog shows, nothing was sent. Exit 1:
 # the session is gone.
 . "$(dirname "$0")/lib.sh"
 [ $# = 4 ] || { echo "usage: start.sh <name> <cwd> <label> <message file>" >&2; exit 2; }
@@ -18,6 +22,13 @@ has_models || exit 3
 [ "$1" = "$IMPL" ] && role=IMPL || role=ORCH
 SESSION_MODEL=$(model $role)
 ADVISOR_MODEL=$(model ADVISOR)
+SESSION_ENV_FILE=
+if [ $role = IMPL ] && [ -n "${IMPL_ENV_FILE:-}" ]; then
+  f=$(realpath -e "$IMPL_ENV_FILE" 2>/dev/null) && [ -f "$f" ] || { echo "IMPL_ENV_FILE $IMPL_ENV_FILE in loop.env is no file" >&2; exit 3; }
+  [ "$(stat -c %a "$f")" = 600 ] || { echo "IMPL_ENV_FILE $f is mode $(stat -c %a "$f"): chmod 600 it, it holds secrets" >&2; exit 3; }
+  case $f/ in "$(realpath -m "$REPO")"/*) echo "IMPL_ENV_FILE $f sits in the implementer's checkout: move it out" >&2; exit 3 ;; esac
+  SESSION_ENV_FILE=$f
+fi
 handle=$(drv_start "$1" "$2" "$3") || { echo "start failed" >&2; exit 1; }
 nap 12
 # Look before the first send. A start dialog (folder trust, or any menu with

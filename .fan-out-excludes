@@ -10,3 +10,5 @@ docs/reference/plugins
 docs/log
 # frozen archive
 plugins/deprecated/**
+# one folder per eval case, a list by design
+plugins/issue-loop/evals

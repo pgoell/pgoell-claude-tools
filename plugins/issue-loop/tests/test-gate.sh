@@ -1,5 +1,5 @@
 # gate.sh with fake gh, git, curl
-good() { echo CLOSED >"$FAKE/issue_state"; echo 5 >"$FAKE/prs"; printf -- '- [x] a Test: t1\n- [x] b Proof: t2\n' >"$FAKE/body"; echo src/app.py >"$FAKE/files"; echo abc1234 >"$FAKE/live"; : >"$FAKE/dirty"; rm -f "$FAKE/down"; }
+good() { rm -f "$FAKE/pr_state" "$FAKE/auto" "$FAKE/checks" "$L/task.notified"; : >"$STUB/screen"; echo CLOSED >"$FAKE/issue_state"; echo 5 >"$FAKE/prs"; printf -- '- [x] a Test: t1\n- [x] b Proof: t2\n' >"$FAKE/body"; echo src/app.py >"$FAKE/files"; echo abc1234 >"$FAKE/live"; : >"$FAKE/dirty"; rm -f "$FAKE/down"; }
 gate() { PATH="$T/bin:$PATH" "$L/gate.sh" 7 2>&1; }
 use() { printf '{"type":"assistant","message":{"usage":{"input_tokens":%s,"cache_read_input_tokens":%s,"cache_creation_input_tokens":0}}}\nnot json\n' "$1" "$2" >"$proj/a.jsonl"; }
 gateh() { HOME="$T/home" gate; }
@@ -23,6 +23,18 @@ good; printf '.github/workflows/deploy.yml\nsrc/a.py\n' >"$FAKE/files"; out=$(ga
 has "gate tells the human" "$out" "TELL HUMAN: PR 5 touched .github/workflows/deploy.yml"
 hasnt "gate: no handover line without a transcript" "$out" "HAND OVER NOW"
 has "gate: unknown context without a transcript" "$out" "orchestrator context: unknown tokens"
+# a task that ended with HELD: its PR waits for the owner's review
+held() { good; echo OPEN >"$FAKE/issue_state"; echo OPEN >"$FAKE/pr_state"; echo '{"enabledAt":"x"}' >"$FAKE/auto"; echo 'HELD #7: waits for the owner' >"$L/task.notified"; }
+held; out=$(gate); ok "a held task passes the gate" $? 0; has "gate says GATE HELD" "$out" "GATE HELD"
+hasnt "a held task is no GATE PASS" "$out" "GATE PASS"; has "gate names the held PR" "$out" "HELD PR 5: waits for the owner's review"
+hasnt "a held PR is not failed as unmerged" "$out" "not merged"; hasnt "a held task's open issue is no failure" "$out" "FAIL issue 7 open"
+held; rm "$L/task.notified"; printf 'report\nHELD #7: waits for the owner\n' >"$STUB/screen"; out=$(gate); has "gate reads HELD from the screen" "$out" "GATE HELD"
+held; rm "$FAKE/auto"; out=$(gate); ok "a held PR without auto-merge fails" $? 1; has "gate names the missing auto-merge" "$out" "FAIL PR 5 held without auto-merge"
+held; printf 'Test fail\nLint pending\n' >"$FAKE/checks"; out=$(gate); ok "a held PR with a red check fails" $? 1
+has "gate names the red check" "$out" "FAIL PR 5 held with check Test fail"; has "gate names the running check" "$out" "FAIL PR 5 held with check Lint pending"
+held; echo MERGED >"$FAKE/pr_state"; out=$(gate); ok "HELD with no open PR fails" $? 1; has "gate says no PR is held" "$out" "no PR of it is open"
+good; echo OPEN >"$FAKE/pr_state"; out=$(gate); has "without HELD an open PR still fails" "$out" "FAIL PR 5 not merged"
+good
 proj="$T/home/.claude/projects/$(printf %s "$(cd "$L" && pwd -P)" | sed 's/[^A-Za-z0-9]/-/g')"; mkdir -p "$proj"
 good; use 10 90000; out=$(gateh); ok "gate passes under 120k" $? 0; has "gate prints the context" "$out" "orchestrator context: 90010 tokens"
 hasnt "no handover under 120k" "$out" "HAND OVER"

@@ -14,7 +14,7 @@ plugins/diagrams/skills/creating-diagrams/engine/examples 14
 plugins/diagrams/skills/creating-diagrams/engine/renderers/shared 18
 plugins/insights/evals 12
 plugins/insights/skills/digest/scripts 8
-plugins/issue-loop/skills/running-the-loop/assets 17
+plugins/issue-loop/skills/running-the-loop/assets 18
 plugins/issue-loop/skills/running-the-loop/references 11
 plugins/issue-loop/tests 17
 plugins/learning/evals 14

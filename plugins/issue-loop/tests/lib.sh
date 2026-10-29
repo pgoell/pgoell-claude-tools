@@ -29,7 +29,9 @@ json=""; for ((i = 1; i <= $#; i++)); do [ "${!i}" = --json ] && { j=$((i + 1));
 case "$1 $2 $json" in
 "issue view state") cat "$FAKE/issue_state" ;;
 "pr list number") cat "$FAKE/prs" ;;
-"pr view state") echo MERGED ;;
+"pr view state") cat "$FAKE/pr_state" 2>/dev/null || echo MERGED ;;
+"pr view autoMergeRequest") cat "$FAKE/auto" 2>/dev/null ;;
+"pr checks name,bucket") cat "$FAKE/checks" 2>/dev/null ;;
 "pr view title") echo "fix: a thing" ;;
 "pr view body") cat "$FAKE/body" ;;
 "pr view files") cat "$FAKE/files" ;;

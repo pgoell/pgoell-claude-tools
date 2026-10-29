@@ -52,7 +52,7 @@ Then make the loop folder, outside every checkout:
 
 It writes `loop.env`, `models.env`, `rules.local.md`, `ledger.tsv`, `standing-order.md`, `standing-order-impl.md` and a blank `HANDOFF.md`, and eight stubs: `next.sh`, `wait.sh`, `gate.sh`, `start.sh`, `notify.sh`, `grant.sh`, `takeover-check.sh` and `lib.sh`. A stub runs the same script from the installed plugin, so the folder never holds a copy to go stale. Then:
 
-1. Edit `loop.env`: the implementer's session name, its checkout, the base branch, the deploy workflow, a URL that proves the app is alive. Leave `ISSUE_LOOP_VERSION=latest`, or set an exact version of 0.9.0 or later to pin one. Check `models.env` with the user: the model per role in the Claude Code column.
+1. Edit `loop.env`: the implementer's session name, its checkout, the base branch, the deploy workflow, a URL that proves the app is alive. Leave `ISSUE_LOOP_VERSION=latest`, or set an exact version of 0.9.0 or later to pin one. Check `models.env` with the user: the model per role in the Claude Code column. Ask where the review runs, and set `REVIEW_IN` (next section when it is `ci`).
 2. Answer the plugin's rules in `rules.local.md` with the user. A `## N.K` section answers the K-th `<FILL: ...>` of rule N. A `## N` section is a whole rule of the loop's own, and an empty `## N` drops rule N. `next.sh` lists each `FILL` without an answer and refuses to send a brief with one. `references/brief-rules.md` gives the reason behind each rule, so the user can drop one that does not fit.
 3. Write the user's standing orders into `HANDOFF.md` as they give them. That file is your memory.
 4. Write your own session name into the file `orch-name` in the loop folder: the name this session was started under. If you cannot tell which name in the driver's list is yours (with herdr, `herdr agent list`), ask the user. Rule 19 of the brief has the implementer tell that session when it is done. `next.sh` refuses to send a brief while the file is missing. Then name the Claude session for the user: `herdr agent prompt <your name> "/rename <project>-orchestrator-main"` (it runs when your turn ends). The driver's name stays as it is; the scripts use it. At a handover the names and the old tabs change as `handing-over` says.
@@ -61,6 +61,16 @@ It writes `loop.env`, `models.env`, `rules.local.md`, `ledger.tsv`, `standing-or
 7. Start the implementer if none runs: write a one-line hello to a file and run `./start.sh <name> <checkout> "<tab label>" <file>`. The implementer should have a checkout of its own that no other session works in. One that ran before the standing order was granted must be started anew, since a session reads its instructions when it starts.
 
 If the host has no herdr, read `references/driver.md` and write the five driver functions for what the host has, before anything else.
+
+## Review in CI
+
+`REVIEW_IN=ci` in `loop.env` is for a repo that reviews every PR in CI. `next.sh` then lays `assets/rules-ci.md` over rules 7, 15 and 16: no review subagent; the implementer answers each blocking thread with a reply whose first word is `Fixed`, `Rejected`, `Intentional` or `Didn't matter` and resolves it; after three rounds it ends `BLOCKED`; a PR on a code-owned path ends `HELD #N` with auto-merge on, and waits for the owner's approving review. A loop's own `## 7`, `## 15` or `## 16` in `rules.local.md` still wins over the overlay. The repo needs:
+
+- A review job that posts blocking findings as review threads, and branch protection that requires resolved conversations and the review job.
+- Risky paths in `.github/CODEOWNERS`, and branch protection that requires a code owner's review.
+- An implementer that pushes as another GitHub account than the owner's, since GitHub never counts an author's approval of their own PR. Set `IMPL_ENV_FILE` in `loop.env` to a file outside every checkout, mode 600, with one line `GH_TOKEN=<token>` of a bot account. `start.sh` loads it into the implementer's session only, never the orchestrator's; where git takes its credentials from `gh auth git-credential`, both `gh` and `git push` act as the bot. Make it a classic token with the `repo` scope only: a fine-grained token cannot reach a repo that another personal account owns, and a token without the `workflow` scope cannot push a change to `.github/workflows`, so an implementer led astray by a prompt cannot change CI. Add the bot as a collaborator with write access. Start the implementer anew after you set it.
+
+The example is kasten (`pgoell/kasten`): PRs #1317 and #1318 there moved its review into CI.
 
 ## Granting the standing order
 

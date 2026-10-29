@@ -24,6 +24,8 @@ Three demands are easy to miss:
 - **Unwrapped lines.** `wait.sh` and the go-ahead check match at the start of a line. A driver that returns the screen as wrapped rows breaks the match when the DONE line is long.
 - **A state that can say "blocked".** That is how `wait.sh` sees a permission question. A driver without it can print `unknown`; then a waiting session is found only by the clock.
 
+`drv_start` also reads `SESSION_ENV_FILE`, which `start.sh` sets for the implementer when `loop.env` names `IMPL_ENV_FILE`: a file of KEY=value lines that the new session's environment must hold and no other process's. The herdr driver runs `set -a; . <file>; set +a` in the tab's shell before it starts claude, so the values never show on a command line; that needs a POSIX shell such as bash or zsh in the tab.
+
 ## What is herdr-specific
 
 herdr is a terminal workspace manager with a CLI for agent sessions. Only `driver-herdr.sh` knows it. These are the calls it makes:

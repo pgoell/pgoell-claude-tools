@@ -4,6 +4,8 @@
 
 ## The order
 
+Before the list, a held PR (`references/gate.md`, "What `GATE HELD` means"). Once it has landed, one short task runs rule 9 from "After the merge" (release, deploy, the live checks) and the rule 16 proof on the real thing, with the held task's issues on the DONE line. If the owner asked for changes, the next task continues the PR. A PR that still waits holds nothing back.
+
 1. A gap or fault the last task shipped, and regressions. They go first and "must hold".
 2. What the last task left of its own issues.
 3. Issues with the user's "run next" label (`priority` on most repos), oldest first. A bug among them may join a batch of related bugs; a feature among them still gets its own bugs fixed before the next feature. The label only moves an issue up: it does not run a "not now" issue, and it does not skip the gate.

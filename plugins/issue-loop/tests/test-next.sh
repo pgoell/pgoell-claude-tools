@@ -33,7 +33,7 @@ hasnt "task.md has no placeholder left" "$(cat "$L/task.md")" "{{"
 coder=$(sed -n 's/^CLAUDE_CODER_MODEL=//p' "$L/models.env")
 review=$(sed -n 's/^CLAUDE_REVIEW_MODEL=//p' "$L/models.env")
 has "the brief names the coder model" "$(cat "$L/task.md")" "on $coder (Agent tool"
-has "the brief names the review model" "$(cat "$L/task.md")" "run on $review"
+has "the brief names the review model" "$(cat "$L/task.md")" "runs on $review"
 "$L/next.sh" >/dev/null 2>&1; ok "next without a task line" $? 2
 grep -v '^ALIVE_URL=' "$L/loop.env" >"$L/loop.env.new" && mv "$L/loop.env.new" "$L/loop.env"
 echo "ALIVE_URL='https://app.example/alive?a=1&b=2|c/d'" >>"$L/loop.env"
@@ -46,6 +46,15 @@ for ban in 'Never wait with sleep' 'no tail or head' 'never piped'; do
   "$L/next.sh" --force "t. $ban" >/dev/null 2>&1; ok "next refuses: $ban" $? 3
 done
 has "a URL with & and | survives" "$(cat "$L/task.md")" "curl -fsS https://app.example/alive?a=1&b=2|c/d answers"
+echo "REVIEW_IN=ci" >>"$L/loop.env"; "$L/next.sh" --force "t" >/dev/null
+has "REVIEW_IN=ci: the brief's rule 7 is the CI review" "$(cat "$L/task.md")" "7. The review runs in CI."
+has "REVIEW_IN=ci: rule 16 ends a held PR with HELD" "$(cat "$L/task.md")" "end the task with HELD #N"
+hasnt "REVIEW_IN=ci: no review subagent in rule 7" "$(cat "$L/task.md")" "7. One review, with a bar."
+echo "REVIEW_IN=both" >>"$L/loop.env"; out=$("$L/next.sh" --force "t" 2>&1); ok "next refuses an unknown REVIEW_IN" $? 3
+has "next names REVIEW_IN" "$out" "REVIEW_IN=both"
+grep -v '^REVIEW_IN=' "$L/loop.env" >"$L/loop.env.new" && mv "$L/loop.env.new" "$L/loop.env"
+"$L/next.sh" --force "t" >/dev/null
+has "REVIEW_IN unset: rule 7 is the session review" "$(cat "$L/task.md")" "7. One review, with a bar."
 rm "$STUB/status"; "$L/next.sh" "t" >/dev/null 2>&1; ok "next refuses a gone implementer" $? 1
 }
 

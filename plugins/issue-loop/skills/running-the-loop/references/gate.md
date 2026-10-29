@@ -6,6 +6,17 @@ Step 4 of "One turn of the loop" in `SKILL.md` runs `./gate.sh 41 38 39` and rea
 
 `GATE PASS` means: issues closed, every PR since the task began merged with no open box and with each ticked box naming its test (`Test:` or `Proof:` on its line or an indented line under it), the live commit is the head of the base branch, the checkout is clean, the app answers.
 
+## What `GATE HELD` means
+
+The task ended with `HELD #N` (rule 16 of `assets/rules-ci.md`): its PR touches a code-owned path and waits for the owner's approving review. `gate.sh` reads the HELD line from `task.notified` or the screen and checks the held PR instead of failing it: open, auto-merge on, no check that fails or still runs. Its issues may stay open; they close when it lands. The other checks stay (boxes and their tests, the live commit, a clean checkout on the base branch). `GATE HELD` exits 0, like a pass.
+
+Then:
+
+- Tell the user as a todo: the PR link, "approve it or ask for changes", and what lands on approval (auto-merge merges it).
+- Write `held #<PR>` in the ledger and the PR under "Held" in `HANDOFF.md`.
+- Send the next task. Never approve, label or merge the PR yourself, and never ask the implementer to.
+- Look at each held PR at every break (`gh pr view <PR> --json state,reviewDecision`). Once it is merged, its release and live proof run next (`references/queue.md`). If the owner asked for changes, that is the next task: continue the PR.
+
 ## Reading the report
 
 The screen keeps only about 70 lines of it (`. ./lib.sh; drv_read "$IMPL" 130` shows what is left), so read the headings in capitals and "Not fixed" from the PR body, where rule 12 puts them too (`gh pr view N --json body,comments`). Read these parts of the report above all:
