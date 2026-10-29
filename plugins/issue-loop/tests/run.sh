@@ -17,6 +17,7 @@ test_next_refusals
 test_grant
 test_next_sends
 test_next_go_ahead
+test_trusted
 test_wait
 test_notify
 test_gate

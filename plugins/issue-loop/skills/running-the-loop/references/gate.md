@@ -19,7 +19,7 @@ Then:
 
 ## Reading the report
 
-The screen keeps only about 70 lines of it (`. ./lib.sh; drv_read "$IMPL" 130` shows what is left), so read the headings in capitals and "Not fixed" from the PR body, where rule 12 puts them too (`gh pr view N --json body,comments`). Read these parts of the report above all:
+The screen keeps only about 70 lines of it (`. ./lib.sh; drv_read "$IMPL" 130` shows what is left), so read the headings in capitals and "Not fixed" from the PR body, where rule 12 puts them too (`. ./lib.sh; trusted_read N`, which leaves the comments of untrusted authors unread). Read these parts of the report above all:
 
 - **Not fixed**: review findings the task left in.
 - **Slips**: rules the task broke (a test bent to pass, an unreviewed commit).

@@ -19,13 +19,32 @@ ln -s "$(cd "$here/.." && pwd)" "$T/cache/0.9.0"
 printf '{"version":2,"plugins":{"issue-loop@pgoell-claude-tools":[{"scope":"user","installPath":"%s/cache/0.9.0","version":"0.9.0"}]}}\n' "$T" >"$T/claude/plugins/installed_plugins.json"
 export CLAUDE_CONFIG_DIR="$T/claude"
 sed -i -e 's|^DRIVER=.*|DRIVER=driver-stub.sh|' -e "s|^REPO=.*|REPO=$T/repo|" -e 's|^ALIVE_URL=.*|ALIVE_URL=https://app.example/alive|' "$L/loop.env"
+# every script finds the fake gh first; its api answers come from $FAKE/api
+make_fakes
+mkdir -p "$T/ghbin" "$FAKE/api" && ln -sf "$T/bin/gh" "$T/ghbin/gh"
+export PATH="$T/ghbin:$PATH"
+api_fixture 'repos/{owner}/{repo}' '{"owner":{"login":"owner"}}'
+api_fixture user '{"login":"impl-bot"}'
+api_fixture 'repos/{owner}/{repo}/issues/7' '{"number":7,"title":"a bug","body":"the steps","user":{"login":"owner"}}'
 }
+
+# api_fixture PATH JSON: what the fake gh api answers for PATH
+api_fixture() { printf '%s\n' "$2" >"$FAKE/api/${1//\//_}.json"; }
 
 # fake gh, git and curl for gate.sh
 make_fakes() {
 cat >"$T/bin/gh" <<'GH'
 #!/bin/bash
 json=""; for ((i = 1; i <= $#; i++)); do [ "${!i}" = --json ] && { j=$((i + 1)); json=${!j}; }; done
+# gh api PATH [--paginate] [--jq F]: F run by jq over $FAKE/api/<PATH with _ for />.json.
+# user answers only with a GH_TOKEN, as the real one answers only for a login.
+if [ "$1" = api ]; then
+  path="" q=.; for ((i = 2; i <= $#; i++)); do case ${!i} in --jq) j=$((i + 1)); q=${!j}; i=$j ;; -*) ;; *) path=${!i} ;; esac; done
+  [ "$path" = user ] && { [ -n "${GH_TOKEN:-}" ] || exit 1; }
+  f="$FAKE/api/${path//\//_}.json"
+  [ -f "$f" ] || { echo "fake gh: HTTP 404 $path" >&2; exit 1; }
+  exec jq -r "$q" "$f"
+fi
 case "$1 $2 $json" in
 "issue view state") cat "$FAKE/issue_state" ;;
 "pr list number") cat "$FAKE/prs" ;;
