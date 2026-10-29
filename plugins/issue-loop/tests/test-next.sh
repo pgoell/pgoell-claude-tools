@@ -121,7 +121,7 @@ hasnt "the token is not in the brief" "$(cat "$L/task.md")" "ghp_secret123"
 hasnt "the token is not printed" "$out" "ghp_secret123"
 echo REVIEW_IN=ci >>"$L/loop.env"; "$L/next.sh" --force "Fix #7" >/dev/null
 has "REVIEW_IN=ci trusts the CI review's bot" "$(cat "$L/task.md")" 'IN("owner","impl-bot","github-actions[bot]"))'
-has "the CI review reads its threads with rule 2's filter" "$(cat "$L/task.md")" "with the filter of rule 2"
+has "the CI review reads its threads with rule 2's filter" "$(cat "$L/task.md")" "with the filter of rule 2 on pulls/N/comments"
 grep -vE '^(REVIEW_IN|IMPL_ENV_FILE)=' "$L/loop.env" >"$L/loop.env.new" && mv "$L/loop.env.new" "$L/loop.env"
 echo "TRUSTED_AUTHORS='alice bob'" >>"$L/loop.env"
 "$L/next.sh" --force "Release the held PR" >/dev/null; ok "TRUSTED_AUTHORS: next briefs a task with no issue" $? 0
