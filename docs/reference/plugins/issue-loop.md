@@ -36,7 +36,7 @@ Both skills start from their slash command or from a plain request ("run the iss
 | `loop.env`        | The settings: implementer name and checkout, base branch, deploy workflow, alive URL, driver, permission mode, where the review runs, the implementer's own credentials. |
 | `models.env`      | The model per role and per harness: sessions, implementing and review subagents, advisor. `start.sh` and `next.sh` read it.                                              |
 | `rules.local.md`  | The loop's own answers to the plugin's rules: the `FILL` marks, and any rule of its own. The brief is the plugin's rules plus this file.                                 |
-| `next.sh`         | Sends `/clear` and the brief to the implementer. Refuses while the implementer works or without the standing order.                                                      |
+| `next.sh`         | Sends `/clear` and the brief to the implementer. Refuses while the implementer works or without the standing order. Fast-forwards `REPO` first when it sits on `BASE`.   |
 | `wait.sh`         | Waits for the implementer's DONE, BLOCKED or HELD line, on its screen or in the file `notify.sh` writes, with a clock.                                                   |
 | `gate.sh`         | Pass, held or fail from outside: issues closed, PRs merged (or one held for the owner's review), every ticked box names a test, live commit, clean tree, app up.         |
 | `grant.sh`        | Run by you in a terminal of your own, never by a session: writes your standing order into the sessions' instructions after you type yes.                                 |
