@@ -16,6 +16,7 @@ wire_stub
 test_next_refusals
 test_grant
 test_next_sends
+test_next_pulls
 test_next_go_ahead
 test_trusted
 test_wait

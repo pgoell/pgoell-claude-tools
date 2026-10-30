@@ -58,6 +58,24 @@ has "REVIEW_IN unset: rule 7 is the session review" "$(cat "$L/task.md")" "7. On
 rm "$STUB/status"; "$L/next.sh" "t" >/dev/null 2>&1; ok "next refuses a gone implementer" $? 1
 }
 
+# next.sh fast-forwards REPO when it sits on BASE, and leaves a feature branch alone
+test_next_pulls() {
+echo done >"$STUB/status"
+g() { git -c user.name=t -c user.email=t@t "$@"; }
+git init -q --bare -b main "$T/origin.git"
+g -C "$T/repo" symbolic-ref HEAD refs/heads/main && g -C "$T/repo" remote add origin "$T/origin.git"
+g -C "$T/repo" commit -q --allow-empty -m one && g -C "$T/repo" push -q origin main
+g clone -q "$T/origin.git" "$T/other" && g -C "$T/other" commit -q --allow-empty -m two && g -C "$T/other" push -q origin main
+"$L/next.sh" --force "t" >/dev/null 2>&1
+ok "next fast-forwards REPO on BASE" "$(git -C "$T/repo" log -1 --format=%s)" two
+g -C "$T/other" commit -q --allow-empty -m three && g -C "$T/other" push -q origin main
+g -C "$T/repo" checkout -q -b feature
+"$L/next.sh" --force "t" >/dev/null 2>&1
+ok "next leaves REPO alone off BASE" "$(git -C "$T/repo" log -1 --format=%s)" two
+g -C "$T/repo" checkout -q main && g -C "$T/repo" remote remove origin
+rm -rf "$T/origin.git" "$T/other"
+}
+
 # go-ahead: text forms, menu about the brief, and a menu that is not about the
 # brief. Only a session that rests is answered.
 test_next_go_ahead() {

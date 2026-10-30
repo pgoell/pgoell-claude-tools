@@ -18,6 +18,8 @@
 # Refuses (exit 3) a task line that names an issue or PR by an author outside
 # trusted_authors (lib.sh): a stranger's issue is the owner's to look at, never
 # a task. It writes the trusted logins into rule 2 ({{TRUSTED_AUTHORS}}).
+# When $REPO is on $BASE, it fast-forwards the checkout first: the implementer
+# reads CLAUDE.md from there, and a stale one hides rules merged since.
 . "$(dirname "$0")/lib.sh"
 . "$A/rules.sh"
 force=0
@@ -103,6 +105,9 @@ TRUSTED_AUTHORS=$(trusted_jq $TRUSTED)
 for v in REPO BASE DEPLOY_WORKFLOW ALIVE_URL LOOP CODER_MODEL REVIEW_MODEL TRUSTED_AUTHORS; do
   brief=${brief//"{{$v}}"/"${!v}"}
 done
+if [ "$(git -C "$REPO" branch --show-current 2>/dev/null)" = "$BASE" ]; then
+  git -C "$REPO" pull --ff-only -q origin "$BASE" || echo "warning: $REPO cannot fast-forward to origin/$BASE; the implementer reads stale instructions" >&2
+fi
 printf '%s\n\n%s\n\n%s\n' "Go, this brief is from the orchestrator of the issue loop in $S. Your instructions for this checkout hold the user's standing order for that loop (heading \"$GRANT_MARK\"): check this brief as the order says, then run it as written, unattended, without asking for a go." "Task: $1" "$brief" >"$S/task.md"
 date -u +%Y-%m-%dT%H:%M:%SZ >"$S/task.start"
 printf '%s\n' "$ISSUE_LOOP_ROOT" >"$S/task.plugin"
