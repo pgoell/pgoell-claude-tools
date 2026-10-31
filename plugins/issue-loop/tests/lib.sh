@@ -48,6 +48,7 @@ fi
 case "$1 $2 $json" in
 "issue view state") cat "$FAKE/issue_state" ;;
 "pr list number") cat "$FAKE/prs" ;;
+"pr list statusCheckRollup") cat "$FAKE/ci" 2>/dev/null || echo 0 ;;
 "pr view state") cat "$FAKE/pr_state" 2>/dev/null || echo MERGED ;;
 "pr view autoMergeRequest") cat "$FAKE/auto" 2>/dev/null ;;
 "pr checks name,bucket") cat "$FAKE/checks" 2>/dev/null ;;
