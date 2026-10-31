@@ -95,5 +95,36 @@ ok "no quoted font family outside the fallback layer" "$(grep -c 'font[^;]*"' "$
 has "one column below 640 px" "$(cat "$T/news-css.txt")" "@media (max-width:639px)"
 has "fallback layer has the dark tokens" "$(cat "$T/news.html")" '@media (prefers-color-scheme: dark) {'
 
+# a bracket on the lead: RECORD fills both matches' record, empty for a knockout
+bracket() {
+  python3 - "$NP/2026-10-19.json" "$1" <<'PY'
+import json, sys
+path, rec = sys.argv[1], sys.argv[2] or None
+e = json.load(open(path))
+m = lambda a, b, s, w: {"a": a, "b": b, "score": s, "winner": w, "when": None, "record": rec}
+e["lead"]["bracket"] = {"tags": {"Gen.G": "GEN", "T1": "T1"}, "rounds": [
+    {"name": "Semis", "matches": [m("Gen.G", "Top Esports", "3-1", "a"), m("T1", "Invictus Gaming", "3-2", "a")]},
+    {"name": "Final", "matches": [m("Gen.G", "T1", None, None)]}]}
+json.dump(e, open(path, "w"))
+PY
+}
+edition https://example.org/bridge 2026-10-18 2026-10-13
+bracket 2-1
+out=$(validate); ok "validate swiss bracket exit" $? 0
+bracket 2:1
+out=$(validate); ok "validate bad record exit" $? 1
+has "validate bad record names it" "$out" 'record must be like "2-1" or null'
+render() { uv run -q "$S/render.py" --vault "$RV" --date 2026-10-19 --design tabbed --out "$T/b.html" >/dev/null 2>&1; cat "$T/b.html"; }
+bracket 2-1
+out=$(render)
+has "swiss bracket class" "$out" 'class="bracket swiss"'
+has "swiss record band" "$out" '<h5 class="rec">2-1<span class="pips"><i class="w"></i><i class="w"></i><i class="l"></i></span></h5>'
+has "team tag" "$out" '<span class="tag">GEN</span>'
+bracket ""
+out=$(render)
+has "knockout bracket class" "$out" 'class="bracket ko"'
+has "knockout joins pairs" "$out" '<div class="round pairs">'
+ok "knockout has no record band" "$(grep -c 'class="rec"' <<<"$out")" 0
+
 echo "$pass passed, $fail failed"
 [ "$fail" -eq 0 ]

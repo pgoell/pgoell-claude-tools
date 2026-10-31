@@ -1,17 +1,26 @@
 {#- A story's tournament tree and a section's league tables; only tabbed draws them. None reads `edition`. -#}
+{%- macro side(st, m, s) -%}
+{%- set tag = (st.bracket.tags or {}).get(m[s]) -%}
+<div class="t{{ ' win' if m.winner == s }}{{ ' out' if m.winner and m.winner != s }}">{% if tag %}<span class="tag">{{ tag }}</span>{% endif %}<span class="tn">{{ m[s] }}</span>{% if m.score %}<span class="sc">{{ m.score.split('-')[0 if s == 'a' else 1] }}</span>{% endif %}</div>
+{%- endmacro -%}
+{%- macro match(st, m) -%}
+<div class="m{{ ' open' if not m.winner }}">{{ side(st, m, 'a') }}{{ side(st, m, 'b') }}{% if m.when and not m.winner %}<div class="when">{{ m.when }}</div>{% endif %}</div>
+{%- endmacro -%}
+{#- A Swiss stage (any match carries a record) groups each round's matches by record, with no lines;
+    a knockout tree puts each match in an equal slot and joins pairs to the match they feed. -#}
 {%- macro bracket(st) -%}
-<div class="bracket" role="group" aria-label="{{ 'Turnierbaum' if st.lang == 'de' else 'Bracket' }}">
+{%- set swiss = st.bracket.rounds|map(attribute='matches')|sum(start=[])|selectattr('record')|list|length > 0 -%}
+<div class="bracket {{ 'swiss' if swiss else 'ko' }}" role="group" aria-label="{{ 'Turnierbaum' if st.lang == 'de' else 'Bracket' }}">
   {%- for r in st.bracket.rounds %}
-  <div class="round">
+  <div class="round{{ ' pairs' if not swiss and loop.nextitem and loop.nextitem.matches|length * 2 == r.matches|length }}">
     <h4>{{ r.name }}</h4>
     <div class="ms">
     {%- for m in r.matches %}
-      <div class="m{{ ' open' if not m.winner }}">
-        {%- for side in ['a', 'b'] %}
-        <div class="t{{ ' win' if m.winner == side }}{{ ' out' if m.winner and m.winner != side }}"><span class="tn">{{ m[side] }}</span>{% if m.score %}<span class="sc">{{ m.score.split('-')[0 if side == 'a' else 1] }}</span>{% endif %}</div>
-        {%- endfor %}
-        {%- if m.when and not m.winner %}<div class="when">{{ m.when }}</div>{% endif %}
-      </div>
+      {%- if swiss and loop.changed(m.record) and m.record %}
+      {%- set wl = m.record.split('-')|map('int')|list %}
+      <h5 class="rec">{{ m.record }}<span class="pips">{% for _ in range(wl[0]) %}<i class="w"></i>{% endfor %}{% for _ in range(wl[1]) %}<i class="l"></i>{% endfor %}</span></h5>
+      {%- endif %}
+      {%- if swiss %}{{ match(st, m) }}{% else %}<div class="slot">{{ match(st, m) }}</div>{% endif %}
     {%- endfor %}
     </div>
   </div>

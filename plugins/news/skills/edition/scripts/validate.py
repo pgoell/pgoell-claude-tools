@@ -94,6 +94,8 @@ def story(s: object, where: str, day: str) -> None:
 
     bracket = s.get("bracket")
     if bracket is not None and check(isinstance(bracket, dict), where, "bracket must be an object or null"):
+        tags = bracket.get("tags")
+        check(tags is None or (isinstance(tags, dict) and all(is_str(k) and is_str(v) for k, v in tags.items())), where, "bracket.tags must map team names to tags")
         rounds = bracket.get("rounds")
         if check(isinstance(rounds, list) and 1 <= len(rounds) <= 8, where, "bracket.rounds must be a list of 1 to 8"):
             for i, r in enumerate(rounds):
@@ -109,6 +111,7 @@ def story(s: object, where: str, day: str) -> None:
                             check(m.get("winner") in ("a", "b", None), mw, 'winner must be "a", "b" or null')
                             check(m.get("score") is None or (is_str(m["score"]) and SCORE.match(m["score"])), mw, 'score must be like "3-2" or null')
                             check(m.get("when") is None or is_str(m.get("when")), mw, "when must be a string or null")
+                            check(m.get("record") is None or (is_str(m["record"]) and SCORE.match(m["record"])), mw, 'record must be like "2-1" or null')
 
     words = len(str(s.get("summary", "")).split())
     low, high = SUMMARY_WORDS.get(s.get("importance"), (25, 150))
