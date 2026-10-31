@@ -17,7 +17,7 @@ Rules for this job:
 
 4. Tools. Work with whatever tools suit the job: the edit tool, sed, scripts, heredocs, bash, chained shell calls. This brief bans none of them.
 
-5. Tests are the proof. Every checklist line gets a test. The test is the evidence for the box; name it after `Test:` (`Proof:` for a proof subagent), on the box's line or on an indented line under it. `gate.sh` fails a ticked box without one. See each new test fail on the code of {{BASE}} before you count it.
+5. Tests are the proof. Every checklist line gets a test. The test is the evidence for the box; name it after `Test:` (`Proof:` for a proof subagent), on the box's line or on an indented line under it. Name a lint or check command after `Check:` for a box about docs or comments, which no test can prove. `gate.sh` fails a ticked box without one. See each new test fail on the code of {{BASE}} before you count it.
    - While working, run one test: <FILL: the command that runs a single test by its id>.
    - Run the full suite (<FILL: the command that runs the full suite>) at three points only: before the first push, after the review fixes, and when a change touches shared code. Not after each edit.
    - A test that fails now and then: find the cause in the product or the fixture. Do not add sleeps. Stop after 15 minutes on one flake: mark the test as an expected failure with the reason, open an issue, go on.
