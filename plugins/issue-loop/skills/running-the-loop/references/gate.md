@@ -16,6 +16,7 @@ Then:
 - Write `held #<PR>` in the ledger and the PR under "Held" in `HANDOFF.md`.
 - Send the next task. Never approve, label or merge the PR yourself, and never ask the implementer to.
 - Look at each held PR at every break (`gh pr view <PR> --json state,reviewDecision`). Once it is merged, its release and live proof run next (`references/queue.md`). If the owner asked for changes, that is the next task: continue the PR.
+- A held PR the owner has approved lands next, ahead of every other merge. A merge ahead of it can conflict, and the push that fixes the conflict dismisses the approval.
 
 ## Reading the report
 
