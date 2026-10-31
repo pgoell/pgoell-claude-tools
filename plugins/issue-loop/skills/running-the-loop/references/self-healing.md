@@ -13,6 +13,6 @@
 - `takeover-check.sh` prints `TAKEOVER FAIL`: each `FAIL` line names one check. Do not repair the standing order yourself; a wrong name in `HANDOFF.md` or `orch-name` is the outgoing orchestrator's to fix.
 - No `impl settled` line came: `wait.sh` still settles on the DONE line, on the screen or in `task.notified`. Check that `orch-name` holds your name, and run `./notify.sh "DONE #0"` yourself once between tasks, never during one (it overwrites `task.notified`): the line must land in your own tab.
 - `gate.sh` fails "not on <base>" or "working tree dirty" in the middle of a task: that is normal, the gate is for after the task.
-- `gate.sh` fails "live is X, <base> is Y" right after the DONE line: the deploy may still run. Look at `gh run list`, wait a minute, run the gate again.
+- `gate.sh` fails "live is X, <base> is Y" right after the DONE line: the deploy may still run. Look at `gh run list`, wait a minute, run the gate again. When it fails on every commit the loop does not deploy (lint, test or comment trims), set `LIVE_TYPES` in `loop.env` to the commit types the deploy releases.
 - A driver call fails: run the driver's own command by hand (`herdr agent list`) and read `references/driver.md`.
 - The implementer's state is `gone` but its tab is there: read the pane itself (`herdr pane read <pane id>`); a start dialog may have closed the session.

@@ -35,7 +35,11 @@ out=$("$L/wait.sh" "#210"); ok "wait STALLED exit" $? 5; ok "wait STALLED word" 
 out=$(timeout 2 "$L/wait.sh" "#210"); ok "wait: STALLED starts the clock anew" $? 124
 touch -d '21 minutes ago' "$L/task.alive"; echo working >"$STUB/status"
 out=$(timeout 2 "$L/wait.sh" "#210"); ok "wait: a working session is no stall" $? 124
-echo idle >"$STUB/status"; touch -d '21 minutes ago' "$L/task.alive"
+echo idle >"$STUB/status"; touch -d '21 minutes ago' "$L/task.alive"; echo 2 >"$FAKE/ci"
+out=$(PATH="$T/bin:$PATH" timeout 2 "$L/wait.sh" "#210"); ok "wait: a running CI check is no stall" $? 124
+rm "$FAKE/ci"; touch -d '21 minutes ago' "$L/task.alive"
+out=$(PATH="$T/bin:$PATH" "$L/wait.sh" "#210"); ok "wait: STALLED with no CI running" "$out" STALLED
+touch -d '21 minutes ago' "$L/task.alive"
 "$L/next.sh" "t" >/dev/null; [ -e "$L/task.alive" ]; ok "next clears the stall clock" $? 1
 printf 'old output\n29 new messages (ctrl+End) ↓\n' >"$STUB/screen"; echo 'DONE #210' >"$L/task.notified"; touch -d '21 minutes ago' "$L/task.alive"
 out=$(timeout 5 "$L/wait.sh" "#210"); ok "wait settles on task.notified with a scrolled-up screen" "$out" settled
