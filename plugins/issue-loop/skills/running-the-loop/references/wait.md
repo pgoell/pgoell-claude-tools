@@ -12,9 +12,9 @@ By rule 19 of the brief the implementer runs `notify.sh` as its last tool call, 
 
 ## The other words
 
-| Word      | Meaning                              | Do                                                                                                                                                  |
-| --------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `TIMEOUT` | the task is older than 100 minutes   | read the screen first. In merge or deploy: let it finish. Else send "finish by rule 10 now" once. Then start `wait.sh` again at once                |
-| `ASKING`  | the session waits on a question      | read the screen. See "Permission mode" in `SKILL.md`                                                                                                |
-| `STALLED` | no work for 20 minutes, no DONE line | read the screen. If the last line is an API error, send "carry on where you stopped" once. If a suite run or a CI wait shows, start `wait.sh` again |
-| `GONE`    | no session has that name             | the session died. Tell the user; start a new one with `start.sh` once the checkout is clean                                                         |
+| Word      | Meaning                                                                 | Do                                                                                                                                                  |
+| --------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TIMEOUT` | the task is older than 100 minutes                                      | read the screen first. In merge or deploy: let it finish. Else send "finish by rule 10 now" once. Then start `wait.sh` again at once                |
+| `ASKING`  | the session waits on a question                                         | read the screen. See "Permission mode" in `SKILL.md`                                                                                                |
+| `STALLED` | no work for 20 minutes, no DONE line, no CI check running on an open PR | read the screen. If the last line is an API error, send "carry on where you stopped" once. If a suite run or a CI wait shows, start `wait.sh` again |
+| `GONE`    | no session has that name                                                | the session died. Tell the user; start a new one with `start.sh` once the checkout is clean                                                         |
