@@ -4,7 +4,7 @@ Step 4 of "One turn of the loop" in `SKILL.md` runs `./gate.sh 41 38 39` and rea
 
 ## What `GATE PASS` means
 
-`GATE PASS` means: issues closed, every PR since the task began merged with no open box and with each ticked box naming its test (`Test:` or `Proof:` on its line or an indented line under it), the live commit is the head of the base branch, the checkout is clean, the app answers.
+`GATE PASS` means: issues closed, every PR since the task began merged with no open box and with each ticked box naming its test (`Test:`, `Proof:` or `Check:` on its line or an indented line under it), the live commit is the head of the base branch, the checkout is clean, the app answers.
 
 ## What `GATE HELD` means
 

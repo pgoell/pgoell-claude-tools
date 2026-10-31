@@ -13,6 +13,7 @@ good; printf -- '- [x] a\n- [x] b\n' >"$FAKE/body"; out=$(gate); ok "gate fails 
 has "no-test boxes named" "$out" "FAIL PR 5: 2 ticked boxes name no test"
 good; printf -- '  - [X] a\n' >"$FAKE/body"; out=$(gate); has "gate fails on an indented [X] without a test" "$out" "FAIL PR 5: 1 ticked boxes name no test"
 good; printf -- '- [x] a\n  Test: t1\n- [x] b\n' >"$FAKE/body"; out=$(gate); has "a Test: under the box counts, a box with none fails" "$out" "FAIL PR 5: 1 ticked boxes name no test"
+good; printf -- '- [x] a docs line. Check: `mise run lint`\n- [x] b\n  Check: lint\n' >"$FAKE/body"; out=$(gate); ok "gate counts Check: as a box's proof" $? 0
 good; echo 'no boxes here' >"$FAKE/body"; out=$(gate); ok "gate passes a body with no boxes" $? 0
 good; printf -- '- [x] a Test: t1\n```\n- [x] example\n```\n' >"$FAKE/body"; out=$(gate); ok "gate skips a ticked box in a code block" $? 0
 good; echo OPEN >"$FAKE/issue_state"; out=$(gate); has "gate fails on an open issue" "$out" "FAIL issue 7 open"

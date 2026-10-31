@@ -2,7 +2,7 @@
 # usage: gate.sh <issue numbers...>
 # Pass or fail for the task that next.sh started last. Exit 0 only if all holds:
 # the issues are closed, every PR made since the task began is merged with no
-# open box and every ticked box names its test (Test: or Proof: on its line),
+# open box and every ticked box names its test (Test:, Proof: or Check: on its line),
 # the live commit is the head of BASE, the implementer's checkout is clean on
 # BASE, and the live app answers. It reads; it changes nothing. A newer installed
 # plugin gets a NEWER PLUGIN line, which never fails the gate.
@@ -41,8 +41,8 @@ for p in $(gh pr list --state all --search "created:>=$start" --json number -q '
   # A box inside a fenced code block is an example, not a checklist line.
   # A box's test may sit on its own line or on the indented lines under it.
   k=$(awk '/^[[:space:]]*```/ { f = !f; next } f { next }
-    /^[[:space:]]*- \[[xX]\]/ { if (b && !t) n++; b = 1; t = /Test:|Proof:/; next }
-    b && /^[[:space:]]+[^[:space:]]/ && !/^[[:space:]]*- / { if (/Test:|Proof:/) t = 1; next }
+    /^[[:space:]]*- \[[xX]\]/ { if (b && !t) n++; b = 1; t = /Test:|Proof:|Check:/; next }
+    b && /^[[:space:]]+[^[:space:]]/ && !/^[[:space:]]*- / { if (/Test:|Proof:|Check:/) t = 1; next }
     { if (b && !t) n++; b = 0 }
     END { if (b && !t) n++; print n + 0 }' <<<"$body")
   [ "$k" = 0 ] || no "PR $p: $k ticked boxes name no test"
