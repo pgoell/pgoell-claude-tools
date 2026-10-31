@@ -3,9 +3,9 @@
 # Pass or fail for the task that next.sh started last. Exit 0 only if all holds:
 # the issues are closed, every PR made since the task began is merged with no
 # open box and every ticked box names its test (Test: or Proof: on its line),
-# the live commit is the head of BASE, the implementer's checkout is clean on
-# BASE, and the live app answers. It reads; it changes nothing. A newer installed
-# plugin gets a NEWER PLUGIN line, which never fails the gate.
+# the live commit is the head of BASE (or every commit after it falls outside
+# LIVE_TYPES), the implementer's checkout is clean on BASE, and the live app
+# answers. It reads; it changes nothing but a fetch. A newer installed plugin gets a NEWER PLUGIN line, which never fails the gate.
 # A task that ended with HELD (its PR waits for the owner's review) gets GATE
 # HELD, exit 0, in place of GATE PASS: the held PR is open with auto-merge on and
 # no check that fails or runs, and its issues may stay open. The HELD line is
@@ -52,7 +52,13 @@ done
 head=$(git ls-remote origin "refs/heads/$BASE" | cut -f1)
 if [ -n "$DEPLOY_WORKFLOW" ]; then
   live=$(gh run list --workflow "$DEPLOY_WORKFLOW" -L 5 --json headSha,conclusion -q '[.[]|select(.conclusion=="success")][0].headSha')
-  [ "$live" = "$head" ] || no "live is ${live:0:7}, $BASE is ${head:0:7}"
+  # LIVE_TYPES in loop.env: commit types that must reach live. Unset, every commit must.
+  if [ "$live" != "$head" ]; then
+    git fetch -q origin "$BASE" 2>/dev/null
+    if subj=$(git log --format=%s "$live..$head" 2>/dev/null) && ! grep -qE "^(${LIVE_TYPES:-.*})" <<<"$subj"; then
+      echo "note: live is ${live:0:7}, $BASE is ${head:0:7}; nothing there needs a deploy"
+    else no "live is ${live:0:7}, $BASE is ${head:0:7}"; fi
+  fi
 fi
 [ -z "$(git --no-optional-locks status --porcelain)" ] || no "working tree dirty"
 [ "$(git branch --show-current)" = "$BASE" ] || no "not on $BASE"

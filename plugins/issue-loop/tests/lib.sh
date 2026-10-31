@@ -65,6 +65,8 @@ case "$*" in
 "ls-remote origin refs/heads/main") printf 'abc1234\trefs/heads/main\n' ;;
 "--no-optional-locks status --porcelain") cat "$FAKE/dirty" ;;
 "branch --show-current") echo main ;;
+"fetch -q origin main") ;;
+"log --format=%s fff0000..abc1234") cat "$FAKE/log" 2>/dev/null || exit 128 ;;
 *) echo "fake git: $*" >&2; exit 1 ;;
 esac
 GIT
