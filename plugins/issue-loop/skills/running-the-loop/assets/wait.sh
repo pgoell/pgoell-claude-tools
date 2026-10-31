@@ -15,6 +15,7 @@
 #   ASKING   (4) the session waits on a question and has no DONE line
 #   STALLED  (5) the session has not worked for STALL_MIN minutes (default 20)
 #                and has no DONE line: its turn may have died on an API error.
+#                A CI check that runs or waits on an open PR counts as work.
 #                The clock is the file task.alive; next.sh removes it with the
 #                next task.
 # Needs GNU date (date -d) and GNU stat (stat -c).
@@ -31,6 +32,9 @@ while true; do
   st=$(drv_status "$IMPL")
   [ "$st" = gone ] && { echo GONE; exit 3; }
   [ "$st" = working ] && : >"$alive"
+  # A CI wait is rest, not a stall. The time limit still catches a hung run.
+  ci=$(cd "$REPO" && gh pr list --state open --json statusCheckRollup -q '[.[].statusCheckRollup[]|select(.status=="IN_PROGRESS" or .status=="QUEUED")]|length' 2>/dev/null)
+  [ "${ci:-0}" -gt 0 ] 2>/dev/null && : >"$alive"
   if ! has_token && [ $(($(date +%s) - $(stat -c %Y "$alive"))) -gt $((${STALL_MIN:-20} * 60)) ]; then
     : >"$alive"
     echo STALLED

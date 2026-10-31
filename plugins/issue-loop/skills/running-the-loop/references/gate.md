@@ -4,7 +4,7 @@ Step 4 of "One turn of the loop" in `SKILL.md` runs `./gate.sh 41 38 39` and rea
 
 ## What `GATE PASS` means
 
-`GATE PASS` means: issues closed, every PR since the task began merged with no open box and with each ticked box naming its test (`Test:`, `Proof:` or `Check:` on its line or an indented line under it), the live commit is the head of the base branch, the checkout is clean, the app answers.
+`GATE PASS` means: issues closed, every PR since the task began merged with no open box and with each ticked box naming its test (`Test:`, `Proof:` or `Check:` on its line or an indented line under it), the live commit is the head of the base branch (when `LIVE_TYPES` is set in `loop.env`, commits after live whose subjects start with none of those types do not count), the checkout is clean, the app answers.
 
 ## What `GATE HELD` means
 
@@ -16,6 +16,7 @@ Then:
 - Write `held #<PR>` in the ledger and the PR under "Held" in `HANDOFF.md`.
 - Send the next task. Never approve, label or merge the PR yourself, and never ask the implementer to.
 - Look at each held PR at every break (`gh pr view <PR> --json state,reviewDecision`). Once it is merged, its release and live proof run next (`references/queue.md`). If the owner asked for changes, that is the next task: continue the PR.
+- A held PR the owner has approved lands next, ahead of every other merge. A merge ahead of it can conflict, and the push that fixes the conflict dismisses the approval.
 
 ## Reading the report
 

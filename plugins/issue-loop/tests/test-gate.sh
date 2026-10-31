@@ -17,7 +17,14 @@ good; printf -- '- [x] a docs line. Check: `mise run lint`\n- [x] b\n  Check: li
 good; echo 'no boxes here' >"$FAKE/body"; out=$(gate); ok "gate passes a body with no boxes" $? 0
 good; printf -- '- [x] a Test: t1\n```\n- [x] example\n```\n' >"$FAKE/body"; out=$(gate); ok "gate skips a ticked box in a code block" $? 0
 good; echo OPEN >"$FAKE/issue_state"; out=$(gate); has "gate fails on an open issue" "$out" "FAIL issue 7 open"
-good; echo fff0000 >"$FAKE/live"; out=$(gate); has "gate fails when live is not the head" "$out" "FAIL live is fff0000, main is abc1234"
+good; rm -f "$FAKE/log"; echo fff0000 >"$FAKE/live"; out=$(gate); has "gate fails when live is not the head" "$out" "FAIL live is fff0000, main is abc1234"
+good; echo fff0000 >"$FAKE/live"; echo 'chore(lint): x' >"$FAKE/log"; out=$(gate); has "without LIVE_TYPES any commit after live fails" "$out" "FAIL live is fff0000"
+sed -i "s/^LIVE_TYPES=.*/LIVE_TYPES='feat|fix|perf'/" "$L/loop.env"
+good; echo fff0000 >"$FAKE/live"; printf 'chore(lint): x\ntest(frame): y\n' >"$FAKE/log"; out=$(gate); ok "commits outside LIVE_TYPES pass" $? 0
+has "gate notes live behind with nothing to deploy" "$out" "nothing there needs a deploy"
+good; echo fff0000 >"$FAKE/live"; printf 'chore: x\nfix(app): y\n' >"$FAKE/log"; out=$(gate); has "a fix after live fails" "$out" "FAIL live is fff0000"
+good; echo fff0000 >"$FAKE/live"; rm -f "$FAKE/log"; out=$(gate); has "an unknown range fails" "$out" "FAIL live is fff0000"
+sed -i "s/^LIVE_TYPES=.*/LIVE_TYPES=/" "$L/loop.env"
 good; echo ' M x' >"$FAKE/dirty"; out=$(gate); has "gate fails on a dirty tree" "$out" "FAIL working tree dirty"
 good; touch "$FAKE/down"; out=$(gate); has "gate fails when the app is down" "$out" "FAIL live app does not answer"
 good; printf '.github/workflows/deploy.yml\nsrc/a.py\n' >"$FAKE/files"; out=$(gate); ok "machine file does not fail the gate" $? 0
