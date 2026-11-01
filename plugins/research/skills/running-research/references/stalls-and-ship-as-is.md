@@ -14,7 +14,7 @@ Send all of this, then wait for the user's answer:
 
 - The open critical issue ids, each with one line on what is wrong, then any minor ids.
 - What you tried (which gap-fills or rewrites ran), and what closed since iteration 1. At a stall, say the last round closed none of these ids.
-- For each `weak-source-<claim-slug>` id: gap-fill found no stronger source for this thesis pillar, and the id stays until one exists or the pillar changes. Shipped as it is, the pillar stays `low (one source)`, and the report names its source.
+- For each `weak-source-<claim-slug>` id: this thesis pillar rests on one weak source (say if a gap-fill looked for a stronger one and found none), and the id stays until one exists or the pillar changes. Shipped as it is, the pillar stays `low (one source)`, and the report names its source.
 - The three options, each with what it does:
   - `continue`: one more round on these ids. At a stall, say it repeats a round that closed none, so it fits only when something should differ this time.
   - `ship as-is`: the cost line below.
@@ -34,11 +34,11 @@ The cost line depends on the loop.
 
 Step 11 tells the user, in this order:
 
-1. Total iterations of each loop and the final paths.
+1. Total iterations of each loop and the final paths (`report.html` and `report.md`; `report.md` alone for markdown or a failed render).
 2. Every critical issue left open, from the newest review of each loop. A loop ends with a critical issue only after a `ship as-is`, so this prints nothing on a clean run:
 
    ```bash
-   O={OUTPUT_PATH}
+   O="{OUTPUT_PATH}"
    for f in "$(ls "$O"/research/synthesis-review-*.md | sort -V | tail -1)" "$(ls "$O"/draft-review-*.md | sort -V | tail -1)"; do
      awk '/^ *- id: /{ id=$3; c=0 } /^ *severity: critical/{ c=1 }
      /^ *description: /&&c{ d=$0; sub(/^ *description: /,"",d); print id ": " d }' "$f"
@@ -46,5 +46,5 @@ Step 11 tells the user, in this order:
    ```
 
 3. Any minor issues from those same reviews.
-4. Every claim or pillar `synthesis.md` labels `Confidence: low (refuted)`.
+4. Every claim or pillar `synthesis.md` labels `Confidence: low (refuted)`, and whether the check or the refetch contradicted it.
 5. Every claim still there in other words whose old text a check found wrong: listed `REFUTED` in `claim-checks.md`, or marked `rejected` in a `REFETCH:` block. Say: reworded, not checked again. Leave out a claim whose text now has a `confirmed` mark or an outcome other than `NOT-CHECKED`.

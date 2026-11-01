@@ -99,6 +99,7 @@ label_case "older rejected, no check is medium" 2 medium - rejected -
 # Shipped over a mark in the last review.
 label_case "rejected in last review, no check" 2 "low (refuted)" - rejected
 label_case "rejected in last review beats older UPHELD" 2 "low (refuted)" UPHELD confirmed rejected
+label_case "rejected carried past the limit beats UPHELD" 2 "low (refuted)" UPHELD rejected rejected
 label_case "rejected beats confirmed in one review" 2 "low (refuted)" - confirmed+rejected
 label_case "rejected with one source is refuted" 1 "low (refuted)" - rejected
 # The other rows hold.
@@ -118,7 +119,7 @@ wrong="$(cd "$T" && mkdir -p w && printf '## C\n\n- Claim: X\n  - Independent so
 [ "$wrong" = "X | low (refuted) | table says high" ] && ok "labels: flags low (refuted) on a later UPHELD" || bad "labels: flags low (refuted) on a later UPHELD: $wrong"
 
 # The open critical issues come from the newest review of each loop.
-O="$T/o"
+O="$T/my reports"
 mkdir -p "$O/research"
 review() {
   printf 'VERDICT: ISSUES\n\nISSUES:\n  - id: %s\n    severity: %s\n    category: logic\n    description: %s\n    location: x\n\nSUMMARY:\ndone\n' "$2" "$3" "$4" >"$1"
@@ -126,10 +127,10 @@ review() {
 review "$O/research/synthesis-review-2.md" old-gone critical "closed since"
 review "$O/research/synthesis-review-10.md" weak-source-x critical "pillar on one vendor"
 review "$O/draft-review-1.md" draft-minor minor "a small thing"
-listed="$(OPENDIR="$O" bash -c "$(printf '%s\n' "$OPEN" | sed 's/^O={OUTPUT_PATH}$/O=$OPENDIR/')")"
+listed="$(OPENDIR="$O" bash -c "$(printf '%s\n' "$OPEN" | sed 's/^O="{OUTPUT_PATH}"$/O="$OPENDIR"/')")"
 [ "$listed" = "weak-source-x: pillar on one vendor" ] && ok "open critical issues: newest review only, no minor" || bad "open critical issues: $listed"
 review "$O/draft-review-2.md" draft-crit critical "draft distorts X"
-listed="$(OPENDIR="$O" bash -c "$(printf '%s\n' "$OPEN" | sed 's/^O={OUTPUT_PATH}$/O=$OPENDIR/')" | tail -1)"
+listed="$(OPENDIR="$O" bash -c "$(printf '%s\n' "$OPEN" | sed 's/^O="{OUTPUT_PATH}"$/O="$OPENDIR"/')" | tail -1)"
 [ "$listed" = "draft-crit: draft distorts X" ] && ok "open critical issues: the writer loop too" || bad "open critical issues, writer loop: $listed"
 
 # Words the rules depend on.
@@ -140,6 +141,8 @@ has "$LABELS" 'marked `rejected` by the last `synthesis-review-{n}.md`' "row 1 r
 has "$STALLS" 'compare its critical issue ids' "a stall compares critical ids"
 has "$STALLS" 'every other claim is `medium` at best' "the message names the cost of skipping the check"
 has "$STALLS" '`weak-source-<claim-slug>`' "the message explains a weak source id"
+has "$SKILL/synthesis-reviewer-prompt.md" 'copy it with `mark: rejected`' "a rejected claim past the limit keeps its mark"
+has "$SKILL/references/claim-check.md" 'is checked whatever the cap' "a claim once found wrong passes the cap"
 has "$SKILL/synthesis-reviewer-prompt.md" 'the URLs synthesis.md cites for it now' "the refetch follows the claim"
 
 echo "$pass passed, $fail failed"

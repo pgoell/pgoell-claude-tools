@@ -10,7 +10,7 @@ Sort each claim into one group, first match wins:
 
 1. `SKIPPED-CONFIRMED`: a `confirmed` mark in the `REFETCH:` block of any `synthesis-review-{n}.md`, whose `claim:` line matches the claim's text now. The newest review that lists the claim must hold no `rejected` or `unresolved` mark for it, and `claim-checks.md` must not list it as `REFUTED`.
 2. Carried: `claim-checks.md` lists the claim with votes, and its text is unchanged. It keeps its votes and outcome, and no one checks it again.
-3. To check: every other claim, up to the cap. Changed text is a new check under the same id. Against the cap, an id the old file lists as `REFUTED` and a claim any `REFETCH:` block marks `rejected`, in old words or new, go first, so a claim once found wrong cannot fall past the cap.
+3. To check: every other claim, up to the cap. Changed text is a new check under the same id. An id the old file lists as `REFUTED` and a claim any `REFETCH:` block marks `rejected`, in old words or new, is checked whatever the cap and takes no place under it, unless the cap is 0, so a claim once found wrong cannot fall past it.
 4. `NOT-CHECKED`: the claims past the cap.
 
 The cap is 15 claims per run, unless `brief.md` has a line `Claim cap: N`, which replaces it (0 checks nothing). If N is not a whole number, use 15 and tell the user. Count each id once, including carried claims and claims checked in an earlier round; skipped claims do not count.

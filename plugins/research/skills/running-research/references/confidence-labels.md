@@ -16,7 +16,7 @@ The first row that matches wins. N is the claim's `Independent sources: N`. An o
 
 What this decides:
 
-- **The check did not reach the claim.** Over the cap (`NOT-CHECKED`), `Claim cap: 0`, not testable, text changed since the last check, or the user said `ship as-is` at a check-in or stall before Step 7 ran: the label comes from N alone, so row 5 or row 2. No check, no `high`. Row 1 still comes first.
+- **The check did not reach the claim.** Over the cap (`NOT-CHECKED`), `Claim cap: 0`, not testable, text changed since the last check, or the user said `ship as-is` at a check-in or stall before Step 7 reached this text: the label comes from N alone, so row 5 or row 2. No check, no `high`. Row 1 still comes first.
 - **The check reached it and the refetch settled it.** `SKIPPED-CONFIRMED` is reached: `high` when N is 2 or more. A `confirmed` mark counts only through that outcome, so at a `ship as-is` before Step 7 it does not raise the label.
 - **One source is low whatever the check says.** `UPHELD` or a `confirmed` refetch shows that the source says it, not that a second source agrees.
 - **The user shipped a refuted claim.** It is `low (refuted)`, whatever N is, the report says the check contradicted it, and the Step 11 summary names it. A `rejected` claim shipped at a check-in or stall goes the same way, also when an earlier check upheld it, because the mark is newer.
@@ -31,7 +31,7 @@ What this decides:
 
 ## Set the final labels
 
-`references/claim-check.md` section 5, the `ship as-is` of a synthesis check-in or stall, and the Step 10 PASS route send you here. Read `synthesis.md`, `claim-checks.md` if it exists, and the `REFETCH:` blocks of the `synthesis-review-{n}.md` files. For each claim and pillar, take the first row that matches and replace its `Confidence:` line in `synthesis.md`. Change no other line. Then check, with `S={OUTPUT_PATH}/research/synthesis.md`:
+`references/claim-check.md` section 5, the `ship as-is` of a synthesis check-in or stall, and the Step 10 PASS route send you here. Read `synthesis.md`, `claim-checks.md` if it exists, and the `REFETCH:` blocks of the `synthesis-review-{n}.md` files. For each claim and pillar, take the first row that matches and replace its `Confidence:` line in `synthesis.md`. Change no other line. Then check, with `S="{OUTPUT_PATH}/research/synthesis.md"`:
 
 ```bash
 claims=$(grep -c '^ *- Claim:' "$S")

@@ -151,7 +151,8 @@ Dispatched agent prompt:
     Give both the id `refetch-<claim-slug>` and keep it while the claim stays
     `rejected` or `unresolved`. A claim now `confirmed`, or gone from
     synthesis.md, drops its id. A claim left `rejected` that the limit of 5 kept
-    you from fetching again keeps its id, critical. Mark each URL on its own line; when one
+    you from fetching again keeps its id, critical, and its `REFETCH:` entry:
+    copy it with `mark: rejected` and the quote `not fetched again`. Mark each URL on its own line; when one
     claim's URLs disagree, its one issue takes the worst mark (`rejected`,
     then `unresolved`).
 
