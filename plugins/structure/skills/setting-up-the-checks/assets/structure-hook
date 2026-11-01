@@ -29,12 +29,14 @@
 # the folder it runs in names, trusted or not.
 rest=${PATH:-}:
 clean=
+data=$(cd "${MISE_DATA_DIR:-/nonexistent}" 2>/dev/null && pwd -P)
 while [ -n "$rest" ]; do
   entry=${rest%%:*}
   rest=${rest#*:}
-  case $entry in
-    */mise/shims | */mise/shims/ | "${MISE_DATA_DIR:-/nonexistent}/shims" | "${MISE_DATA_DIR:-/nonexistent}/shims/") ;;
-    /*) clean=$clean:$entry ;;
+  case $entry in /*) ;; *) continue ;; esac
+  case $(cd "$entry" 2>/dev/null && pwd -P) in
+    */mise/shims | "${data:-/nonexistent}/shims") ;;
+    *) clean=$clean:$entry ;;
   esac
 done
 PATH=${clean#:}
@@ -53,14 +55,21 @@ set -uo pipefail
 
 limit=30
 dir=$(cd "$(dirname "$0")" && pwd)
-# With stdin closed, the pipe of $(cat) would land on fd 0 and cat would read it.
+# With stdin closed, the job's fd 3 could not copy it, and a pipe could land on fd 0.
 true 2>&- 3<&0 || exec </dev/null
+# A terminal is a person, who ends the event with Ctrl-D, and a background job could
+# not read from it.
+input=
+if [ -t 0 ]; then
+  input=$(head -c 16777216)
+  exec </dev/null
+fi
 scratch=$(mktemp -d) && scratch=$(cd "$scratch" && pwd) || exit 0
 
 check() {
   # Stdin may stay open or never end, so this read is on the job's clock. An event
   # over this size fails in jq, below. Nothing else needs the event's stdin.
-  input=$(head -c 16777216 <&3)
+  input+=$(head -c 16777216 <&3)
   exec 3<&-
   # $(...) strips a newline that ends a name, so the name ends in a mark until then.
   filter='(.tool_input.file_path // empty) | tostring + "x"'
@@ -84,6 +93,8 @@ check() {
   folder=${file%/*}
   folder=${folder:-/}
   name=${file##*/}
+  # The checks list names by line and git prints a top without its last newline.
+  case $folder in *$'\n') exit 0 ;; esac
   # With no git, each "|| exit 0" below would pass the file unchecked.
   if ! command -v git >/dev/null; then
     echo 'structure-hook: needs git on PATH, not only as a mise shim' >&2
@@ -155,7 +166,7 @@ wait "$body" 2>/dev/null
 rc=$?
 if [ "$rc" -gt 128 ]; then
   file=$(cat "$scratch/file" 2>/dev/null)
-  echo "structure-hook: gave up on ${file:-the edited file} after ${limit} s; a file in its repo may block" >&2
+  echo "structure-hook: gave up on ${file:-the edited file} after ${limit} s; stdin or a file in its repo may block" >&2
   exit 1
 fi
 exit "$rc"

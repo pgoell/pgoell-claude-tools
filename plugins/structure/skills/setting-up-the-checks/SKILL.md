@@ -75,7 +75,7 @@ Do not wire pre-push or CI while a bare run still fails, unless the user says so
 
 ## Step 6: The Claude Code editor hook
 
-Add the `PostToolUse` block from [references/editor-hook.md](references/editor-hook.md) to the repo's `.claude/settings.json`, merged into what is there. It is a project hook, so it fires only in this repo. Then test it as the reference says.
+Add the `PostToolUse` block from [references/editor-hook.md](references/editor-hook.md) to the repo's `.claude/settings.json`, merged into what is there. It is a project hook, so it fires only in this repo. Then test it as the reference says. The hook needs `jq` on `PATH` or in mise's global config (`mise use -g jq`): a `jq` that only the project pins does not serve it.
 
 ## Step 7: Check it works
 

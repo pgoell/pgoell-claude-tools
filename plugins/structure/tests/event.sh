@@ -29,8 +29,12 @@ if realmise="$(readlink -f "$(command -v mise)")" && [ -x "$realmise" ]; then
     export MISE_DATA_DIR=$data MISE_GLOBAL_CONFIG_FILE=$WORK/global$n.toml
     : >"$MISE_GLOBAL_CONFIG_FILE"
     if [ -n "${3:-}" ]; then printf '[tools]\njq = "path:%s"\n' "$jqdir" >"$MISE_GLOBAL_CONFIG_FILE"; fi
+    if [ -n "${4:-}" ]; then
+      mkdir -p "$4"
+      export TMPDIR=$4
+    fi
     event "$REPO/big.md" "$data/shims:$base"
-    unset MISE_DATA_DIR MISE_GLOBAL_CONFIG_FILE
+    unset MISE_DATA_DIR MISE_GLOBAL_CONFIG_FILE TMPDIR
     if [ -e "$WORK/mark$n" ]; then bad "M1 $1: the repo's jq ran"; else ok "M1 $1: the repo's jq did not run"; fi
   }
   # Only jq in /usr/bin would change what these expect, so skip on such a machine.
@@ -42,6 +46,10 @@ jq = "path:./evil"'; do
       mise_route "${route%%|*}" "${route#*|}" global
       flags big.md "M3 ${route%%|*}, jq in the global config: mise found through the shim, file checked"
     done
+    # With TMPDIR in the repo only the ceiling keeps its config from the scratch folder.
+    mise_route .tool-versions "jq path:$WORK/repo$((n + 1))/evil" "" "$WORK/repo$((n + 1))/.tmp"
+  else
+    echo "skip M1 to M3: jq in /usr/bin"
   fi
 else
   echo "skip M1 to M3: no mise"
@@ -49,21 +57,22 @@ fi
 
 # The shim folder goes by its usual name, with or without the last "/", and by
 # MISE_DATA_DIR. A shim there that runs leaves a mark.
-for route in "xdg/mise/shims" "xdg/mise/shims/" "custom/shims"; do
+for route in xdg/mise/shims xdg/mise/shims/ xdg/mise/shims/. xdg//mise/shims link custom/shims custom/shims/ custom//shims; do
   fresh
   mkfile big.md 20004
   shims="$WORK/s$n/$route"
-  mkdir -p "$shims"
+  mkdir -p "$WORK/s$n/xdg/mise/shims"
+  if [ "$route" = link ]; then ln -s xdg/mise/shims "$shims"; else mkdir -p "$shims"; fi
   printf '#!/bin/sh\ntouch "%s"\n' "$WORK/mark$n" >"$shims/awk"
   chmod 755 "$shims/awk"
-  case $route in custom/*) export MISE_DATA_DIR=$WORK/s$n/custom ;; esac
+  case $route in custom/shims/) export MISE_DATA_DIR=$WORK/s$n/custom/ ;; custom/*) export MISE_DATA_DIR=$WORK/s$n/custom ;; esac
   event "$REPO/big.md" "$shims:$PATH"
   unset MISE_DATA_DIR
   flags big.md "M4 shim folder $route: file checked"
   if [ -e "$WORK/mark$n" ]; then bad "M4 shim folder $route: a shim ran"; else ok "M4 shim folder $route: no shim ran"; fi
 done
 
-# With git only as a shim the file must not pass in silence.
+# With git only as a shim, which must not run, the file must not pass in silence.
 fresh
 mkfile big.md 20004
 tools="$WORK/tools$n"
@@ -71,8 +80,12 @@ mkdir -p "$tools"
 for t in /usr/bin/* /bin/*; do ln -sfn "$t" "$tools/${t##*/}"; done
 rm -f "$tools/git"
 ln -sf "$jqbin" "$tools/jq"
-event "$REPO/big.md" "$tools"
-if [ "$RC" -eq 1 ] && grep -q 'needs git' <<<"$ERR"; then ok "M5 no git on PATH: exit 1, says so"; else bad "M5 no git on PATH: exit 1, says so (rc=$RC: ${ERR:0:120})"; fi
+shims="$WORK/s$n/mise/shims"
+mkdir -p "$shims"
+printf '#!/bin/sh\ntouch "%s"\n' "$WORK/mark$n" >"$shims/git"
+chmod 755 "$shims/git"
+event "$REPO/big.md" "$shims:$tools"
+if [ "$RC" -eq 1 ] && grep -q 'needs git' <<<"$ERR" && [ ! -e "$WORK/mark$n" ]; then ok "M5 git only as a shim: exit 1, says so"; else bad "M5 git only as a shim: exit 1, says so (rc=$RC: ${ERR:0:120})"; fi
 
 # A jq that fails: issue 335, part 1. The event goes in by hand, as this jq cannot.
 fresh
@@ -153,6 +166,27 @@ ERR="$(yes | TMPDIR="$HANG_TMP" timeout 25 scripts/structure-hook 2>&1 >/dev/nul
 RC=$?
 if [ "$RC" -eq 1 ] && grep -q 'needs jq' <<<"$ERR"; then ok "S5 stdin that never ends: exit 1"; else bad "S5 stdin that never ends: exit 1 (rc=$RC: ${ERR:0:120})"; fi
 returns "S5 stdin that never ends: returns, no temp files"
+
+# An event typed on a terminal, ended by Ctrl-D, needs no job's clock.
+fresh
+mkfile big.md 20004
+if command -v script >/dev/null; then
+  ERR="$( (
+    sleep 1
+    printf '{"tool_input":{"file_path":"%s/big.md"}}\n\004' "$REPO"
+    sleep 2
+  ) | timeout 10 script -qec 'scripts/structure-hook; echo rc=$?' /dev/null 2>&1)"
+  if grep -q '^rc=2' <<<"$ERR" && grep -qF 'file-size: big.md is ~5001 tokens' <<<"$ERR"; then ok "S8 event typed on a terminal is read"; else bad "S8 event typed on a terminal is read (${ERR:0:160})"; fi
+else
+  echo "skip S8: no script"
+fi
+
+# A folder ending in a newline passes, since the checks cannot name it: issue 337.
+fresh
+folder=$'sub\n'
+for i in 1 2 3 4 5 6 7 8; do mkfile "$folder/f$i" 1; done
+event "$REPO/$folder/f1"
+silent "E7 folder name ending in a newline passes"
 
 # Empty stdin that closes: no event, nothing to say.
 fresh
