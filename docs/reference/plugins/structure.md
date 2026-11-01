@@ -35,8 +35,8 @@ All in `plugins/structure/skills/setting-up-the-checks/assets/`. The skill copie
 
 ## Files in the target repo
 
-- `.file-size-excludes`: one git glob per line, anchored at the repo root. It reads `\n`, `\t`, `\r`, `\s` as those characters, so a name as a report shows it works here. It skips a line over 512 bytes, as `.fan-out-excludes` does.
-- `.fan-out-excludes`: folders the fan-out check skips, one glob per line (`*`, `**` and `?` only), with a comment line above each that says why. It skips a line over 512 bytes.
+- `.file-size-excludes`: one git glob per line, anchored at the repo root. It reads `\n`, `\t`, `\r`, `\s` as those characters, so a name as a report shows it works here. It skips a line over 512 bytes or with more than 4 `**`, and every glob after the 1024th, as `.fan-out-excludes` does.
+- `.fan-out-excludes`: folders the fan-out check skips, one glob per line (`*`, `**` and `?` only), with a comment line above each that says why. It skips a line over 512 bytes or with more than 4 `**`, and every glob after the 1024th.
 - `.fan-out-baseline`: `<folder> <count>` per line. A folder fails when it passes both 7 and its line. A person raises a line by hand, and the diff shows it.
 - `.claude/settings.json`: the `PostToolUse` block that runs `scripts/structure-hook`, a project hook so it fires only in that repo.
 

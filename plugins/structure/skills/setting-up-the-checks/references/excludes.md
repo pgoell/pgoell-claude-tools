@@ -2,7 +2,13 @@
 
 All three files sit at the repo root. The scripts find them from any subdirectory and read the working-tree copy. In each, a line that starts with `#` is a comment and blank lines are skipped.
 
-In both excludes files a line over 512 bytes, counted as written, is skipped: a longer one could cost seconds or minutes. What it would have excluded still gets reported. For a path that long, write a glob such as `deep/**`.
+In both excludes files these lines are skipped, since they could cost seconds to hours or pass the limit for git's arguments:
+
+- a line over 512 bytes, counted as written; for a path that long, write a glob such as `deep/**`;
+- a line with more than 4 `**`;
+- every glob after the 1024th, where comments, blank lines and skipped lines do not count.
+
+No message says so. What a skipped line would have excluded still gets reported.
 
 ## `.file-size-excludes`
 

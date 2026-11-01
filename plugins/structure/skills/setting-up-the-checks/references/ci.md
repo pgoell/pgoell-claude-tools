@@ -11,6 +11,8 @@ A lint job is a job that already runs format or lint checks on every pull reques
 - run: scripts/check-fan-out --all
 ```
 
+If that job sets no `timeout-minutes`, add `timeout-minutes: 10`, or as long as the job needs: GitHub's default is six hours, and an excludes line inside the limits can still be slow on a huge repo.
+
 ## GitHub Actions, new workflow
 
 If no job like that exists, create `.github/workflows/structure.yml`. Find the default branch, trying these in order:
@@ -32,6 +34,7 @@ on:
 jobs:
   structure:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - run: scripts/check-file-size
