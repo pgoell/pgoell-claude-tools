@@ -10,6 +10,8 @@ In both excludes files these lines are skipped, since they could cost seconds to
 
 No message says so. What a skipped line would have excluded still gets reported.
 
+`check-fan-out` matches globs with no regex, so no one line stalls it on any awk. A file built to cost the most, with 1024 such lines over hundreds of folders, can still take minutes.
+
 ## `.file-size-excludes`
 
 `check-file-size` already skips lockfiles, images, fonts, PDFs and license texts. This file adds to those defaults:

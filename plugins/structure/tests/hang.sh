@@ -520,6 +520,32 @@ for tool in "${AWKS[@]}"; do
   PATH=$oldpath
 done
 
+# S6 345: the hook returns on a very deep path under mawk. Master ran out its 30 s.
+if command -v mawk >/dev/null; then
+  fresh
+  deep1000=$(printf 'd/%.0s' $(seq 1000))
+  files 8 "${deep1000%/}"
+  git add -A
+  printf '%s\n' '**/**/**/**/zz' >.fan-out-excludes
+  shim=$WORK/shim-mawk
+  PATH=$shim:$PATH try_hook "$REPO/${deep1000}a1"
+  want_rc "S6 345: the hook reports the folder under mawk" 2
+fi
+
+# S7 345: "**/" costs the folders' slashes, not their length, on long paths.
+fresh
+long=$(for i in $(seq 15); do repeat a 250; printf /; done)
+for i in $(seq 200); do files 8 "$long$i"; done
+git add -A
+for i in $(seq 1024); do echo "**/zq$i*"; done >.fan-out-excludes
+for tool in "${AWKS[@]}"; do
+  oldpath=$PATH
+  PATH=$WORK/shim-${tool##*/}:$PATH
+  fast_fan
+  want_rc "S7 345 ${tool##*/}: 1024 lines of **/ over 200 long paths return" 1
+  PATH=$oldpath
+done
+
 # S3 the worst input the limits still let through.
 fresh
 for i in 1 2 3 4 5 6 7 8; do mkfile "${deep}m/f$i" 100; done
