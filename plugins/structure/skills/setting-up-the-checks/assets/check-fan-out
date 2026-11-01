@@ -110,25 +110,49 @@ function compile(g,   i, c) {
       # "**/**/" matches what "**/" matches.
       if (nt < first[nex] || tok[nt] != "S") tok[++nt] = "S"
     } else if (substr(g, i, 2) == "**") { i++; tok[++nt] = "A" }
+    # "*?*" reaches just what "?*" does, so a run of them costs one "*".
+    else if (c == "*" && nt > first[nex] && tok[nt] == "?" && tok[nt - 1] == "*") { tok[nt - 1] = "?"; tok[nt] = "*" }
     else if (c == "*" || c == "?") tok[++nt] = c
     else if (nt >= first[nex] && (tok[nt] == "L" || tok[nt] == "F")) lit[nt] = lit[nt] c
     else if (nt >= first[nex] && tok[nt] == "*") { tok[nt] = "F"; lit[nt] = c }
     else { tok[++nt] = "L"; lit[nt] = c }
   }
   first[nex + 1] = nt + 1
+  # What d must hold for the walk to get anywhere: its least length, and each plain
+  # text once.
+  for (i = first[nex]; i <= nt; i++) {
+    if (tok[i] == "?") least[nex]++
+    else if (tok[i] == "L" || tok[i] == "F") {
+      least[nex] += length(lit[i])
+      if (!((nex, lit[i]) in held)) { held[nex, lit[i]] = 1; need[nex, ++nneed[nex]] = lit[i] }
+    }
+  }
+}
+# Past this much walking the run stops with no result: tokens times path length times
+# 1024 globs times every folder cannot be bounded by any cap on a line, and to go on
+# without the globs would report folders the excludes cover. The filter in matches
+# keeps a real repo far below it.
+function spend(k) {
+  if ((steps += k) <= 16000000) return
+  print "check-fan-out: .fan-out-excludes costs too much to match here. Use fewer globs or fewer wildcards in a glob." > "/dev/stderr"
+  exit 2
 }
 # Walks the tokens of glob g over d and keeps, in rising order, each offset in d the
 # tokens so far can end at. No token sees an offset twice, so one call costs at most
 # tokens times the length of d, on any awk. after_slash lists the offsets just past
 # each "/" in d; excluded fills it once per folder.
-function matches(d, g,   len, t, k, w, wl, i, j, n, m, p, q, c, once) {
+function matches(d, g,   len, t, k, w, wl, i, j, n, m, p, q, s, c, once, last) {
   len = length(d)
+  if (len < least[g]) return 0
   # A glob that ends in plain text mostly fails here, at the cost of one compare.
   t = first[g + 1] - 1
   if (t >= first[g] && (tok[t] == "L" || tok[t] == "F") && substr(d, len - length(lit[t]) + 1) != lit[t]) return 0
+  for (i = 1; i <= nneed[g]; i++) if (!index(d, need[g, i])) return 0
+  spend(i)
   n = 1
   at[1] = 1
-  for (t = first[g]; t < first[g + 1] && n > 0; t++) {
+  last = first[g + 1]
+  for (t = first[g]; t < last && n > 0; t++) {
     k = tok[t]
     m = 0
     if (k == "L") {
@@ -140,14 +164,14 @@ function matches(d, g,   len, t, k, w, wl, i, j, n, m, p, q, c, once) {
       # that a later hit would, so then the first hit is enough.
       w = lit[t]
       wl = length(w)
-      q = 0
-      once = t + 1 < first[g + 1] && (tok[t + 1] == "*" || tok[t + 1] == "F")
+      q = s = 0
+      once = t + 1 < last && (tok[t + 1] == "*" || tok[t + 1] == "F")
       for (i = 1; i <= n; i++) {
         p = at[i]
         if (p <= q) continue
-        j = index(substr(d, p), "/")
-        q = j ? p + j - 1 : len + 1
-        while ((j = index(substr(d, p), w)) > 0 && p + j - 1 <= q) {
+        while (++s <= nslash && after_slash[s] <= p) continue
+        q = s <= nslash ? after_slash[s--] - 1 : len + 1
+        while ((j = index(substr(d, p, q - p + wl), w)) > 0) {
           p += j - 1
           next_at[++m] = p + wl
           if (once) break
@@ -185,6 +209,7 @@ function matches(d, g,   len, t, k, w, wl, i, j, n, m, p, q, c, once) {
       }
       while (j <= n) next_at[++m] = at[j++]
     }
+    spend(n + m + 8)
     n = m
     for (i = 1; i <= n; i++) at[i] = next_at[i]
   }
