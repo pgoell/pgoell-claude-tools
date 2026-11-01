@@ -25,7 +25,7 @@ What this decides:
 ## Who writes the label
 
 1. The synthesis agent writes the provisional label on every iteration, from N alone: `medium`, or `low (one source)`. It never writes `high`.
-2. The synthesis reviewer, in Check 7, flags a missing label and a label higher than the rule allows. A lower label is no issue, since item 3 sets the final one.
+2. The synthesis reviewer, in Check 7, flags a missing label, a `high` the rule does not give, and a `medium` when N is 1. Any other difference is no issue, since item 3 sets the final label.
 3. You, the orchestrator, set the final labels before the writer starts (the next section).
 
 ## Set the final labels
