@@ -41,10 +41,10 @@ Dispatched agent prompt:
 
     1. `{OUTPUT_PATH}/plan.md`
     2. `{OUTPUT_PATH}/research/synthesis.md`
-    3. The researcher outputs in `{OUTPUT_PATH}/research/`. Exclude synthesis
-       and review files; cluster files and gap-fill files are in scope. Use:
+    3. The researcher outputs in `{OUTPUT_PATH}/research/`. Exclude synthesis,
+       claim-check and review files; cluster files and gap-fill files are in scope. Use:
        ```bash
-       ls {OUTPUT_PATH}/research/*.md | grep -v -E '(/(synthesis|.*-review-))'
+       ls {OUTPUT_PATH}/research/*.md | grep -v -E '(/(synthesis|claim-checks|.*-review-))'
        ```
     4. If iteration > 1: `{OUTPUT_PATH}/research/synthesis-review-{ITERATION-1}.md`
        (prior review). Use the prior review to assign STABLE issue ids: same
