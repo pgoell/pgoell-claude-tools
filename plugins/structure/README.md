@@ -20,7 +20,7 @@ This plugin was called `file-size` up to 0.1.0.
 
 All in `skills/setting-up-the-checks/assets/`.
 
-`check-file-size` checks the paths it gets as arguments, as staged, or with no arguments every file in HEAD's tree. It skips symlinks, submodules, lockfiles, binaries, fonts, PDFs and license texts; a repo adds globs in `.file-size-excludes`.
+`check-file-size` checks the paths it gets as arguments, as staged, or with no arguments every file in HEAD's tree. It skips symlinks, submodules, lockfiles, binaries, fonts, PDFs and license texts; a repo adds globs in `.file-size-excludes`, where a line over 512 bytes is skipped, as in `.fan-out-excludes`.
 
 `check-fan-out` counts the files and folders in each folder, from git's list of tracked and untracked files (never ignored ones). It skips the repo root and names that start with `.`.
 

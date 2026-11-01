@@ -25,6 +25,8 @@ EXCLUDES=(
 # name a report shows works here; git reads every other "\" (see escape, below).
 # Only a regular file counts, and only its first MiB: a repo nobody has read may
 # hold a FIFO, a symlink to a device or a huge file there.
+# A line over 512 bytes is skipped: it could cost seconds, and a file it fails to
+# skip gets reported.
 # $(...) strips every newline that ends the name, so the output ends in a mark.
 top=$(git rev-parse --show-toplevel && echo x)
 top=${top%$'\n'x}
@@ -35,12 +37,10 @@ if [ -f "$top/.file-size-excludes" ]; then
     glob=${glob#"${glob%%[![:space:]]*}"}
     glob=${glob%"${glob##*[![:space:]]}"}
     case $glob in '' | '#'*) continue ;; esac
-    # No path is longer than 4096, and no real file needs 64 KiB of such lines: the
-    # loop could cost minutes on a file nobody has read.
-    if [ "${#glob}" -le 4096 ]; then
-      case $glob in *\\*) escapes=$((escapes + ${#glob})) ;; esac
-    fi
-    if [ "${#glob}" -le 4096 ] && [ "$escapes" -le 65536 ]; then
+    # No real file needs 64 KiB of such lines: the loop could cost minutes on a file
+    # nobody has read.
+    case $glob in *\\*) escapes=$((escapes + ${#glob})) ;; esac
+    if [ "$escapes" -le 65536 ]; then
       rest=$glob
       glob=
       while [[ $rest == *\\* ]]; do
@@ -58,7 +58,7 @@ if [ -f "$top/.file-size-excludes" ]; then
       glob+=$rest
     fi
     EXCLUDES+=("$glob")
-  done < <(head -c 1048576 "$top/.file-size-excludes" 2>/dev/null)
+  done < <(head -c 1048576 "$top/.file-size-excludes" 2>/dev/null | LC_ALL=C awk 'length($0) <= 512')
 fi
 
 # The "top" magic anchors excludes at the repo root while arguments resolve
