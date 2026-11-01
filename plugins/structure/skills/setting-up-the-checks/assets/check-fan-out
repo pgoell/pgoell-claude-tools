@@ -11,8 +11,8 @@
 #                                  written from today's overages
 # Entries come from git: tracked plus untracked, never ignored. The repo root
 # and names that start with "." (and all below them) are skipped. A report, the
-# baseline and the excludes write "\" in a folder's name as "\\" and a newline as
-# "\n", so that each folder has one line.
+# baseline and the excludes write a folder's name as escape, below, says, so that
+# each folder has one line and the name a report shows works in both files.
 set -euo pipefail
 
 LIMIT=7
@@ -35,10 +35,18 @@ base=$(mktemp)
 excl=$(mktemp)
 trap 'rm -f "$want" "$list" "$out" "$base" "$excl"' EXIT
 
-# Sets escaped to name $1 as one line. Each name gets its own, so none can merge.
+# Sets escaped to name $1 as one line that survives a line reader: "\" as "\\",
+# newline, tab and CR as "\n", "\t", "\r", and a "#" or space that starts it as
+# "\#", "\s". Each name gets its own call, so none can merge.
 escape() {
   escaped=${1//\\/\\\\}
   escaped=${escaped//$'\n'/\\n}
+  escaped=${escaped//$'\t'/\\t}
+  escaped=${escaped//$'\r'/\\r}
+  case $escaped in
+    '#'*) escaped=\\$escaped ;;
+    ' '*) escaped=\\s${escaped# } ;;
+  esac
 }
 
 mode=check
@@ -66,9 +74,9 @@ esac
 
 git -C "$top" ls-files -z --cached --others --exclude-standard >"$list"
 
-# Baseline lines are "<folder> <count>"; exclude lines are git globs ("*"
-# stays in one folder, "**" crosses folders). In both files "#" starts a
-# comment line and blank lines are skipped.
+# Baseline lines are "<folder> <count>"; exclude lines are globs ("*" and "?" stay
+# in one folder, "**" crosses folders). In both files "#" starts a comment line
+# and blank lines are skipped.
 # Only a regular file counts, and only its first MiB: a repo nobody has read may
 # hold a FIFO, a symlink to a device or a huge file there.
 fresh=1
@@ -83,19 +91,22 @@ while IFS= read -r -d '' path; do
 done <"$list" | awk -v mode="$mode" -v limit="$LIMIT" -v want="$want" -v fresh="$fresh" \
   -v base="$base" -v excl="$excl" '
 function trim(s) { sub(/^[ \t\r]+/, "", s); sub(/[ \t\r]+$/, "", s); return s }
-function glob2re(g,   part, n, i) {
-  # By hand, as awks read backslashes in a gsub replacement differently.
-  n = split(g, part, "\\")
-  g = part[1]
-  for (i = 2; i <= n; i++) g = g "\\\\" part[i]
-  gsub(/[.+(){}|$]/, "[&]", g)
-  gsub(/\*\*\//, "%%A%%", g)
-  gsub(/\*\*/, "%%B%%", g)
-  gsub(/\*/, "[^/]*", g)
-  gsub(/\?/, "[^/]", g)
-  gsub(/%%A%%/, "(.*/)?", g)
-  gsub(/%%B%%/, ".*", g)
-  return "^" g "$"
+function glob2re(g,   re, c, i) {
+  # One pass, as a later step would rewrite what an earlier one wrote. Only *, **
+  # and ? are special: "[" and "^" are plain characters.
+  re = "^"
+  for (i = 1; i <= length(g); i++) {
+    c = substr(g, i, 1)
+    if (substr(g, i, 3) == "**/") { re = re "(.*/)?"; i += 2 }
+    else if (substr(g, i, 2) == "**") { re = re ".*"; i++ }
+    else if (c == "*") re = re "[^/]*"
+    else if (c == "?") re = re "[^/]"
+    else if (c == "\\") re = re "\\\\"
+    else if (c == "^") re = re "\\^"
+    else if (index(".+(){}|$[]", c)) re = re "[" c "]"
+    else re = re c
+  }
+  return re "$"
 }
 function excluded(d,   i) {
   for (i = 1; i <= nex; i++) if (d ~ ex[i]) return 1

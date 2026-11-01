@@ -25,7 +25,8 @@ Pre-commit checks what a commit stages, pre-push and CI check the whole repo, an
 ## Step 1: Look at the repo
 
 ```bash
-cd "$(git rev-parse --show-toplevel)"
+top=$(git rev-parse --show-toplevel && echo x)
+cd "${top%$'\n'x}"
 ls lefthook.yml .lefthook.yml lefthook.yaml .lefthook.yaml 2>/dev/null
 command -v lefthook || mise exec -- lefthook version
 ls mise.toml .mise.toml 2>/dev/null
