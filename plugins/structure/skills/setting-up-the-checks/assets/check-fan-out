@@ -79,9 +79,9 @@ git -C "$top" ls-files -z --cached --others --exclude-standard >"$list"
 # and blank lines are skipped.
 # Only a regular file counts, and only its first MiB: a repo nobody has read may
 # hold a FIFO, a symlink to a device or a huge file there.
-# A line of the excludes over 512 bytes or with more than 4 "**" is skipped, and so
-# is every glob after the 1024th: each could cost minutes, or hours under mawk. A
-# folder they fail to skip gets reported.
+# A line of the excludes over 512 bytes or with more than 4 "**" is skipped, as in
+# check-file-size, and so is every glob after the 1024th: each costs time on every
+# folder over the limit. A folder they fail to skip gets reported.
 # tr first: a NUL between two "*" would hide a "**" from awk.
 fresh=1
 if [ -f "$top/.fan-out-baseline" ]; then
@@ -95,24 +95,77 @@ while IFS= read -r -d '' path; do
 done <"$list" | awk -v mode="$mode" -v limit="$LIMIT" -v want="$want" -v fresh="$fresh" \
   -v base="$base" -v excl="$excl" '
 function trim(s) { sub(/^[ \t\r]+/, "", s); sub(/[ \t\r]+$/, "", s); return s }
-function glob2re(g,   re, c, i) {
-  # One pass, as a later step would rewrite what an earlier one wrote. Only *, **
-  # and ? are special: "[" and "^" are plain characters.
-  re = "^"
+# Globs get a matcher of their own: a regex built from one made mawk backtrack for
+# minutes on many "*" or on "**/**/**/**/zz" over a very deep path. compile turns a
+# glob into tokens, stored from first[g] up: "L" (plain text in lit), "?", "*", "A"
+# ("**") and "S" ("**/"). Only *, ** and ? are special.
+function compile(g,   i, c) {
+  first[++nex] = nt + 1
   for (i = 1; i <= length(g); i++) {
     c = substr(g, i, 1)
-    # A run of "*" past the second adds nothing, as in git, and stalled mawk.
+    # A run of "*" past the second adds nothing, as in git.
     while (substr(g, i, 3) == "***") i++
-    if (substr(g, i, 3) == "**/") { re = re "(.*/)?"; i += 2 }
-    else if (substr(g, i, 2) == "**") { re = re ".*"; i++ }
-    else if (c == "*") re = re "[^/]*"
-    else if (c == "?") re = re "(\\\\[^/]|[^/\\\\])"
-    else if (c == "\\") re = re "\\\\"
-    else if (c == "^") re = re "\\^"
-    else if (index(".+(){}|$[]", c)) re = re "[" c "]"
-    else re = re c
+    if (substr(g, i, 3) == "**/") {
+      i += 2
+      # "**/**/" matches what "**/" matches.
+      if (nt < first[nex] || tok[nt] != "S") tok[++nt] = "S"
+    } else if (substr(g, i, 2) == "**") { i++; tok[++nt] = "A" }
+    else if (c == "*" || c == "?") tok[++nt] = c
+    else if (nt >= first[nex] && tok[nt] == "L") lit[nt] = lit[nt] c
+    else { tok[++nt] = "L"; lit[nt] = c }
   }
-  return re "$"
+  first[nex + 1] = nt + 1
+}
+# Walks the tokens of glob g over d and keeps, in rising order, each offset in d the
+# tokens so far can end at. No token sees an offset twice, so one call costs at most
+# tokens times the length of d, on any awk. A run spends 8 million offsets at most:
+# past that no glob matches and the folder gets reported, as with the line limits.
+function matches(d, g,   len, t, k, w, wl, i, j, n, m, p, q, c) {
+  len = length(d)
+  # A glob that ends in plain text mostly fails here, at the cost of one compare.
+  t = first[g + 1] - 1
+  if (t >= first[g] && tok[t] == "L" && substr(d, len - length(lit[t]) + 1) != lit[t]) return 0
+  n = 1
+  at[1] = 1
+  for (t = first[g]; t < first[g + 1] && n > 0 && spent <= 8000000; t++) {
+    k = tok[t]
+    m = 0
+    if (k == "L") {
+      w = lit[t]
+      wl = length(w)
+      for (i = 1; i <= n; i++) if (substr(d, at[i], wl) == w) next_at[++m] = at[i] + wl
+    } else if (k == "?") {
+      # One character of the name: an escape such as "\n" counts as one.
+      for (i = 1; i <= n; i++) {
+        p = at[i]
+        c = substr(d, p, 1)
+        if (c == "\\") { p++; c = substr(d, p, 1) }
+        if (c != "" && c != "/" && (m == 0 || next_at[m] != p + 1)) next_at[++m] = p + 1
+      }
+    } else if (k == "*") {
+      q = 0
+      for (i = 1; i <= n; i++) {
+        for (p = at[i]; p > q; p++) {
+          next_at[++m] = q = p
+          c = substr(d, p, 1)
+          if (c == "" || c == "/") break
+        }
+      }
+    } else if (k == "A") {
+      for (p = at[1]; p <= len + 1; p++) next_at[++m] = p
+    } else {
+      # "**/": where the last token ended, or just past any later "/".
+      j = 1
+      for (p = at[1]; p <= len + 1; p++) {
+        if (j <= n && at[j] == p) { next_at[++m] = p; j++ }
+        else if (substr(d, p - 1, 1) == "/") next_at[++m] = p
+      }
+    }
+    spent += n + m
+    n = m
+    for (i = 1; i <= n; i++) at[i] = next_at[i]
+  }
+  return spent <= 8000000 && n > 0 && at[n] == len + 1
 }
 # A raw tab or CR, as an older file or a person writes it, reads as its escape.
 function raw(s,   n, part, i) {
@@ -132,13 +185,13 @@ function plain(s) {
 }
 function excluded(d,   i) {
   d = plain(d)
-  for (i = 1; i <= nex; i++) if (d ~ ex[i]) return 1
+  for (i = 1; i <= nex; i++) if (matches(d, i)) return 1
   return 0
 }
 BEGIN {
   while ((getline line < excl) > 0) {
     line = trim(line)
-    if (line != "" && line !~ /^#/) ex[++nex] = glob2re(plain(raw(line)))
+    if (line != "" && line !~ /^#/) compile(plain(raw(line)))
   }
   while ((getline line < base) > 0) {
     line = trim(line)

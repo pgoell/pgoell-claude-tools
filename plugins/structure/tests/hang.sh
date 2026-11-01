@@ -520,6 +520,39 @@ for tool in "${AWKS[@]}"; do
   PATH=$oldpath
 done
 
+# S6 345: the hook returns on a very deep path under mawk. Master ran out its 30 s.
+if command -v mawk >/dev/null; then
+  fresh
+  deep1000=$(printf 'd/%.0s' $(seq 1000))
+  files 8 "${deep1000%/}"
+  git add -A
+  printf '%s\n' '**/**/**/**/zz' >.fan-out-excludes
+  shim=$WORK/shim-mawk
+  PATH=$shim:$PATH try_hook "$REPO/${deep1000}a1"
+  want_rc "S6 345: the hook reports the folder under mawk" 2
+fi
+
+# S7 345: the worst globs for the matcher: every offset stays alive under each token.
+# Without its limit on work this ran past 60 s under each awk. Folders it gave up on
+# get reported.
+fresh
+seg=$(repeat a 240)
+for i in $(seq 200); do files 8 "$seg$i"; done
+git add -A
+line=$(printf 'a*%.0s' $(seq 255))'z*'
+yes "$line" | head -n 1024 >.fan-out-excludes
+fast_fan_30() {
+  ERR="$(timeout 30 bash scripts/check-fan-out --all 2>&1 >/dev/null)"
+  RC=$?
+}
+for tool in "${AWKS[@]}"; do
+  oldpath=$PATH
+  PATH=$WORK/shim-${tool##*/}:$PATH
+  fast_fan_30
+  want_rc "S7 345 ${tool##*/}: the worst globs return" 1
+  PATH=$oldpath
+done
+
 # S3 the worst input the limits still let through.
 fresh
 for i in 1 2 3 4 5 6 7 8; do mkfile "${deep}m/f$i" 100; done

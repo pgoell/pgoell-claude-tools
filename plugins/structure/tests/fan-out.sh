@@ -400,3 +400,131 @@ for ch in '*' '?'; do
   RC=$?
   if [ "$RC" -ne 124 ]; then ok "F21 lines of $ch do not stall (rc=$RC)"; else bad "F21 lines of $ch do not stall"; fi
 done
+
+# Runs check-fan-out --all under awk $1 ("mawk", "busybox awk"), within 10 s.
+fan_under() {
+  local shim="$WORK/under-${1%% *}"
+  mkdir -p "$shim"
+  printf '#!/bin/sh\nexec %s "$@"\n' "$1" >"$shim/awk"
+  chmod 755 "$shim/awk"
+  ERR="$(PATH="$shim:$PATH" timeout 10 bash scripts/check-fan-out --all 2>&1 >/dev/null)"
+  RC=$?
+}
+UNDER=()
+for aw in gawk mawk 'busybox awk'; do command -v "${aw%% *}" >/dev/null && UNDER+=("$aw"); done
+
+# F22 345: many "*" in one glob. Master stalled mawk on this past 60 s.
+fresh
+as="$(printf 'd/%.0s' $(seq 39))$(printf 'a%.0s' $(seq 200))"
+files 8 "$as"
+git add -A
+for glob in '**/a*a*a*a*a*a*a*a*a*a*a*a*zz' "**/$(printf 'a*%.0s' $(seq 100))zz"; do
+  printf '%s\n' "$glob" >.fan-out-excludes
+  for aw in "${UNDER[@]}"; do
+    fan_under "$aw"
+    if [ "$RC" -eq 1 ]; then ok "F22 $aw: ${glob:0:20}... does not stall"; else bad "F22 $aw: ${glob:0:20}... does not stall (rc=$RC)"; fi
+  done
+done
+printf '%s\n' '**/a*a*a*a*a*a*a*a*a*a*a*a' >.fan-out-excludes
+for aw in "${UNDER[@]}"; do
+  fan_under "$aw"
+  if [ "$RC" -eq 0 ]; then ok "F22 $aw: many * that match skip the folder"; else bad "F22 $aw: many * that match skip the folder (rc=$RC)"; fi
+done
+
+# F23 345: "**" on a very deep path. Master took mawk 12 s at depth 400 and past 60 s
+# at 1000. The literal between "**" gets past the check of the glob's end.
+fresh
+deep1000="$(printf 'd/%.0s' $(seq 1000))"
+files 8 "${deep1000}zz"
+files 8 "${deep1000%/}"
+git add -A
+for row in '**/**/**/**/zz|1' '**/d/**/d/**/d/**/zz|1' '**/d|1' '**/**/**/**/d/zz|1' '**/d/**/d/**/d/**/d|1' 'd/**|0'; do
+  printf '%s\n' "${row%|*}" >.fan-out-excludes
+  for aw in "${UNDER[@]}"; do
+    fan_under "$aw"
+    if [ "$RC" -eq "${row#*|}" ]; then ok "F23 $aw: ${row%|*} at depth 1000"; else bad "F23 $aw: ${row%|*} at depth 1000 (rc=$RC)"; fi
+  done
+done
+
+# F24 345: each glob skips the folders it did on master, under every awk. The rows
+# came from master's regexes, and all three awks agreed on them.
+fresh
+dirs=(a/b a/b/c ab axb a.b 'x[y' 'x^y' 'x$y' 'x(y)' 'x|y' 'x+y' 'x{y}' 'x*y' 'x?y' $'l\nm' $'t\tu' 'p\q' '#h' ' s' 'zz/a/b')
+shown=(a/b a/b/c ab axb a.b 'x[y' 'x^y' 'x$y' 'x(y)' 'x|y' 'x+y' 'x{y}' 'x*y' 'x?y' 'l\nm' 't\tu' 'p\\q' '\#h' '\ss' 'zz/a/b')
+for d in "${dirs[@]}"; do files 8 "$d"; done
+git add -A
+while IFS='~' read -r glob want; do
+  printf '%s\n' "$glob" >.fan-out-excludes
+  for aw in "${UNDER[@]}"; do
+    fan_under "$aw"
+    got=""
+    for s in "${shown[@]}"; do grep -qF "fan-out: $s holds" <<<"$ERR" || got="$got $s"; done
+    if [ "$got" = "${want:+ }$want" ]; then ok "F24 $aw: $glob"; else bad "F24 $aw: $glob (got:$got)"; fi
+  done
+done <<'ROWS'
+a*b~ab axb a.b
+a?b~axb a.b
+a**b~a/b ab axb a.b
+a**/b~a/b ab
+a/**~a/b a/b/c
+**/b~a/b zz/a/b
+**/a/**~a/b a/b/c zz/a/b
+**/**/c~a/b/c
+a/***~a/b a/b/c
+***/b~a/b zz/a/b
+****/c~a/b/c
+a/*~a/b
+*/b~a/b
+*~ab axb a.b x[y x^y x$y x(y) x|y x+y x{y} x*y x?y l\nm t\tu p\\q \#h \ss
+?~
+**~a/b a/b/c ab axb a.b x[y x^y x$y x(y) x|y x+y x{y} x*y x?y l\nm t\tu p\\q \#h \ss zz/a/b
+x[y~x[y
+x[[]y~
+x^y~x^y
+^x~
+x$y~x$y
+x$~
+x?y~x[y x^y x$y x|y x+y x*y x?y
+x\*y~
+x*y~x[y x^y x$y x|y x+y x*y x?y
+x.y~
+a.b~a.b
+x(y)~x(y)
+x|y~x|y
+x+y~x+y
+x{y}~x{y}
+x???~x(y) x{y}
+l\nm~l\nm
+l?m~l\nm
+l*m~l\nm
+t\tu~t\tu
+t?u~t\tu
+p\\q~p\\q
+p?q~p\\q
+p??q~
+\#h~\#h
+#h~
+?h~\#h
+\ss~\ss
+ s~
+?s~\ss
+**/#h~\#h
+a/b/~
+a**~a/b a/b/c ab axb a.b
+zz/**/b~zz/a/b
+zz**/b~zz/a/b
+z*/*/b~zz/a/b
+ROWS
+
+# F25 345: in UTF-8 "?" takes a character under gawk and a byte under the others, as
+# on master. A name that is not UTF-8 matches under each; master missed it under gawk.
+fresh
+files 8 'ä'
+files 8 $'b\xff'
+git add -A
+for aw in "${UNDER[@]}"; do
+  one='??' && [ "$aw" = gawk ] && one='?'
+  printf '%s\n' "$one" 'b*' >.fan-out-excludes
+  LC_ALL=C.UTF-8 fan_under "$aw"
+  if [ "$RC" -eq 0 ]; then ok "F25 $aw: $one is the UTF-8 name"; else bad "F25 $aw: $one is the UTF-8 name (${ERR:0:90})"; fi
+done

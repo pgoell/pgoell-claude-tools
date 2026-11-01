@@ -10,6 +10,8 @@ In both excludes files these lines are skipped, since they could cost seconds to
 
 No message says so. What a skipped line would have excluded still gets reported.
 
+`check-fan-out` matches globs with no regex, so no line stalls it on any awk. A run gives up after 8 million match steps, far past what a real repo spends: from there no glob matches, and the folders left get reported.
+
 ## `.file-size-excludes`
 
 `check-file-size` already skips lockfiles, images, fonts, PDFs and license texts. This file adds to those defaults:
