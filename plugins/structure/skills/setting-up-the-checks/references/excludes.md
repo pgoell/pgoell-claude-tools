@@ -59,6 +59,6 @@ Both checks keep one line per name, and a line reader would lose some names. So 
 | `#` that starts the path   | `\#`             |
 | space that starts the path | `\s`             |
 
-Copy the name as the report shows it. In `.fan-out-excludes`, `?` stands for one character of the name, escaped or not, and a raw tab or CR also works. In `.file-size-excludes` a shown name is still a glob, so a `*`, `?` or `[` in it needs a `\` before it. A space that ends a name is the one case a shown name does not cover, since a line loses it: write `?` for it in `.fan-out-excludes`, `\s` in `.file-size-excludes`.
+Copy the name as the report shows it. In `.fan-out-excludes`, `?` stands for one character of the name, escaped or not, and a raw tab or CR inside a name also works. A line over 512 bytes is skipped. In `.file-size-excludes` a shown name is still a glob, so a `*`, `?` or `[` in it needs a `\` before it. A space that ends a name is the one case a shown name does not cover, since a line loses it: write `?` for it in `.fan-out-excludes`, `\s` in `.file-size-excludes`.
 
 An exclude written before this scheme may change meaning: in `.file-size-excludes` a glob with `\n`, `\t`, `\r` or `\s` now means those characters, and in `.fan-out-excludes` a `[...]` no longer is a class. A line that stops matching shows up in the next report.

@@ -528,6 +528,17 @@ excludes $'x\x01y.md'
 run
 if passes; then ok "O4 a 0x01 byte in the excludes stays itself"; else bad "O4 a 0x01 byte in the excludes stays itself (rc=$RC: ${ERR:0:200})"; fi
 
+# A skipped long line uses up none of the budget for shown names.
+fresh
+mkfile $'a\tb' 20004
+git add -A
+{
+  head -c 70000 /dev/zero | tr '\0' 'z'
+  printf '\\\n%s\n' 'a\tb'
+} >.file-size-excludes
+run $'a\tb'
+if passes; then ok "O4 a long line leaves shown names working"; else bad "O4 a long line leaves shown names working (rc=$RC: ${ERR:0:200})"; fi
+
 # O5 a long line of backslashes in the excludes costs no real time. Master took 1 s
 # on this size; the "\n" passes alone would take 16 s.
 fresh

@@ -374,3 +374,29 @@ for aw in mawk 'busybox awk'; do
   RC=$?
   if [ "$RC" -eq 1 ]; then ok "F19 $aw skips a 1 MiB excludes line"; else bad "F19 $aw skips a 1 MiB excludes line (rc=$RC)"; fi
 done
+
+# F20 ? takes one character of the name: never a "/" or half an escape.
+fresh
+files 8 'x\/b'
+files 8 $'a\tb'
+git add -A
+fan_excludes 'x??b' 'a?tb'
+fan --all
+if [ "$RC" -eq 1 ] && grep -qF 'fan-out: x\\/b ' <<<"$ERR" && grep -qF 'fan-out: a\tb ' <<<"$ERR"; then
+  ok "F20 ? crosses no / and splits no escape"
+else
+  bad "F20 ? crosses no / and splits no escape (rc=$RC: ${ERR:0:200})"
+fi
+
+# F21 a line of many wildcards costs no real time.
+fresh
+files 8 src
+git add -A
+for ch in '*' '?'; do
+  head -c 4096 /dev/zero | tr '\0' "$ch" >.fan-out-excludes
+  printf '\n' >>.fan-out-excludes
+  head -c 512 /dev/zero | tr '\0' "$ch" >>.fan-out-excludes
+  timeout 10 bash scripts/check-fan-out --all >/dev/null 2>&1
+  RC=$?
+  if [ "$RC" -ne 124 ]; then ok "F21 lines of $ch do not stall (rc=$RC)"; else bad "F21 lines of $ch do not stall"; fi
+done

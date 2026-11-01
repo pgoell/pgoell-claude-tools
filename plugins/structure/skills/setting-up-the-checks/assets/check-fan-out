@@ -100,7 +100,7 @@ function glob2re(g,   re, c, i) {
     if (substr(g, i, 3) == "**/") { re = re "(.*/)?"; i += 2 }
     else if (substr(g, i, 2) == "**") { re = re ".*"; i++ }
     else if (c == "*") re = re "[^/]*"
-    else if (c == "?") re = re "(\\\\.|[^/])"
+    else if (c == "?") re = re "(\\\\[^/]|[^/\\\\])"
     else if (c == "\\") re = re "\\\\"
     else if (c == "^") re = re "\\^"
     else if (index(".+(){}|$[]", c)) re = re "[" c "]"
@@ -132,8 +132,8 @@ function excluded(d,   i) {
 BEGIN {
   while ((getline line < excl) > 0) {
     line = trim(line)
-    # No path is longer than 4096, and a longer line could cost minutes.
-    if (line != "" && line !~ /^#/ && length(line) <= 4096) ex[++nex] = glob2re(plain(raw(line)))
+    # A longer line could cost minutes, and a folder it fails to skip gets reported.
+    if (line != "" && line !~ /^#/ && length(line) <= 512) ex[++nex] = glob2re(plain(raw(line)))
   }
   while ((getline line < base) > 0) {
     line = trim(line)
