@@ -79,14 +79,15 @@ git -C "$top" ls-files -z --cached --others --exclude-standard >"$list"
 # and blank lines are skipped.
 # Only a regular file counts, and only its first MiB: a repo nobody has read may
 # hold a FIFO, a symlink to a device or a huge file there.
-# A line of the excludes over 512 bytes is skipped: it could cost minutes, and a
-# folder it fails to skip gets reported.
+# A line of the excludes over 512 bytes or with more than 4 "**" is skipped, and so
+# is every glob after the 1024th: each could cost minutes, or hours under mawk. A
+# folder they fail to skip gets reported.
 fresh=1
 if [ -f "$top/.fan-out-baseline" ]; then
   fresh=0
   head -c 1048576 "$top/.fan-out-baseline" >"$base" 2>/dev/null || :
 fi
-if [ -f "$top/.fan-out-excludes" ]; then head -c 1048576 "$top/.fan-out-excludes" 2>/dev/null | LC_ALL=C awk 'length($0) <= 512' >"$excl" || :; fi
+if [ -f "$top/.fan-out-excludes" ]; then head -c 1048576 "$top/.fan-out-excludes" 2>/dev/null | LC_ALL=C awk 'length($0) <= 512 && !/^[ \t\r\f\v]*(#|$)/ && gsub(/\*\*+/, "&") <= 4 { if (++n > 1024) exit; print }' >"$excl" || :; fi
 while IFS= read -r -d '' path; do
   escape "$path"
   printf '%s\n' "$escaped"
@@ -99,6 +100,8 @@ function glob2re(g,   re, c, i) {
   re = "^"
   for (i = 1; i <= length(g); i++) {
     c = substr(g, i, 1)
+    # A run of "*" past the second adds nothing, as in git, and stalled mawk.
+    while (substr(g, i, 3) == "***") i++
     if (substr(g, i, 3) == "**/") { re = re "(.*/)?"; i += 2 }
     else if (substr(g, i, 2) == "**") { re = re ".*"; i++ }
     else if (c == "*") re = re "[^/]*"

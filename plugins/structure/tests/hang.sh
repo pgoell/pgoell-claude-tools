@@ -383,3 +383,145 @@ if [ "$size_rc" -eq 1 ] && [ "$RC" -eq 1 ]; then
 else
   bad "L7 both checks skip a line padded with NUL bytes (file-size rc=$size_rc, fan-out rc=$RC)"
 fi
+
+# S1 many or starry excludes lines cost neither checks nor the hook any real time:
+# issues 342 and 344. Each check gets 10 s; master failed or ran past 45 s.
+stars() { printf '**/%.0s' $(seq 170) && echo zz; }
+fast_size() {
+  ERR="$(timeout 10 bash scripts/check-file-size "$@" 2>&1 >/dev/null)"
+  RC=$?
+}
+fast_fan() {
+  ERR="$(timeout 10 bash scripts/check-fan-out --all 2>&1 >/dev/null)"
+  RC=$?
+}
+want_rc() { if [ "$RC" -eq "$2" ]; then ok "$1"; else bad "$1 (rc=$RC: ${ERR:0:120})"; fi; }
+
+fresh
+mkfile a 100
+git add -A
+yes a | head -n 80000 >.file-size-excludes
+fast_size a
+want_rc "S1 342: 80000 short excludes lines pass" 0
+try_hook "$REPO/a"
+want_rc "S1 342: the hook passes on 80000 short lines" 0
+yes a | head -c 1048576 >.file-size-excludes
+fast_size a
+want_rc "S1 342: 1 MiB of short excludes lines passes" 0
+try_hook "$REPO/a"
+want_rc "S1 342: the hook passes on 1 MiB of short lines" 0
+yes '# note' | head -c 1048576 >.file-size-excludes
+fast_size a
+want_rc "S1 342: 1 MiB of comment lines passes" 0
+
+deep=$(printf 'd/%.0s' $(seq 40))
+fresh
+mkfile "${deep}a" 100
+git add -A
+git commit -qm deep
+stars >.file-size-excludes
+fast_size
+want_rc "S1 344: a line of 170 **/ does not stall a bare check-file-size" 0
+try_hook "$REPO/${deep}a"
+want_rc "S1 344: the hook passes on a line of 170 **/" 0
+
+# S2 the limits keep what fits and report what does not: nothing they drop can hide
+# a big file. Run under each awk at hand, since mawk stalled where gawk did not.
+AWKS=("$(command -v awk)")
+command -v mawk >/dev/null && AWKS+=("$(command -v mawk)")
+[ "${#AWKS[@]}" -gt 1 ] || echo "note: no mawk here, S2 runs under awk alone"
+for tool in "${AWKS[@]}"; do
+  shim="$WORK/shim-${tool##*/}"
+  mkdir -p "$shim"
+  ln -sf "$tool" "$shim/awk"
+  oldpath=$PATH
+  PATH=$shim:$PATH
+  who=${tool##*/}
+
+  fresh
+  files 8 "${deep%/}"
+  git add -A
+  stars >.fan-out-excludes
+  fast_fan
+  want_rc "S2 344 $who: a line of 170 **/ does not stall check-fan-out" 1
+
+  # A run of "*" counts as "**", as in git. Master stalled mawk on four of them.
+  printf '***/%s\n' "${deep%/}" >.fan-out-excludes
+  fast_fan
+  want_rc "S2 344 $who: ***/ matches as **/ does" 0
+  fresh
+  files 8 "$deep$(repeat a 200)"
+  git add -A
+  printf '***/***/***/***/zz\n' >.fan-out-excludes
+  fast_fan
+  want_rc "S2 344 $who: a line of four ***/ does not stall check-fan-out" 1
+
+  fresh
+  for i in $(seq 200); do files 8 "t/f$i"; done
+  git add -A
+  yes zz | head -c 1048576 >.fan-out-excludes
+  fast_fan
+  want_rc "S2 342 $who: 1 MiB of short lines and 200 big folders do not stall check-fan-out" 1
+
+  fresh
+  mkfile a/b/c/big.md 20004
+  files 8 a/b/c/d
+  git add -A
+  excludes '**/a/**/b/**/c/**/big.md'
+  fast_size
+  want_rc "S2 $who: file-size keeps a line of 4 **" 0
+  excludes '**/**/a/**/b/**/c/**/big.md'
+  fast_size
+  want_rc "S2 $who: file-size drops a line of 5 **, the file is reported" 1
+  printf '%s\n' '**/a/**/b/**/c/**/d' >.fan-out-excludes
+  fast_fan
+  want_rc "S2 $who: fan-out keeps a line of 4 **" 0
+  printf '%s\n' '**/**/a/**/b/**/c/**/d' >.fan-out-excludes
+  fast_fan
+  want_rc "S2 $who: fan-out drops a line of 5 **, the folder is reported" 1
+
+  # 1024 globs count, comments, blank lines and long lines use none of them.
+  fill() { yes "$1" | head -n "$2"; }
+  {
+    fill '# note' 2000
+    fill '' 2000
+    fill "$(head -c 600 /dev/zero | tr '\0' z)" 5
+    fill zz 1023
+    echo a/b/c/big.md
+  } >.file-size-excludes
+  fast_size
+  want_rc "S2 $who: file-size keeps glob 1024, past comments and long lines" 0
+  {
+    fill zz 1024
+    echo a/b/c/big.md
+  } >.file-size-excludes
+  fast_size
+  want_rc "S2 $who: file-size drops glob 1025, the file is reported" 1
+  {
+    fill '# note' 2000
+    fill zz 1023
+    echo a/b/c/d
+  } >.fan-out-excludes
+  fast_fan
+  want_rc "S2 $who: fan-out keeps glob 1024, past comments" 0
+  {
+    fill zz 1024
+    echo a/b/c/d
+  } >.fan-out-excludes
+  fast_fan
+  want_rc "S2 $who: fan-out drops glob 1025, the folder is reported" 1
+  PATH=$oldpath
+done
+
+# S3 the worst input the limits still let through.
+fresh
+for i in 1 2 3 4 5 6 7 8; do mkfile "${deep}m/f$i" 100; done
+for i in $(seq 200); do mkfile "${deep}f$i" 100; done
+git add -A
+git commit -qm deep
+for i in $(seq 1024); do echo "**/**/**/**/$(head -c 490 /dev/zero | tr '\0' z)$i"; done >.file-size-excludes
+cp .file-size-excludes .fan-out-excludes
+fast_size
+want_rc "S3 file-size returns on 1024 long lines of 4 ** over 208 deep files" 0
+fast_fan
+want_rc "S3 fan-out returns on 1024 long lines of 4 ** over 208 deep files" 1
