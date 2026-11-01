@@ -68,7 +68,8 @@ Dispatched agent prompt:
        every iteration, replacing any label the file holds. Never write `high`:
        the orchestrator sets the final labels after the claim check. A thesis
        pillar takes both lines too, with N the number of origin groups across
-       the sources of the claims it rests on.
+       the sources of the claims it rests on, and a `Rests on:` line naming
+       those claims.
 
     2. Reconcile contradictions. For each contradiction, take a position: which
        side is more credible and why? Cite sources. If you cannot adjudicate,
@@ -97,12 +98,15 @@ Dispatched agent prompt:
 
     ## Argument Structure
     1. <Pillar 1: claim that supports thesis>
+       - Rests on: SQ1 claim 2, SQ3 claim 1
        - Independent sources: N
        - Confidence: medium | low (one source)
     2. <Pillar 2: claim that supports thesis>
+       - Rests on: SQ1 claim 2, SQ3 claim 1
        - Independent sources: N
        - Confidence: medium | low (one source)
     3. <Pillar 3: claim that supports thesis>
+       - Rests on: SQ1 claim 2, SQ3 claim 1
        - Independent sources: N
        - Confidence: medium | low (one source)
 

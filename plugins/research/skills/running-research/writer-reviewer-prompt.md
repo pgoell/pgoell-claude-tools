@@ -67,7 +67,7 @@ Dispatched agent prompt:
       missing section is minor at most. References stays required either way.
     - Low-Confidence Claims: it must list every low claim the report states; a
       missing one is critical. With no low claim it holds one line saying so in
-      a full report, and a shorter report may leave it out.
+      a full report, and a shorter report with none may leave it out.
 
     Issue per missing/misnamed section. Sub-section variations are minor.
 

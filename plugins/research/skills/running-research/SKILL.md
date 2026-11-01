@@ -17,7 +17,7 @@ No authentication required. Uses the host agent's web search and fetch or browse
 
 1. **Subagent dispatch when available and permitted**: dispatch researcher, synthesis, writer, and reviewer agents.
 2. **File read tools**: load the brief and prompt templates before dispatch.
-3. **Shell**: directory creation, file globbing, the `grep -x` check of Step 1, the `sha256sum` and `grep -c` checks of Step 3, the `sha256sum` and `head -1` check of Step 4, and the `mv` and render checks of Step 11.
+3. **Shell**: directory creation, file globbing, the `grep -x` check of Step 1, the `sha256sum` and `grep -c` checks of Step 3, the `sha256sum` and `head -1` check of Step 4, the label check of `references/confidence-labels.md`, and the `mv` and render checks of Step 11.
 4. **Progress list**: live loop bookkeeping.
 5. **Web search and fetch or browse tools**: researchers, the synthesis reviewer and the claim checkers use them; the orchestrator uses them only if subagent dispatch fails.
 
@@ -158,14 +158,14 @@ Then, once per round, not once per gap-fill: every round with a critical issue w
 
 ### Loop safeguards (Steps 5-6)
 
-**Stall detection.** After writing `synthesis-review-{N}.md`, compare its issue id set to `synthesis-review-{N-1}.md`. If identical, surface to user immediately. Skip this when the round came from a refuted claim: the review never lists its id, and Step 7 stops a claim that stays refuted.
+**Stall detection.** After writing `synthesis-review-{N}.md`, compare its issue id set to `synthesis-review-{N-1}.md`. If identical, surface to user immediately; a `ship as-is` here goes as at a check-in. Skip this when the round came from a refuted claim: the review never lists its id, and Step 7 stops a claim that stays refuted.
 
 **Check-in.** After synthesis-review iterations 3, 6, 9, ..., pause and surface:
 
 - Open issue ids and one-line descriptions
 - What was attempted (which gap-fills ran)
 - What's been narrowed (issues closed since iteration 1)
-- Options: `continue`, `ship as-is` (skips Step 7: set the labels as `references/confidence-labels.md` says, then go to Step 8), `intervene`
+- Options: `continue`, `ship as-is` (skips Step 7: set the labels as `references/confidence-labels.md` says, then go to Step 8, or back to the writer as Step 10 says), `intervene`
 
 Update the progress list at every step so the user can inspect live status through the host platform.
 
@@ -210,12 +210,12 @@ For any `content-gap-suspected` issues:
 
 2. Re-dispatch synthesis-reviewer (Step 5) with REVIEWER_FEEDBACK populated with the writer-reviewer's content-gap-suspected issue list. The next synthesis-review file is `synthesis-review-{prior-N+1}.md` (synthesis loop counter resumes monotonically).
 3. Branch on synthesis-reviewer verdict:
-   - PASS → the synthesis did not change, so skip Step 7: re-dispatch writer with prose-only feedback (drop the content-gap notes from the writer-reviewer's issue list). Return to Step 9.
+   - PASS → the synthesis did not change, so skip Step 7, set the labels again (`references/confidence-labels.md`; a new `unresolved` mark can lower one), and re-dispatch writer with prose-only feedback (drop the content-gap notes from the writer-reviewer's issue list). Return to Step 9.
    - ISSUES → return to Step 6's classification logic (`evidence-gap` / `coverage` / `source-quality` route to gap-fill research; `logic` / `structure` route to re-synthesize; a rejected refetch claim or refuted claim takes both routes, as Step 6 says). When the synthesis loop closes again, through Step 7, re-dispatch writer with the original prose feedback (if any) plus a fresh writer review. Return to Step 9.
 
 ### Loop safeguards (Steps 9-10)
 
-Same as synthesis loop. Stall detection on consecutive identical id sets in `draft-review-{M}.md` and `draft-review-{M-1}.md`. Check-in every 3 iterations of writer-review. Same options.
+Same as synthesis loop. Stall detection on consecutive identical id sets in `draft-review-{M}.md` and `draft-review-{M-1}.md`. Check-in every 3 iterations of writer-review. Same options, but `ship as-is` here goes to Step 11 with the current draft.
 
 ### Step 11: Present
 
