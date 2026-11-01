@@ -63,6 +63,12 @@ Dispatched agent prompt:
          report on its own on the next.
        - Sources whose notes name one original with no URL ("restates the Acme
          Q3 press release, no URL found") form one group; say so under Notes.
+       Then give each claim a provisional `Confidence:` line from N alone:
+       `medium` when N is 2 or more, `low (one source)` when N is 1. Do this on
+       every iteration, replacing any label the file holds. Never write `high`:
+       the orchestrator sets the final labels after the claim check. A thesis
+       pillar takes both lines too, with N the number of origin groups across
+       the sources of the claims it rests on.
 
     2. Reconcile contradictions. For each contradiction, take a position: which
        side is more credible and why? Cite sources. If you cannot adjudicate,
@@ -91,8 +97,14 @@ Dispatched agent prompt:
 
     ## Argument Structure
     1. <Pillar 1: claim that supports thesis>
+       - Independent sources: N
+       - Confidence: medium | low (one source)
     2. <Pillar 2: claim that supports thesis>
+       - Independent sources: N
+       - Confidence: medium | low (one source)
     3. <Pillar 3: claim that supports thesis>
+       - Independent sources: N
+       - Confidence: medium | low (one source)
 
     ## Claims by Sub-Question
 
@@ -100,10 +112,12 @@ Dispatched agent prompt:
     - Claim: <claim>
       - Sources: [URL | Title | tag | origin: URL], [URL | Title | tag]
       - Independent sources: N
+      - Confidence: medium | low (one source)
       - Notes: <any methodological caveats>
     - Claim: <claim>
       - Sources: ...
       - Independent sources: N
+      - Confidence: medium | low (one source)
     - Contradictions: <if any, with adjudication>
 
     ### SQ2: <sub-question>

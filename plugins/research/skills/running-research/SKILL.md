@@ -125,7 +125,7 @@ A check fails on a missing file, an unchanged hash, or a wrong first line. Re-di
 ### Step 5: Review synthesis (iteration N)
 
 1. Read `synthesis-reviewer-prompt.md`.
-2. Inject: BRIEF, OUTPUT_PATH, ITERATION, REVIEWER_FEEDBACK (empty for normal flow; populated only when re-dispatched from cross-loop branch in Step 10).
+2. Inject: BRIEF, OUTPUT_PATH, ITERATION, LABEL_RULES_PATH (path to references/confidence-labels.md), REVIEWER_FEEDBACK (empty for normal flow; populated only when re-dispatched from cross-loop branch in Step 10).
 3. Dispatch via the host subagent tool. Wait for completion. In its sixth check, the reviewer fetches again up to 5 cited URLs (first any URL the prior round left `rejected` or `unresolved`, then numbers, then thesis pillars) and records each mark in the file's `REFETCH:` block.
 4. Read the verdict from agent response, or from `{OUTPUT_PATH}/research/synthesis-review-{N}.md` if response is unparseable.
 
@@ -165,7 +165,7 @@ Then, once per round, not once per gap-fill: every round with a critical issue w
 - Open issue ids and one-line descriptions
 - What was attempted (which gap-fills ran)
 - What's been narrowed (issues closed since iteration 1)
-- Options: `continue`, `ship as-is`, `intervene`
+- Options: `continue`, `ship as-is` (skips Step 7: set the labels as `references/confidence-labels.md` says, then go to Step 8), `intervene`
 
 Update the progress list at every step so the user can inspect live status through the host platform.
 
@@ -173,7 +173,7 @@ Update the progress list at every step so the user can inspect live status throu
 
 Runs each time the synthesis review passes in Step 5, before any writer. Three fresh checkers try to refute each key claim. Read `references/claim-check.md` and follow it: it picks the claims, says what to tell the user, dispatches `references/claim-checker-prompt.md`, and writes `{OUTPUT_PATH}/research/claim-checks.md`.
 
-Section 5 of that file routes the result. A newly refuted claim goes to Step 6, and the loop comes back through Step 5 to here. With no refuted claim, or after the user says `ship as-is`, continue to Step 8, or, when Step 10 sent you to Step 6, back to the writer as Step 10 says.
+Section 5 of that file routes the result and sets each claim's `Confidence:` label before the writer. A newly refuted claim goes to Step 6, and the loop comes back through Step 5 to here. With no refuted claim, or after the user says `ship as-is`, continue to Step 8, or, when Step 10 sent you to Step 6, back to the writer as Step 10 says.
 
 ### Step 8: Write (iteration M, starting at 1)
 
@@ -233,7 +233,7 @@ Same as synthesis loop. Stall detection on consecutive identical id sets in `dra
 ├── research/
 │   ├── {cluster-slug}.md         (one per cluster, notes + inline sources)
 │   ├── gap-{n}-{slug}.md         (gap-fill research)
-│   ├── synthesis.md              (overwritten each iteration)
+│   ├── synthesis.md              (overwritten each iteration; the orchestrator sets its final labels)
 │   ├── synthesis-review-{n}.md
 │   └── claim-checks.md           (rewritten each Step 7 round; only the orchestrator writes it)
 ├── draft.md                      (overwritten each iteration; renamed report.md in Step 11)

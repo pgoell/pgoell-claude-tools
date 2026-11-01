@@ -47,8 +47,12 @@ Dispatched agent prompt:
     in the report that don't appear in the synthesis (added unilaterally by the
     writer)? Are there synthesis claims dropped or distorted?
 
+    Does each claim's wording fit its `Confidence:` line in the synthesis: high
+    stated plainly, medium hedged, low naming its source and reason? Stating a
+    low claim plainly is a distorted claim.
+
     Issue per accuracy failure. Severity: critical for added/distorted claims,
-    minor for dropped minor points.
+    minor for dropped minor points and for a hedge on a high claim.
 
     ### Check 2: Format (category: format)
 
@@ -61,6 +65,9 @@ Dispatched agent prompt:
       Deep Mode section must be there; a missing one is critical. When it asks
       for something shorter, the writer keeps only the sections that fit, so a
       missing section is minor at most. References stays required either way.
+    - Low-Confidence Claims: it must list every low claim the report states; a
+      missing one is critical. With no low claim it holds one line saying so in
+      a full report, and a shorter report may leave it out.
 
     Issue per missing/misnamed section. Sub-section variations are minor.
 
