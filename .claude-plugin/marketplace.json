@@ -86,7 +86,7 @@
       "name": "news",
       "source": "./plugins/news",
       "description": "Build a personal daily newspaper in a kasten vault, linked from the daily note, shaped by your feedback.",
-      "version": "0.10.0"
+      "version": "0.11.0"
     },
     {
       "name": "insights",

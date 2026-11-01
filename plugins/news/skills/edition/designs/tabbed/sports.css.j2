@@ -1,0 +1,37 @@
+/* a tournament tree or a Swiss stage: one column per round, scrolling sideways inside its box on a phone */
+.bracket{grid-column:1 / -1;display:flex;gap:22px;width:0;min-width:100%;overflow-x:auto;margin:16px 0 0;padding:10px 2px 6px;
+  border-top:1px solid var(--rule);font-family:var(--font-head);font-size:14px;line-height:1.3}
+.round{flex:1 0 170px;display:flex;flex-direction:column}
+.round h4{margin:0 0 8px;padding:4px 8px;background:var(--paper-2);border-bottom:2px solid var(--ink);font-size:11.5px;font-weight:600;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--ink)}
+.round .ms{flex:1;display:flex;flex-direction:column}
+.m{position:relative;border:1px solid var(--rule);background:var(--paper);border-radius:2px}
+.m .t{display:flex;align-items:center;gap:7px;padding:4px 8px 4px 9px;color:var(--ink-soft)}
+.m .t + .t{border-top:1px solid var(--rule)}
+.m .tag{flex:none;min-width:34px;padding:1px 3px;border:1px solid var(--rule);border-radius:2px;font-family:var(--font-mono);
+  font-size:10.5px;font-weight:600;text-align:center;color:var(--muted)}
+.m .tn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.m .sc{font-variant-numeric:tabular-nums}
+.m .t.win{color:var(--ink);font-weight:700;box-shadow:inset 3px 0 0 var(--accent)}
+.m .t.win .sc{color:var(--accent)}
+.m .t.win .tag{border-color:var(--accent);color:var(--accent)}
+.m .t.out{color:var(--muted)}
+.m.open{border-style:dashed}
+.m .when{padding:2px 8px 3px;font-size:12px;color:var(--accent);border-top:1px dashed var(--rule)}
+/* knockout: equal slots, so a pair's midpoint is the centre of the slot it feeds */
+.ko .ms{display:grid;grid-auto-rows:1fr}
+.ko .slot{display:flex;flex-direction:column;justify-content:center;position:relative;padding:5px 0}
+.ko .round:not(:first-child) .slot::before,.ko .round:not(:last-child) .slot::after{content:"";position:absolute;width:11px;border:0 solid var(--muted)}
+.ko .round:not(:first-child) .slot::before{right:100%;top:50%;border-top-width:1px}
+.ko .round:not(:last-child) .slot::after{left:100%;top:50%;border-top-width:1px}
+.ko .round.pairs .slot:nth-child(odd)::after{bottom:0;border-right-width:1px}
+.ko .round.pairs .slot:nth-child(even)::after{top:0;bottom:50%;border-top-width:0;border-bottom-width:1px;border-right-width:1px}
+/* Swiss: matches top-aligned under a record band; dots count wins and losses */
+.swiss .ms{gap:6px}
+.swiss .rec{display:flex;justify-content:space-between;align-items:center;margin:8px 0 0;font-size:12px;font-weight:600;
+  font-variant-numeric:tabular-nums;color:var(--muted)}
+.swiss .rec:first-child{margin-top:0}
+.pips{display:flex;gap:3px}
+.pips i{width:9px;height:9px;border-radius:1px}
+.pips .w{background:var(--k-ok)}
+.pips .l{background:var(--k-danger)}

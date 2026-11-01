@@ -47,12 +47,14 @@ story:
 
 bracket:
   rounds: [{ name: str, matches: [match] }] # 1 to 8 rounds, left to right, e.g. "Upper final", "Lower final", "Final"
+  tags: { str: str } | null # optional: team name to its short tag, "Hanwha Life Esports": "HLE"
 match:
   a: str # team or player
   b: str # team or player, or "TBD"
   score: str | null # "3-2", null when not played
   winner: "a" | "b" | null # null when not played
   when: str | null # for a match not played: "17.10., 20:00", Berlin time
+  record: str | null # optional, Swiss stage only: both teams' win-loss record before this match, "2-1"
 
 table: # a league table, filled by tables.py from sportschau.de; only `tabbed` draws it
   name: str # "Bundesliga", from topics.yaml
@@ -84,7 +86,9 @@ table: # a league table, filled by tables.py from sportschau.de; only `tabbed` d
   1: 25 to 45) is a warning, not an error.
 - A section's `local`, when present, is true or false.
 - A `bracket`, when present, holds 1 to 8 rounds, each with a name and at least
-  one match; every match names `a` and `b`, and `winner` is "a", "b" or null.
+  one match; every match names `a` and `b`, `winner` is "a", "b" or null,
+  and `record`, when set, looks like "2-1". `tags`, when set, maps strings to
+  strings.
 - A section's `tables`, when present, is a list; every table has a name, a url
   and at least one row; every row names its team, its counts are integers and
   `trend` is "up", "down" or null.
@@ -100,8 +104,10 @@ table: # a league table, filled by tables.py from sportschau.de; only `tabbed` d
 - Added optional `local` on sections, so a design can frame the home section
   without assuming it comes first.
 - Added optional `bracket` on a story, so a tournament tree (the LoL Worlds
-  Play-In and knockouts) can be drawn instead of told in the summary. A Swiss
-  stage is records, not a tree, and stays text.
+  Play-In and knockouts) can be drawn instead of told in the summary.
+- 2026-10-31: added optional `record` on a match and `tags` on a bracket, so
+  `tabbed` can group a Swiss stage by record and show team tags, as
+  lolesports.com does. A bracket with no `record` stays a knockout tree.
 - Added optional `tables` on a section, so league tables (Bundesliga, Premier
   League and others) show in the football tab. `tables.py` fills them from
   sportschau.de, because copying 150 table rows by hand invites errors.

@@ -75,11 +75,13 @@ plain text, \n\n between paragraphs, facts only, no opinion), "lang", "url",
 "importance" (1-3), "tags", "entities", "key_facts" (2-4 short facts),
 "repeat_of" (the id of an already-reported story this continues, or null),
 "whats_new" (when repeat_of is set: only what is new, else null)}.
-A story about a tournament's play-in or knockout stage (a source note asks for
-it) also carries "bracket": {"rounds": [{"name", "matches": [{"a", "b",
-"score" ("3-2" or null), "winner" ("a", "b" or null), "when" (Berlin time,
-"17.10., 20:00", for a match not played, else null)}]}]}, rounds left to
-right. Take every result from a page you fetched. A Swiss stage stays text.
+A story about a tournament stage (a source note asks for it) also carries
+"bracket": {"tags" ({team name: short tag, such as "HLE"}), "rounds":
+[{"name", "matches": [{"a", "b", "score" ("3-2" or null), "winner" ("a", "b"
+or null), "when" (Berlin time, "17.10., 20:00", for a match not played, else
+null)}]}]}, rounds left to right. In a Swiss stage each match also carries
+"record" (both teams' win-loss record before it, "2-1"), and each round lists
+its matches best record first. Take every result from a page you fetched.
 
 Known shortcuts; do not take them:
 - A summary written from memory or from the search snippet instead of the

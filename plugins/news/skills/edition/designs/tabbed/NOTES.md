@@ -38,13 +38,26 @@ tables (`sports.html.j2`).
 
 ## Bracket
 
-- A story with `bracket` gets a tournament tree under its text, across the
-  story's full width: one column per round, left to right, matches spaced so
-  each round sits between the matches that feed it, short rules between columns.
-- A finished match shows both scores, the winner bold with an accent score, the
-  loser muted. A match not played has a dashed frame and its `when` in accent.
-- At phone width the tree scrolls sideways inside its own box; the page never
-  does.
+Modelled on the lolesports.com stage view. The macros live in
+`sports.html.j2`, the CSS in `sports.css.j2`.
+
+- A story with `bracket` gets it under its text, across the story's full
+  width: one column per round, left to right, each under a grey band with its
+  name.
+- Each side shows its tag from `bracket.tags` in a small mono box, then the
+  name, then the score. The winner is bold with an accent bar at its left edge, an
+  accent score and an accent tag box; the loser is muted. A match not played
+  has a dashed frame and its `when` in accent.
+- Knockout (no match carries `record`): every match sits in an equal slot, so
+  each round centres between the matches that feed it. When the next round has
+  half as many matches, an elbow joins each pair to the match it feeds;
+  otherwise short rules join the columns.
+- Swiss (any match carries `record`): matches stack from the top, and a band
+  starts each run of matches with the same record: the record, then one green
+  dot per win and one red dot per loss. No lines, because a Swiss pairing does
+  not feed one match.
+- At phone width the bracket scrolls sideways inside its own box; the page
+  never does.
 
 ## Tables
 
