@@ -424,6 +424,13 @@ fast_size
 want_rc "S1 344: a line of 170 **/ does not stall a bare check-file-size" 0
 try_hook "$REPO/${deep}a"
 want_rc "S1 344: the hook passes on a line of 170 **/" 0
+# A NUL between two "*" hid the "**" from the limit, and bash then dropped it.
+{
+  for i in $(seq 102); do printf '*\0*/'; done
+  echo zz
+} >.file-size-excludes
+fast_size
+want_rc "S1 344: NUL bytes do not hide ** from the limit" 0
 
 # S2 the limits keep what fits and report what does not: nothing they drop can hide
 # a big file. Run under each awk at hand, since mawk stalled where gawk did not.

@@ -28,6 +28,7 @@ EXCLUDES=(
 # A line over 512 bytes or with more than 4 "**" is skipped, and so is every glob
 # after the 1024th: each could cost seconds to hours, or pass the limit for git's
 # arguments. A file they fail to skip gets reported.
+# tr first: a NUL between two "*" would hide a "**" from awk.
 # $(...) strips every newline that ends the name, so the output ends in a mark.
 top=$(git rev-parse --show-toplevel && echo x)
 top=${top%$'\n'x}
@@ -59,7 +60,7 @@ if [ -f "$top/.file-size-excludes" ]; then
       glob+=$rest
     fi
     EXCLUDES+=("$glob")
-  done < <(head -c 1048576 "$top/.file-size-excludes" 2>/dev/null | LC_ALL=C awk 'length($0) <= 512 && !/^[ \t\r\f\v]*(#|$)/ && gsub(/\*\*+/, "&") <= 4 { if (++n > 1024) exit; print }')
+  done < <(head -c 1048576 "$top/.file-size-excludes" 2>/dev/null | tr '\0' '\1' | LC_ALL=C awk 'length($0) <= 512 && !/^[ \t\r\f\v]*(#|$)/ && gsub(/\*\*+/, "&") <= 4 { if (++n > 1024) exit; print }')
 fi
 
 # The "top" magic anchors excludes at the repo root while arguments resolve
