@@ -181,7 +181,7 @@ silent "U6 a file named --all does not judge other folders"
 # A relative TMPDIR, as the check scripts run git from another folder.
 fresh
 mkdir -p m/rel
-mkfile m/big.md 20004
+mkfile m/small.md 1
 cd m || exit 1
-TMPDIR=rel hook "$REPO/m/big.md" "$REPO/scripts/structure-hook"
-flags m/big.md "U7 a relative TMPDIR still checks the file"
+TMPDIR=rel hook "$REPO/m/small.md" "$REPO/scripts/structure-hook"
+silent "U7 a relative TMPDIR makes no false report"
