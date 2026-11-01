@@ -52,9 +52,15 @@ Dispatched agent prompt:
        `Independent sources: N`, the number of groups. List one group's sources
        next to each other:
        - A source's group is its `origin` if set, else its own URL. A source
-         whose URL is another source's origin joins that group.
-       - A URL with an origin in any researcher file has that origin everywhere.
-         A URL cited twice counts once.
+         whose URL is another source's origin joins that group. Follow origins
+         to the last one: if a restates b and b restates c, all three are one
+         group.
+       - Compare URLs ignoring scheme, `www.`, a trailing slash and tracking
+         parameters.
+       - Within one claim, a URL cited twice counts once, and a citation with no
+         origin takes the origin another citation of that URL gives. An origin
+         does not carry to another claim: a page can restate on one point and
+         report on its own on the next.
        - Sources whose notes name one original with no URL ("restates the Acme
          Q3 press release, no URL found") form one group; say so under Notes.
 

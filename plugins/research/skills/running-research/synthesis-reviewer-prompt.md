@@ -94,7 +94,8 @@ Dispatched agent prompt:
     Then check each claim's `Independent sources: N` against the researcher
     files. Flag a claim whose sources share one origin but are listed as
     several: N counts copies of one origin apart, an origin in a researcher
-    file is missing from synthesis.md, or the line is absent. Id
+    file is missing from synthesis.md, or the line is absent. Compare URLs
+    ignoring scheme, `www.`, a trailing slash and tracking parameters. Id
     `shared-origin-<claim-slug>`, category `logic`, so the fix is a new
     synthesis and not a new researcher. Severity: critical for a key claim,
     minor otherwise. The id drops once N is right. A correct
