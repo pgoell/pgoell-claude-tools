@@ -173,7 +173,7 @@ Update the progress list at every step so the user can inspect live status throu
 
 Runs each time the synthesis review passes in Step 5, before any writer. Three fresh checkers try to refute each key claim. Read `references/claim-check.md` and follow it: it picks the claims, says what to tell the user, dispatches `references/claim-checker-prompt.md`, and writes `{OUTPUT_PATH}/research/claim-checks.md`.
 
-If a claim is refuted, go to Step 6; the loop comes back through Step 5 to here. Otherwise continue to Step 8, or, when Step 10 sent you to Step 6, back to the writer as Step 10 says.
+Section 5 of that file routes the result. A newly refuted claim goes to Step 6, and the loop comes back through Step 5 to here. With no refuted claim, continue to Step 8, or, when Step 10 sent you to Step 6, back to the writer as Step 10 says.
 
 ### Step 8: Write (iteration M, starting at 1)
 

@@ -4,11 +4,11 @@ Step 7 sends you here. You, the orchestrator, pick the claims, dispatch the chec
 
 ## 1. Pick the claims
 
-Read `synthesis.md`. List its testable claims in this order: numbers, then names and dates (deal terms and amounts count as numbers), then thesis pillars. A claim gets the id `claim-check-<claim-slug>`; keep the slug across rounds.
+Read `synthesis.md`. List its testable claims in this order, in file order within each kind: numbers (amounts and deal terms too), then names and dates, then thesis pillars. A testable claim has at least one cited source and states something a page could contradict; leave out the rest. A claim gets the id `claim-check-<claim-slug>`; keep the slug across rounds.
 
 Sort each claim into one group, first match wins:
 
-1. `SKIPPED-CONFIRMED`: a `confirmed` mark in the `REFETCH:` block of any `synthesis-review-{n}.md`, whose `claim:` line matches the claim's text now. The newest review that lists the claim must hold no `rejected` or `unresolved` mark for it.
+1. `SKIPPED-CONFIRMED`: a `confirmed` mark in the `REFETCH:` block of any `synthesis-review-{n}.md`, whose `claim:` line matches the claim's text now. The newest review that lists the claim must hold no `rejected` or `unresolved` mark for it, and `claim-checks.md` must not list it as `REFUTED`.
 2. Carried: `claim-checks.md` lists the claim with votes, and its text and sources are unchanged. It keeps its votes and outcome, and no one checks it again.
 3. To check: every other claim, up to the cap. Changed text is a new check under the same id.
 4. `NOT-CHECKED`: the claims past the cap.
