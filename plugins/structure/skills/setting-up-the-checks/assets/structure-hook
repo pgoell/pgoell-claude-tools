@@ -6,8 +6,8 @@
 # JSON on stdin and runs check-file-size and check-fan-out, which sit beside
 # this script, on tool_input.file_path. Exit 2 shows their message to Claude;
 # exit 0 says nothing. A file outside a git repo, ignored by git, or in a repo
-# with no copy of this hook at the path it was called by (a nested repo the
-# project ignores) passes. A file in another repo or worktree that has a copy meets that repo's
+# with no copy of this hook at the same path (a nested repo the project ignores)
+# passes. A symlinked scripts/ counts as scripts/. A file in another repo or worktree that has a copy meets that repo's
 # baseline and excludes, through this copy's scripts: never run code from the
 # repo of an edited file, which may be a clone nobody has read.
 set -uo pipefail
@@ -25,12 +25,16 @@ if [ -z "$file" ] || [ ! -f "$file" ]; then exit 0; fi
 # shellcheck disable=SC2046
 unset $(git rev-parse --local-env-vars 2>/dev/null)
 top=$(git -C "$(dirname "$file")" rev-parse --show-toplevel 2>/dev/null) || exit 0
-# The hook's path in its repo, from the path it was called by: git would resolve
-# a symlinked scripts/ and answer for the folder it reaches.
+# Look for a copy by this hook's path in its repo. Git answers for the folder a
+# symlink reaches, so also try the path from each folder above that has a .git.
+self=$(basename "$0")
+at=$(git -C "$dir" rev-parse --show-prefix 2>/dev/null)
 root=$dir
-while [ -n "$root" ] && [ ! -e "$root/.git" ]; do root=${root%/*}; done
-if [ -n "$root" ]; then at=${dir#"$root"}; else at=$(git -C "$dir" rev-parse --show-prefix 2>/dev/null); fi
-[ -f "$top/$at/$(basename "$0")" ] || exit 0
+until [ -f "$top/$at/$self" ]; do
+  [ -n "$root" ] || exit 0
+  if [ -e "$root/.git" ]; then at=${dir#"$root"}; fi
+  root=${root%/*}
+done
 cd "$(dirname "$file")" || exit 0
 name=$(basename "$file")
 

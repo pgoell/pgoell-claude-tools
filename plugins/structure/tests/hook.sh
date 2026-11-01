@@ -251,6 +251,33 @@ mkfile src/big.md 20004
 hook "$REPO/src/big.md" "$REPO/scripts/structure-hook"
 flags src/big.md "H13 scripts linked to a subfolder of another repo is checked"
 
+# Review of PR 323: a link to the top of a repo, a link that sits in another
+# repo, and a .git folder inside scripts/ all still find the copy.
+other="$WORK/other$n"
+fresh
+git init -q "$other"
+link_scripts "$other"
+mkfile src/big.md 20004
+hook "$REPO/src/big.md" "$REPO/scripts/structure-hook"
+flags src/big.md "H13 scripts linked to the top of another repo is checked"
+fresh
+mkfile src/big.md 20004
+git init -q "$WORK/a$n"
+ln -s "$REPO/scripts" "$WORK/a$n/tools"
+hook "$REPO/src/big.md" "$WORK/a$n/tools/structure-hook"
+flags src/big.md "H13 hook called through a link that sits in another repo is checked"
+fresh
+mkfile src/big.md 20004
+mkdir scripts/.git
+hook "$REPO/src/big.md" "$REPO/scripts/structure-hook"
+flags src/big.md "H13 a .git folder inside scripts does not hide the copy"
+
+other="$WORK/other$n"
+git init -q "$other"
+fresh
+link_scripts "$other/deep/tools"
+mkfile src/big.md 20004
+hook "$REPO/src/big.md" "$REPO/scripts/structure-hook"
 # The link does not widen the check: a nested repo with no copy stays silent, and
 # one with a copy has it stay unrun.
 echo '/inner/' >.gitignore
