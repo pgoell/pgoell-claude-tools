@@ -7,9 +7,12 @@
 # this script, on tool_input.file_path. Exit 2 shows their message to Claude;
 # exit 0 says nothing. A file outside a git repo, ignored by git, or in a repo
 # with no copy of this hook at the same path (a nested repo the project ignores)
-# passes. A symlinked scripts/ counts as scripts/. A file in another repo or worktree that has a copy meets that repo's
-# baseline and excludes, through this copy's scripts: never run code from the
-# repo of an edited file, which may be a clone nobody has read.
+# passes. A symlinked scripts/ counts as scripts/. A file in another repo or
+# worktree that has a copy meets that repo's baseline and excludes, through this
+# copy's scripts. It never runs code from the repo of an edited file, which may
+# be a clone nobody has read: git asks that repo only where its top and its
+# info/exclude are, and every other git runs against a throwaway git dir. So that
+# repo's config, hooks, filters, fsmonitor and objects stay out of it.
 set -uo pipefail
 
 dir=$(cd "$(dirname "$0")" && pwd)
@@ -39,13 +42,19 @@ done
 cd "$(dirname "$file")" || exit 0
 name=$(basename "$file")
 
-# check-file-size sizes the staged copy. Stage the file into a throwaway copy
-# of the index, so the size on disk counts and the real index stays as it was.
-index=$(mktemp)
-trap 'rm -f "$index"' EXIT
-real=$(git rev-parse --git-path index)
-if [ -f "$real" ]; then cp "$real" "$index"; else rm -f "$index"; fi
-export GIT_INDEX_FILE=$index
+# Git obeys the repo it works in, and core.fsmonitor, filters, hooks, pagers and
+# lazy fetches all run commands. So work against an empty throwaway git dir: the
+# checks see the size on disk and the folder's entries, and the edited repo stays
+# as it was. The user's own config stays in force, but its fsmonitor would watch
+# a folder about to go.
+exclude=$(git rev-parse --git-path info/exclude) || exit 0
+scratch=$(mktemp -d)
+trap 'rm -rf "$scratch"' EXIT
+git init -q --bare --template= "$scratch" >/dev/null 2>&1 || exit 0
+printf '[core]\n\tfsmonitor = false\n' >>"$scratch/config"
+mkdir "$scratch/info"
+if [ -f "$exclude" ]; then cp "$exclude" "$scratch/info/exclude"; fi
+export GIT_DIR=$scratch GIT_WORK_TREE=$top
 git add -- ":(literal)$name" 2>/dev/null || exit 0
 
 failed=0
