@@ -2,7 +2,7 @@
 
 **Purpose:** Turn the approved synthesis into a polished prose report. Stylist, not analyst.
 
-**Dispatch:** Spawned by the orchestrator after synthesis-review passes. Reads brief + synthesis + report-template. Writes `draft.md` (overwritten each iteration).
+**Dispatch:** Spawned by the orchestrator after synthesis-review passes and the claim check ends. Reads brief + synthesis + report-template. Writes `draft.md` (overwritten each iteration).
 
 ```
 Dispatched agent prompt:

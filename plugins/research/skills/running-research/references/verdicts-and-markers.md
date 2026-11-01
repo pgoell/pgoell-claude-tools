@@ -1,6 +1,6 @@
 # Verdicts and markers
 
-The orchestrator of `research:running-research` reads this file to parse reviewer verdicts and researcher markers.
+The orchestrator of `research:running-research` reads this file to parse reviewer verdicts, researcher markers and claim checker results.
 
 ## Verdict Parsing
 
@@ -36,4 +36,6 @@ These words are fixed. Every prompt that writes or reads them uses these spellin
 - `ARTIFACT-VERIFIED <sha256>`: last line of a researcher's response; the file is complete.
 - `ARTIFACT-MISSING <reason>`: last line of a researcher's response; the file is absent or partial.
 - `REFETCH:`: the block in `synthesis-review-{N}.md` that lists refetched URLs.
+- `CLAIM-CHECK: REFUTED | UPHELD | UNCLEAR`: last line of a claim checker's response, after its `quote:` and `url:` lines. Two or more `REFUTED` make the claim a critical `source-quality` issue, id `claim-check-<claim-slug>`.
+- `SPLIT`, `SKIPPED-CONFIRMED`, `NOT-CHECKED`: outcomes in `claim-checks.md` beside those three words; `references/claim-check.md` defines them.
 - `confirmed`, `rejected`, `unresolved`: the mark per refetched URL. A `rejected` claim is a critical `source-quality` issue; an `unresolved` one is minor.
