@@ -81,3 +81,45 @@ ERR="$(printf '{"tool_input":{"file_path":"%s/big.md"}}' "$REPO" |
   STRUCTURE_HOOK_IN_BASH=1 "$REPO/scripts/structure-hook" 2>&1 >/dev/null)"
 RC=$?
 flags big.md "P3 an inherited STRUCTURE_HOOK_IN_BASH makes no false block"
+
+# CDPATH must not send the hook's cd elsewhere: issue 331. The decoy's checks leave a mark.
+decoy() {
+  local d="$WORK/cdpath$n/$1"
+  mkdir -p "$d"
+  printf '#!/bin/sh\ntouch "%s"\n' "$WORK/decoy$n" >"$d/check-file-size"
+  cp "$d/check-file-size" "$d/check-fan-out"
+  chmod 755 "$d/check-file-size" "$d/check-fan-out"
+}
+fresh
+mkfile big.md 20004
+decoy scripts
+ERR="$(printf '{"tool_input":{"file_path":"%s/big.md"}}' "$REPO" |
+  CDPATH="$WORK/cdpath$n" scripts/structure-hook 2>&1 >/dev/null)"
+RC=$?
+flags big.md "S2 CDPATH with a relative \$0: file still checked"
+if [ -e "$WORK/decoy$n" ]; then bad "S2 CDPATH with a relative \$0: decoy ran"; else ok "S2 CDPATH with a relative \$0: decoy stays out"; fi
+
+fresh
+mkfile sub/big.md 20004
+decoy sub
+ERR="$(printf '{"tool_input":{"file_path":"sub/big.md"}}' |
+  CDPATH="$WORK/cdpath$n" scripts/structure-hook 2>&1 >/dev/null)"
+RC=$?
+flags sub/big.md "S3 CDPATH with a relative file_path: file still checked"
+
+# The limit of issue 328: an absolute entry inside the edited repo is the user's
+# own setting, so it stays, and its tool runs. See references/editor-hook.md.
+fresh
+mkfile big.md 20004
+mkdir -p .tools
+awkbin="$(command -v awk)"
+printf '#!/bin/sh\ntouch "%s"\nexec "%s" "$@"\n' "$WORK/mark$n" "$awkbin" >.tools/awk
+chmod 755 .tools/awk
+run_with_path_big() {
+  ERR="$(printf '{"tool_input":{"file_path":"%s/big.md"}}' "$REPO" |
+    PATH=$1 "$REPO/scripts/structure-hook" 2>&1 >/dev/null)"
+  RC=$?
+}
+run_with_path_big "$REPO/.tools:$real"
+flags big.md "P4 absolute entry inside the repo: file still checked"
+if [ -e "$WORK/mark$n" ]; then ok "P4 absolute entry inside the repo: its tool runs, the documented limit"; else bad "P4 absolute entry inside the repo: its tool runs, the documented limit"; fi

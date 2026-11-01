@@ -232,3 +232,45 @@ if [ -d /proc/self ]; then
   REPO=$caller
   if [ -z "$(in_repo)" ]; then ok "G8 the hook's job ends with the hook"; else bad "G8 the hook's job ends with the hook"; fi
 fi
+
+# With stdin closed the hook has no event, and returns without one: issue 330.
+fresh
+HANG_TMP="$WORK/tmp$n"
+mkdir -p "$HANG_TMP"
+ERR="$(TMPDIR="$HANG_TMP" timeout 10 scripts/structure-hook 2>&1 >/dev/null <&-)"
+RC=$?
+if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then ok "S1 closed stdin: exits 0 and says nothing"; else bad "S1 closed stdin: exits 0 and says nothing (rc=$RC: ${ERR:0:80})"; fi
+returns "S1 closed stdin: returns"
+
+# Runs the hook with jq only through the fake mise $1, on big.md with a FIFO
+# .gitignore, so the job gives up. Sets RC, ERR.
+give_up_with_mise() {
+  local t tools
+  fresh
+  tools="$WORK/tools$n"
+  mkfile big.md 20004
+  plant .gitignore fifo
+  short_limit
+  mkdir -p "$tools"
+  for t in /usr/bin/* /bin/*; do ln -sf "$t" "$tools/${t##*/}"; done
+  rm -f "$tools/jq" "$tools/mise"
+  printf '#!/bin/sh\n%s\n' "$1" >"$tools/mise"
+  chmod 755 "$tools/mise"
+  ERR="$(printf '{"tool_input":{"file_path":"%s/big.md"}}' "$REPO" |
+    PATH=$tools timeout 10 scripts/structure-hook 2>&1 >/dev/null)"
+  RC=$?
+}
+
+# The give-up line names the file, wherever jq came from.
+give_up_with_mise "shift 3; exec \"$(command -v jq)\" \"\$@\""
+if [ "$RC" -eq 1 ] && grep -qF "gave up on $REPO/big.md after 1 s" <<<"$ERR"; then ok "G10 jq only through mise: give-up names the file"; else bad "G10 jq only through mise: give-up names the file (rc=$RC: ${ERR:0:120})"; fi
+fresh
+mkfile big.md 20004
+plant .gitignore fifo
+short_limit
+try_hook
+if [ "$RC" -eq 1 ] && grep -qF "gave up on $REPO/big.md after 1 s" <<<"$ERR"; then ok "G10 jq on PATH: give-up names the file"; else bad "G10 jq on PATH: give-up names the file (rc=$RC: ${ERR:0:120})"; fi
+
+# A mise that blocks: the name is not known yet, and the line leaves no blank.
+give_up_with_mise "exec sleep 60"
+if [ "$RC" -eq 1 ] && grep -qF "gave up on the edited file after 1 s" <<<"$ERR"; then ok "G11 mise blocks: give-up says the edited file"; else bad "G11 mise blocks: give-up says the edited file (rc=$RC: ${ERR:0:120})"; fi
