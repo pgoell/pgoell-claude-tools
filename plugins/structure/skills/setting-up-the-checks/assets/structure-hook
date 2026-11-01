@@ -33,10 +33,12 @@ done
 PATH=${clean#:}
 PATH=${PATH:-/usr/bin:/bin}
 export PATH
-if [ -z "${STRUCTURE_HOOK_IN_BASH:-}" ]; then
+# Bash as sh also sets BASH_VERSION, so the mark tells it from a plain bash.
+if [ -z "${BASH_VERSION:-}" ] || [ -z "${STRUCTURE_HOOK_IN_BASH:-}" ]; then
   export STRUCTURE_HOOK_IN_BASH=1
   exec bash "$0"
 fi
+unset STRUCTURE_HOOK_IN_BASH
 
 set -uo pipefail
 

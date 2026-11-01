@@ -73,3 +73,11 @@ if [ "$RC" -eq 2 ] && [ "$(sort -u "$WORK/mise$n")" = "$REPO/scripts" ]; then
 else
   bad "P2 mise runs from the hook's folder (rc=$RC, ran in $(cat "$WORK/mise$n" 2>/dev/null))"
 fi
+
+# The mark the hook sets for itself, inherited from outside, changes nothing.
+fresh
+mkfile big.md 20004
+ERR="$(printf '{"tool_input":{"file_path":"%s/big.md"}}' "$REPO" |
+  STRUCTURE_HOOK_IN_BASH=1 "$REPO/scripts/structure-hook" 2>&1 >/dev/null)"
+RC=$?
+flags big.md "P3 an inherited STRUCTURE_HOOK_IN_BASH makes no false block"
