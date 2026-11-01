@@ -64,7 +64,7 @@ fi
 # Counts the objects in the repo at $1.
 objects() { find "$1/.git/objects" -type f | wc -l; }
 
-# Replaces the hook at $1 with a stub that names itself, to show which copy ran.
+# Replaces the hook at $1 with a stub that names itself: it must never run.
 stub() {
   printf '#!/usr/bin/env bash\necho "stub %s" >&2\nexit 2\n' "$1" >"$1"
   chmod 755 "$1"
@@ -121,29 +121,45 @@ else
   bad "H7 hook in a linked worktree checks its file, index unchanged (rc=$RC: $ERR)"
 fi
 
-# H8 a file in another checkout of the repo goes to that checkout's copy, both ways.
+# H8 a file in another checkout meets that checkout's baseline, both ways, and
+# that checkout's copy of the hook does not run.
 with_worktree
-mkfile "$TREE/x.md" 1
-mkfile "$REPO/y.md" 1
+for i in 1 2 3 4 5 6 7 8; do
+  mkfile "$TREE/src/m$i.py" 1
+  mkfile "$REPO/src/m$i.py" 1
+done
+echo 'src 8' >"$TREE/.fan-out-baseline"
 stub "$TREE/scripts/structure-hook"
-hook "$TREE/x.md"
-if [ "$RC" -eq 2 ] && [ "$ERR" = "stub $TREE/scripts/structure-hook" ]; then ok "H8 main's hook calls the worktree's copy"; else bad "H8 main's hook calls the worktree's copy (rc=$RC: $ERR)"; fi
-git -C "$REPO" checkout -q -- scripts/structure-hook
+hook "$TREE/src/m1.py"
+if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then ok "H8 main's hook keeps to the worktree's baseline"; else bad "H8 main's hook keeps to the worktree's baseline (rc=$RC: $ERR)"; fi
 git -C "$TREE" checkout -q -- scripts/structure-hook
 stub "$REPO/scripts/structure-hook"
-hook "$REPO/y.md" "$TREE/scripts/structure-hook"
-if [ "$RC" -eq 2 ] && [ "$ERR" = "stub $REPO/scripts/structure-hook" ]; then ok "H8 the worktree's hook calls main's copy"; else bad "H8 the worktree's hook calls main's copy (rc=$RC: $ERR)"; fi
+hook "$REPO/src/m1.py" "$TREE/scripts/structure-hook"
+if [ "$RC" -eq 2 ] && grep -qF 'fan-out: src holds 8 entries' <<<"$ERR" && ! grep -qF stub <<<"$ERR"; then
+  ok "H8 the worktree's hook keeps to main, which has no baseline"
+else
+  bad "H8 the worktree's hook keeps to main, which has no baseline (rc=$RC: $ERR)"
+fi
 
-# H9 a nested repo that set up the checks itself is checked by its own copy.
+# H9 a nested repo that set up the checks is checked with its own excludes, and
+# its copy of the hook does not run: the edited repo may be one nobody has read.
 fresh
 outer=$REPO
 echo '/inner/' >.gitignore
 mkdir -p inner/scripts
 git init -q inner
 stub "$outer/inner/scripts/structure-hook"
-mkfile inner/x.md 1
-hook "$outer/inner/x.md"
-if [ "$RC" -eq 2 ] && [ "$ERR" = "stub $outer/inner/scripts/structure-hook" ]; then ok "H9 nested repo with the hook runs its own copy"; else bad "H9 nested repo with the hook runs its own copy (rc=$RC: $ERR)"; fi
+mkfile inner/big.md 20004
+mkfile inner/gen.md 20004
+echo 'gen.md' >inner/.file-size-excludes
+hook "$outer/inner/big.md"
+if [ "$RC" -eq 2 ] && grep -qF 'file-size: big.md is ~5001 tokens' <<<"$ERR" && ! grep -qF stub <<<"$ERR"; then
+  ok "H9 nested repo with the hook is checked, its copy not run"
+else
+  bad "H9 nested repo with the hook is checked, its copy not run (rc=$RC: $ERR)"
+fi
+hook "$outer/inner/gen.md"
+if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then ok "H9 nested repo's excludes apply"; else bad "H9 nested repo's excludes apply (rc=$RC: $ERR)"; fi
 
 # H10 a worktree of a branch without the hook passes in silence.
 with_worktree
@@ -181,13 +197,13 @@ else
   bad "H11 scripts folder linked from another repo runs in place (rc=$RC: $ERR)"
 fi
 
-# H12 a relative file_path still reaches the file through the other copy.
+# H12 a relative file_path still reaches a file in the other checkout.
 with_worktree
 mkfile "$TREE/sub/big.md" 20004
 cd "$TREE/sub" || exit 1
 hook big.md "$REPO/scripts/structure-hook"
 if [ "$RC" -eq 2 ] && grep -qF 'file-size: sub/big.md is ~5001 tokens' <<<"$ERR"; then
-  ok "H12 relative path goes through the other copy"
+  ok "H12 relative path reaches the other checkout"
 else
-  bad "H12 relative path goes through the other copy (rc=$RC: $ERR)"
+  bad "H12 relative path reaches the other checkout (rc=$RC: $ERR)"
 fi
