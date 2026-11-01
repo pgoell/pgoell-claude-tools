@@ -58,7 +58,7 @@ mkdir -p {OUTPUT_PATH}/research
 
 ### Step 2: Plan (orchestrator-internal)
 
-YOU plan, not an agent. Decompose the brief into sub-questions and cluster them into coherent topics. As many clusters as the brief demands; each cluster should be deep enough to warrant a dedicated researcher. Cluster slugs must be unique and avoid colliding with reserved names (`synthesis`, `gap-N-*`, `*-review-*`). A slug must not be `claim-checks` or start with `report`, `summary`, `findings` or `analysis` (see File Layout).
+YOU plan, not an agent. Decompose the brief into sub-questions and cluster them into coherent topics. As many clusters as the brief demands; each cluster should be deep enough to warrant a dedicated researcher. Cluster slugs must be unique and avoid colliding with reserved names (`synthesis`, `gap-N-*`, `synthesis-review-N`, `draft-review-N`). A slug must not be `claim-checks` or start with `report`, `summary`, `findings` or `analysis` (see File Layout).
 
 A brief field that reads `open (user skipped)` is yours to choose. Pick what serves the rest of the brief, and list each choice under `## Open fields` in plan.md, so the user sees it. From here on, BRIEF holds the text of brief.md followed by that list.
 
@@ -158,7 +158,7 @@ Then, once per round, not once per gap-fill: every round with a critical issue w
 
 ### Loop safeguards (Steps 5-6)
 
-**Stall detection.** After writing `synthesis-review-{N}.md`, compare its issue id set to `synthesis-review-{N-1}.md`. If identical, surface to user immediately; a `ship as-is` here goes as at a check-in. Skip this when the round came from a refuted claim: the review never lists its id, and Step 7 stops a claim that stays refuted.
+**Stall detection.** After writing a `synthesis-review-{N}.md` with verdict ISSUES, compare its issue id set to `synthesis-review-{N-1}.md`. If identical, surface to user immediately; a `ship as-is` here goes as at a check-in. Skip this when the round came from a refuted claim: the review never lists its id, and Step 7 stops a claim that stays refuted.
 
 **Check-in.** After synthesis-review iterations 3, 6, 9, ..., pause and surface:
 
@@ -222,7 +222,7 @@ Same as synthesis loop. Stall detection on consecutive identical id sets in `dra
 1. Resolve the format once, by the order in Output Format: prompt override, then the brief's `Format:` line, then html.
 2. Rename the passed draft with the shell: `mv {OUTPUT_PATH}/draft.md {OUTPUT_PATH}/report.md`. For markdown, that is the report.
 3. For html, you (never a subagent) render `{OUTPUT_PATH}/report.html` from `report.md`: read `references/rendering-the-report.md` and follow it, checks and failure path included. `report.md` stays as the reviewed source.
-4. Surface a brief summary: total iterations of each loop, the final paths (`report.html` and `report.md`; `report.md` alone for markdown or a failed render), any minor (non-blocking) issues from the final reviews, and every claim still `REFUTED` in `claim-checks.md`.
+4. Surface a brief summary: total iterations of each loop, the final paths (`report.html` and `report.md`; `report.md` alone for markdown or a failed render), any minor (non-blocking) issues from the final reviews, and every claim or pillar `synthesis.md` labels `Confidence: low (refuted)`.
 
 ## File Layout (output directory)
 

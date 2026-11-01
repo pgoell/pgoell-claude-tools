@@ -45,7 +45,7 @@ Dispatched agent prompt:
     3. The researcher outputs in `{OUTPUT_PATH}/research/`. Exclude synthesis,
        claim-check and review files; cluster files and gap-fill files are in scope. Use:
        ```bash
-       ls {OUTPUT_PATH}/research/*.md | grep -v -E '(/(synthesis|claim-checks|.*-review-))'
+       ls {OUTPUT_PATH}/research/*.md | grep -v -E '/(synthesis|claim-checks|(synthesis|draft)-review-[0-9]+)\.md$'
        ```
     4. If iteration > 1: `{OUTPUT_PATH}/research/synthesis-review-{ITERATION-1}.md`
        (prior review). Use the prior review to assign STABLE issue ids: same
@@ -76,6 +76,11 @@ Dispatched agent prompt:
     Issue per evidence gap. Severity: critical for unsupported key claims, minor
     for thin corroboration on minor claims.
 
+    A key claim or thesis pillar with a correct `Independent sources: 1` is
+    minor, whether or not a second source seems to exist: id
+    `one-source-<claim-slug>`. Its `Confidence: low (one source)` line already
+    tells the reader. The id drops once N is 2 or more.
+
     ### Check 3: Source Quality (category: source-quality)
 
     Are key claims dependent on weak sources (vendor self-reporting, single
@@ -83,7 +88,8 @@ Dispatched agent prompt:
     credibility tags carried through correctly from researcher outputs?
 
     Issue per overweight reliance on weak source. Severity: critical if it's a
-    thesis pillar, minor otherwise.
+    thesis pillar, minor otherwise. Having one source is not by itself this
+    issue: when that source is sound, Check 2 alone judges it.
 
     ### Check 4: Logic (category: logic)
 
@@ -168,6 +174,7 @@ Dispatched agent prompt:
     - `weak-thesis-no-position` (structural)
     - `shared-origin-acme-revenue` (copies of one origin counted apart)
     - `confidence-acme-revenue` (a `high` the rule does not give)
+    - `one-source-acme-revenue` (a key claim with one independent source)
 
     If iteration > 1 and the prior review has an issue with the same root cause,
     REUSE that id. Stall detection depends on id stability.
