@@ -54,7 +54,10 @@ unset CDPATH
 set -uo pipefail
 
 limit=30
-dir=$(cd "$(dirname "$0")" && pwd)
+# Dirname and $(...) would strip a newline that ends the folder's name.
+case $0 in */*) dir=${0%/*}/ ;; *) dir=. ;; esac
+dir=$(cd "$dir" && pwd && echo x)
+dir=${dir%$'\n'x}
 # With stdin closed, the job's fd 3 could not copy it, and a pipe could land on fd 0.
 true 2>&- 3<&0 || exec </dev/null
 # A terminal is a person, who ends the event with Ctrl-D, and a background job could
@@ -93,8 +96,6 @@ check() {
   folder=${file%/*}
   folder=${folder:-/}
   name=${file##*/}
-  # The checks list names by line and git prints a top without its last newline.
-  case $folder in *$'\n') exit 0 ;; esac
   # With no git, each "|| exit 0" below would pass the file unchecked.
   if ! command -v git >/dev/null; then
     echo 'structure-hook: needs git on PATH, not only as a mise shim' >&2
@@ -106,7 +107,8 @@ check() {
   # Config passed by environment stays: it may be what guards an unread repo.
   # shellcheck disable=SC2046
   unset $(git rev-parse --local-env-vars 2>/dev/null | grep -v '^GIT_CONFIG')
-  top=$(git -C "$folder" rev-parse --show-toplevel 2>/dev/null) || exit 0
+  top=$(git -C "$folder" rev-parse --show-toplevel 2>/dev/null && echo x) || exit 0
+  top=${top%$'\n'x}
   # Look for a copy by this hook's path in its repo. Git answers for the folder a
   # symlink reaches, so also try the path from each folder above that has a .git.
   self=$(basename "$0")

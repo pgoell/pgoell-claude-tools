@@ -143,6 +143,68 @@ else
   bad "F7 a missing baseline is written from today's overages (rc=$RC)"
 fi
 
+# F9 folders with a newline in their name count apart and keep their names: issue 337.
+fresh
+files 8 $'sub\n'
+files 9 $'sub\n\n'
+files 5 'lit\n'
+files 5 $'lit\n'
+git add -A
+fan --all
+if [ "$RC" -eq 1 ] && grep -qxF "$(fanline 'sub\n' 8)." <<<"$ERR" && grep -qxF "$(fanline 'sub\n\n' 9)." <<<"$ERR" &&
+  [ "$(grep -c '^fan-out: ' <<<"$ERR")" -eq 2 ]; then
+  ok "F9 two such folders report apart; a literal \\n in a name is another folder"
+else
+  bad "F9 two such folders report apart; a literal \\n in a name is another folder (rc=$RC: ${ERR:0:200})"
+fi
+fan $'sub\n/a1'
+if [ "$RC" -eq 1 ] && grep -qxF "$(fanline 'sub\n' 8)." <<<"$ERR" && ! grep -qF 'sub\n\n' <<<"$ERR"; then
+  ok "F9 a path checks only its own such folder"
+else
+  bad "F9 a path checks only its own such folder (rc=$RC: ${ERR:0:200})"
+fi
+
+# F10 the name a report shows works in the baseline and the excludes.
+printf '%s\n' 'sub\n 8' >.fan-out-baseline
+fan $'sub\n/a1'
+if [ "$RC" -eq 0 ]; then ok "F10 the shown name holds in the baseline"; else bad "F10 the shown name holds in the baseline (rc=$RC: ${ERR:0:200})"; fi
+rm .fan-out-baseline
+printf '%s\n' 'sub\n' >.fan-out-excludes
+fan $'sub\n/a1'
+if [ "$RC" -eq 0 ]; then ok "F10 the shown name holds in the excludes"; else bad "F10 the shown name holds in the excludes (rc=$RC: ${ERR:0:200})"; fi
+rm .fan-out-excludes
+fan --update-baseline
+if [ "$RC" -eq 0 ] && [ "$(grep -v '^#' .fan-out-baseline | LC_ALL=C sort | tr '\n' ,)" = 'sub\n 8,sub\n\n 9,' ]; then
+  ok "F10 --update-baseline writes the shown names"
+else
+  bad "F10 --update-baseline writes the shown names (rc=$RC)"
+fi
+fan --all
+if [ "$RC" -eq 0 ]; then ok "F10 a written baseline holds"; else bad "F10 a written baseline holds (rc=$RC: ${ERR:0:200})"; fi
+git rm -qf $'sub\n/a8'
+fan --update-baseline
+if [ "$RC" -eq 0 ] && grep -qxF 'sub\n\n 9' .fan-out-baseline && ! grep -qF 'sub\n ' .fan-out-baseline; then
+  ok "F10 --update-baseline drops such a folder under the limit"
+else
+  bad "F10 --update-baseline drops such a folder under the limit (rc=$RC)"
+fi
+
+# F11 a backslash in a folder's name shows doubled; a folder named -n is checked.
+fresh
+files 8 'a\b'
+files 8 -n
+git add -A
+fan --all
+if [ "$RC" -eq 1 ] && grep -qxF "$(fanline 'a\\b' 8)." <<<"$ERR"; then ok "F11 a backslash shows doubled"; else bad "F11 a backslash shows doubled (rc=$RC: ${ERR:0:200})"; fi
+fan 'a\b/a1'
+if [ "$RC" -eq 1 ] && grep -qxF "$(fanline 'a\\b' 8)." <<<"$ERR"; then ok "F11 a path into that folder checks it"; else bad "F11 a path into that folder checks it (rc=$RC: ${ERR:0:200})"; fi
+printf '%s\n' 'a\\b' -n >.fan-out-excludes
+fan --all
+if [ "$RC" -eq 0 ]; then ok "F11 the shown name holds in the excludes"; else bad "F11 the shown name holds in the excludes (rc=$RC: ${ERR:0:200})"; fi
+rm .fan-out-excludes
+fan -n/a1
+if [ "$RC" -eq 1 ] && grep -qxF "$(fanline -n 8)." <<<"$ERR"; then ok "F11 a path into folder -n checks it"; else bad "F11 a path into folder -n checks it (rc=$RC: ${ERR:0:200})"; fi
+
 # F8 no arguments is a usage error.
 fan
 if [ "$RC" -eq 2 ]; then ok "F8 no arguments exits 2"; else bad "F8 no arguments exits 2 (rc=$RC)"; fi

@@ -181,12 +181,64 @@ else
   echo "skip S8: no script"
 fi
 
-# A folder ending in a newline passes, since the checks cannot name it: issue 337.
+# A folder ending in a newline is checked and named: issue 337.
 fresh
 folder=$'sub\n'
 for i in 1 2 3 4 5 6 7 8; do mkfile "$folder/f$i" 1; done
 event "$REPO/$folder/f1"
-silent "E7 folder name ending in a newline passes"
+if [ "$RC" -eq 2 ] && grep -qxF 'fan-out: sub\n holds 8 entries; the limit is 7.' <<<"$ERR"; then ok "E7 folder name ending in a newline is reported by name"; else bad "E7 folder name ending in a newline is reported by name (rc=$RC: ${ERR:0:120})"; fi
+rm "$folder/f8"
+event "$REPO/$folder/f1"
+silent "E7 the same folder at seven entries passes"
+mkfile "$folder/big.md" 20004
+rm "$folder/f7"
+event "$REPO/$folder/big.md"
+flags "$folder/big.md" "E7 a big file in that folder is reported"
+
+# A newline inside or at the start of the folder's name, by absolute and relative path.
+for folder in $'a\nb' $'\nc'; do
+  fresh
+  for i in 1 2 3 4 5 6 7 8; do mkfile "$folder/f$i" 1; done
+  event "$folder/f1"
+  shown=${folder//$'\n'/\\n}
+  if [ "$RC" -eq 2 ] && grep -qxF "fan-out: $shown holds 8 entries; the limit is 7." <<<"$ERR"; then ok "E7 folder $shown is reported by name"; else bad "E7 folder $shown is reported by name (rc=$RC: ${ERR:0:120})"; fi
+done
+
+# A repo top ending in a newline: the issue's steps, then its excludes and baseline.
+fresh $'\n'
+mkfile big.md 20004
+event "$REPO/big.md"
+flags big.md "E9 repo top ending in a newline: big file is reported"
+mkfile keep.md 20004
+printf 'big.md\n' >.file-size-excludes
+event "$REPO/big.md"
+silent "E9 that repo's file-size excludes count"
+event "$REPO/keep.md"
+flags keep.md "E9 a file those excludes leave out is reported"
+for i in 1 2 3 4 5 6 7 8; do mkfile "sub/f$i" 1; done
+event "$REPO/sub/f1"
+if [ "$RC" -eq 2 ] && grep -qxF 'fan-out: sub holds 8 entries; the limit is 7.' <<<"$ERR"; then ok "E9 that repo's folder over the limit is reported"; else bad "E9 that repo's folder over the limit is reported (rc=$RC: ${ERR:0:120})"; fi
+printf 'sub 8\n' >.fan-out-baseline
+event "$REPO/sub/f1"
+silent "E9 that repo's baseline counts"
+printf 'sub\n' >.fan-out-excludes
+: >.fan-out-baseline
+event "$REPO/sub/f1"
+silent "E9 that repo's fan-out excludes count"
+
+# Top and folder both end in a newline.
+fresh $'\n\n'
+mkfile $'sub\n/big.md' 20004
+event "$REPO/"$'sub\n/big.md'
+flags $'sub\n/big.md' "E9 top and folder both ending in newlines: big file is reported"
+
+# The hook's own folder ends in a newline.
+fresh
+mkfile big.md 20004
+mv scripts $'scripts\n'
+ERR="$(jq -cn --arg f "$REPO/big.md" '{tool_input: {file_path: $f}}' | $'scripts\n/structure-hook' 2>&1 >/dev/null)"
+RC=$?
+flags big.md "E10 hook in a folder ending in a newline still checks"
 
 # Empty stdin that closes: no event, nothing to say.
 fresh

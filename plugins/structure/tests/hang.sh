@@ -219,7 +219,7 @@ if [ -d /proc/self ]; then
   # A check that is slow, not blocked in git.
   fresh
   mkfile big.md 20004
-  sed -i 's|^tr .*|sleep 60 \&\& &|' scripts/check-fan-out
+  sed -i 's|^while IFS= read -r -d .* path; do|sleep 60 \&\& &|' scripts/check-fan-out
   term_leaves_nothing "G7 SIGTERM during a slow check: nothing left running"
 
   # A plain run: the job with its sleep ends with the hook.

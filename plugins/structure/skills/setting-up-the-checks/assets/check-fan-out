@@ -10,7 +10,9 @@
 #                                  never raises or adds one; a missing file is
 #                                  written from today's overages
 # Entries come from git: tracked plus untracked, never ignored. The repo root
-# and names that start with "." (and all below them) are skipped.
+# and names that start with "." (and all below them) are skipped. A report, the
+# baseline and the excludes write "\" in a folder's name as "\\" and a newline as
+# "\n", so that each folder has one line.
 set -euo pipefail
 
 LIMIT=7
@@ -20,7 +22,9 @@ if [ "$#" -eq 0 ]; then
   exit 2
 fi
 
-top=$(git rev-parse --show-toplevel)
+# $(...) strips every newline that ends the name, so the output ends in a mark.
+top=$(git rev-parse --show-toplevel && echo x)
+top=${top%$'\n'x}
 prefix=$(git rev-parse --show-prefix)
 
 # Files, not process substitutions, so a git failure stops the script.
@@ -30,6 +34,12 @@ out=$(mktemp)
 base=$(mktemp)
 excl=$(mktemp)
 trap 'rm -f "$want" "$list" "$out" "$base" "$excl"' EXIT
+
+# Sets escaped to name $1 as one line. Each name gets its own, so none can merge.
+escape() {
+  escaped=${1//\\/\\\\}
+  escaped=${escaped//$'\n'/\\n}
+}
 
 mode=check
 case $1 in
@@ -44,9 +54,11 @@ case $1 in
         /*) continue ;;
         *) path=$prefix${arg#./} ;;
       esac
+      escape "$path"
+      path=$escaped
       while [ "${path%/*}" != "$path" ]; do
         path=${path%/*}
-        echo "$path"
+        printf '%s\n' "$path"
       done
     done >"$want"
     ;;
@@ -65,10 +77,17 @@ if [ -f "$top/.fan-out-baseline" ]; then
   head -c 1048576 "$top/.fan-out-baseline" >"$base" 2>/dev/null || :
 fi
 if [ -f "$top/.fan-out-excludes" ]; then head -c 1048576 "$top/.fan-out-excludes" >"$excl" 2>/dev/null || :; fi
-tr '\0' '\n' <"$list" | awk -v mode="$mode" -v limit="$LIMIT" -v want="$want" -v fresh="$fresh" \
+while IFS= read -r -d '' path; do
+  escape "$path"
+  printf '%s\n' "$escaped"
+done <"$list" | awk -v mode="$mode" -v limit="$LIMIT" -v want="$want" -v fresh="$fresh" \
   -v base="$base" -v excl="$excl" '
 function trim(s) { sub(/^[ \t\r]+/, "", s); sub(/[ \t\r]+$/, "", s); return s }
-function glob2re(g) {
+function glob2re(g,   part, n, i) {
+  # By hand, as awks read backslashes in a gsub replacement differently.
+  n = split(g, part, "\\")
+  g = part[1]
+  for (i = 2; i <= n; i++) g = g "\\\\" part[i]
   gsub(/[.+(){}|$]/, "[&]", g)
   gsub(/\*\*\//, "%%A%%", g)
   gsub(/\*\*/, "%%B%%", g)

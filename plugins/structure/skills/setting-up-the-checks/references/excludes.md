@@ -46,3 +46,7 @@ docs/how-to 9
 - a file exists: lowers a line to today's count, drops a line once the folder is at or under the limit (or gone, or excluded), keeps comments, and never raises or adds a line.
 
 To accept a bigger folder, a person edits the number by hand, and the diff shows it. An agent never does that to make the check pass.
+
+## Odd folder names
+
+`check-fan-out` keeps one line per folder, so its report, `.fan-out-baseline` and `.fan-out-excludes` all write a backslash in a folder's name as `\\` and a newline as `\n`. Copy the name as the report shows it.
