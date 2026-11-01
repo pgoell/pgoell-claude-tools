@@ -1,5 +1,5 @@
 # Folders the fan-out check skips, on top of the repo root and dot folders.
-# One git glob per line, anchored at the repo root, with a comment line above
+# One glob per line, anchored at the repo root, with a comment line above
 # it that says why.
 
 # one folder per marketplace entry

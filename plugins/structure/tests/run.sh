@@ -426,6 +426,138 @@ else
   bad "A7 pre-commit hook lets a small file through (rc=$RC)"
 fi
 
+# O1 both git hooks work at a repo top ending in a newline: issue 339, part 3.
+fresh $'\n'
+mkdir -p .githooks
+cp "$ASSETS/pre-commit" "$ASSETS/pre-push" .githooks/
+git config core.hooksPath .githooks
+mkfile big.md 20004
+git add -A
+ERR="$(git commit -qm big 2>&1 >/dev/null)"
+RC=$?
+if [ "$RC" -ne 0 ] && grep -qxF "$(line big.md 5001)" <<<"$ERR"; then
+  ok "O1 pre-commit blocks a big file at such a top"
+else
+  bad "O1 pre-commit blocks a big file at such a top (rc=$RC: ${ERR:0:200})"
+fi
+git rm -q --cached big.md
+mkfile small.md 100
+git add -A -- . ':!big.md'
+ERR="$(git commit -qm small 2>&1 >/dev/null)"
+RC=$?
+if [ "$RC" -eq 0 ]; then ok "O1 pre-commit passes a small file at such a top"; else bad "O1 pre-commit passes a small file at such a top (rc=$RC: ${ERR:0:200})"; fi
+git init -q --bare "$WORK/remote$n.git"
+git remote add origin "$WORK/remote$n.git"
+ERR="$(git push -q origin HEAD:refs/heads/ok 2>&1 >/dev/null)"
+RC=$?
+if [ "$RC" -eq 0 ]; then ok "O1 pre-push passes a clean repo at such a top"; else bad "O1 pre-push passes a clean repo at such a top (rc=$RC: ${ERR:0:200})"; fi
+git add big.md
+git commit -qnm big
+ERR="$(git push -q origin HEAD:refs/heads/big 2>&1 >/dev/null)"
+RC=$?
+if [ "$RC" -ne 0 ] && grep -qxF "$(line big.md 5001)" <<<"$ERR"; then
+  ok "O1 pre-push blocks a big file at such a top"
+else
+  bad "O1 pre-push blocks a big file at such a top (rc=$RC: ${ERR:0:200})"
+fi
+# The first lines of SKILL.md's step 1, run from a folder below such a top.
+step1="$(sed -n '/^## Step 1/,/^ls lefthook/p' "$ASSETS/../SKILL.md" | sed -e '1,/^```bash$/d' -e '$d')"
+mkdir sub
+got="$(cd sub && bash -c "$step1"$'\npwd' 2>&1 && echo x)"
+if [ "$got" = "$REPO"$'\nx' ]; then ok "O2 SKILL.md step 1 reaches such a top"; else bad "O2 SKILL.md step 1 reaches such a top (got: $got)"; fi
+
+# O3 a report keeps one line per file and its name works as an exclude: part 4.
+fresh
+mkfile $'big\n/x.md' 20004
+git add -A
+run
+if [ "$RC" -eq 1 ] && grep -qxF "$(line 'big\n/x.md' 5001)" <<<"$ERR" && ! grep -q '^/x.md' <<<"$ERR"; then
+  ok "O3 a newline in a path shows as \\n, one line"
+else
+  bad "O3 a newline in a path shows as \\n, one line (rc=$RC: ${ERR:0:200})"
+fi
+excludes 'big\n/x.md'
+run
+if passes; then ok "O3 the shown name holds in the excludes"; else bad "O3 the shown name holds in the excludes (rc=$RC: ${ERR:0:200})"; fi
+run $'big\n/x.md'
+if passes; then ok "O3 the shown name excludes an argument too"; else bad "O3 the shown name excludes an argument too (rc=$RC: ${ERR:0:200})"; fi
+
+# O4 the same for every name a line would lose; "\*" stays git's own escape.
+fresh
+names=('#x.md' ' y.md' $'t\tb.md' $'\tc.md' $'d\r.md' 'a\b.md' $'lit\n.md' 'lit\n.md')
+shown=('\#x.md' '\sy.md' 't\tb.md' '\tc.md' 'd\r.md' 'a\\b.md' 'lit\n.md' 'lit\\n.md')
+for f in "${names[@]}"; do mkfile "$f" 20004; done
+mkfile abig.md 20004
+mkfile 'a*.md' 20004
+git add -A
+run
+missed=""
+for s in "${shown[@]}"; do grep -qxF "$(line "$s" 5001)" <<<"$ERR" || missed="$missed [$s]"; done
+if [ "$RC" -eq 1 ] && [ -z "$missed" ]; then ok "O4 each odd name shows in one line"; else bad "O4 each odd name shows in one line (rc=$RC, missed:$missed)"; fi
+leaked=""
+for s in "${shown[@]}"; do
+  excludes "$s"
+  run
+  grep -qxF "$(line "$s" 5001)" <<<"$ERR" && leaked="$leaked [$s]"
+  [ "$(grep -c '^file-size: ' <<<"$ERR")" -eq 9 ] || leaked="$leaked [$s: not one]"
+done
+if [ -z "$leaked" ]; then ok "O4 each shown name excludes that file alone"; else bad "O4 each shown name excludes that file alone (leaked:$leaked)"; fi
+excludes 'a\*.md'
+run
+if reports abig.md && ! reports 'a*.md'; then ok "O4 \\* in a glob stays plain"; else bad "O4 \\* in a glob stays plain (${ERR:0:200})"; fi
+rm 'a*.md'
+git rm -q --cached 'a*.md'
+mkfile 'o[d.md' 20004
+git add -A
+excludes 'o\[d.md'
+run
+if ! reports 'o[d.md'; then ok "O4 \\[ in a glob stays plain"; else bad "O4 \\[ in a glob stays plain"; fi
+
+fresh
+mkfile 'x.md ' 20004
+git add -A
+excludes 'x.md\s'
+run
+if passes; then ok "O4 \\s in the excludes matches a space that ends a name"; else bad "O4 \\s in the excludes matches a space that ends a name (rc=$RC: ${ERR:0:200})"; fi
+
+# A 0x01 byte in a glob is itself.
+fresh
+mkfile $'x\x01y.md' 20004
+git add -A
+excludes $'x\x01y.md'
+run
+if passes; then ok "O4 a 0x01 byte in the excludes stays itself"; else bad "O4 a 0x01 byte in the excludes stays itself (rc=$RC: ${ERR:0:200})"; fi
+
+# A skipped long line uses up none of the budget for shown names.
+fresh
+mkfile $'a\tb' 20004
+git add -A
+{
+  head -c 70000 /dev/zero | tr '\0' 'z'
+  printf '\\\n%s\n' 'a\tb'
+} >.file-size-excludes
+run $'a\tb'
+if passes; then ok "O4 a long line leaves shown names working"; else bad "O4 a long line leaves shown names working (rc=$RC: ${ERR:0:200})"; fi
+
+# O5 a long line of backslashes in the excludes costs no real time. Master took 1 s
+# on this size; the "\n" passes alone would take 16 s.
+fresh
+mkfile small.md 100
+git add -A
+head -c 262144 /dev/zero | tr '\0' '\\' >.file-size-excludes
+timeout 10 bash scripts/check-file-size small.md >/dev/null 2>&1
+RC=$?
+if [ "$RC" -ne 124 ]; then ok "O5 a 256 KiB excludes line does not stall (rc=$RC)"; else bad "O5 a 256 KiB excludes line does not stall"; fi
+
+# O6 so do many long lines of them.
+fresh
+mkfile small.md 100
+git add -A
+yes "$(head -c 4000 /dev/zero | tr '\0' '\\')" | head -c 1048576 >.file-size-excludes
+timeout 10 bash scripts/check-file-size small.md >/dev/null 2>&1
+RC=$?
+if [ "$RC" -ne 124 ]; then ok "O6 1 MiB of long excludes lines does not stall (rc=$RC)"; else bad "O6 1 MiB of long excludes lines does not stall"; fi
+
 # shellcheck source=fan-out.sh
 . "$TESTS/fan-out.sh"
 # shellcheck source=hook.sh

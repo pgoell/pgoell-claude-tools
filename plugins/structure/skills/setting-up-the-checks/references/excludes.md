@@ -8,6 +8,7 @@ All three files sit at the repo root. The scripts find them from any subdirector
 
 - one git glob per line, anchored at the repo root;
 - `*` stays inside one folder, `**/` crosses folders;
+- `[...]` is a class, as in git: write `\\[` for a plain `[`;
 - the rest of a line is taken as is: no leading `/` (write `dir/**`, not `/dir/**`) and no trailing `# comment`;
 - no file means the defaults only.
 
@@ -22,7 +23,7 @@ A new exclude line counts at once; a split counts for a bare run only once commi
 
 ## `.fan-out-excludes`
 
-Folders `check-fan-out` skips. Same glob rules, matched against the folder's path: `docs/log` skips that folder, `vendor/**` every folder below `vendor`, `**/fixtures` any folder named `fixtures`. Write a comment line above each glob that says why the folder is a list by design; a reviewer reads it in the diff.
+Folders `check-fan-out` skips. Same glob rules except that `*`, `**` and `?` are the only special characters (`[` and `^` are plain), matched against the folder's path: `docs/log` skips that folder, `vendor/**` every folder below `vendor`, `**/fixtures` any folder named `fixtures`. Write a comment line above each glob that says why the folder is a list by design; a reviewer reads it in the diff.
 
 ```text
 # one file per docs change, by design
@@ -47,6 +48,17 @@ docs/how-to 9
 
 To accept a bigger folder, a person edits the number by hand, and the diff shows it. An agent never does that to make the check pass.
 
-## Odd folder names
+## Odd names
 
-`check-fan-out` keeps one line per folder, so its report, `.fan-out-baseline` and `.fan-out-excludes` all write a backslash in a folder's name as `\\` and a newline as `\n`. Copy the name as the report shows it.
+Both checks keep one line per name, and a line reader would lose some names. So each report, `.fan-out-baseline` and both excludes files write:
+
+| In the name                | Written          |
+| -------------------------- | ---------------- |
+| backslash                  | `\\`             |
+| newline, tab, CR           | `\n`, `\t`, `\r` |
+| `#` that starts the path   | `\#`             |
+| space that starts the path | `\s`             |
+
+Copy the name as the report shows it. In `.fan-out-excludes`, `?` stands for one character of the name, escaped or not, and a raw tab or CR inside a name also works. A line over 512 bytes is skipped. In `.file-size-excludes` a shown name is still a glob, so a `*`, `?` or `[` in it needs a `\` before it. A space that ends a name is the one case a shown name does not cover, since a line loses it: write `?` for it in `.fan-out-excludes`, `\s` in `.file-size-excludes`.
+
+An exclude written before this scheme may change meaning: in `.file-size-excludes` a glob with `\n`, `\t`, `\r` or `\s` now means those characters, and in `.fan-out-excludes` a `[...]` no longer is a class. A line that stops matching shows up in the next report.
