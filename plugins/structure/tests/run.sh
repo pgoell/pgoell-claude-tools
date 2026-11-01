@@ -435,6 +435,8 @@ fi
 . "$TESTS/hang.sh"
 # shellcheck source=path.sh
 . "$TESTS/path.sh"
+# shellcheck source=event.sh
+. "$TESTS/event.sh"
 
 echo "$pass passed, $fail failed"
 [ "$fail" -eq 0 ]
