@@ -88,7 +88,7 @@ if [ -f "$top/.fan-out-baseline" ]; then
   fresh=0
   head -c 1048576 "$top/.fan-out-baseline" >"$base" 2>/dev/null || :
 fi
-if [ -f "$top/.fan-out-excludes" ]; then head -c 1048576 "$top/.fan-out-excludes" 2>/dev/null | tr '\0' '\1' | LC_ALL=C awk 'length($0) <= 512 && !/^[ \t\r\f\v]*(#|$)/ && gsub(/\*\*+/, "&") <= 4 { if (++n > 1024) exit; print }' >"$excl" || :; fi
+if [ -f "$top/.fan-out-excludes" ]; then head -c 1048576 "$top/.fan-out-excludes" 2>/dev/null | LC_ALL=C tr '\0' '\1' 2>/dev/null | LC_ALL=C awk 'length($0) <= 512 && !/^[ \t\r]*(#|$)/ && gsub(/\*\*+/, "&") <= 4 { if (++n > 1024) exit; print }' >"$excl" || :; fi
 while IFS= read -r -d '' path; do
   escape "$path"
   printf '%s\n' "$escaped"
