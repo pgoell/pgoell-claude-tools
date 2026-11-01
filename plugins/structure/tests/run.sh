@@ -547,7 +547,7 @@ git add -A
 head -c 262144 /dev/zero | tr '\0' '\\' >.file-size-excludes
 timeout 10 bash scripts/check-file-size small.md >/dev/null 2>&1
 RC=$?
-if [ "$RC" -ne 124 ]; then ok "O5 a 256 KiB excludes line does not stall (rc=$RC)"; else bad "O5 a 256 KiB excludes line does not stall"; fi
+if [ "$RC" -eq 0 ]; then ok "O5 a 256 KiB excludes line does not stall"; else bad "O5 a 256 KiB excludes line does not stall (rc=$RC)"; fi
 
 # O6 so do many long lines of them.
 fresh
@@ -556,7 +556,7 @@ git add -A
 yes "$(head -c 4000 /dev/zero | tr '\0' '\\')" | head -c 1048576 >.file-size-excludes
 timeout 10 bash scripts/check-file-size small.md >/dev/null 2>&1
 RC=$?
-if [ "$RC" -ne 124 ]; then ok "O6 1 MiB of long excludes lines does not stall (rc=$RC)"; else bad "O6 1 MiB of long excludes lines does not stall"; fi
+if [ "$RC" -eq 0 ]; then ok "O6 1 MiB of long excludes lines does not stall"; else bad "O6 1 MiB of long excludes lines does not stall (rc=$RC)"; fi
 
 # shellcheck source=fan-out.sh
 . "$TESTS/fan-out.sh"

@@ -274,3 +274,79 @@ if [ "$RC" -eq 1 ] && grep -qF "gave up on $REPO/big.md after 1 s" <<<"$ERR"; th
 # A mise that blocks: the name is not known yet, and the line leaves no blank.
 give_up_with_mise "exec sleep 60"
 if [ "$RC" -eq 1 ] && grep -qF "gave up on the edited file after 1 s" <<<"$ERR"; then ok "G11 mise blocks: give-up says the edited file"; else bad "G11 mise blocks: give-up says the edited file (rc=$RC: ${ERR:0:120})"; fi
+
+# Writes $2 copies of character $1 to stdout.
+repeat() { head -c "$2" /dev/zero | tr '\0' "$1"; }
+
+# L1 a 1 MiB excludes line of backslashes costs no real time: issue 340.
+fresh
+mkfile small.md 100
+git add -A
+repeat '\' 1048576 >.file-size-excludes
+timeout 10 bash scripts/check-file-size small.md >/dev/null 2>&1
+RC=$?
+if [ "$RC" -eq 0 ]; then ok "L1 a 1 MiB excludes line does not stall"; else bad "L1 a 1 MiB excludes line does not stall (rc=$RC)"; fi
+
+# L2 a line over the kernel's 128 KiB limit for one argument does not reach git.
+fresh
+mkfile small.md 100
+git add -A
+repeat a 200000 >.file-size-excludes
+run small.md
+if passes; then ok "L2 a 200 KB excludes line does not fail the check"; else bad "L2 a 200 KB excludes line does not fail the check (rc=$RC: ${ERR:0:200})"; fi
+
+# L3 both checks keep a line of 512 bytes and skip one of 513.
+for size in 512 513; do
+  fresh
+  mkfile big.md 20004
+  files 8 src
+  git add -A
+  { repeat '*' $((size - 6)) && echo big.md; } >.file-size-excludes
+  { repeat '*' $((size - 3)) && echo src; } >.fan-out-excludes
+  run big.md
+  size_rc=$RC
+  fan --all
+  want=$((size == 512 ? 0 : 1))
+  if [ "$size_rc" -eq "$want" ] && [ "$RC" -eq "$want" ]; then
+    ok "L3 both checks treat a line of $size bytes alike"
+  else
+    bad "L3 both checks treat a line of $size bytes alike (file-size rc=$size_rc, fan-out rc=$RC)"
+  fi
+done
+
+# L4 a skipped line hides nothing: the big file it named still fails the check.
+fresh
+mkfile big.md 20004
+git add -A
+{ printf 'big.md' && repeat ' ' 200000; } >.file-size-excludes
+ERR=$(timeout 10 bash scripts/check-file-size big.md 2>&1 >/dev/null)
+RC=$?
+if [ "$RC" -eq 1 ] && reports big.md; then ok "L4 a skipped line leaves its file reported"; else bad "L4 a skipped line leaves its file reported (rc=$RC: ${ERR:0:200})"; fi
+
+# L5 both checks measure the line as written, spaces and all.
+fresh
+mkfile big.md 20004
+files 8 src
+git add -A
+{ repeat ' ' 600 && echo big.md; } >.file-size-excludes
+{ repeat ' ' 600 && echo src; } >.fan-out-excludes
+run big.md
+size_rc=$RC
+fan --all
+if [ "$size_rc" -eq 1 ] && [ "$RC" -eq 1 ]; then
+  ok "L5 both checks skip a line padded past 512 bytes"
+else
+  bad "L5 both checks skip a line padded past 512 bytes (file-size rc=$size_rc, fan-out rc=$RC)"
+fi
+
+# L6 the most the skip lets through: 1 MiB of lines at the limit. A guard, as master
+# passes it too.
+for ch in '\' ' ' a; do
+  fresh
+  mkfile small.md 100
+  git add -A
+  yes "$(repeat "$ch" 512)" | head -c 1048576 >.file-size-excludes
+  timeout 10 bash scripts/check-file-size small.md >/dev/null 2>&1
+  RC=$?
+  if [ "$RC" -eq 0 ]; then ok "L6 1 MiB of 512-byte lines of '$ch' pass in time"; else bad "L6 1 MiB of 512-byte lines of '$ch' pass in time (rc=$RC)"; fi
+done

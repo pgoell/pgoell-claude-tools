@@ -2,6 +2,8 @@
 
 All three files sit at the repo root. The scripts find them from any subdirectory and read the working-tree copy. In each, a line that starts with `#` is a comment and blank lines are skipped.
 
+In both excludes files a line over 512 bytes, counted as written, is skipped: a longer one could cost minutes. What it would have excluded still gets reported. For a path that long, write a glob such as `deep/**`.
+
 ## `.file-size-excludes`
 
 `check-file-size` already skips lockfiles, images, fonts, PDFs and license texts. This file adds to those defaults:
@@ -59,6 +61,6 @@ Both checks keep one line per name, and a line reader would lose some names. So 
 | `#` that starts the path   | `\#`             |
 | space that starts the path | `\s`             |
 
-Copy the name as the report shows it. In `.fan-out-excludes`, `?` stands for one character of the name, escaped or not, and a raw tab or CR inside a name also works. A line over 512 bytes is skipped. In `.file-size-excludes` a shown name is still a glob, so a `*`, `?` or `[` in it needs a `\` before it. A space that ends a name is the one case a shown name does not cover, since a line loses it: write `?` for it in `.fan-out-excludes`, `\s` in `.file-size-excludes`.
+Copy the name as the report shows it. In `.fan-out-excludes`, `?` stands for one character of the name, escaped or not, and a raw tab or CR inside a name also works. In `.file-size-excludes` a shown name is still a glob, so a `*`, `?` or `[` in it needs a `\` before it. A space that ends a name is the one case a shown name does not cover, since a line loses it: write `?` for it in `.fan-out-excludes`, `\s` in `.file-size-excludes`.
 
 An exclude written before this scheme may change meaning: in `.file-size-excludes` a glob with `\n`, `\t`, `\r` or `\s` now means those characters, and in `.fan-out-excludes` a `[...]` no longer is a class. A line that stops matching shows up in the next report.

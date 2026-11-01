@@ -131,9 +131,10 @@ function excluded(d,   i) {
 }
 BEGIN {
   while ((getline line < excl) > 0) {
-    line = trim(line)
     # A longer line could cost minutes, and a folder it fails to skip gets reported.
-    if (line != "" && line !~ /^#/ && length(line) <= 512) ex[++nex] = glob2re(plain(raw(line)))
+    if (length(line) > 512) continue
+    line = trim(line)
+    if (line != "" && line !~ /^#/) ex[++nex] = glob2re(plain(raw(line)))
   }
   while ((getline line < base) > 0) {
     line = trim(line)

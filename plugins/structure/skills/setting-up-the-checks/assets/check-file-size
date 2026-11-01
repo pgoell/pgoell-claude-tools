@@ -31,16 +31,16 @@ top=${top%$'\n'x}
 if [ -f "$top/.file-size-excludes" ]; then
   escapes=0
   while IFS= read -r glob || [ -n "$glob" ]; do
+    # A longer line could cost minutes, and a file it fails to skip gets reported.
+    if [ "${#glob}" -gt 512 ]; then continue; fi
     glob=${glob%$'\r'}
     glob=${glob#"${glob%%[![:space:]]*}"}
     glob=${glob%"${glob##*[![:space:]]}"}
     case $glob in '' | '#'*) continue ;; esac
-    # No path is longer than 4096, and no real file needs 64 KiB of such lines: the
-    # loop could cost minutes on a file nobody has read.
-    if [ "${#glob}" -le 4096 ]; then
-      case $glob in *\\*) escapes=$((escapes + ${#glob})) ;; esac
-    fi
-    if [ "${#glob}" -le 4096 ] && [ "$escapes" -le 65536 ]; then
+    # No real file needs 64 KiB of such lines: the loop could cost minutes on a file
+    # nobody has read.
+    case $glob in *\\*) escapes=$((escapes + ${#glob})) ;; esac
+    if [ "$escapes" -le 65536 ]; then
       rest=$glob
       glob=
       while [[ $rest == *\\* ]]; do
