@@ -89,7 +89,9 @@ Dispatched agent prompt:
 
     Issue per overweight reliance on weak source. Severity: critical if it's a
     thesis pillar, minor otherwise. Having one source is not by itself this
-    issue: when that source is sound, Check 2 alone judges it.
+    issue: when that source is sound, Check 2 alone judges it. When a thesis
+    pillar's one source is weak, this critical issue replaces Check 2's minor
+    one: id `weak-source-<claim-slug>`.
 
     ### Check 4: Logic (category: logic)
 
