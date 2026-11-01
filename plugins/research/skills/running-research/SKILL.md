@@ -17,9 +17,9 @@ No authentication required. Uses the host agent's web search and fetch or browse
 
 1. **Subagent dispatch when available and permitted**: dispatch researcher, synthesis, writer, and reviewer agents.
 2. **File read tools**: load the brief and prompt templates before dispatch.
-3. **Shell**: directory creation, file globbing, the `grep -x` check of Step 1, the `sha256sum` and `grep -c` checks of Step 3, the `sha256sum` and `head -1` check of Step 4, and the `mv` and render checks of Step 10.
+3. **Shell**: directory creation, file globbing, the `grep -x` check of Step 1, the `sha256sum` and `grep -c` checks of Step 3, the `sha256sum` and `head -1` check of Step 4, the label check of `references/confidence-labels.md`, the open-issue list of `references/stalls-and-ship-as-is.md`, and the `mv` and render checks of Step 11.
 4. **Progress list**: live loop bookkeeping.
-5. **Web search and fetch or browse tools**: researchers and the synthesis reviewer use them; the orchestrator uses them only if subagent dispatch fails.
+5. **Web search and fetch or browse tools**: researchers, the synthesis reviewer and the claim checkers use them; the orchestrator uses them only if subagent dispatch fails.
 
 ## Platform Adaptation
 
@@ -58,7 +58,7 @@ mkdir -p {OUTPUT_PATH}/research
 
 ### Step 2: Plan (orchestrator-internal)
 
-YOU plan, not an agent. Decompose the brief into sub-questions and cluster them into coherent topics. As many clusters as the brief demands; each cluster should be deep enough to warrant a dedicated researcher. Cluster slugs must be unique and avoid colliding with reserved names (`synthesis`, `gap-N-*`, `*-review-*`). A slug must not start with `report`, `summary`, `findings` or `analysis` (see File Layout).
+YOU plan, not an agent. Decompose the brief into sub-questions and cluster them into coherent topics. As many clusters as the brief demands; each cluster should be deep enough to warrant a dedicated researcher. Cluster slugs must be unique and avoid colliding with reserved names (`synthesis`, `gap-N-*`, `synthesis-review-N`, `draft-review-N`). A slug must not be `claim-checks` or start with `report`, `summary`, `findings` or `analysis` (see File Layout).
 
 A brief field that reads `open (user skipped)` is yours to choose. Pick what serves the rest of the brief, and list each choice under `## Open fields` in plan.md, so the user sees it. From here on, BRIEF holds the text of brief.md followed by that list.
 
@@ -97,7 +97,7 @@ Sub-questions:
 ...
 ```
 
-Use the progress list to seed: "Spawn researchers", "Synthesize", "Review synthesis", "Write report", "Review report". Mark tasks completed as the pipeline progresses.
+Use the progress list to seed: "Spawn researchers", "Synthesize", "Review synthesis", "Check claims", "Write report", "Review report". Mark tasks completed as the pipeline progresses.
 
 ### Step 3: Spawn parallel researchers
 
@@ -125,8 +125,8 @@ A check fails on a missing file, an unchanged hash, or a wrong first line. Re-di
 ### Step 5: Review synthesis (iteration N)
 
 1. Read `synthesis-reviewer-prompt.md`.
-2. Inject: BRIEF, OUTPUT_PATH, ITERATION, REVIEWER_FEEDBACK (empty for normal flow; populated only when re-dispatched from cross-loop branch in Step 9).
-3. Dispatch via the host subagent tool. Wait for completion. In its sixth check, the reviewer fetches again up to 5 cited URLs (first any URL the prior round left `rejected` or `unresolved`, then numbers, then thesis pillars) and records each mark in the file's `REFETCH:` block.
+2. Inject: BRIEF, OUTPUT_PATH, ITERATION, LABEL_RULES_PATH (path to references/confidence-labels.md), REVIEWER_FEEDBACK (empty for normal flow; populated only when re-dispatched from cross-loop branch in Step 10).
+3. Dispatch via the host subagent tool. Wait for completion. In its sixth check, the reviewer fetches again up to 5 cited URLs (first the URLs of any claim the prior round left `rejected` or `unresolved`, then numbers, then thesis pillars) and records each mark in the file's `REFETCH:` block.
 4. Read the verdict from agent response, or from `{OUTPUT_PATH}/research/synthesis-review-{N}.md` if response is unparseable.
 
 If verdict is PASS: continue to Step 7.
@@ -137,7 +137,7 @@ If verdict is ISSUES with critical issues: classify and proceed to Step 6.
 
 Classify each critical issue:
 
-- `evidence-gap`, `coverage`, `source-quality` → spawn gap-fill researcher per issue (or per coherent group of related issues). A `rejected` refetch claim (id `refetch-<claim-slug>`) is a `source-quality` issue.
+- `evidence-gap`, `coverage`, `source-quality` → spawn gap-fill researcher per issue (or per coherent group of related issues). A `rejected` refetch claim (id `refetch-<claim-slug>`) and a claim the claim check refuted (id `claim-check-<claim-slug>`) are `source-quality` issues.
 - `logic`, `structure` → no researcher; item 3 takes them.
 
 For each gap-fill issue:
@@ -150,6 +150,7 @@ Then, once per round, not once per gap-fill: every round with a critical issue w
 3. When every gap-fill file has passed its Step 3 check (or the user, asked after a second failure, said to go on without it), re-dispatch synthesis (Step 4 with ITERATION=N+1) once per round (the retry on a failed Step 4 check still applies), with REVIEWER_FEEDBACK holding every critical issue of this round:
    - each gap-fill issue, with its gap-fill file path;
    - each rejected refetch claim, with the claim, the page quote from the `REFETCH:` block and the gap-fill file path, so the wrong claim leaves synthesis.md;
+   - each refuted claim, with the claim, the quotes and URLs from `claim-checks.md` and the gap-fill file path, so the wrong claim leaves synthesis.md or changes;
    - each `logic` or `structure` issue.
 
    Wait for completion.
@@ -157,18 +158,17 @@ Then, once per round, not once per gap-fill: every round with a critical issue w
 
 ### Loop safeguards (Steps 5-6)
 
-**Stall detection.** After writing `synthesis-review-{N}.md`, compare its issue id set to `synthesis-review-{N-1}.md`. If identical, surface to user immediately.
-
-**Check-in.** After synthesis-review iterations 3, 6, 9, ..., pause and surface:
-
-- Open issue ids and one-line descriptions
-- What was attempted (which gap-fills ran)
-- What's been narrowed (issues closed since iteration 1)
-- Options: `continue`, `ship as-is`, `intervene`
+After each review with verdict ISSUES, and after iterations 3, 6, 9, ..., read `references/stalls-and-ship-as-is.md`: it says when to stop, what to tell the user, and what `continue`, `ship as-is` and `intervene` each do.
 
 Update the progress list at every step so the user can inspect live status through the host platform.
 
-### Step 7: Write (iteration M, starting at 1)
+### Step 7: Claim check
+
+Runs each time the synthesis review passes in Step 5, before any writer. Three fresh checkers try to refute each key claim. Read `references/claim-check.md` and follow it: it picks the claims, says what to tell the user, dispatches `references/claim-checker-prompt.md`, and writes `{OUTPUT_PATH}/research/claim-checks.md`.
+
+Section 5 of that file routes the result and sets each claim's `Confidence:` label before the writer. A newly refuted claim goes to Step 6, and the loop comes back through Step 5 to here. With no refuted claim, or after the user says `ship as-is`, continue to Step 8, or, when Step 10 sent you to Step 6, back to the writer as Step 10 says.
+
+### Step 8: Write (iteration M, starting at 1)
 
 1. Read `writer-prompt.md`.
 2. Inject: BRIEF, OUTPUT_PATH, TEMPLATE_PATH (path to report-template.md), REVIEWER_FEEDBACK (empty on first pass; populated on re-dispatch).
@@ -177,18 +177,18 @@ Update the progress list at every step so the user can inspect live status throu
 
 BRIEF carries the `Deliverable:` line. The writer fits form, length and language to it, and the writer reviewer checks that fit.
 
-### Step 8: Review report (iteration M)
+### Step 9: Review report (iteration M)
 
 1. Read `writer-reviewer-prompt.md`.
 2. Inject: BRIEF, OUTPUT_PATH, TEMPLATE_PATH, ITERATION=M.
 3. Dispatch via the host subagent tool. Wait for completion.
 4. Read verdict.
 
-If PASS: continue to Step 10.
+If PASS: continue to Step 11.
 
-If ISSUES with critical issues: classify and proceed to Step 9.
+If ISSUES with critical issues: classify and proceed to Step 10.
 
-### Step 9: Address writer-review issues
+### Step 10: Address writer-review issues
 
 Classify each critical issue:
 
@@ -197,25 +197,25 @@ Classify each critical issue:
 
 For batched prose/flow/accuracy/format issues:
 
-1. Re-dispatch writer with REVIEWER_FEEDBACK populated. Wait. Return to Step 8 with iteration M+1.
+1. Re-dispatch writer with REVIEWER_FEEDBACK populated. Wait. Return to Step 9 with iteration M+1.
 
 For any `content-gap-suspected` issues:
 
 2. Re-dispatch synthesis-reviewer (Step 5) with REVIEWER_FEEDBACK populated with the writer-reviewer's content-gap-suspected issue list. The next synthesis-review file is `synthesis-review-{prior-N+1}.md` (synthesis loop counter resumes monotonically).
 3. Branch on synthesis-reviewer verdict:
-   - PASS → re-dispatch writer with prose-only feedback (drop the content-gap notes from the writer-reviewer's issue list). Return to Step 8.
-   - ISSUES → return to Step 6's classification logic (`evidence-gap` / `coverage` / `source-quality` route to gap-fill research; `logic` / `structure` route to re-synthesize; a rejected refetch claim takes both routes, as Step 6 says). When the synthesis loop closes again, re-dispatch writer with the original prose feedback (if any) plus a fresh writer review. Return to Step 8.
+   - PASS → the synthesis did not change, so skip Step 7, set the labels again (`references/confidence-labels.md`; a new `unresolved` mark can lower one), and re-dispatch writer with prose-only feedback (drop the content-gap notes from the writer-reviewer's issue list). Return to Step 9.
+   - ISSUES → return to Step 6's classification logic (`evidence-gap` / `coverage` / `source-quality` route to gap-fill research; `logic` / `structure` route to re-synthesize; a rejected refetch claim or refuted claim takes both routes, as Step 6 says). When the synthesis loop closes again, through Step 7, re-dispatch writer with the original prose feedback (if any) plus a fresh writer review. Return to Step 9.
 
-### Loop safeguards (Steps 8-9)
+### Loop safeguards (Steps 9-10)
 
-Same as synthesis loop. Stall detection on consecutive identical id sets in `draft-review-{M}.md` and `draft-review-{M-1}.md`. Check-in every 3 iterations of writer-review. Same options.
+Same as the synthesis loop, on `draft-review-{M}.md`: `references/stalls-and-ship-as-is.md`. Here `ship as-is` goes to Step 11 with the current draft.
 
-### Step 10: Present
+### Step 11: Present
 
 1. Resolve the format once, by the order in Output Format: prompt override, then the brief's `Format:` line, then html.
-2. Rename the passed draft with the shell: `mv {OUTPUT_PATH}/draft.md {OUTPUT_PATH}/report.md`. For markdown, that is the report.
+2. Rename the draft (passed, or shipped as-is) with the shell: `mv {OUTPUT_PATH}/draft.md {OUTPUT_PATH}/report.md`. For markdown, that is the report.
 3. For html, you (never a subagent) render `{OUTPUT_PATH}/report.html` from `report.md`: read `references/rendering-the-report.md` and follow it, checks and failure path included. `report.md` stays as the reviewed source.
-4. Surface a brief summary: total iterations of each loop, the final paths (`report.html` and `report.md`; `report.md` alone for markdown or a failed render), any minor (non-blocking) issues from the final reviews.
+4. Surface a brief summary: read "The end summary" in `references/stalls-and-ship-as-is.md` and report what it lists.
 
 ## File Layout (output directory)
 
@@ -226,19 +226,20 @@ Same as synthesis loop. Stall detection on consecutive identical id sets in `dra
 ├── research/
 │   ├── {cluster-slug}.md         (one per cluster, notes + inline sources)
 │   ├── gap-{n}-{slug}.md         (gap-fill research)
-│   ├── synthesis.md              (overwritten each iteration)
-│   └── synthesis-review-{n}.md
-├── draft.md                      (overwritten each iteration; renamed report.md in Step 10)
+│   ├── synthesis.md              (overwritten each iteration; the orchestrator sets its final labels)
+│   ├── synthesis-review-{n}.md
+│   └── claim-checks.md           (rewritten each Step 7 round; only the orchestrator writes it)
+├── draft.md                      (overwritten each iteration; renamed report.md in Step 11)
 ├── draft-review-{n}.md
 ├── report.md                     (the reviewed report; the deliverable for markdown, the source for html)
-└── report.html                   (html only: rendered from report.md in Step 10, the deliverable)
+└── report.html                   (html only: rendered from report.md in Step 11, the deliverable)
 ```
 
-Subagents never write a file named `report*`, `summary*`, `findings*` or `analysis*` with a `.md` extension: Claude Code refuses those writes from a subagent ("Subagents should return findings as text, not write report files"). That is why the writer writes `draft.md` and only the orchestrator, in Step 10, names it `report.md`.
+Subagents never write a file named `report*`, `summary*`, `findings*` or `analysis*` with a `.md` extension: Claude Code refuses those writes from a subagent ("Subagents should return findings as text, not write report files"). That is why the writer writes `draft.md` and only the orchestrator, in Step 11, names it `report.md`.
 
 ## Verdicts and Markers
 
-Read `references/verdicts-and-markers.md` to parse a verdict (Steps 5, 8) or a researcher's last line (Step 3). Its words are fixed: every prompt uses those spellings and no others.
+Read `references/verdicts-and-markers.md` to parse a verdict (Steps 5, 9) a researcher's last line (Step 3) or a checker's last line (Step 7). Its words are fixed: every prompt uses those spellings and no others.
 
 ## Self-Healing
 
@@ -247,16 +248,16 @@ Read `references/verdicts-and-markers.md` to parse a verdict (Steps 5, 8) or a r
 - Artifact file missing: re-dispatch once. Surface if still missing.
 - Verdict unparseable: re-dispatch reviewer once with format reminder.
 - Researcher fails the Step 3 check (`ARTIFACT-MISSING`, hash mismatch, missing or unparseable last line, source count under the floor): re-dispatch once. Surface if it fails again (likely bad cluster boundary).
+- Checker fails its reply twice: its vote is `UNCLEAR`; go on (see `references/claim-check.md`).
 - Refetched URL dead, moved, paywalled or refused: the reviewer marks it `unresolved` and goes on. Never retry it yourself.
-- Stall detected: surface to user immediately. Don't auto-retry.
-- Check-in interval reached: pause, present status, await user choice.
+- Stall detected or check-in interval reached: send the message in `references/stalls-and-ship-as-is.md` and await the user's choice. Don't auto-retry.
 - Output dir not writable: suggest alternative path, ask user.
 - HTML template unreadable, or the render fails its check (fewer links than report.md, template sample text left): keep `report.md`, leave no partial `report.html`, tell the user (see `references/rendering-the-report.md`).
 
 ## Behavioral Guidelines
 
 - Never pass session history to agents. Construct each dispatch fresh from the template + injected values.
-- Each prompt template has placeholders; the "Inject" item of its step (3, 4, 5, 6, 7, 8) names every one.
+- Each prompt template has placeholders; the "Inject" item of its step (3, 4, 5, 6, 8, 9, and `references/claim-check.md` for Step 7) names every one.
 - Credentials/secrets never appear in templates or injected values.
 - See `report-template.md` for report structure (use Deep Mode section) and `research-recipes.md` for search patterns.
 
@@ -272,4 +273,4 @@ Override resolution order, highest precedence first:
 
 Path: `{OUTPUT_PATH}/report.<ext>`, where `OUTPUT_PATH` is the brief's folder (default `reports/<topic-slug>-<YYYY-MM-DD>/`) and `<ext>` resolves from format. html keeps `report.md` beside `report.html` as its source.
 
-When emitting HTML, follow `references/research-report-template.html` in this skill's directory, as Step 10 and `references/rendering-the-report.md` say. Read the template lazily. Do not introduce U+2014 or U+2013 codepoints in body copy; HTML entity forms are permitted.
+When emitting HTML, follow `references/research-report-template.html` in this skill's directory, as Step 11 and `references/rendering-the-report.md` say. Read the template lazily. Do not introduce U+2014 or U+2013 codepoints in body copy; HTML entity forms are permitted.

@@ -1,6 +1,6 @@
 # Rendering the report as HTML
 
-Step 10 sends you here when the resolved format is html. You, the orchestrator, render `{OUTPUT_PATH}/report.html` from `{OUTPUT_PATH}/report.md`. Never hand this to a subagent: Claude Code refuses `report*.md` files from subagents, and the reviews passed `report.md`, so only a faithful copy of it may ship. `report.md` stays as the reviewed source; `report.html` is the deliverable.
+Step 11 sends you here when the resolved format is html. You, the orchestrator, render `{OUTPUT_PATH}/report.html` from `{OUTPUT_PATH}/report.md`. Never hand this to a subagent: Claude Code refuses `report*.md` files from subagents, and the reviews passed `report.md`, so only a faithful copy of it may ship. `report.md` stays as the reviewed source; `report.html` is the deliverable.
 
 ## 1. Read the inputs
 

@@ -36,18 +36,40 @@ Dispatched agent prompt:
 
     1. `{OUTPUT_PATH}/plan.md`: original plan with cluster definitions and
        sub-questions. This is your scope and structure.
-    2. `{OUTPUT_PATH}/research/*.md` excluding files starting with `synthesis`
-       or matching `*-review-*`. Cluster files and gap-fill files (`gap-N-*.md`)
+    2. `{OUTPUT_PATH}/research/*.md` excluding `synthesis.md`, `claim-checks.md`
+       and the review files (`synthesis-review-N.md`). Cluster files and gap-fill files (`gap-N-*.md`)
        are both in scope. Use:
        ```bash
-       ls {OUTPUT_PATH}/research/*.md | grep -v -E '(/(synthesis|.*-review-))'
+       ls {OUTPUT_PATH}/research/*.md | grep -v -E '/(synthesis|claim-checks|(synthesis|draft)-review-[0-9]+)\.md$'
        ```
 
     ## Synthesis Tasks
 
     1. Inventory claims. Extract every substantive claim from the researcher
        files. Group by sub-question. For each claim, record its sources (with
-       credibility tags carried forward) and any contradicting claims.
+       credibility tags and origins carried forward) and any contradicting
+       claims. Group each claim's sources by origin and record
+       `Independent sources: N`, the number of groups. List one group's sources
+       next to each other:
+       - A source's group is its `origin` if set, else its own URL. A source
+         whose URL is another source's origin joins that group. Follow origins
+         to the last one: if a restates b and b restates c, all three are one
+         group.
+       - Compare URLs ignoring scheme, `www.`, a trailing slash and tracking
+         parameters.
+       - Within one claim, a URL cited twice counts once, and a citation with no
+         origin takes the origin another citation of that URL gives. An origin
+         does not carry to another claim: a page can restate on one point and
+         report on its own on the next.
+       - Sources whose notes name one original with no URL ("restates the Acme
+         Q3 press release, no URL found") form one group; say so under Notes.
+       Then give each claim a provisional `Confidence:` line from N alone:
+       `medium` when N is 2 or more, `low (one source)` when N is 1. Do this on
+       every iteration, replacing any label the file holds. Never write `high`:
+       the orchestrator sets the final labels after the claim check. A thesis
+       pillar takes both lines too, with N the number of origin groups across
+       the sources of the claims it rests on, and a `Rests on:` line naming
+       those claims.
 
     2. Reconcile contradictions. For each contradiction, take a position: which
        side is more credible and why? Cite sources. If you cannot adjudicate,
@@ -76,17 +98,30 @@ Dispatched agent prompt:
 
     ## Argument Structure
     1. <Pillar 1: claim that supports thesis>
+       - Rests on: SQ1 claim 2, SQ3 claim 1
+       - Independent sources: N
+       - Confidence: medium | low (one source)
     2. <Pillar 2: claim that supports thesis>
+       - Rests on: SQ1 claim 2, SQ3 claim 1
+       - Independent sources: N
+       - Confidence: medium | low (one source)
     3. <Pillar 3: claim that supports thesis>
+       - Rests on: SQ1 claim 2, SQ3 claim 1
+       - Independent sources: N
+       - Confidence: medium | low (one source)
 
     ## Claims by Sub-Question
 
     ### SQ1: <sub-question>
     - Claim: <claim>
-      - Sources: [URL | Title | tag], [URL | Title | tag]
+      - Sources: [URL | Title | tag | origin: URL], [URL | Title | tag]
+      - Independent sources: N
+      - Confidence: medium | low (one source)
       - Notes: <any methodological caveats>
     - Claim: <claim>
       - Sources: ...
+      - Independent sources: N
+      - Confidence: medium | low (one source)
     - Contradictions: <if any, with adjudication>
 
     ### SQ2: <sub-question>
@@ -106,9 +141,9 @@ Dispatched agent prompt:
     <Findings that don't fit the thesis. Don't hide them.>
 
     ## Source Inventory
-    | Source | Title | Tag | Used in claims |
-    |--------|-------|-----|----------------|
-    | <URL>  | ...   | ... | SQ1 claim 2, SQ3 claim 1 |
+    | Source | Title | Tag | Origin | Used in claims |
+    |--------|-------|-----|--------|----------------|
+    | <URL>  | ...   | ... | <URL, or empty> | SQ1 claim 2, SQ3 claim 1 |
     ```
 
     ## Critical Constraints
@@ -117,7 +152,7 @@ Dispatched agent prompt:
       analysis. The writer turns it into prose.
     - Do NOT add new evidence or new sources. Work only from the researcher files.
     - Do NOT silently drop contradictions. Reconcile them or flag them unresolved.
-    - Credibility tags must travel with each source on every reuse.
+    - Credibility tags and origins must travel with each source on every reuse.
 
     ## Self-Healing
 

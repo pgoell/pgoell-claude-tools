@@ -26,6 +26,7 @@ Dispatched agent prompt:
 
     - Output path: {OUTPUT_PATH}
     - Iteration: {ITERATION}
+    - Label rule: {LABEL_RULES_PATH}
 
     ## Hypothesis from Writer-Reviewer (cross-loop only)
 
@@ -41,19 +42,21 @@ Dispatched agent prompt:
 
     1. `{OUTPUT_PATH}/plan.md`
     2. `{OUTPUT_PATH}/research/synthesis.md`
-    3. The researcher outputs in `{OUTPUT_PATH}/research/`. Exclude synthesis
-       and review files; cluster files and gap-fill files are in scope. Use:
+    3. The researcher outputs in `{OUTPUT_PATH}/research/`. Exclude synthesis,
+       claim-check and review files; cluster files and gap-fill files are in scope. Use:
        ```bash
-       ls {OUTPUT_PATH}/research/*.md | grep -v -E '(/(synthesis|.*-review-))'
+       ls {OUTPUT_PATH}/research/*.md | grep -v -E '/(synthesis|claim-checks|(synthesis|draft)-review-[0-9]+)\.md$'
        ```
     4. If iteration > 1: `{OUTPUT_PATH}/research/synthesis-review-{ITERATION-1}.md`
        (prior review). Use the prior review to assign STABLE issue ids: same
        issue across iterations must keep the same id. New issues get new ids.
        Its `REFETCH:` block sets the order for Check 6.
+    5. `{LABEL_RULES_PATH}`, and `{OUTPUT_PATH}/research/claim-checks.md` if it
+       exists, for Check 7.
 
     ## Checks
 
-    Run all 6 checks. For each, identify specific issues with stable ids.
+    Run all 7 checks. For each, identify specific issues with stable ids.
 
     ### Check 1: Coverage (category: coverage)
 
@@ -65,12 +68,18 @@ Dispatched agent prompt:
     ### Check 2: Evidence Completeness (category: evidence-gap)
 
     Does each claim in the synthesis have at least one source? Are key claims
-    backed by 2+ independent sources? Are there claims that should have a number
+    backed by 2+ independent sources (`Independent sources: 2` or more, so
+    copies of one origin do not pass)? Are there claims that should have a number
     but lack one? Are there contradictions in the source material that the
     synthesis silently picked one side of?
 
     Issue per evidence gap. Severity: critical for unsupported key claims, minor
     for thin corroboration on minor claims.
+
+    A key claim or thesis pillar with a correct `Independent sources: 1` is
+    minor, whether or not a second source seems to exist: id
+    `one-source-<claim-slug>`. Its `Confidence: low (one source)` line already
+    tells the reader. The id drops once N is 2 or more.
 
     ### Check 3: Source Quality (category: source-quality)
 
@@ -79,7 +88,10 @@ Dispatched agent prompt:
     credibility tags carried through correctly from researcher outputs?
 
     Issue per overweight reliance on weak source. Severity: critical if it's a
-    thesis pillar, minor otherwise.
+    thesis pillar, minor otherwise. Having one source is not by itself this
+    issue: when that source is sound, Check 2 alone judges it. When a thesis
+    pillar's one source is weak, this critical issue replaces Check 2's minor
+    one: id `weak-source-<claim-slug>`.
 
     ### Check 4: Logic (category: logic)
 
@@ -89,6 +101,16 @@ Dispatched agent prompt:
 
     Issue per logical flaw. Severity: critical for thesis-level inconsistencies,
     minor for local logic gaps.
+
+    Then check each claim's `Independent sources: N` against the researcher
+    files. Flag a claim whose sources share one origin but are listed as
+    several: N counts copies of one origin apart, an origin in a researcher
+    file is missing from synthesis.md, or the line is absent. Compare URLs
+    ignoring scheme, `www.`, a trailing slash and tracking parameters. Id
+    `shared-origin-<claim-slug>`, category `logic`, so the fix is a new
+    synthesis and not a new researcher. Severity: critical for a key claim,
+    minor otherwise. The id drops once N is right. A correct
+    `Independent sources: 1` is not this issue; Check 2 judges it.
 
     ### Check 5: Structure (category: structure)
 
@@ -105,8 +127,9 @@ Dispatched agent prompt:
     the source says what the claim says. Fetch again at most 5 URLs cited in
     synthesis.md, fewer when fewer are cited. Pick them in this order:
 
-    1. If iteration > 1: the URLs marked `rejected` or `unresolved` in the
-       prior review's `REFETCH:` block.
+    1. If iteration > 1: for each claim the prior review's `REFETCH:` block
+       marks `rejected` or `unresolved`, the URLs synthesis.md cites for it now,
+       which may no longer be the URL that was marked. Skip a claim now gone.
     2. URLs behind numeric claims.
     3. URLs behind thesis-pillar claims.
 
@@ -127,9 +150,23 @@ Dispatched agent prompt:
     A `rejected` claim is a critical issue; an `unresolved` claim is minor.
     Give both the id `refetch-<claim-slug>` and keep it while the claim stays
     `rejected` or `unresolved`. A claim now `confirmed`, or gone from
-    synthesis.md, drops its id. Mark each URL on its own line; when one
+    synthesis.md, drops its id. A claim left `rejected` that the limit of 5 kept
+    you from fetching again keeps its id, critical, and its `REFETCH:` entry:
+    copy it with `mark: rejected` and the quote `not fetched again`. Mark each URL on its own line; when one
     claim's URLs disagree, its one issue takes the worst mark (`rejected`,
     then `unresolved`).
+
+    ### Check 7: Confidence labels (category: logic)
+
+    Check each claim's and thesis pillar's `Confidence:` line against the rule
+    table in `{LABEL_RULES_PATH}`, using its N, `claim-checks.md` and the
+    `REFETCH:` blocks of earlier reviews. Flag three things: a missing line, a
+    `high` that the first matching row does not give, and a `medium` when N is
+    1. Any other difference is no issue: the synthesis labels from N alone, and
+    the orchestrator sets the final labels after the claim check, so a `medium`
+    on a claim the check found `UNCLEAR` or `REFUTED` waits for that step. Id
+    `confidence-<claim-slug>`, so the fix is a new synthesis and not a new
+    researcher. Severity: critical.
 
     ## Stable Issue IDs
 
@@ -140,6 +177,9 @@ Dispatched agent prompt:
     - `missing-2024-tariff-data` (specific gap)
     - `unresolved-mckinsey-vs-bcg-cost-estimates` (specific contradiction)
     - `weak-thesis-no-position` (structural)
+    - `shared-origin-acme-revenue` (copies of one origin counted apart)
+    - `confidence-acme-revenue` (a `high` the rule does not give)
+    - `one-source-acme-revenue` (a key claim with one independent source)
 
     If iteration > 1 and the prior review has an issue with the same root cause,
     REUSE that id. Stall detection depends on id stability.

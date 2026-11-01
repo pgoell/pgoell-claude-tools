@@ -25,7 +25,8 @@ Pre-commit checks what a commit stages, pre-push and CI check the whole repo, an
 ## Step 1: Look at the repo
 
 ```bash
-cd "$(git rev-parse --show-toplevel)"
+top=$(git rev-parse --show-toplevel && echo x)
+cd "${top%$'\n'x}"
 ls lefthook.yml .lefthook.yml lefthook.yaml .lefthook.yaml 2>/dev/null
 command -v lefthook || mise exec -- lefthook version
 ls mise.toml .mise.toml 2>/dev/null
@@ -75,7 +76,7 @@ Do not wire pre-push or CI while a bare run still fails, unless the user says so
 
 ## Step 6: The Claude Code editor hook
 
-Add the `PostToolUse` block from [references/editor-hook.md](references/editor-hook.md) to the repo's `.claude/settings.json`, merged into what is there. It is a project hook, so it fires only in this repo. Then test it as the reference says.
+Add the `PostToolUse` block from [references/editor-hook.md](references/editor-hook.md) to the repo's `.claude/settings.json`, merged into what is there. It is a project hook, so it fires only in this repo. Then test it as the reference says. The hook needs `jq` on `PATH` or in mise's global config (`mise use -g jq`): a `jq` that only the project pins does not serve it.
 
 ## Step 7: Check it works
 

@@ -55,7 +55,7 @@ plugins/
                             #   stub and after skills ship. plugins/databricks/references/research/
                             #   is gitignored and local-only: never force-add it.
     tests/                  # Optional self-contained check of shipped scripts, run by hand
-                            #   (issue-loop, insights, news, agent-system-management, structure:
+                            #   (issue-loop, insights, news, research, agent-system-management, structure:
                             #   tests/run.sh with fakes or fixtures, no network;
                             #   presentations: tests/run.sh drives deck fixtures in headless Chrome;
                             #   atlassian: tests/run.sh parses the JSON bodies of its examples)
@@ -80,7 +80,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 
 - `atlassian` 2.0.8: `jira`, `confluence`
 - `google-workspace` 1.0.3: `gmail`, `calendar`
-- `research` 2.3.5: `research`, `running-research`
+- `research` 2.6.2: `research`, `running-research`
 - `writing` 3.1.4: `ghostwrite`, `coach`
 - `runtime-bridge` 0.2.0: `claude-codex-bridge`
 - `agent-system-management` 0.7.12: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
@@ -93,7 +93,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `diagrams` 0.1.3: `creating-diagrams`
 - `news` 0.11.0: `edition`, `feedback`, `tune`
 - `insights` 0.7.0: `digest`, `apply`, `activity`
-- `structure` 0.2.0: `setting-up-the-checks`, `setting-up-import-boundaries`
+- `structure` 0.2.8: `setting-up-the-checks`, `setting-up-import-boundaries`
 - `issue-loop` 0.13.5: `running-the-loop`, `handing-over` (Claude Code only)
 - `prose-styles` 0.1.0: no skills; output styles `orwell`, `concise`, `ste`, `house` (Claude Code only)
 - `guards` 0.1.3: no skills; `PreToolUse` hook `pkill-self-match` (Claude Code only)
