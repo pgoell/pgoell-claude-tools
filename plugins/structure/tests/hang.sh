@@ -252,7 +252,7 @@ give_up_with_mise() {
   plant .gitignore fifo
   short_limit
   mkdir -p "$tools"
-  for t in /usr/bin/* /bin/*; do ln -sf "$t" "$tools/${t##*/}"; done
+  for t in /usr/bin/* /bin/*; do ln -sfn "$t" "$tools/${t##*/}"; done
   rm -f "$tools/jq" "$tools/mise"
   printf '#!/bin/sh\n%s\n' "$1" >"$tools/mise"
   chmod 755 "$tools/mise"

@@ -10,10 +10,10 @@
 # with no copy of this hook at the same path (a nested repo the project ignores)
 # passes. A symlinked scripts/ counts as scripts/. A file in another repo or
 # worktree that has a copy meets that repo's baseline and excludes, through this
-# copy's scripts. It never runs code from the repo of an edited file, which may
-# be a clone nobody has read, unless the user's own PATH names a folder in it:
-# git asks that repo only where its top and its info/exclude are, and every other
-# git runs against a throwaway git dir. So that
+# copy's scripts. It runs no code from the repo of an edited file, which may be
+# a clone nobody has read, unless a tool on the user's own PATH brings it in (a
+# folder in that repo, a mise shim): git asks that repo only where its top and its
+# info/exclude are, and every other git runs against a throwaway git dir. So that
 # repo's config, hooks, filters, fsmonitor and objects stay out of it.
 #
 # Nor does it hang on that repo, whose files may be FIFOs or symlinks to devices:
