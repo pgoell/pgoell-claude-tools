@@ -429,6 +429,8 @@ fi
 . "$TESTS/fan-out.sh"
 # shellcheck source=hook.sh
 . "$TESTS/hook.sh"
+# shellcheck source=untrusted.sh
+. "$TESTS/untrusted.sh"
 
 echo "$pass passed, $fail failed"
 [ "$fail" -eq 0 ]
