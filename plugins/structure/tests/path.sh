@@ -55,7 +55,7 @@ no_repo_tool ". first, called from another folder" ".:$real" "$WORK"
 no_repo_tool "relative folder from the repo root" ".tools:$real" "$REPO"
 no_repo_tool "../ entry" "../.tools:$real"
 
-# With no jq on PATH the fallback runs mise in the hook's folder, not the caller's.
+# With no jq on PATH the fallback runs mise in no project's folder: issue 334.
 fresh
 mkfile big.md 20004
 tools="$WORK/tools$n"
@@ -68,10 +68,11 @@ chmod 755 "$tools/mise"
 ERR="$(cd "$WORK/caller$n" && printf '{"tool_input":{"file_path":"%s/big.md"}}' "$REPO" |
   PATH=$tools "$REPO/scripts/structure-hook" 2>&1 >/dev/null)"
 RC=$?
-if [ "$RC" -eq 2 ] && [ "$(sort -u "$WORK/mise$n")" = "$REPO/scripts" ]; then
-  ok "P2 mise runs from the hook's folder"
+ran="$(sort -u "$WORK/mise$n")"
+if [ "$RC" -eq 2 ] && [ -n "$ran" ] && [ "${ran#"$REPO"}" = "$ran" ] && [ "${ran#"$WORK/caller"}" = "$ran" ]; then
+  ok "P2 mise runs in neither the hook's folder nor the caller's"
 else
-  bad "P2 mise runs from the hook's folder (rc=$RC, ran in $(cat "$WORK/mise$n" 2>/dev/null))"
+  bad "P2 mise runs in neither the hook's folder nor the caller's (rc=$RC, ran in $ran)"
 fi
 
 # The mark the hook sets for itself, inherited from outside, changes nothing.

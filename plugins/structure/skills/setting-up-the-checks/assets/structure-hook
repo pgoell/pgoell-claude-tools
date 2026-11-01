@@ -11,10 +11,10 @@
 # passes. A symlinked scripts/ counts as scripts/. A file in another repo or
 # worktree that has a copy meets that repo's baseline and excludes, through this
 # copy's scripts. It runs no code from the repo of an edited file, which may be
-# a clone nobody has read, unless a tool on the user's own PATH brings it in (a
-# folder in that repo, a mise shim): git asks that repo only where its top and its
-# info/exclude are, and every other git runs against a throwaway git dir. So that
-# repo's config, hooks, filters, fsmonitor and objects stay out of it.
+# a clone nobody has read, unless a folder in that repo is on the user's own PATH:
+# git asks that repo only where its top and its info/exclude are, and every other
+# git runs against a throwaway git dir. So that repo's config, hooks, filters,
+# fsmonitor and objects stay out of it, and so does its mise config.
 #
 # Nor does it hang on that repo, whose files may be FIFOs or symlinks to devices:
 # the checks read their settings only from regular files and only so far, and a
@@ -25,12 +25,19 @@
 # entry that does not start with "/" names a folder relative to where a tool runs,
 # which here may be the edited repo. An empty PATH would mean the current folder.
 # An absolute entry stays, even inside that repo: it is the user's own setting.
+# Mise's shim folder goes, since a shim runs a path: tool that the mise config of
+# the folder it runs in names, trusted or not.
 rest=${PATH:-}:
 clean=
+data=$(cd "${MISE_DATA_DIR:-/nonexistent}" 2>/dev/null && pwd -P)
 while [ -n "$rest" ]; do
   entry=${rest%%:*}
   rest=${rest#*:}
-  case $entry in /*) clean=$clean:$entry ;; esac
+  case $entry in /*) ;; *) continue ;; esac
+  case $(cd "$entry" 2>/dev/null && pwd -P) in
+    */mise/shims | "${data:-/nonexistent}/shims") ;;
+    *) clean=$clean:$entry ;;
+  esac
 done
 PATH=${clean#:}
 PATH=${PATH:-/usr/bin:/bin}
@@ -48,27 +55,58 @@ set -uo pipefail
 
 limit=30
 dir=$(cd "$(dirname "$0")" && pwd)
-# With stdin closed, the pipe of $(cat) would land on fd 0 and cat would read it.
+# With stdin closed, the job's fd 3 could not copy it, and a pipe could land on fd 0.
 true 2>&- 3<&0 || exec </dev/null
-input=$(cat)
+# A terminal is a person, who ends the event with Ctrl-D, and a background job could
+# not read from it.
+input=
+if [ -t 0 ]; then
+  input=$(head -c 16777216)
+  exec </dev/null
+fi
 scratch=$(mktemp -d) && scratch=$(cd "$scratch" && pwd) || exit 0
 
 check() {
+  # Stdin may stay open or never end, so this read is on the job's clock. An event
+  # over this size fails in jq, below. Nothing else needs the event's stdin.
+  input+=$(head -c 16777216 <&3)
+  exec 3<&-
+  # $(...) strips a newline that ends a name, so the name ends in a mark until then.
+  filter='(.tool_input.file_path // empty) | tostring + "x"'
+  # Mise reads no project's config here: from the hook's folder it would read the
+  # edited repo's when the hook sits in that repo. Mise may be on PATH only as what
+  # the shims link to.
   if command -v jq >/dev/null; then
-    file=$(jq -r '.tool_input.file_path // empty' <<<"$input")
-  elif ! file=$(cd "$dir" && mise exec -- jq -r '.tool_input.file_path // empty' <<<"$input"); then
-    echo 'structure-hook: needs jq on PATH or through mise' >&2
+    file=$(jq -r "$filter" <<<"$input")
+  else
+    mise=$(command -v mise) || mise=$(readlink -f "${MISE_DATA_DIR:-${XDG_DATA_HOME:-${HOME:-}/.local/share}/mise}/shims/jq")
+    file=$(cd "$scratch" && MISE_CEILING_PATHS=$scratch "$mise" exec -- jq -r "$filter" <<<"$input" 2>/dev/null)
+  fi || {
+    echo "structure-hook: needs jq on PATH or in mise's global config, and an event jq can read" >&2
     exit 1
-  fi
+  }
+  file=${file%x}
   if [ -z "$file" ] || [ ! -f "$file" ]; then exit 0; fi
   printf '%s' "$file" >"$scratch/file"
+  # A name may start with "-" and end in a newline, so no dirname, no basename.
+  case $file in /*) ;; *) file=./$file ;; esac
+  folder=${file%/*}
+  folder=${folder:-/}
+  name=${file##*/}
+  # The checks list names by line and git prints a top without its last newline.
+  case $folder in *$'\n') exit 0 ;; esac
+  # With no git, each "|| exit 0" below would pass the file unchecked.
+  if ! command -v git >/dev/null; then
+    echo 'structure-hook: needs git on PATH, not only as a mise shim' >&2
+    exit 1
+  fi
   # Git reads a file such as .gitignore or a link to /dev/zero whole, however large.
   ulimit -v 4194304 2>/dev/null
   # The edited file's own repo decides, whatever repo the caller's GIT_DIR names.
   # Config passed by environment stays: it may be what guards an unread repo.
   # shellcheck disable=SC2046
   unset $(git rev-parse --local-env-vars 2>/dev/null | grep -v '^GIT_CONFIG')
-  top=$(git -C "$(dirname "$file")" rev-parse --show-toplevel 2>/dev/null) || exit 0
+  top=$(git -C "$folder" rev-parse --show-toplevel 2>/dev/null) || exit 0
   # Look for a copy by this hook's path in its repo. Git answers for the folder a
   # symlink reaches, so also try the path from each folder above that has a .git.
   self=$(basename "$0")
@@ -79,8 +117,7 @@ check() {
     if [ -e "$root/.git" ]; then at=${dir#"$root"}; fi
     root=${root%/*}
   done
-  cd "$(dirname "$file")" || exit 0
-  name=$(basename "$file")
+  cd "$folder" || exit 0
 
   # Git obeys the repo it works in, and core.fsmonitor, filters, hooks, pagers and
   # lazy fetches all run commands. So work against an empty throwaway git dir: the
@@ -116,7 +153,7 @@ stop() {
 trap stop EXIT
 trap 'exit 143' TERM INT HUP
 set -m
-check </dev/null &
+check 3<&0 </dev/null &
 body=$!
 (
   sleep "$limit"
@@ -129,7 +166,7 @@ wait "$body" 2>/dev/null
 rc=$?
 if [ "$rc" -gt 128 ]; then
   file=$(cat "$scratch/file" 2>/dev/null)
-  echo "structure-hook: gave up on ${file:-the edited file} after ${limit} s; a file in its repo may block" >&2
+  echo "structure-hook: gave up on ${file:-the edited file} after ${limit} s; stdin or a file in its repo may block" >&2
   exit 1
 fi
 exit "$rc"
