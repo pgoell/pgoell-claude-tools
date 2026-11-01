@@ -58,8 +58,8 @@ export GIT_DIR=$scratch GIT_WORK_TREE=$top
 git add -- ":(literal)$name" 2>/dev/null || exit 0
 
 failed=0
-size=$("$dir/check-file-size" "$name" 2>&1 >/dev/null) || failed=1
-fan=$("$dir/check-fan-out" "$name" 2>&1 >/dev/null) || failed=1
+size=$("$dir/check-file-size" "./$name" 2>&1 >/dev/null) || failed=1
+fan=$("$dir/check-fan-out" "./$name" 2>&1 >/dev/null) || failed=1
 if [ "$failed" -eq 0 ]; then exit 0; fi
 if [ -n "$size" ] && [ -n "$fan" ]; then size=$size$'\n\n'; fi
 echo "$size$fan" >&2

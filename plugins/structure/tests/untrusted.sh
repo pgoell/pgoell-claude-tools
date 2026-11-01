@@ -164,3 +164,16 @@ echo 'big.md filter=shrink' >.gitattributes
 printf '[filter "shrink"]\n\tclean = head -c 10\n' >"$WORK/global$n"
 GIT_CONFIG_GLOBAL="$WORK/global$n" hook "$REPO/big.md"
 silent "U5 a filter in the user's global config still applies"
+
+# A file name is not an option: review of PR 325. Check-fan-out's modes write the
+# baseline, through a symlink if the repo holds one, or judge the whole repo.
+fresh
+mkfile ./--update-baseline 1
+hook "$REPO/--update-baseline"
+silent "U6 a file named --update-baseline passes"
+if [ -e .fan-out-baseline ]; then bad "U6 --update-baseline wrote the baseline"; else ok "U6 --update-baseline wrote no baseline"; fi
+fresh
+for i in 1 2 3 4 5 6 7 8; do mkfile "src/m$i.py" 1; done
+mkfile ./--all 1
+hook "$REPO/--all"
+silent "U6 a file named --all does not judge other folders"
