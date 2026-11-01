@@ -21,6 +21,8 @@ EXCLUDES=(
 
 # A repo adds its own globs in .file-size-excludes at its root: one per line,
 # "#" starts a comment line, blank lines are skipped. A missing file adds none.
+# Only a regular file counts, and only its first MiB: a repo nobody has read may
+# hold a FIFO, a symlink to a device or a huge file there.
 top=$(git rev-parse --show-toplevel)
 if [ -f "$top/.file-size-excludes" ]; then
   while IFS= read -r glob || [ -n "$glob" ]; do
@@ -29,7 +31,7 @@ if [ -f "$top/.file-size-excludes" ]; then
     glob=${glob%"${glob##*[![:space:]]}"}
     case $glob in '' | '#'*) continue ;; esac
     EXCLUDES+=("$glob")
-  done <"$top/.file-size-excludes"
+  done < <(head -c 1048576 "$top/.file-size-excludes" 2>/dev/null)
 fi
 
 # The "top" magic anchors excludes at the repo root while arguments resolve

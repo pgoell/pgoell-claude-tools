@@ -27,7 +27,9 @@ prefix=$(git rev-parse --show-prefix)
 want=$(mktemp)
 list=$(mktemp)
 out=$(mktemp)
-trap 'rm -f "$want" "$list" "$out"' EXIT
+base=$(mktemp)
+excl=$(mktemp)
+trap 'rm -f "$want" "$list" "$out" "$base" "$excl"' EXIT
 
 mode=check
 case $1 in
@@ -55,10 +57,16 @@ git -C "$top" ls-files -z --cached --others --exclude-standard >"$list"
 # Baseline lines are "<folder> <count>"; exclude lines are git globs ("*"
 # stays in one folder, "**" crosses folders). In both files "#" starts a
 # comment line and blank lines are skipped.
+# Only a regular file counts, and only its first MiB: a repo nobody has read may
+# hold a FIFO, a symlink to a device or a huge file there.
 fresh=1
-if [ -f "$top/.fan-out-baseline" ]; then fresh=0; fi
+if [ -f "$top/.fan-out-baseline" ]; then
+  fresh=0
+  head -c 1048576 "$top/.fan-out-baseline" >"$base" 2>/dev/null || :
+fi
+if [ -f "$top/.fan-out-excludes" ]; then head -c 1048576 "$top/.fan-out-excludes" >"$excl" 2>/dev/null || :; fi
 tr '\0' '\n' <"$list" | awk -v mode="$mode" -v limit="$LIMIT" -v want="$want" -v fresh="$fresh" \
-  -v base="$top/.fan-out-baseline" -v excl="$top/.fan-out-excludes" '
+  -v base="$base" -v excl="$excl" '
 function trim(s) { sub(/^[ \t\r]+/, "", s); sub(/[ \t\r]+$/, "", s); return s }
 function glob2re(g) {
   gsub(/[.+(){}|$]/, "[&]", g)

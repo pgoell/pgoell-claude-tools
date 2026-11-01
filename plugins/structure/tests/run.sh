@@ -431,6 +431,10 @@ fi
 . "$TESTS/hook.sh"
 # shellcheck source=untrusted.sh
 . "$TESTS/untrusted.sh"
+# shellcheck source=hang.sh
+. "$TESTS/hang.sh"
+# shellcheck source=path.sh
+. "$TESTS/path.sh"
 
 echo "$pass passed, $fail failed"
 [ "$fail" -eq 0 ]
