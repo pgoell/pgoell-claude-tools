@@ -23,16 +23,17 @@ bad() {
 
 # Writes a file of $2 bytes at path $1, creating its folders.
 mkfile() {
-  mkdir -p "$(dirname "$1")"
+  # Dirname would strip a newline that ends the folder's name.
+  case $1 in */*) mkdir -p -- "${1%/*}" ;; esac
   head -c "$2" /dev/zero | tr '\0' a >"$1"
 }
 
 # Makes a fresh repo in $REPO with the scripts copied to scripts/, as the
-# skill does in a target repo.
+# skill does in a target repo. $1, if given, ends the repo's name.
 n=0
 fresh() {
   n=$((n + 1))
-  REPO="$WORK/repo$n"
+  REPO="$WORK/repo$n${1:-}"
   mkdir -p "$REPO/scripts"
   cp "$SCRIPT" "$REPO/scripts/check-file-size" 2>/dev/null
   cp "$ASSETS/check-fan-out" "$ASSETS/structure-hook" "$REPO/scripts/" 2>/dev/null

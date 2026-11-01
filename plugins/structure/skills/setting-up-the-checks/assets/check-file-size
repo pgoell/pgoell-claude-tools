@@ -23,7 +23,9 @@ EXCLUDES=(
 # "#" starts a comment line, blank lines are skipped. A missing file adds none.
 # Only a regular file counts, and only its first MiB: a repo nobody has read may
 # hold a FIFO, a symlink to a device or a huge file there.
-top=$(git rev-parse --show-toplevel)
+# $(...) strips every newline that ends the name, so the output ends in a mark.
+top=$(git rev-parse --show-toplevel && echo x)
+top=${top%$'\n'x}
 if [ -f "$top/.file-size-excludes" ]; then
   while IFS= read -r glob || [ -n "$glob" ]; do
     glob=${glob%$'\r'}
