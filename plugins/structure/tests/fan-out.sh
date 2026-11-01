@@ -438,11 +438,13 @@ deep1000="$(printf 'd/%.0s' $(seq 1000))"
 files 8 "${deep1000}zz"
 files 8 "${deep1000%/}"
 git add -A
-for row in '**/**/**/**/zz|1' '**/d/**/d/**/d/**/zz|1' '**/d|1' '**/**/**/**/d/zz|1' '**/d/**/d/**/d/**/d|1' 'd/**|0'; do
+# Each row: a glob and how many of the two folders stay reported.
+for row in '**/**/**/**/zz|1' '**/d/**/d/**/d/**/zz|1' '**/d|1' '**/**/**/**/d/zz|1' '**/d/**/d/**/d/**/d|1' 'd/**|0' '**/**/**/**/yy|2' '**/d/**/d/**/d/**/yy|2'; do
   printf '%s\n' "${row%|*}" >.fan-out-excludes
   for aw in "${UNDER[@]}"; do
     fan_under "$aw"
-    if [ "$RC" -eq "${row#*|}" ]; then ok "F23 $aw: ${row%|*} at depth 1000"; else bad "F23 $aw: ${row%|*} at depth 1000 (rc=$RC)"; fi
+    got=$(grep -c '^fan-out: ' <<<"$ERR")
+    if [ "$RC" -ne 124 ] && [ "$got" -eq "${row#*|}" ]; then ok "F23 $aw: ${row%|*} at depth 1000"; else bad "F23 $aw: ${row%|*} at depth 1000 (rc=$RC, $got)"; fi
   done
 done
 

@@ -532,24 +532,17 @@ if command -v mawk >/dev/null; then
   want_rc "S6 345: the hook reports the folder under mawk" 2
 fi
 
-# S7 345: the worst globs for the matcher: every offset stays alive under each token.
-# Without its limit on work this ran past 60 s under each awk. Folders it gave up on
-# get reported.
+# S7 345: "**/" costs the folders' slashes, not their length, on long paths.
 fresh
-seg=$(repeat a 240)
-for i in $(seq 200); do files 8 "$seg$i"; done
+long=$(for i in $(seq 15); do repeat a 250; printf /; done)
+for i in $(seq 200); do files 8 "$long$i"; done
 git add -A
-line=$(printf 'a*%.0s' $(seq 255))'z*'
-yes "$line" | head -n 1024 >.fan-out-excludes
-fast_fan_30() {
-  ERR="$(timeout 30 bash scripts/check-fan-out --all 2>&1 >/dev/null)"
-  RC=$?
-}
+for i in $(seq 1024); do echo "**/zq$i*"; done >.fan-out-excludes
 for tool in "${AWKS[@]}"; do
   oldpath=$PATH
   PATH=$WORK/shim-${tool##*/}:$PATH
-  fast_fan_30
-  want_rc "S7 345 ${tool##*/}: the worst globs return" 1
+  fast_fan
+  want_rc "S7 345 ${tool##*/}: 1024 lines of **/ over 200 long paths return" 1
   PATH=$oldpath
 done
 

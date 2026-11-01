@@ -97,8 +97,8 @@ done <"$list" | awk -v mode="$mode" -v limit="$LIMIT" -v want="$want" -v fresh="
 function trim(s) { sub(/^[ \t\r]+/, "", s); sub(/[ \t\r]+$/, "", s); return s }
 # Globs get a matcher of their own: a regex built from one made mawk backtrack for
 # minutes on many "*" or on "**/**/**/**/zz" over a very deep path. compile turns a
-# glob into tokens, stored from first[g] up: "L" (plain text in lit), "?", "*", "A"
-# ("**") and "S" ("**/"). Only *, ** and ? are special.
+# glob into tokens, stored from first[g] up: "L" (plain text in lit), "F" ("*" then
+# plain text), "?", "*", "A" ("**") and "S" ("**/"). Only *, ** and ? are special.
 function compile(g,   i, c) {
   first[++nex] = nt + 1
   for (i = 1; i <= length(g); i++) {
@@ -111,29 +111,49 @@ function compile(g,   i, c) {
       if (nt < first[nex] || tok[nt] != "S") tok[++nt] = "S"
     } else if (substr(g, i, 2) == "**") { i++; tok[++nt] = "A" }
     else if (c == "*" || c == "?") tok[++nt] = c
-    else if (nt >= first[nex] && tok[nt] == "L") lit[nt] = lit[nt] c
+    else if (nt >= first[nex] && (tok[nt] == "L" || tok[nt] == "F")) lit[nt] = lit[nt] c
+    else if (nt >= first[nex] && tok[nt] == "*") { tok[nt] = "F"; lit[nt] = c }
     else { tok[++nt] = "L"; lit[nt] = c }
   }
   first[nex + 1] = nt + 1
 }
 # Walks the tokens of glob g over d and keeps, in rising order, each offset in d the
 # tokens so far can end at. No token sees an offset twice, so one call costs at most
-# tokens times the length of d, on any awk. A run spends 8 million offsets at most:
-# past that no glob matches and the folder gets reported, as with the line limits.
-function matches(d, g,   len, t, k, w, wl, i, j, n, m, p, q, c) {
+# tokens times the length of d, on any awk. after_slash lists the offsets just past
+# each "/" in d; excluded fills it once per folder.
+function matches(d, g,   len, t, k, w, wl, i, j, n, m, p, q, c, once) {
   len = length(d)
   # A glob that ends in plain text mostly fails here, at the cost of one compare.
   t = first[g + 1] - 1
-  if (t >= first[g] && tok[t] == "L" && substr(d, len - length(lit[t]) + 1) != lit[t]) return 0
+  if (t >= first[g] && (tok[t] == "L" || tok[t] == "F") && substr(d, len - length(lit[t]) + 1) != lit[t]) return 0
   n = 1
   at[1] = 1
-  for (t = first[g]; t < first[g + 1] && n > 0 && spent <= 8000000; t++) {
+  for (t = first[g]; t < first[g + 1] && n > 0; t++) {
     k = tok[t]
     m = 0
     if (k == "L") {
       w = lit[t]
       wl = length(w)
       for (i = 1; i <= n; i++) if (substr(d, at[i], wl) == w) next_at[++m] = at[i] + wl
+    } else if (k == "F") {
+      # The text may start anywhere up to the next "/". A "*" after it reaches all
+      # that a later hit would, so then the first hit is enough.
+      w = lit[t]
+      wl = length(w)
+      q = 0
+      once = t + 1 < first[g + 1] && (tok[t + 1] == "*" || tok[t + 1] == "F")
+      for (i = 1; i <= n; i++) {
+        p = at[i]
+        if (p <= q) continue
+        j = index(substr(d, p), "/")
+        q = j ? p + j - 1 : len + 1
+        while ((j = index(substr(d, p), w)) > 0 && p + j - 1 <= q) {
+          p += j - 1
+          next_at[++m] = p + wl
+          if (once) break
+          p++
+        }
+      }
     } else if (k == "?") {
       # One character of the name: an escape such as "\n" counts as one.
       for (i = 1; i <= n; i++) {
@@ -156,16 +176,19 @@ function matches(d, g,   len, t, k, w, wl, i, j, n, m, p, q, c) {
     } else {
       # "**/": where the last token ended, or just past any later "/".
       j = 1
-      for (p = at[1]; p <= len + 1; p++) {
-        if (j <= n && at[j] == p) { next_at[++m] = p; j++ }
-        else if (substr(d, p - 1, 1) == "/") next_at[++m] = p
+      for (i = 1; i <= nslash; i++) {
+        p = after_slash[i]
+        if (p <= at[1]) continue
+        while (j <= n && at[j] < p) next_at[++m] = at[j++]
+        if (j <= n && at[j] == p) j++
+        next_at[++m] = p
       }
+      while (j <= n) next_at[++m] = at[j++]
     }
-    spent += n + m
     n = m
     for (i = 1; i <= n; i++) at[i] = next_at[i]
   }
-  return spent <= 8000000 && n > 0 && at[n] == len + 1
+  return n > 0 && at[n] == len + 1
 }
 # A raw tab or CR, as an older file or a person writes it, reads as its escape.
 function raw(s,   n, part, i) {
@@ -183,8 +206,15 @@ function plain(s) {
   if (substr(s, 1, 2) == "\\s") return " " substr(s, 3)
   return s
 }
-function excluded(d,   i) {
+function excluded(d,   i, rest, s) {
   d = plain(d)
+  nslash = s = 0
+  rest = d
+  while ((i = index(rest, "/")) > 0) {
+    s += i
+    after_slash[++nslash] = s + 1
+    rest = substr(rest, i + 1)
+  }
   for (i = 1; i <= nex; i++) if (matches(d, i)) return 1
   return 0
 }
