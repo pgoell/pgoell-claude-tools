@@ -207,3 +207,99 @@ if [ "$RC" -eq 2 ] && grep -qF 'file-size: sub/big.md is ~5001 tokens' <<<"$ERR"
 else
   bad "H12 relative path reaches the other checkout (rc=$RC: $ERR)"
 fi
+
+# Expects exit 2 with file-size line $1 for test name $2, and no stub's words.
+flags() {
+  if [ "$RC" -eq 2 ] && grep -qF "file-size: $1 is ~5001 tokens" <<<"$ERR" && ! grep -qF stub <<<"$ERR"; then
+    ok "$2"
+  else
+    bad "$2 (rc=$RC: $ERR)"
+  fi
+}
+
+# Expects exit 0 and no words for test name $1.
+silent() {
+  if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then ok "$1"; else bad "$1 (rc=$RC: $ERR)"; fi
+}
+
+# Moves this repo's scripts to folder $1 and leaves a scripts symlink to it.
+link_scripts() {
+  mkdir -p "$1"
+  mv scripts/* "$1/"
+  rmdir scripts
+  ln -s "$1" scripts
+}
+
+# H13 issue 321, a regression from PR 319: scripts/ is a symlink, and git asked
+# in the folder it reaches names no path in this repo.
+fresh
+link_scripts "$WORK/shared$n"
+mkfile src/big.md 20004
+hook "$REPO/src/big.md" "$REPO/scripts/structure-hook"
+flags src/big.md "H13 scripts linked to a folder outside any repo is checked"
+fresh
+mkfile src/big.md 20004
+ln -s "$REPO/scripts" "$WORK/tools$n"
+hook "$REPO/src/big.md" "$WORK/tools$n/structure-hook"
+flags src/big.md "H13 hook called through a link from outside any repo is checked"
+
+other="$WORK/other$n"
+git init -q "$other"
+fresh
+link_scripts "$other/deep/tools"
+mkfile src/big.md 20004
+hook "$REPO/src/big.md" "$REPO/scripts/structure-hook"
+flags src/big.md "H13 scripts linked to a subfolder of another repo is checked"
+
+# The link does not widen the check: a nested repo with no copy stays silent, and
+# one with a copy has it stay unrun.
+echo '/inner/' >.gitignore
+git init -q inner
+mkfile inner/big.md 20004
+before="$(objects inner)"
+hook "$REPO/inner/big.md" "$REPO/scripts/structure-hook"
+silent "H13 linked scripts, nested repo with no copy passes in silence"
+if [ "$(objects inner)" = "$before" ] && [ ! -e inner/.git/index ]; then
+  ok "H13 linked scripts, nothing written to the nested repo"
+else
+  bad "H13 linked scripts, nothing written to the nested repo"
+fi
+mkdir inner/scripts
+stub "$REPO/inner/scripts/structure-hook"
+hook "$REPO/inner/big.md" "$REPO/scripts/structure-hook"
+flags big.md "H13 linked scripts, nested repo's copy is found and not run"
+
+# H14 issue 321, a regression from PR 319: GIT_DIR alone makes git take the
+# current folder as the top of the work tree.
+fresh
+mkfile src/small.md 100
+git add -A
+before="$(git ls-files -s)"
+mkfile src/big.md 20004
+GIT_DIR="$REPO/.git" hook "$REPO/src/big.md"
+flags src/big.md "H14 GIT_DIR without GIT_WORK_TREE is checked"
+GIT_DIR=.git GIT_INDEX_FILE=.git/index hook "$REPO/src/big.md"
+flags src/big.md "H14 relative GIT_DIR and GIT_INDEX_FILE, as from a git hook, is checked"
+if [ "$(git ls-files -s)" = "$before" ]; then ok "H14 real index unchanged"; else bad "H14 real index unchanged"; fi
+
+# The file's own repo decides, not the caller's: a nested repo with no copy stays
+# silent under GIT_DIR, and a pair at repo A does not steer a file in repo B.
+echo '/inner/' >.gitignore
+git init -q inner
+mkfile inner/big.md 20004
+before="$(objects inner)"
+outer="$(objects .)"
+GIT_DIR="$REPO/.git" hook "$REPO/inner/big.md"
+silent "H14 GIT_DIR, nested repo with no copy passes in silence"
+if [ "$(objects inner)" = "$before" ] && [ "$(objects .)" = "$outer" ]; then
+  ok "H14 GIT_DIR, nothing written to either repo"
+else
+  bad "H14 GIT_DIR, nothing written to either repo"
+fi
+a=$REPO
+fresh
+mkfile "$REPO/src/big.md" 20004
+outer="$(objects "$a")"
+GIT_DIR="$a/.git" GIT_WORK_TREE="$a" hook "$REPO/src/big.md"
+flags src/big.md "H14 GIT_DIR and GIT_WORK_TREE at another repo, the file's repo is checked"
+if [ "$(objects "$a")" = "$outer" ]; then ok "H14 nothing written to the other repo"; else bad "H14 nothing written to the other repo"; fi
