@@ -222,7 +222,7 @@ Same as synthesis loop. Stall detection on consecutive identical id sets in `dra
 1. Resolve the format once, by the order in Output Format: prompt override, then the brief's `Format:` line, then html.
 2. Rename the passed draft with the shell: `mv {OUTPUT_PATH}/draft.md {OUTPUT_PATH}/report.md`. For markdown, that is the report.
 3. For html, you (never a subagent) render `{OUTPUT_PATH}/report.html` from `report.md`: read `references/rendering-the-report.md` and follow it, checks and failure path included. `report.md` stays as the reviewed source.
-4. Surface a brief summary: total iterations of each loop, the final paths (`report.html` and `report.md`; `report.md` alone for markdown or a failed render), any minor (non-blocking) issues from the final reviews, and every claim or pillar `synthesis.md` labels `Confidence: low (refuted)`.
+4. Surface a brief summary: total iterations of each loop, the final paths (`report.html` and `report.md`; `report.md` alone for markdown or a failed render), any minor (non-blocking) issues from the final reviews, every claim or pillar `synthesis.md` labels `Confidence: low (refuted)`, and every claim still there in other words whose old text `claim-checks.md` lists as `REFUTED` (say: reworded, not checked again).
 
 ## File Layout (output directory)
 
