@@ -48,7 +48,7 @@ name=$(basename "$file")
 # as it was. The user's own config stays in force, but its fsmonitor would watch
 # a folder about to go.
 exclude=$(git rev-parse --git-path info/exclude) || exit 0
-scratch=$(mktemp -d)
+scratch=$(mktemp -d) && scratch=$(cd "$scratch" && pwd) || exit 0
 trap 'rm -rf "$scratch"' EXIT
 git init -q --bare --template= "$scratch" >/dev/null 2>&1 || exit 0
 printf '[core]\n\tfsmonitor = false\n' >>"$scratch/config"
