@@ -326,3 +326,51 @@ rm .fan-out-baseline
 fan_excludes 'y?'
 fan --all
 if [ "$RC" -eq 0 ]; then ok "F16 y? in the excludes matches it"; else bad "F16 y? in the excludes matches it (rc=$RC: ${ERR:0:200})"; fi
+
+# F17 globs see a "#" or space that starts a path as itself, and ? one escaped character.
+for pair in '#x|?x' '#x|**/#x' ' y|?y' ' y|**/ y'; do
+  fresh
+  files 8 "${pair%%|*}"
+  git add -A
+  fan_excludes "${pair#*|}"
+  fan --all
+  if [ "$RC" -eq 0 ]; then ok "F17 ${pair#*|} matches [${pair%%|*}]"; else bad "F17 ${pair#*|} matches [${pair%%|*}] (rc=$RC: ${ERR:0:200})"; fi
+done
+fresh
+files 8 $'a\tb'
+files 8 $'c\rd'
+git add -A
+fan_excludes 'a?b' 'c?d'
+fan --all
+if [ "$RC" -eq 0 ]; then ok "F17 ? matches a tab and a CR"; else bad "F17 ? matches a tab and a CR (rc=$RC: ${ERR:0:200})"; fi
+fan_excludes $'a\tb' $'c\rd'
+fan --all
+if [ "$RC" -eq 0 ]; then ok "F17 a raw tab or CR holds in the excludes"; else bad "F17 a raw tab or CR holds in the excludes (rc=$RC: ${ERR:0:200})"; fi
+
+# F18 a baseline line with a raw tab, from an older script, still holds and stays.
+rm .fan-out-excludes
+printf 'a\tb 8\nc\rd 8\n' >.fan-out-baseline
+fan --all
+if [ "$RC" -eq 0 ]; then ok "F18 a raw baseline line holds"; else bad "F18 a raw baseline line holds (rc=$RC: ${ERR:0:200})"; fi
+fan --update-baseline
+fan --all
+if [ "$RC" -eq 0 ] && grep -qxF 'a\tb 8' .fan-out-baseline && grep -qxF 'c\rd 8' .fan-out-baseline; then
+  ok "F18 update keeps a raw line, written as its escape"
+else
+  bad "F18 update keeps a raw line, written as its escape (rc=$RC: $(cat .fan-out-baseline))"
+fi
+
+# F19 a long excludes line stalls no awk.
+fresh
+files 8 src
+git add -A
+head -c 1048576 /dev/zero | tr '\0' a >.fan-out-excludes
+for aw in mawk 'busybox awk'; do
+  command -v "${aw%% *}" >/dev/null || continue
+  mkdir -p "$WORK/awk$n"
+  printf '#!/bin/sh\nexec %s "$@"\n' "$aw" >"$WORK/awk$n/awk"
+  chmod 755 "$WORK/awk$n/awk"
+  PATH="$WORK/awk$n:$PATH" timeout 10 bash scripts/check-fan-out --all >/dev/null 2>&1
+  RC=$?
+  if [ "$RC" -eq 1 ]; then ok "F19 $aw skips a 1 MiB excludes line"; else bad "F19 $aw skips a 1 MiB excludes line (rc=$RC)"; fi
+done

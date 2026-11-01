@@ -29,20 +29,31 @@ EXCLUDES=(
 top=$(git rev-parse --show-toplevel && echo x)
 top=${top%$'\n'x}
 if [ -f "$top/.file-size-excludes" ]; then
+  escapes=0
   while IFS= read -r glob || [ -n "$glob" ]; do
     glob=${glob%$'\r'}
     glob=${glob#"${glob%%[![:space:]]*}"}
     glob=${glob%"${glob##*[![:space:]]}"}
     case $glob in '' | '#'*) continue ;; esac
-    # "\\" goes aside first, so that its second "\" starts nothing. No path is longer
-    # than 4096, and these take minutes on a line of 1 MiB.
-    if [ "${#glob}" -le 4096 ]; then
-      glob=${glob//\\\\/$'\1'}
-      glob=${glob//\\n/$'\n'}
-      glob=${glob//\\t/$'\t'}
-      glob=${glob//\\r/$'\r'}
-      glob=${glob//\\s/ }
-      glob=${glob//$'\1'/\\\\}
+    # No path is longer than 4096, and no real file needs 64 KiB of such lines: the
+    # loop could cost minutes on a file nobody has read.
+    case $glob in *\\*) escapes=$((escapes + ${#glob})) ;; esac
+    if [ "${#glob}" -le 4096 ] && [ "$escapes" -le 65536 ]; then
+      rest=$glob
+      glob=
+      while [[ $rest == *\\* ]]; do
+        glob+=${rest%%\\*}
+        rest=${rest#*\\}
+        case ${rest:0:1} in
+          n) glob+=$'\n' ;;
+          t) glob+=$'\t' ;;
+          r) glob+=$'\r' ;;
+          s) glob+=' ' ;;
+          *) glob+=\\${rest:0:1} ;;
+        esac
+        rest=${rest:1}
+      done
+      glob+=$rest
     fi
     EXCLUDES+=("$glob")
   done < <(head -c 1048576 "$top/.file-size-excludes" 2>/dev/null)

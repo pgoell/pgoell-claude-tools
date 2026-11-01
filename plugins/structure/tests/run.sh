@@ -520,6 +520,14 @@ excludes 'x.md\s'
 run
 if passes; then ok "O4 \\s in the excludes matches a space that ends a name"; else bad "O4 \\s in the excludes matches a space that ends a name (rc=$RC: ${ERR:0:200})"; fi
 
+# A 0x01 byte in a glob is itself.
+fresh
+mkfile $'x\x01y.md' 20004
+git add -A
+excludes $'x\x01y.md'
+run
+if passes; then ok "O4 a 0x01 byte in the excludes stays itself"; else bad "O4 a 0x01 byte in the excludes stays itself (rc=$RC: ${ERR:0:200})"; fi
+
 # O5 a long line of backslashes in the excludes costs no real time. Master took 1 s
 # on this size; the "\n" passes alone would take 16 s.
 fresh
@@ -529,6 +537,15 @@ head -c 262144 /dev/zero | tr '\0' '\\' >.file-size-excludes
 timeout 10 bash scripts/check-file-size small.md >/dev/null 2>&1
 RC=$?
 if [ "$RC" -ne 124 ]; then ok "O5 a 256 KiB excludes line does not stall (rc=$RC)"; else bad "O5 a 256 KiB excludes line does not stall"; fi
+
+# O6 so do many long lines of them.
+fresh
+mkfile small.md 100
+git add -A
+yes "$(head -c 4000 /dev/zero | tr '\0' '\\')" | head -c 1048576 >.file-size-excludes
+timeout 10 bash scripts/check-file-size small.md >/dev/null 2>&1
+RC=$?
+if [ "$RC" -ne 124 ]; then ok "O6 1 MiB of long excludes lines does not stall (rc=$RC)"; else bad "O6 1 MiB of long excludes lines does not stall"; fi
 
 # shellcheck source=fan-out.sh
 . "$TESTS/fan-out.sh"
