@@ -330,3 +330,11 @@ outer="$(objects "$a")"
 GIT_DIR="$a/.git" GIT_WORK_TREE="$a" hook "$REPO/src/big.md"
 flags src/big.md "H14 GIT_DIR and GIT_WORK_TREE at another repo, the file's repo is checked"
 if [ "$(objects "$a")" = "$outer" ]; then ok "H14 nothing written to the other repo"; else bad "H14 nothing written to the other repo"; fi
+
+# Second review of PR 323: config passed by environment stays in force, since it
+# may be what guards an unread repo. Here it ignores the file, which then passes.
+fresh
+mkfile "$REPO/big.md" 20004
+echo 'big.md' >"$WORK/ignore$n"
+GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.excludesFile GIT_CONFIG_VALUE_0="$WORK/ignore$n" hook "$REPO/big.md"
+silent "H14 config passed by environment stays in force"

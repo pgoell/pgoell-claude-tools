@@ -22,8 +22,9 @@ elif ! file=$(mise exec -- jq -r '.tool_input.file_path // empty' <<<"$input"); 
 fi
 if [ -z "$file" ] || [ ! -f "$file" ]; then exit 0; fi
 # The edited file's own repo decides, whatever repo the caller's GIT_DIR names.
+# Config passed by environment stays: it may be what guards an unread repo.
 # shellcheck disable=SC2046
-unset $(git rev-parse --local-env-vars 2>/dev/null)
+unset $(git rev-parse --local-env-vars 2>/dev/null | grep -v '^GIT_CONFIG')
 top=$(git -C "$(dirname "$file")" rev-parse --show-toplevel 2>/dev/null) || exit 0
 # Look for a copy by this hook's path in its repo. Git answers for the folder a
 # symlink reaches, so also try the path from each folder above that has a .git.
