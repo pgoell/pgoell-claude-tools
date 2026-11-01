@@ -213,7 +213,7 @@ Same as the synthesis loop, on `draft-review-{M}.md`: `references/stalls-and-shi
 ### Step 11: Present
 
 1. Resolve the format once, by the order in Output Format: prompt override, then the brief's `Format:` line, then html.
-2. Rename the passed draft with the shell: `mv {OUTPUT_PATH}/draft.md {OUTPUT_PATH}/report.md`. For markdown, that is the report.
+2. Rename the draft (passed, or shipped as-is) with the shell: `mv {OUTPUT_PATH}/draft.md {OUTPUT_PATH}/report.md`. For markdown, that is the report.
 3. For html, you (never a subagent) render `{OUTPUT_PATH}/report.html` from `report.md`: read `references/rendering-the-report.md` and follow it, checks and failure path included. `report.md` stays as the reviewed source.
 4. Surface a brief summary: read "The end summary" in `references/stalls-and-ship-as-is.md` and report what it lists.
 

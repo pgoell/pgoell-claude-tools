@@ -23,7 +23,7 @@ Send all of this, then wait for the user's answer:
 The cost line depends on the loop.
 
 - Synthesis loop: "`ship as-is` skips the claim check. A claim can be `high` only if an earlier claim check cleared it in these same words, so every other claim is `medium` at best. The open critical issues stay open, and the final summary names them."
-- Writer loop: "`ship as-is` keeps the current draft. The claim check has run, so no label changes. The open critical issues stay open, and the final summary names them."
+- Writer loop: "`ship as-is` keeps the current draft and its labels. The open critical issues stay open, and the final summary names them."
 
 ## After `ship as-is`
 
