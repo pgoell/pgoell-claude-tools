@@ -36,11 +36,11 @@ Dispatched agent prompt:
 
     1. `{OUTPUT_PATH}/plan.md`: original plan with cluster definitions and
        sub-questions. This is your scope and structure.
-    2. `{OUTPUT_PATH}/research/*.md` excluding files starting with `synthesis`
-       or `claim-checks`, or matching `*-review-*`. Cluster files and gap-fill files (`gap-N-*.md`)
+    2. `{OUTPUT_PATH}/research/*.md` excluding `synthesis.md`, `claim-checks.md`
+       and the review files (`synthesis-review-N.md`). Cluster files and gap-fill files (`gap-N-*.md`)
        are both in scope. Use:
        ```bash
-       ls {OUTPUT_PATH}/research/*.md | grep -v -E '(/(synthesis|claim-checks|.*-review-))'
+       ls {OUTPUT_PATH}/research/*.md | grep -v -E '/(synthesis|claim-checks|(synthesis|draft)-review-[0-9]+)\.md$'
        ```
 
     ## Synthesis Tasks

@@ -4,7 +4,7 @@ Step 7 sends you here. You, the orchestrator, pick the claims, dispatch the chec
 
 ## 1. Pick the claims
 
-Read `synthesis.md`. List its testable claims in this order, in file order within each kind: numbers (amounts and deal terms too), then names and dates, then thesis pillars. A testable claim states something a page could contradict and has at least one cited source; leave out the rest. A thesis pillar takes the sources of the claims it rests on. A claim gets the id `claim-check-<claim-slug>`; the slug never holds `-review-`, which the researcher file filter drops. A claim reworded in a later round is the same claim when it makes the same point on the same subject: it keeps its id.
+Read `synthesis.md`. List its testable claims in this order, in file order within each kind: numbers (amounts and deal terms too), then names and dates, then thesis pillars. A testable claim states something a page could contradict and has at least one cited source; leave out the rest. A thesis pillar takes the sources of the claims it rests on. A claim gets the id `claim-check-<claim-slug>`. A claim reworded in a later round is the same claim when it makes the same point on the same subject: it keeps its id.
 
 Sort each claim into one group, first match wins:
 
