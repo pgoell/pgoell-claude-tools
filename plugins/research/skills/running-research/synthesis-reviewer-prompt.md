@@ -127,8 +127,9 @@ Dispatched agent prompt:
     the source says what the claim says. Fetch again at most 5 URLs cited in
     synthesis.md, fewer when fewer are cited. Pick them in this order:
 
-    1. If iteration > 1: the URLs marked `rejected` or `unresolved` in the
-       prior review's `REFETCH:` block.
+    1. If iteration > 1: for each claim the prior review's `REFETCH:` block
+       marks `rejected` or `unresolved`, the URLs synthesis.md cites for it now,
+       which may no longer be the URL that was marked. Skip a claim now gone.
     2. URLs behind numeric claims.
     3. URLs behind thesis-pillar claims.
 
@@ -149,7 +150,9 @@ Dispatched agent prompt:
     A `rejected` claim is a critical issue; an `unresolved` claim is minor.
     Give both the id `refetch-<claim-slug>` and keep it while the claim stays
     `rejected` or `unresolved`. A claim now `confirmed`, or gone from
-    synthesis.md, drops its id. Mark each URL on its own line; when one
+    synthesis.md, drops its id. A claim left `rejected` that the limit of 5 kept
+    you from fetching again keeps its id, critical, and its `REFETCH:` entry:
+    copy it with `mark: rejected` and the quote `not fetched again`. Mark each URL on its own line; when one
     claim's URLs disagree, its one issue takes the worst mark (`rejected`,
     then `unresolved`).
 

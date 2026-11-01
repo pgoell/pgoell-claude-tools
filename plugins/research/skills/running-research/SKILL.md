@@ -17,7 +17,7 @@ No authentication required. Uses the host agent's web search and fetch or browse
 
 1. **Subagent dispatch when available and permitted**: dispatch researcher, synthesis, writer, and reviewer agents.
 2. **File read tools**: load the brief and prompt templates before dispatch.
-3. **Shell**: directory creation, file globbing, the `grep -x` check of Step 1, the `sha256sum` and `grep -c` checks of Step 3, the `sha256sum` and `head -1` check of Step 4, the label check of `references/confidence-labels.md`, and the `mv` and render checks of Step 11.
+3. **Shell**: directory creation, file globbing, the `grep -x` check of Step 1, the `sha256sum` and `grep -c` checks of Step 3, the `sha256sum` and `head -1` check of Step 4, the label check of `references/confidence-labels.md`, the open-issue list of `references/stalls-and-ship-as-is.md`, and the `mv` and render checks of Step 11.
 4. **Progress list**: live loop bookkeeping.
 5. **Web search and fetch or browse tools**: researchers, the synthesis reviewer and the claim checkers use them; the orchestrator uses them only if subagent dispatch fails.
 
@@ -126,7 +126,7 @@ A check fails on a missing file, an unchanged hash, or a wrong first line. Re-di
 
 1. Read `synthesis-reviewer-prompt.md`.
 2. Inject: BRIEF, OUTPUT_PATH, ITERATION, LABEL_RULES_PATH (path to references/confidence-labels.md), REVIEWER_FEEDBACK (empty for normal flow; populated only when re-dispatched from cross-loop branch in Step 10).
-3. Dispatch via the host subagent tool. Wait for completion. In its sixth check, the reviewer fetches again up to 5 cited URLs (first any URL the prior round left `rejected` or `unresolved`, then numbers, then thesis pillars) and records each mark in the file's `REFETCH:` block.
+3. Dispatch via the host subagent tool. Wait for completion. In its sixth check, the reviewer fetches again up to 5 cited URLs (first the URLs of any claim the prior round left `rejected` or `unresolved`, then numbers, then thesis pillars) and records each mark in the file's `REFETCH:` block.
 4. Read the verdict from agent response, or from `{OUTPUT_PATH}/research/synthesis-review-{N}.md` if response is unparseable.
 
 If verdict is PASS: continue to Step 7.
@@ -158,14 +158,7 @@ Then, once per round, not once per gap-fill: every round with a critical issue w
 
 ### Loop safeguards (Steps 5-6)
 
-**Stall detection.** After writing a `synthesis-review-{N}.md` with verdict ISSUES, compare its issue id set to `synthesis-review-{N-1}.md`. If identical, surface to user immediately; a `ship as-is` here goes as at a check-in. Skip this when the round came from a refuted claim: the review never lists its id, and Step 7 stops a claim that stays refuted.
-
-**Check-in.** After synthesis-review iterations 3, 6, 9, ..., pause and surface:
-
-- Open issue ids and one-line descriptions
-- What was attempted (which gap-fills ran)
-- What's been narrowed (issues closed since iteration 1)
-- Options: `continue`, `ship as-is` (skips Step 7: set the labels as `references/confidence-labels.md` says, then go to Step 8, or back to the writer as Step 10 says), `intervene`
+After each review with verdict ISSUES, and after iterations 3, 6, 9, ..., read `references/stalls-and-ship-as-is.md`: it says when to stop, what to tell the user, and what `continue`, `ship as-is` and `intervene` each do.
 
 Update the progress list at every step so the user can inspect live status through the host platform.
 
@@ -215,14 +208,14 @@ For any `content-gap-suspected` issues:
 
 ### Loop safeguards (Steps 9-10)
 
-Same as synthesis loop. Stall detection on consecutive identical id sets in `draft-review-{M}.md` and `draft-review-{M-1}.md`. Check-in every 3 iterations of writer-review. Same options, but `ship as-is` here goes to Step 11 with the current draft.
+Same as the synthesis loop, on `draft-review-{M}.md`: `references/stalls-and-ship-as-is.md`. Here `ship as-is` goes to Step 11 with the current draft.
 
 ### Step 11: Present
 
 1. Resolve the format once, by the order in Output Format: prompt override, then the brief's `Format:` line, then html.
-2. Rename the passed draft with the shell: `mv {OUTPUT_PATH}/draft.md {OUTPUT_PATH}/report.md`. For markdown, that is the report.
+2. Rename the draft (passed, or shipped as-is) with the shell: `mv {OUTPUT_PATH}/draft.md {OUTPUT_PATH}/report.md`. For markdown, that is the report.
 3. For html, you (never a subagent) render `{OUTPUT_PATH}/report.html` from `report.md`: read `references/rendering-the-report.md` and follow it, checks and failure path included. `report.md` stays as the reviewed source.
-4. Surface a brief summary: total iterations of each loop, the final paths (`report.html` and `report.md`; `report.md` alone for markdown or a failed render), any minor (non-blocking) issues from the final reviews, every claim or pillar `synthesis.md` labels `Confidence: low (refuted)`, and every claim still there in other words whose old text `claim-checks.md` lists as `REFUTED` (say: reworded, not checked again).
+4. Surface a brief summary: read "The end summary" in `references/stalls-and-ship-as-is.md` and report what it lists.
 
 ## File Layout (output directory)
 
@@ -257,8 +250,7 @@ Read `references/verdicts-and-markers.md` to parse a verdict (Steps 5, 9) a rese
 - Researcher fails the Step 3 check (`ARTIFACT-MISSING`, hash mismatch, missing or unparseable last line, source count under the floor): re-dispatch once. Surface if it fails again (likely bad cluster boundary).
 - Checker fails its reply twice: its vote is `UNCLEAR`; go on (see `references/claim-check.md`).
 - Refetched URL dead, moved, paywalled or refused: the reviewer marks it `unresolved` and goes on. Never retry it yourself.
-- Stall detected: surface to user immediately. Don't auto-retry.
-- Check-in interval reached: pause, present status, await user choice.
+- Stall detected or check-in interval reached: send the message in `references/stalls-and-ship-as-is.md` and await the user's choice. Don't auto-retry.
 - Output dir not writable: suggest alternative path, ask user.
 - HTML template unreadable, or the render fails its check (fewer links than report.md, template sample text left): keep `report.md`, leave no partial `report.html`, tell the user (see `references/rendering-the-report.md`).
 
