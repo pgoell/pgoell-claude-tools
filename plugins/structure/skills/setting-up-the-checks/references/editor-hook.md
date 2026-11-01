@@ -2,7 +2,9 @@
 
 `scripts/structure-hook` is a Claude Code `PostToolUse` hook. After each `Edit`, `Write` or `MultiEdit`, Claude Code sends it JSON on stdin; the hook reads `tool_input.file_path` and runs `check-file-size` and `check-fan-out` (from its own folder) on that file. On a failure it prints their message to stderr and exits 2, which Claude Code shows to Claude after the tool ran. Otherwise it exits 0 and says nothing. A file outside a git repo, ignored by git, or gone passes.
 
-`check-file-size` sizes the staged copy of a file, so the hook stages the edited file into a throwaway copy of the index first: the size on disk counts, and the real index stays as it was.
+The hook acts only for a repo that set the checks up. It looks for a copy of itself in the edited file's repo, at the path it has in its own repo. No copy: the file passes, and the hook writes nothing there. So a nested repo the project ignores (a vault, a colocated jj repo) gets no fan-out message and no loose objects. A copy in another repo or linked worktree: the file meets that checkout's baseline and excludes, through this copy's scripts. The hook never runs that other copy, since the edited repo may be a clone nobody has read.
+
+A repo with an older copy gets this by overwriting its copy where it sits. With the copies in `scripts/`, rerun `/structure:setting-up-the-checks`: step 2 overwrites the three scripts and leaves the baseline and excludes alone. A repo that keeps them elsewhere copies `assets/structure-hook` over its own.
 
 It needs `jq`, on `PATH` or through `mise exec --`. Without either it exits 1, which Claude Code reports as a hook error and does not block.
 
@@ -48,4 +50,4 @@ printf '{"tool_name":"Write","tool_input":{"file_path":"%s/x.txt"}}' "$PWD" | sc
 rm x.txt
 ```
 
-If the hook does not fire in a session that was already open, tell the user to restart it. If it still stays silent, check that the session's project folder is this repo (`${CLAUDE_PROJECT_DIR}` points there) and that `scripts/structure-hook` is executable.
+If the hook does not fire in a session that was already open, tell the user to restart it. If it still stays silent, check that the session's project folder is this repo (`${CLAUDE_PROJECT_DIR}` points there), that `scripts/structure-hook` is executable, and that the edited file's repo holds a copy of the hook at that path.
