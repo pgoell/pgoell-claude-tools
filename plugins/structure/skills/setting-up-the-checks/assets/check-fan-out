@@ -79,12 +79,14 @@ git -C "$top" ls-files -z --cached --others --exclude-standard >"$list"
 # and blank lines are skipped.
 # Only a regular file counts, and only its first MiB: a repo nobody has read may
 # hold a FIFO, a symlink to a device or a huge file there.
+# A line of the excludes over 512 bytes is skipped: it could cost minutes, and a
+# folder it fails to skip gets reported.
 fresh=1
 if [ -f "$top/.fan-out-baseline" ]; then
   fresh=0
   head -c 1048576 "$top/.fan-out-baseline" >"$base" 2>/dev/null || :
 fi
-if [ -f "$top/.fan-out-excludes" ]; then head -c 1048576 "$top/.fan-out-excludes" >"$excl" 2>/dev/null || :; fi
+if [ -f "$top/.fan-out-excludes" ]; then head -c 1048576 "$top/.fan-out-excludes" 2>/dev/null | LC_ALL=C awk 'length($0) <= 512' >"$excl" || :; fi
 while IFS= read -r -d '' path; do
   escape "$path"
   printf '%s\n' "$escaped"
@@ -131,8 +133,6 @@ function excluded(d,   i) {
 }
 BEGIN {
   while ((getline line < excl) > 0) {
-    # A longer line could cost minutes, and a folder it fails to skip gets reported.
-    if (length(line) > 512) continue
     line = trim(line)
     if (line != "" && line !~ /^#/) ex[++nex] = glob2re(plain(raw(line)))
   }

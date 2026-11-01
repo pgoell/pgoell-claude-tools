@@ -2,7 +2,7 @@
 
 All three files sit at the repo root. The scripts find them from any subdirectory and read the working-tree copy. In each, a line that starts with `#` is a comment and blank lines are skipped.
 
-In both excludes files a line over 512 bytes, counted as written, is skipped: a longer one could cost minutes. What it would have excluded still gets reported. For a path that long, write a glob such as `deep/**`.
+In both excludes files a line over 512 bytes, counted as written, is skipped: a longer one could cost seconds or minutes. What it would have excluded still gets reported. For a path that long, write a glob such as `deep/**`.
 
 ## `.file-size-excludes`
 

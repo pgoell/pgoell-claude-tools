@@ -350,3 +350,36 @@ for ch in '\' ' ' a; do
   RC=$?
   if [ "$RC" -eq 0 ]; then ok "L6 1 MiB of 512-byte lines of '$ch' pass in time"; else bad "L6 1 MiB of 512-byte lines of '$ch' pass in time (rc=$RC)"; fi
 done
+
+# L7 the limit counts bytes in any locale, and NUL bytes among them.
+p=$(printf 'é%.0s' $(seq 100))
+d="$p/$p/$p"
+fresh
+mkfile "$d/big.md" 20004
+files 8 "$d"
+git add -A
+echo "$d/big.md" >.file-size-excludes
+echo "$d" >.fan-out-excludes
+ERR=$(LC_ALL=C.UTF-8 bash scripts/check-file-size "$d/big.md" 2>&1 >/dev/null)
+size_rc=$?
+ERR=$(LC_ALL=C.UTF-8 bash scripts/check-fan-out --all 2>&1 >/dev/null)
+RC=$?
+if [ "$size_rc" -eq 1 ] && [ "$RC" -eq 1 ]; then
+  ok "L7 both checks skip 600 bytes of 300 characters"
+else
+  bad "L7 both checks skip 600 bytes of 300 characters (file-size rc=$size_rc, fan-out rc=$RC)"
+fi
+fresh
+mkfile big.md 20004
+files 8 src
+git add -A
+{ printf big.md && head -c 600 /dev/zero && echo; } >.file-size-excludes
+{ printf src && head -c 600 /dev/zero && echo; } >.fan-out-excludes
+run big.md
+size_rc=$RC
+fan --all
+if [ "$size_rc" -eq 1 ] && [ "$RC" -eq 1 ]; then
+  ok "L7 both checks skip a line padded with NUL bytes"
+else
+  bad "L7 both checks skip a line padded with NUL bytes (file-size rc=$size_rc, fan-out rc=$RC)"
+fi
