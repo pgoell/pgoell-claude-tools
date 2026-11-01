@@ -30,7 +30,7 @@ All in `skills/setting-up-the-checks/assets/`.
 
 A folder fails when it holds more than 7 entries and more than its line in `.fan-out-baseline`. `.fan-out-excludes` lists folders it skips, one git glob per line with a comment above it that says why.
 
-`structure-hook` reads Claude Code's hook JSON on stdin, runs both checks on `tool_input.file_path` (the size on disk, through a throwaway index), and exits 2 with their message on a failure. A file in a repo with no copy of the hook at the same path, such as a nested repo the project ignores, passes untouched; a file in another repo or worktree with a copy meets that repo's baseline and excludes, and the hook never runs that copy. It needs `jq`.
+`structure-hook` reads Claude Code's hook JSON on stdin, runs both checks on `tool_input.file_path` (the size on disk, through a throwaway index), and exits 2 with their message on a failure. A file in a repo with no copy of the hook at the same path, such as a nested repo the project ignores, passes untouched, and a symlinked `scripts/` counts as `scripts/`; the hook ignores `GIT_DIR` and `GIT_WORK_TREE`, so the file's path alone picks its repo; a file in another repo or worktree with a copy meets that repo's baseline and excludes, and the hook never runs that copy. It needs `jq`.
 
 The fallback git hooks ship beside them as `pre-commit` and `pre-push`.
 
