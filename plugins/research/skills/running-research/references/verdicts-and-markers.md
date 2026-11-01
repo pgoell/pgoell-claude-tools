@@ -38,4 +38,5 @@ These words are fixed. Every prompt that writes or reads them uses these spellin
 - `REFETCH:`: the block in `synthesis-review-{N}.md` that lists refetched URLs.
 - `CLAIM-CHECK: REFUTED | UPHELD | UNCLEAR`: last line of a claim checker's response, after its `quote:` and `url:` lines. Two or more `REFUTED` make the claim a critical `source-quality` issue, id `claim-check-<claim-slug>`.
 - `SPLIT`, `SKIPPED-CONFIRMED`, `NOT-CHECKED`: outcomes in `claim-checks.md` beside those three words; `references/claim-check.md` defines them.
+- `Confidence: high | medium | low (one source | unclear | refuted)`: the label line per claim in `synthesis.md`; `references/confidence-labels.md` holds the rule.
 - `confirmed`, `rejected`, `unresolved`: the mark per refetched URL. A `rejected` claim is a critical `source-quality` issue; an `unresolved` one is minor.

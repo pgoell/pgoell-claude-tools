@@ -26,6 +26,7 @@ Dispatched agent prompt:
 
     - Output path: {OUTPUT_PATH}
     - Iteration: {ITERATION}
+    - Label rule: {LABEL_RULES_PATH}
 
     ## Hypothesis from Writer-Reviewer (cross-loop only)
 
@@ -50,10 +51,12 @@ Dispatched agent prompt:
        (prior review). Use the prior review to assign STABLE issue ids: same
        issue across iterations must keep the same id. New issues get new ids.
        Its `REFETCH:` block sets the order for Check 6.
+    5. `{LABEL_RULES_PATH}`, and `{OUTPUT_PATH}/research/claim-checks.md` if it
+       exists, for Check 7.
 
     ## Checks
 
-    Run all 6 checks. For each, identify specific issues with stable ids.
+    Run all 7 checks. For each, identify specific issues with stable ids.
 
     ### Check 1: Coverage (category: coverage)
 
@@ -142,6 +145,18 @@ Dispatched agent prompt:
     claim's URLs disagree, its one issue takes the worst mark (`rejected`,
     then `unresolved`).
 
+    ### Check 7: Confidence labels (category: logic)
+
+    Check each claim's and thesis pillar's `Confidence:` line against the rule
+    table in `{LABEL_RULES_PATH}`, using its N, `claim-checks.md` and the
+    `REFETCH:` blocks of earlier reviews. Flag three things: a missing line, a
+    `high` that the first matching row does not give, and a `medium` when N is
+    1. Any other difference is no issue: the synthesis labels from N alone, and
+    the orchestrator sets the final labels after the claim check, so a `medium`
+    on a claim the check found `UNCLEAR` or `REFUTED` waits for that step. Id
+    `confidence-<claim-slug>`, so the fix is a new synthesis and not a new
+    researcher. Severity: critical.
+
     ## Stable Issue IDs
 
     For each issue, choose a stable id that survives iterations: short,
@@ -152,6 +167,7 @@ Dispatched agent prompt:
     - `unresolved-mckinsey-vs-bcg-cost-estimates` (specific contradiction)
     - `weak-thesis-no-position` (structural)
     - `shared-origin-acme-revenue` (copies of one origin counted apart)
+    - `confidence-acme-revenue` (a `high` the rule does not give)
 
     If iteration > 1 and the prior review has an issue with the same root cause,
     REUSE that id. Stall detection depends on id stability.

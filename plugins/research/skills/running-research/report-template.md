@@ -50,6 +50,10 @@ Summary of the thesis and main supporting arguments. Actionable recommendations 
 
 End with a "Starting from zero" subsection: concrete guidance for the most common real-world scenario: an organization with a few pilots, no baselines, no measurement culture, and leadership asking "is this working?" This is not the ideal path; it is the realistic one.
 
+## Low-Confidence Claims
+
+One line per low-confidence claim the report states: the claim, its source as a link, and the reason (one source, a check could not confirm it, or a check contradicted it). If there is none, one line saying no claim has low confidence.
+
 ## References
 
 All sources with URLs and access dates

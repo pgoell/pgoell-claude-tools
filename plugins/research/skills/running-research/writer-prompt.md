@@ -56,10 +56,11 @@ Dispatched agent prompt:
        Introduction, Methodology, What Matters Most, Supporting Evidence,
        Analysis & Insights, Limitations & Open Problems, Future Outlook (or
        omit with rationale), Conclusions & Practical Starting Point,
-       References. When it asks for something shorter (a two-page summary, a
+       Low-Confidence Claims, References. When it asks for something shorter (a two-page summary, a
        one-page memo), keep only the sections that fit within that length, in
        template order: Executive Summary with the thesis first, then What
-       Matters Most, then Conclusions, and always References. Never exceed the
+       Matters Most, then Conclusions, Low-Confidence Claims when the report
+       states a low claim, and always References. Never exceed the
        stated length. Write in the language the Deliverable names.
 
     3. Preserve credibility tags inline. When a synthesis claim cites a vendor
@@ -77,9 +78,19 @@ Dispatched agent prompt:
        a dedicated AI measurement function" is. If the synthesis doesn't support
        falsifiable predictions, omit the section with a brief rationale.
 
-    6. Single-source flags. If a finding rests on one source per the synthesis,
-       the prose must say so explicitly: "Based solely on [Source], which has
-       not been independently corroborated..."
+    6. Hedge by the synthesis's `Confidence:` line on each claim.
+       - `high`: state it plainly.
+       - `medium`: hedge it ("the evidence suggests", "reports indicate").
+       - `low`: name the source and the reason in the sentence. For a thesis
+         pillar, the source is that of the claims under its `Rests on:` line. For
+         `low (one source)`: "Based solely on [Source], which has not been
+         independently corroborated..." For `low (unclear)`: "[Source] says so,
+         but a check could not confirm it." For `low (refuted)`: "[Source] says
+         so, but a check of the sources contradicted it."
+       List every low claim the report states in Low-Confidence Claims, one
+       line each: the claim, its source as a link, the reason. In a full report
+       with none, that section holds one line saying no claim has low
+       confidence.
 
     7. References section. Compile the synthesis's Source Inventory into a
        References section with full URLs, titles, credibility tags, and access

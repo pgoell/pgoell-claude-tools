@@ -21,7 +21,7 @@ Calls are 3 per claim to check. When this round's calls plus the calls of earlie
 
 ## 3. Dispatch
 
-For each claim to check, read `references/claim-checker-prompt.md`. Inject CLAIM (as `synthesis.md` states it) and SOURCES (its source entries word for word, with tag and `origin:`, and its `Independent sources: N` line). Inject nothing else: no brief, no synthesis, no path. Send 3 fresh checkers per claim, all in parallel when supported.
+For each claim to check, read `references/claim-checker-prompt.md`. Inject CLAIM (as `synthesis.md` states it) and SOURCES (its source entries word for word, with tag and `origin:`, and its `Independent sources: N` line). Inject nothing else: no brief, no `Confidence:` line, no synthesis, no path. Send 3 fresh checkers per claim, all in parallel when supported.
 
 If the platform cannot dispatch subagents, run the three checks inline, one after another, each from the same two inputs, and tell the user they were less independent.
 
@@ -50,6 +50,8 @@ CLAIMS:
 `votes` and `evidence` stay empty for `SKIPPED-CONFIRMED` and `NOT-CHECKED`.
 
 ## 5. Route
+
+Before any route to the writer, set the final labels: read `references/confidence-labels.md` and follow it.
 
 - An id that was `REFUTED` in the last round and is `REFUTED` again, carried or checked anew: Step 6 did not fix the claim, so stop and surface it to the user. Read the old file before you rewrite it. Options: `continue` (another Step 6 round on every refuted claim), `ship as-is` (go on as for no `REFUTED`; the claim stays `REFUTED`, and Step 11 names it), `intervene`.
 - Otherwise, any new `REFUTED`: each is a critical `source-quality` issue with the claim's id. Go to Step 6, with N the last synthesis review's iteration. The loop returns through Step 5 to Step 7.
