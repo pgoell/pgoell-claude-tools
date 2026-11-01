@@ -135,6 +135,35 @@ ERR="$(printf '{"tool_input":{"file_path":"%s/big.md"}}' "$REPO" |
 RC=$?
 if [ "$RC" -eq 0 ] && [ -z "$ERR" ]; then ok "G6 sparse 5G .gitignore: git stops at the cap"; else bad "G6 sparse 5G .gitignore: git stops at the cap (rc=$RC)"; fi
 
+# Every git the hook starts runs under the memory cap: review of PR 329, where a
+# symlink at .git/commondir filled memory in the first git, before the cap.
+fresh
+mkfile big.md 20004
+tools="$WORK/tools$n"
+mkdir -p "$tools"
+gitbin="$(command -v git)"
+# shellcheck disable=SC2016
+printf '#!/bin/sh\nulimit -v >>"%s"\nexec "%s" "$@"\n' "$WORK/caps$n" "$gitbin" >"$tools/git"
+chmod 755 "$tools/git"
+PATH="$tools:$PATH" hook "$REPO/big.md"
+if [ "$(sort -u "$WORK/caps$n")" = 4194304 ]; then ok "G6 every git runs under the memory cap"; else bad "G6 every git runs under the memory cap ($(sort -u "$WORK/caps$n" | tr '\n' ' '))"; fi
+
+# A setting nobody may read counts as absent, not as a failed check: review of PR 329.
+for path in .fan-out-excludes .fan-out-baseline .file-size-excludes .git/info/exclude; do
+  fresh
+  mkfile small.md 1
+  ln -sf /proc/self/mem "$path"
+  try_hook "$REPO/small.md"
+  silent "G9 $path as a link to /proc/self/mem passes"
+  fresh
+  mkfile small.md 1
+  mkdir -p .git/info
+  : >"$path"
+  chmod 000 "$path"
+  try_hook "$REPO/small.md"
+  silent "G9 unreadable $path passes"
+done
+
 # Lists the processes whose current folder is $REPO or below; Linux only.
 in_repo() {
   local p

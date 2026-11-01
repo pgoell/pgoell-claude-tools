@@ -53,6 +53,8 @@ check() {
     exit 1
   fi
   if [ -z "$file" ] || [ ! -f "$file" ]; then exit 0; fi
+  # Git reads a file such as .gitignore or a link to /dev/zero whole, however large.
+  ulimit -v 4194304 2>/dev/null
   # The edited file's own repo decides, whatever repo the caller's GIT_DIR names.
   # Config passed by environment stays: it may be what guards an unread repo.
   # shellcheck disable=SC2046
@@ -80,10 +82,8 @@ check() {
   git init -q --bare --template= "$scratch/git" >/dev/null 2>&1 || exit 0
   printf '[core]\n\tfsmonitor = false\n' >>"$scratch/git/config"
   mkdir "$scratch/git/info" "$scratch/tmp"
-  if [ -f "$exclude" ]; then head -c 1048576 "$exclude" >"$scratch/git/info/exclude"; fi
+  if [ -f "$exclude" ]; then head -c 1048576 "$exclude" >"$scratch/git/info/exclude" 2>/dev/null; fi
   export GIT_DIR=$scratch/git GIT_WORK_TREE=$top TMPDIR=$scratch/tmp
-  # Git reads a regular .gitignore whole, however large.
-  ulimit -v 4194304 2>/dev/null
   git add -- ":(literal)$name" 2>/dev/null || exit 0
 
   failed=0

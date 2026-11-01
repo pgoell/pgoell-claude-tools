@@ -31,7 +31,7 @@ if [ -f "$top/.file-size-excludes" ]; then
     glob=${glob%"${glob##*[![:space:]]}"}
     case $glob in '' | '#'*) continue ;; esac
     EXCLUDES+=("$glob")
-  done < <(head -c 1048576 "$top/.file-size-excludes")
+  done < <(head -c 1048576 "$top/.file-size-excludes" 2>/dev/null)
 fi
 
 # The "top" magic anchors excludes at the repo root while arguments resolve
