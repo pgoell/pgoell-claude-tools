@@ -47,7 +47,22 @@ Dispatched agent prompt:
 
     1. Inventory claims. Extract every substantive claim from the researcher
        files. Group by sub-question. For each claim, record its sources (with
-       credibility tags carried forward) and any contradicting claims.
+       credibility tags and origins carried forward) and any contradicting
+       claims. Group each claim's sources by origin and record
+       `Independent sources: N`, the number of groups. List one group's sources
+       next to each other:
+       - A source's group is its `origin` if set, else its own URL. A source
+         whose URL is another source's origin joins that group. Follow origins
+         to the last one: if a restates b and b restates c, all three are one
+         group.
+       - Compare URLs ignoring scheme, `www.`, a trailing slash and tracking
+         parameters.
+       - Within one claim, a URL cited twice counts once, and a citation with no
+         origin takes the origin another citation of that URL gives. An origin
+         does not carry to another claim: a page can restate on one point and
+         report on its own on the next.
+       - Sources whose notes name one original with no URL ("restates the Acme
+         Q3 press release, no URL found") form one group; say so under Notes.
 
     2. Reconcile contradictions. For each contradiction, take a position: which
        side is more credible and why? Cite sources. If you cannot adjudicate,
@@ -83,10 +98,12 @@ Dispatched agent prompt:
 
     ### SQ1: <sub-question>
     - Claim: <claim>
-      - Sources: [URL | Title | tag], [URL | Title | tag]
+      - Sources: [URL | Title | tag | origin: URL], [URL | Title | tag]
+      - Independent sources: N
       - Notes: <any methodological caveats>
     - Claim: <claim>
       - Sources: ...
+      - Independent sources: N
     - Contradictions: <if any, with adjudication>
 
     ### SQ2: <sub-question>
@@ -106,9 +123,9 @@ Dispatched agent prompt:
     <Findings that don't fit the thesis. Don't hide them.>
 
     ## Source Inventory
-    | Source | Title | Tag | Used in claims |
-    |--------|-------|-----|----------------|
-    | <URL>  | ...   | ... | SQ1 claim 2, SQ3 claim 1 |
+    | Source | Title | Tag | Origin | Used in claims |
+    |--------|-------|-----|--------|----------------|
+    | <URL>  | ...   | ... | <URL, or empty> | SQ1 claim 2, SQ3 claim 1 |
     ```
 
     ## Critical Constraints
@@ -117,7 +134,7 @@ Dispatched agent prompt:
       analysis. The writer turns it into prose.
     - Do NOT add new evidence or new sources. Work only from the researcher files.
     - Do NOT silently drop contradictions. Reconcile them or flag them unresolved.
-    - Credibility tags must travel with each source on every reuse.
+    - Credibility tags and origins must travel with each source on every reuse.
 
     ## Self-Healing
 

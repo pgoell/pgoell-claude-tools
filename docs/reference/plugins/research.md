@@ -31,6 +31,7 @@ You may skip a question. After you hear once why it matters, the field goes into
 
 - Each researcher ends its reply on `ARTIFACT-VERIFIED <sha256>` or `ARTIFACT-MISSING <reason>`. `running-research` runs `sha256sum` on the researcher's file, compares the hash, and counts its `[source:` lines against a floor: 2 per sub-question, and 2 for a gap-fill file. A file that fails is sent back to the researcher once; a second failure goes to you.
 - Each review round fetches up to 5 cited URLs again, numbers first, then the claims the thesis rests on. The reviewer marks each claim `confirmed`, `rejected` or `unresolved`, with a quote from the page, in a `REFETCH:` block of the review file. A rejected claim is a critical `source-quality` issue that brings a gap-fill researcher. A URL that is dead, moved or refused after one try is `unresolved`, a minor issue, and the review goes on.
+- A researcher adds `origin: <URL>` to a source that restates another page. The synthesis groups each claim's sources by origin and records `Independent sources: N`, so copies of one press release count once. The reviewer flags a claim that counts them apart (id `shared-origin-<claim-slug>`, category `logic`). A critical one brings a new synthesis, with no new researcher.
 - Every review round with a critical issue writes the synthesis again, once, after its gap-fill researchers end. The feedback names each issue and each gap-fill file, so the next review sees the new sources and does not stall on the same gap.
 
 ## Output

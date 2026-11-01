@@ -92,6 +92,16 @@ Dispatched agent prompt:
 
     Inline source format (mandatory): `[source: <URL> | <Title> | <credibility-tag>]`
 
+    When the page restates another page (a press release, study or filing
+    behind a news story or vendor blog), add the page it restates as a fourth
+    field: `[source: <URL> | <Title> | <credibility-tag> | origin: <URL of the page it restates>]`
+
+    Name the earliest page you can trace. You need not fetch it. Leave the field
+    out when the page does its own reporting or only mentions another in passing.
+    If the page restates an original you cannot find a URL for, invent no URL:
+    leave the field out and say so after the claim, as in "(restates the Acme
+    Q3 press release, no URL found)".
+
     Credibility tags:
     - `[independent]`: academic research, non-profit institutions
     - `[consulting]`: consulting firms (incentive caveat applies)
@@ -114,6 +124,8 @@ Dispatched agent prompt:
     - Do NOT write prose summaries beyond what's needed to convey claim + source.
     - Each claim must carry an inline source.
     - One self-contained markdown. No separate sources.md or notes.md.
+    - Write only {OUTPUT_FILE}. Researchers run side by side, so keep no shared
+      source list; an origin goes on the source line in your own file.
     - No shortcuts. Three are forbidden: skipping a source (dropping a
       sub-question or a planned fetch without a note inline), citing an
       `[inaccessible]` source as if you read it, and reporting partial work

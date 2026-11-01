@@ -65,7 +65,8 @@ Dispatched agent prompt:
     ### Check 2: Evidence Completeness (category: evidence-gap)
 
     Does each claim in the synthesis have at least one source? Are key claims
-    backed by 2+ independent sources? Are there claims that should have a number
+    backed by 2+ independent sources (`Independent sources: 2` or more, so
+    copies of one origin do not pass)? Are there claims that should have a number
     but lack one? Are there contradictions in the source material that the
     synthesis silently picked one side of?
 
@@ -89,6 +90,16 @@ Dispatched agent prompt:
 
     Issue per logical flaw. Severity: critical for thesis-level inconsistencies,
     minor for local logic gaps.
+
+    Then check each claim's `Independent sources: N` against the researcher
+    files. Flag a claim whose sources share one origin but are listed as
+    several: N counts copies of one origin apart, an origin in a researcher
+    file is missing from synthesis.md, or the line is absent. Compare URLs
+    ignoring scheme, `www.`, a trailing slash and tracking parameters. Id
+    `shared-origin-<claim-slug>`, category `logic`, so the fix is a new
+    synthesis and not a new researcher. Severity: critical for a key claim,
+    minor otherwise. The id drops once N is right. A correct
+    `Independent sources: 1` is not this issue; Check 2 judges it.
 
     ### Check 5: Structure (category: structure)
 
@@ -140,6 +151,7 @@ Dispatched agent prompt:
     - `missing-2024-tariff-data` (specific gap)
     - `unresolved-mckinsey-vs-bcg-cost-estimates` (specific contradiction)
     - `weak-thesis-no-position` (structural)
+    - `shared-origin-acme-revenue` (copies of one origin counted apart)
 
     If iteration > 1 and the prior review has an issue with the same root cause,
     REUSE that id. Stall detection depends on id stability.
