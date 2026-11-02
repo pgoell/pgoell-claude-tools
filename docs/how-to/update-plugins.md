@@ -8,7 +8,7 @@ status: stable
 
 # Update plugins
 
-Every change to a plugin in this repository bumps its version, so an update picks up exactly the plugins that changed. External plugins (`ponytail`, `emil`, `taste-skill`, `vercel`) follow their upstream `main` and change whenever upstream does.
+Every change to a plugin in this repository bumps its version, so an update picks up exactly the plugins that changed. External plugins (`ponytail`, `emil`, `taste-skill`, `vercel`, `unslop`) follow their upstream `main` and change whenever upstream does.
 
 ## Claude Code
 

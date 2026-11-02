@@ -100,8 +100,9 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `session-title` 0.1.0: no skills; `SessionStart` hook `session-title` (Claude Code only)
 - `ponytail` upstream: `ponytail`, `ponytail-review`, `ponytail-audit`, `ponytail-debt`, `ponytail-gain`, `ponytail-help`
 - `emil` upstream: `emil-design-eng`, `animate`, `review-animations`, `improve-animations`, `prototype`, and 10 more (Claude Code only)
-- `taste-skill` upstream: 14 skills, among them `taste-skill`, `redesign-skill`, `minimalist-skill`, `brutalist-skill`, `image-to-code-skill`, `brandkit`
+- `taste-skill` upstream: `taste-skill`
 - `vercel` upstream: `react-best-practices`, `composition-patterns`, `react-view-transitions`, `react-native-skills`, `web-design-guidelines`, `writing-guidelines`, `deploy-to-vercel`, `vercel-cli-with-tokens`, `vercel-optimize` (Claude Code only)
+- `unslop` upstream: `unslop` (Claude Code only)
 - `deprecated` 0.5.0: frozen archive of `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations`, `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode`, `writing`, `pyramid`, `tech-doc`, `frontend-design`, and the 12 former `workbench` skills (`pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`)
 
 ## How to Develop a New Skill

@@ -22,7 +22,7 @@ CURSOR_MARKET=".cursor-plugin/marketplace.json"
 REPO_URL="https://github.com/pgoell/pgoell-claude-tools"
 
 # Local plugins not offered in Cursor, with the reason. Upstream-URL entries
-# (ponytail, emil, vercel, taste-skill) are skipped because they have no
+# (ponytail, emil, vercel, taste-skill, unslop) are skipped because they have no
 # local directory to carry a manifest.
 #   deprecated    frozen archive of superseded skills
 #   prose-styles  Claude Code output styles; Cursor has no equivalent

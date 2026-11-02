@@ -73,6 +73,7 @@ Tracked from upstream, not vendored:
 - [emil](docs/reference/plugins/emil.md): Emil Kowalski's UI polish and animation skills.
 - [taste-skill](docs/reference/plugins/taste-skill.md): frontend design skills against generic output.
 - [vercel](docs/reference/plugins/vercel.md): Vercel's React, Next.js and deploy skills.
+- [unslop](docs/reference/plugins/unslop.md): takes the AI look out of an existing screen.
 
 Archive:
 
