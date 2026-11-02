@@ -53,4 +53,4 @@ A repo with neither gets versioned hooks from the templates `assets/pre-commit` 
 
 This repo runs the plugin's own copies, so each check has one source. `mise-tasks/check-file-size` and `mise-tasks/check-fan-out` call the scripts; lefthook pre-commit runs both on staged files, and `mise run lint` (pre-push and the CI lint job) runs both on the whole repo. `.claude/settings.json` runs the plugin's `structure-hook` on each edit. The excludes are in `.file-size-excludes` and `.fan-out-excludes`, the accepted fan-out overages in `.fan-out-baseline`, all at the root.
 
-The `pgoell/project-template` Copier template carries byte-identical copies of `check-fan-out` and `structure-hook`; the plugin's copies are canonical.
+The `pgoell/project-template` Copier template carries byte-identical copies of `check-file-size`, `check-fan-out` and `structure-hook`; the plugin's copies are canonical.
