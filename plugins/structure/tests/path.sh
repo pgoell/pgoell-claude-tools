@@ -177,7 +177,7 @@ stops_alone() {
 }
 for aw in "${UNDER[@]}"; do
   fresh
-  sed -i 's/16000000/1/' scripts/check-fan-out
+  sed -i 's/8000000 + 4096 \* over/1/' scripts/check-fan-out
   files 8 abcd
   git add -A
   fan_excludes 'a*b*c?'
@@ -200,3 +200,99 @@ for aw in "${UNDER[@]}"; do
   PATH=$under try_hook "$REPO/abcd/a1"
   stops_alone "S11 350 $aw: the hook shows a stop with exit 2"
 done
+
+# S14 351, 353: a glob that mixes UTF-8 and a bad byte holds under gawk in UTF-8.
+fresh
+mixed=$'ok\xc3\xa9/ol\xe9'
+files 8 "$mixed"
+git add -A
+for aw in "${UNDER[@]}"; do
+  for glob in "$mixed" $'*/ol\xe9' $'**/ol\xe9'; do
+    echo "$glob" >.fan-out-excludes
+    LC_ALL=C.UTF-8 fan_under "$aw"
+    want_rc "S14 351 $aw: mixed encoding, $(printf %q "$glob")" 0
+  done
+  : >.fan-out-excludes
+  LC_ALL=C.UTF-8 fan_under "$aw"
+  if [ "$RC" -eq 1 ] && grep -qaxF "$(fanline "$mixed" 8)." <<<"$ERR"; then ok "S14 $aw: the report keeps the name byte for byte"; else bad "S14 $aw: the report keeps the name byte for byte (rc=$RC)"; fi
+done
+
+# S14 the same for a baseline line with a bad byte under gawk in UTF-8.
+fresh
+files 8 $'ol\xe9'
+git add -A
+printf '%s 9\n' $'ol\xe9' >.fan-out-baseline
+for aw in "${UNDER[@]}"; do
+  LC_ALL=C.UTF-8 fan_under "$aw"
+  want_rc "S14 $aw: a baseline line with a bad byte holds" 0
+done
+
+# S15 353: a glob sees the name, not the letters of its escape. Rows: name, glob, what
+# the run must exit with: 0 where the glob covers the name, 1 where it does not.
+while IFS='~' read -r name glob want; do
+  fresh
+  name=$(printf '%b' "$name")
+  files 8 "$name"
+  git add -A
+  printf '%s\n' "$glob" >.fan-out-excludes
+  for aw in "${UNDER[@]}"; do
+    fan_under "$aw"
+    want_rc "S15 353 $aw: $(printf %q "$name") under $glob" "$want"
+  done
+done <<'ROWS'
+a\tb~*t*~1
+a\tb~a?b~0
+a\tb~a\tb~0
+a\tb~a*b~0
+a\nb~a*n*~1
+a\nb~a\nb~0
+a\rb~*r*~1
+\tx~\*~1
+a\tb~*\*~1
+a\\b~*\*~0
+a\\b~a\\b~0
+\\x~\*~0
+a\\xb~a\xb~0
+a\\~a\~0
+ROWS
+
+# S16 352: a large repo under globs that pass the filter gets its report, from any of
+# the three modes; the limit grows with the folders. 349 stopped all of these.
+fresh
+for s in $(seq 300); do
+  for m in $(seq 100); do
+    for f in 1 2 3 4 5 6 7 8; do printf '100644 e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\tservices/svc%s/src/main/java/com/acme/mod%s/f%s\n' "$s" "$(((s - 1) * 100 + m))" "$f"; done
+  done
+done | git update-index --index-info
+for w in main java acme src com services svc mod; do printf '**/*%s*/*/*/*/*/*/*/*/*/*\n' "$w"; done >.fan-out-excludes
+aw=${UNDER[${#UNDER[@]} - 1]}
+[ "$(command -v mawk)" ] && aw=mawk
+big_under=$WORK/under-${aw%% *}:$PATH
+ERR="$(PATH=$big_under timeout 200 bash scripts/check-fan-out --all 2>&1 >/dev/null)"
+RC=$?
+got=$(grep -c '^fan-out: ' <<<"$ERR")
+if [ "$RC" -eq 1 ] && [ "$got" -eq 30301 ]; then ok "S16 352 $aw: --all reports 30301 folders"; else bad "S16 352 $aw: --all reports 30301 folders (rc=$RC, $got)"; fi
+# Every folder named by a path, as a pre-commit over a very large commit does.
+paths=()
+for s in $(seq 30000); do paths+=("services/svc$(((s - 1) / 100 + 1))/src/main/java/com/acme/mod$s/f1"); done
+ERR="$(PATH=$big_under timeout 200 bash scripts/check-fan-out "${paths[@]}" 2>&1 >/dev/null)"
+RC=$?
+got=$(grep -c '^fan-out: ' <<<"$ERR")
+if [ "$RC" -eq 1 ] && [ "$got" -eq 30301 ]; then ok "S16 352 $aw: a run on 30000 paths reports 30301 folders"; else bad "S16 352 $aw: a run on 30000 paths reports 30301 folders (rc=$RC, $got)"; fi
+ERR="$(PATH=$big_under timeout 200 bash scripts/check-fan-out --update-baseline 2>&1 >/dev/null)"
+RC=$?
+got=$(grep -vc '^#' .fan-out-baseline)
+if [ "$RC" -eq 0 ] && [ "$got" -eq 30301 ]; then ok "S16 352 $aw: --update-baseline writes 30301 lines"; else bad "S16 352 $aw: --update-baseline writes 30301 lines (rc=$RC, $got)"; fi
+
+# S17 354: under busybox the stop on one path comes inside the hook's 30 s, so the hook
+# shows why. At 16 million it gave up and exited 1.
+if command -v busybox >/dev/null; then
+  fresh
+  long=$(printf "%0.s$(repeat a 250)/" $(seq 15))
+  files 8 "${long%/}"
+  yes "$(printf '%0.s*a?' $(seq 170))" | head -n 1024 >.fan-out-excludes
+  git add -A
+  ERR="$(printf '{"tool_input":{"file_path":"%s"}}' "$REPO/${long}a1" | PATH=$WORK/under-busybox:$PATH bash scripts/structure-hook 2>&1 >/dev/null)"
+  RC=$?
+  if [ "$RC" -eq 2 ] && [ "$ERR" = "$stop_line" ]; then ok "S17 354 busybox: the hook shows the stop"; else bad "S17 354 busybox: the hook shows the stop (rc=$RC: ${ERR:0:120})"; fi
+fi

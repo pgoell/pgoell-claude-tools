@@ -375,7 +375,7 @@ for aw in mawk 'busybox awk'; do
   if [ "$RC" -eq 1 ]; then ok "F19 $aw skips a 1 MiB excludes line"; else bad "F19 $aw skips a 1 MiB excludes line (rc=$RC)"; fi
 done
 
-# F20 ? takes one character of the name: never a "/" or half an escape.
+# F20 ? takes one byte of the name: never a "/" or half an escape.
 fresh
 files 8 'x\/b'
 files 8 $'a\tb'
@@ -519,15 +519,17 @@ zz**/b~zz/a/b
 z*/*/b~zz/a/b
 ROWS
 
-# F25 345: in UTF-8 "?" takes a character under gawk and a byte under the others, as
-# on master. A name that is not UTF-8 matches under each; master missed it under gawk.
+# F25 353: in UTF-8 "?" takes one byte under each awk, as in git, so a two-byte name
+# takes "??". A name that is not UTF-8 matches too.
 fresh
 files 8 'ä'
 files 8 $'b\xff'
 git add -A
 for aw in "${UNDER[@]}"; do
-  one='??' && [ "$aw" = gawk ] && one='?'
-  printf '%s\n' "$one" 'b*' >.fan-out-excludes
+  printf '%s\n' '??' 'b*' >.fan-out-excludes
   LC_ALL=C.UTF-8 fan_under "$aw"
-  if [ "$RC" -eq 0 ]; then ok "F25 $aw: $one is the UTF-8 name"; else bad "F25 $aw: $one is the UTF-8 name (${ERR:0:90})"; fi
+  if [ "$RC" -eq 0 ]; then ok "F25 353 $aw: ?? is the UTF-8 name"; else bad "F25 353 $aw: ?? is the UTF-8 name (${ERR:0:90})"; fi
+  printf '%s\n' '?' 'b*' >.fan-out-excludes
+  LC_ALL=C.UTF-8 fan_under "$aw"
+  if [ "$RC" -eq 1 ]; then ok "F25 353 $aw: ? is not the UTF-8 name"; else bad "F25 353 $aw: ? is not the UTF-8 name (rc=$RC)"; fi
 done

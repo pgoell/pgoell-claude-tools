@@ -77,7 +77,7 @@ esac
 git -C "$top" ls-files -z --cached --others --exclude-standard >"$list"
 
 # Baseline lines are "<folder> <count>"; exclude lines are globs ("*" and "?" stay
-# in one folder, "**" crosses folders). In both files "#" starts a comment line
+# in one folder, "**" crosses folders, "?" takes one byte, as in git). In both files "#" starts a comment line
 # and blank lines are skipped.
 # Only a regular file counts, and only its first MiB: a repo nobody has read may
 # hold a FIFO, a symlink to a device or a huge file there.
@@ -94,7 +94,7 @@ if [ -f "$top/.fan-out-excludes" ]; then head -c 1048576 "$top/.fan-out-excludes
 while IFS= read -r -d '' path; do
   escape "$path"
   printf '%s\n' "$escaped"
-done <"$list" | awk -v mode="$mode" -v limit="$LIMIT" -v want="$want" -v fresh="$fresh" \
+done <"$list" | LC_ALL=C awk -v mode="$mode" -v limit="$LIMIT" -v want="$want" -v fresh="$fresh" \
   -v base="$base" -v excl="$excl" '
 function trim(s) { sub(/^[ \t\r]+/, "", s); sub(/[ \t\r]+$/, "", s); return s }
 # Globs get a matcher of their own: a regex built from one made mawk backtrack for
@@ -130,12 +130,15 @@ function compile(g,   i, c) {
     }
   }
 }
-# Past this much walking the run stops with no result: tokens times path length times
-# 1024 globs times every folder cannot be bounded by any cap on a line, and to go on
-# without the globs would report folders the excludes cover. The filter in matches
-# keeps a real repo below it: 31 globs that pass the filter on 3000 folders spend 6.4 million.
+# Past budget the run stops with no result: tokens times path length times 1024 globs
+# times every folder cannot be bounded by any cap on a line, and to go on without the
+# globs would report folders the excludes cover. END sets budget to a fixed part, which
+# busybox awk spends inside the 30 s of the hook, plus a part per folder over the limit. So
+# a file that spends no more than that per folder never stops as the repo grows; 8 globs
+# of 10 "*" spend 623 per folder, and 66 globs at 62 steps each fit. One that spends more
+# can still stop.
 function spend(k) {
-  if ((steps += k) <= 16000000) return
+  if ((steps += k) <= budget) return
   print "check-fan-out: .fan-out-excludes costs too much to match here. Use fewer globs or fewer wildcards in a glob." > "/dev/stderr"
   exit 2
 }
@@ -183,12 +186,10 @@ function matches(d, g,   len, t, k, w, wl, i, j, n, m, p, q, s, c, once, last) {
         }
       }
     } else if (k == "?") {
-      # One character of the name: an escape such as "\n" counts as one.
       for (i = 1; i <= n; i++) {
         p = at[i]
         c = substr(d, p, 1)
-        if (c == "\\") { p++; c = substr(d, p, 1) }
-        if (c != "" && c != "/" && (m == 0 || next_at[m] != p + 1)) next_at[++m] = p + 1
+        if (c != "" && c != "/") next_at[++m] = p + 1
       }
     } else if (k == "*") {
       q = 0
@@ -229,11 +230,19 @@ function raw(s,   n, part, i) {
   for (i = 2; i <= n; i++) s = s "\\r" part[i]
   return s
 }
-# Globs see a "#" or space that starts a path as itself: "?x" and "**/#x" match "#x".
-function plain(s) {
-  if (substr(s, 1, 2) == "\\#") return "#" substr(s, 3)
-  if (substr(s, 1, 2) == "\\s") return " " substr(s, 3)
-  return s
+# Globs match the name itself, so that no glob sees the letters of an escape: this
+# undoes the escapes in a folder and in a glob. A "\" before anything else stays.
+function plain(s,   out, i, c, e) {
+  if (substr(s, 1, 2) == "\\#") s = "#" substr(s, 3)
+  else if (substr(s, 1, 2) == "\\s") s = " " substr(s, 3)
+  out = ""
+  while ((i = index(s, "\\")) > 0) {
+    c = substr(s, i + 1, 1)
+    e = c == "\\" ? "\\" : c == "n" ? "\n" : c == "t" ? "\t" : c == "r" ? "\r" : ""
+    if (e == "") { out = out substr(s, 1, i); s = substr(s, i + 1) }
+    else { out = out substr(s, 1, i - 1) e; s = substr(s, i + 2) }
+  }
+  return out s
 }
 function excluded(d,   i, rest, s) {
   d = plain(d)
@@ -250,7 +259,7 @@ function excluded(d,   i, rest, s) {
 BEGIN {
   while ((getline line < excl) > 0) {
     line = trim(line)
-    if (line != "" && line !~ /^#/) compile(plain(raw(line)))
+    if (line != "" && line !~ /^#/) compile(plain(line))
   }
   while ((getline line < base) > 0) {
     line = trim(line)
@@ -271,6 +280,8 @@ BEGIN {
   }
 }
 END {
+  for (d in count) if (count[d] > limit && (mode != "check" || d in wanted)) over++
+  budget = 8000000 + 4096 * over
   if (mode == "update") {
     if (fresh) {
       for (d in count) if (count[d] > limit && !excluded(d)) print d " " count[d]
