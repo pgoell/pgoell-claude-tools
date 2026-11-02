@@ -203,7 +203,7 @@ done
 
 # S14 351, 353: a glob that mixes UTF-8 and a bad byte holds under gawk in UTF-8.
 fresh
-mixed=$'nam\xc3\xa9/ol\xe9'
+mixed=$'ok\xc3\xa9/ol\xe9'
 files 8 "$mixed"
 git add -A
 for aw in "${UNDER[@]}"; do
