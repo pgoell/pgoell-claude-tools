@@ -124,3 +124,16 @@ run_with_path_big() {
 run_with_path_big "$REPO/.tools:$real"
 flags big.md "P4 absolute entry inside the repo: file still checked"
 if [ -e "$WORK/mark$n" ]; then ok "P4 absolute entry inside the repo: its tool runs, the documented limit"; else bad "P4 absolute entry inside the repo: its tool runs, the documented limit"; fi
+
+# S9 348: a plain "**" that ends a glob costs a folder nothing per byte of its path, so
+# a big repo under one such line does not reach the limit on matching. Entries go in
+# the index only, since the check reads names from git.
+fresh
+long=$(printf '%0.sabcdefghi/' $(seq 380))
+for i in $(seq 5000); do
+  for f in 1 2 3 4 5 6 7 8; do printf '100644 e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\tv/%s%s/f%s\n' "$long" "$i" "$f"; done
+done | git update-index --index-info
+echo 'v/**' >.fan-out-excludes
+ERR="$(timeout 60 bash scripts/check-fan-out --all 2>&1 >/dev/null)"
+RC=$?
+if [ "$RC" -eq 0 ]; then ok "S9 348: v/** over 5000 long folders passes"; else bad "S9 348: v/** over 5000 long folders passes (rc=$RC: ${ERR:0:100})"; fi

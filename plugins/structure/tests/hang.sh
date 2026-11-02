@@ -546,6 +546,26 @@ for tool in "${AWKS[@]}"; do
   PATH=$oldpath
 done
 
+# S8 348: built lines over built folders. The filter ends the first two in seconds, where
+# #347 ran out the time; a line past it stops the run, with no folder reported.
+fresh
+for i in $(seq 200); do files 8 "$(repeat a 240)$i"; done
+git add -A
+for unit in 'a*' '*?'; do
+  for i in $(seq 512); do printf "%0.s$unit" $(seq 255); echo 'z*'; done >.fan-out-excludes
+  for aw in "${UNDER[@]}"; do
+    fan_under "$aw"
+    want_rc "S8 348 $aw: 512 lines of 255 $unit" 1
+  done
+done
+for i in $(seq 1024); do printf '%0.sa*' $(seq 230); echo '1*1*1*1*'; done >.fan-out-excludes
+for aw in "${UNDER[@]}"; do
+  ERR="$(PATH=$WORK/under-${aw%% *}:$PATH timeout 120 bash scripts/check-fan-out --all 2>&1 >/dev/null)"
+  RC=$?
+  grep -q '^fan-out:' <<<"$ERR" && RC=reported
+  want_rc "S8 348 $aw: past the filter stops" 2
+done
+
 # S3 the worst input the limits still let through.
 fresh
 for i in 1 2 3 4 5 6 7 8; do mkfile "${deep}m/f$i" 100; done
