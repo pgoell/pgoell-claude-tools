@@ -15,12 +15,15 @@
 # wait forever: pgrep always finds the shell running the loop. A one-shot
 # `pgrep -f` only prints one extra PID, so it passes.
 #
-# Fails open: a command shlex cannot parse (stray quote, heredoc) passes.
+# Heredoc bodies are removed and `#` is an ordinary character, since a quote or
+# a # in a body would hide the pkill from the lexer.
+# Fails open: a command shlex cannot parse (stray quote) passes.
 import json
 import re
 import shlex
 import sys
 
+HEREDOC = re.compile(r"""<<-?\s*(['"]?)(\w+)\1[^\n]*\n.*?^\s*\2\s*$""", re.M | re.S)
 SEPARATORS = {";", "&&", "||", "|", "&", "(", ")"}
 # Options that take a value, so the token after them is not the pattern.
 SHORT_WITH_VALUE = set("dgGPstuUF")
@@ -46,8 +49,10 @@ PGREP_REASON = (
 
 def segments(command):
     """Split a command into simple commands, respecting quotes."""
+    command = HEREDOC.sub("", command)
     lexer = shlex.shlex(command.replace("\n", ";"), posix=True, punctuation_chars=True)
     lexer.whitespace_split = True
+    lexer.commenters = ""
     segment = []
     for token in lexer:
         if token in SEPARATORS:
