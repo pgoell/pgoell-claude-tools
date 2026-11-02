@@ -1,5 +1,6 @@
 # Tests that structure-hook runs no tool from a relative PATH entry: issue 327. Sourced by
-# run.sh after hook.sh, which defines flags. The tests of the cost limit of check-fan-out
+# run.sh after hook.sh, which defines flags, and after fan-out.sh and hang.sh, whose helpers
+# the rows from S10 on use. The tests of the cost limit of check-fan-out
 # from S9 on sit here too, since the other files are near their size limit.
 
 # Fills folder $1 with a fake of every tool on this machine, each noting in
@@ -161,7 +162,7 @@ for aw in "${UNDER[@]}"; do
   want_rc "S10 350 $aw: many plain texts over 500 folders stop" 2
 done
 
-# S10 the charge makes no false stop: over 20 folders the same lines spend 2.6 million.
+# S10 the charge makes no false stop: over 20 folders the same lines spend 1.4 million.
 built_folders 20
 for aw in "${UNDER[@]}"; do
   fan_under "$aw"
