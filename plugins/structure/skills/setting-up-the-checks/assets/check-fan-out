@@ -9,6 +9,8 @@
 #                                  lowers or drops lines in .fan-out-baseline,
 #                                  never raises or adds one; a missing file is
 #                                  written from today's overages
+# Exit 1 reports folders. Exit 2 is a usage error or an excludes file that costs too
+# much to match; then no folder is reported and no baseline written.
 # Entries come from git: tracked plus untracked, never ignored. The repo root
 # and names that start with "." (and all below them) are skipped. A report, the
 # baseline and the excludes write a folder's name as escape, below, says, so that
@@ -131,7 +133,7 @@ function compile(g,   i, c) {
 # Past this much walking the run stops with no result: tokens times path length times
 # 1024 globs times every folder cannot be bounded by any cap on a line, and to go on
 # without the globs would report folders the excludes cover. The filter in matches
-# keeps a real repo far below it.
+# keeps a real repo below it: 31 globs that pass the filter on 3000 folders spend 6.4 million.
 function spend(k) {
   if ((steps += k) <= 16000000) return
   print "check-fan-out: .fan-out-excludes costs too much to match here. Use fewer globs or fewer wildcards in a glob." > "/dev/stderr"
@@ -147,13 +149,15 @@ function matches(d, g,   len, t, k, w, wl, i, j, n, m, p, q, s, c, once, last) {
   # A glob that ends in plain text mostly fails here, at the cost of one compare.
   t = first[g + 1] - 1
   if (t >= first[g] && (tok[t] == "L" || tok[t] == "F") && substr(d, len - length(lit[t]) + 1) != lit[t]) return 0
-  for (i = 1; i <= nneed[g]; i++) if (!index(d, need[g, i])) return 0
-  spend(i)
+  for (i = 1; i <= nneed[g]; i++) if (!index(d, need[g, i])) { if (i > 4) spend(i); return 0 }
   n = 1
   at[1] = 1
   last = first[g + 1]
   for (t = first[g]; t < last && n > 0; t++) {
     k = tok[t]
+    # A last "**" or "*" needs no walk: "vendor/**" over many folders must cost little.
+    if (t == last - 1 && k == "A") return 1
+    if (t == last - 1 && k == "*") return at[n] >= (nslash ? after_slash[nslash] : 1)
     m = 0
     if (k == "L") {
       w = lit[t]
