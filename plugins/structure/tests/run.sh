@@ -558,6 +558,11 @@ timeout 10 bash scripts/check-file-size small.md >/dev/null 2>&1
 RC=$?
 if [ "$RC" -eq 0 ]; then ok "O6 1 MiB of long excludes lines does not stall"; else bad "O6 1 MiB of long excludes lines does not stall (rc=$RC)"; fi
 
+for s in check-file-size check-fan-out structure-hook; do
+  c="$s names its canonical copy"
+  head -3 "$ASSETS/$s" | grep -q "^# Canonical copy: .*/assets/$s$" && ok "$c" || bad "$c"
+done
+
 # shellcheck source=fan-out.sh
 . "$TESTS/fan-out.sh"
 # shellcheck source=hook.sh

@@ -34,7 +34,7 @@ A folder fails when it holds more than 7 entries and more than its line in `.fan
 
 The fallback git hooks ship beside them as `pre-commit` and `pre-push`.
 
-`check-fan-out` and `structure-hook` start with a comment that names this folder as the canonical copy. `check-file-size` has no such comment. Copies of all three in other repos (the `pgoell/project-template` Copier template holds each in its `template/scripts`) stay byte-identical.
+`check-file-size`, `check-fan-out` and `structure-hook` start with a comment that names this folder as the canonical copy. Copies of all three in other repos (the `pgoell/project-template` Copier template holds each in its `template/scripts`) stay byte-identical.
 
 ## Test
 
