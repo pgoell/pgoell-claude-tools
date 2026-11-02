@@ -217,6 +217,16 @@ for aw in "${UNDER[@]}"; do
   if [ "$RC" -eq 1 ] && grep -qaxF "$(fanline "$mixed" 8)." <<<"$ERR"; then ok "S14 $aw: the report keeps the name byte for byte"; else bad "S14 $aw: the report keeps the name byte for byte (rc=$RC)"; fi
 done
 
+# S14 the same for a baseline line with a bad byte under gawk in UTF-8.
+fresh
+files 8 $'ol\xe9'
+git add -A
+printf '%s 9\n' $'ol\xe9' >.fan-out-baseline
+for aw in "${UNDER[@]}"; do
+  LC_ALL=C.UTF-8 fan_under "$aw"
+  want_rc "S14 $aw: a baseline line with a bad byte holds" 0
+done
+
 # S15 353: a glob sees the name, not the letters of its escape. Rows: name, glob, what
 # the run must exit with: 0 where the glob covers the name, 1 where it does not.
 while IFS='~' read -r name glob want; do
@@ -242,6 +252,8 @@ a\tb~*\*~1
 a\\b~*\*~0
 a\\b~a\\b~0
 \\x~\*~0
+a\\xb~a\xb~0
+a\\~a\~0
 ROWS
 
 # S16 352: a large repo under globs that pass the filter gets its report, from any of

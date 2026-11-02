@@ -10,7 +10,7 @@ In both excludes files these lines are skipped, since they could cost seconds to
 
 No message says so. What a skipped line would have excluded still gets reported.
 
-`check-fan-out` matches globs with no regex, and rules out a folder too short for a glob or missing its plain text with a few cheap checks, so no one line stalls it on any awk. A file that gets past those checks too often stops the run: it prints `.fan-out-excludes costs too much to match here`, exits 2 and reports no folder. The limit is 8 million steps of matching plus 4096 per folder over the limit, so a file that spends less than that per folder never stops as a repo grows: 8 globs of 10 `*` that pass the checks spend 623. The fixed part takes about 15 s under busybox awk, so the stop on one path comes inside the hook's 30 s and the hook shows it.
+`check-fan-out` matches globs with no regex, and rules out a folder too short for a glob or missing its plain text with a few cheap checks, so no one line stalls it on any awk. A file that gets past those checks too often stops the run: it prints `.fan-out-excludes costs too much to match here`, exits 2 and reports no folder. The limit is 8 million steps of matching plus 4096 per folder over the limit, so a file that spends less than that per folder never stops as a repo grows: 8 globs of 10 `*` that pass the checks spend 623. Measured on one machine, the fixed part takes about 15 s under busybox awk, so the stop on one path comes inside the hook's 30 s and the hook shows it; on a slower machine the hook can give up first, and then it exits 1 with a message. In a very large repo a stop takes longer, since the limit grows with the folders.
 
 ## `.file-size-excludes`
 
@@ -69,6 +69,6 @@ Both checks keep one line per name, and a line reader would lose some names. So 
 | `#` that starts the path   | `\#`             |
 | space that starts the path | `\s`             |
 
-Copy the name as the report shows it. In `.fan-out-excludes` a glob sees the name itself and not the letters of its escapes: `*t*` does not match a tab, `?` does, and a raw tab or CR inside a name also works. In `.file-size-excludes` a shown name is still a glob, so a `*`, `?` or `[` in it needs a `\` before it. A space that ends a name is the one case a shown name does not cover, since a line loses it: write `?` for it in `.fan-out-excludes`, `\s` in `.file-size-excludes`.
+Copy the name as the report shows it. In `.fan-out-excludes` a glob sees the name itself and not the letters of its escapes: `*t*` does not match a tab, `?` does, and a raw tab or CR inside a name also works. A `\\` before any other character is a plain backslash. In `.file-size-excludes` a shown name is still a glob, so a `*`, `?` or `[` in it needs a `\` before it. A space that ends a name is the one case a shown name does not cover, since a line loses it: write `?` for it in `.fan-out-excludes`, `\s` in `.file-size-excludes`.
 
 An exclude written before this scheme may change meaning: in `.file-size-excludes` a glob with `\n`, `\t`, `\r` or `\s` now means those characters, and in `.fan-out-excludes` a `[...]` no longer is a class. A line that stops matching shows up in the next report.

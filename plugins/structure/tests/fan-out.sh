@@ -375,7 +375,7 @@ for aw in mawk 'busybox awk'; do
   if [ "$RC" -eq 1 ]; then ok "F19 $aw skips a 1 MiB excludes line"; else bad "F19 $aw skips a 1 MiB excludes line (rc=$RC)"; fi
 done
 
-# F20 ? takes one character of the name: never a "/" or half an escape.
+# F20 ? takes one byte of the name: never a "/" or half an escape.
 fresh
 files 8 'x\/b'
 files 8 $'a\tb'
