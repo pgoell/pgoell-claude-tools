@@ -10,7 +10,7 @@ In both excludes files these lines are skipped, since they could cost seconds to
 
 No message says so. What a skipped line would have excluded still gets reported.
 
-`check-fan-out` matches globs with no regex, and rules out a folder too short for a glob or missing its plain text with a few cheap checks, so no one line stalls it on any awk. A file built to get past those checks, with many such lines over hundreds of folders, stops the run after a fixed amount of matching (seconds, up to about 35 s under busybox awk): `check-fan-out` prints `.fan-out-excludes costs too much to match here`, exits 2 and reports no folder.
+`check-fan-out` matches globs with no regex, and rules out a folder too short for a glob or missing its plain text with a few cheap checks, so no one line stalls it on any awk. A file that gets past those checks too often stops the run after a fixed amount of matching: a file built for it over hundreds of folders, or globs with many `*` and only common plain text over tens of thousands of folders. `check-fan-out` then prints `.fan-out-excludes costs too much to match here`, exits 2 and reports no folder. The stop takes seconds, about 35 s under busybox awk, and longer in a very large repo. Under busybox awk the hook's 30 s can run out first; then it prints that it gave up and exits 1.
 
 ## `.file-size-excludes`
 
