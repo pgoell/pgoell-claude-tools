@@ -552,10 +552,10 @@ fresh
 for i in $(seq 200); do files 8 "$(repeat a 240)$i"; done
 git add -A
 for unit in 'a*' '*?'; do
-  for i in $(seq 512); do printf "%0.s$unit" $(seq 255); echo 'z*'; done >.fan-out-excludes
+  for i in $(seq 1024); do printf "%0.s$unit" $(seq 255); echo 'z*'; done >.fan-out-excludes
   for aw in "${UNDER[@]}"; do
     fan_under "$aw"
-    want_rc "S8 348 $aw: 512 lines of 255 $unit" 1
+    want_rc "S8 348 $aw: 1024 lines of 255 $unit" 1
   done
 done
 for i in $(seq 1024); do printf '%0.sa*' $(seq 230); echo '1*1*1*1*'; done >.fan-out-excludes
