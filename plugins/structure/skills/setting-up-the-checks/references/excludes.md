@@ -10,7 +10,7 @@ In both excludes files these lines are skipped, since they could cost seconds to
 
 No message says so. What a skipped line would have excluded still gets reported.
 
-`check-fan-out` matches globs with no regex, and rules out a folder too short for a glob or missing its plain text with a few cheap checks, so no one line stalls it on any awk. A file that gets past those checks too often stops the run after a fixed amount of matching: a file built for it over hundreds of folders over the limit, or globs with many `*` and only common plain text over tens of thousands of folders over the limit. `check-fan-out` then prints `.fan-out-excludes costs too much to match here`, exits 2 and reports no folder. The stop takes seconds, about 35 s under busybox awk, and longer in a very large repo. Under busybox awk the hook's 30 s can run out first; then it prints that it gave up and exits 1.
+`check-fan-out` matches globs with no regex, and rules out a folder too short for a glob or missing its plain text with a few cheap checks, so no one line stalls it on any awk. A file that gets past those checks too often stops the run: it prints `.fan-out-excludes costs too much to match here`, exits 2 and reports no folder. The limit is 8 million steps of matching plus 4096 per folder over the limit, so a file that spends less than that per folder never stops as a repo grows: 8 globs of 10 `*` that pass the checks spend 623. The fixed part takes about 15 s under busybox awk, so the stop on one path comes inside the hook's 30 s and the hook shows it.
 
 ## `.file-size-excludes`
 
@@ -33,7 +33,7 @@ A new exclude line counts at once; a split counts for a bare run only once commi
 
 ## `.fan-out-excludes`
 
-Folders `check-fan-out` skips. Same glob rules except that `*`, `**` and `?` are the only special characters (`[` and `^` are plain), matched against the folder's path: `docs/log` skips that folder, `vendor/**` every folder below `vendor`, `**/fixtures` any folder named `fixtures`. Write a comment line above each glob that says why the folder is a list by design; a reviewer reads it in the diff.
+Folders `check-fan-out` skips. Same glob rules except that `*`, `**` and `?` are the only special characters (`[` and `^` are plain), matched against the folder's name as git holds it, under every awk and locale, so `?` takes one byte as in git and a two-byte `é` takes `??`: `docs/log` skips that folder, `vendor/**` every folder below `vendor`, `**/fixtures` any folder named `fixtures`. Write a comment line above each glob that says why the folder is a list by design; a reviewer reads it in the diff.
 
 ```text
 # one file per docs change, by design
@@ -69,6 +69,6 @@ Both checks keep one line per name, and a line reader would lose some names. So 
 | `#` that starts the path   | `\#`             |
 | space that starts the path | `\s`             |
 
-Copy the name as the report shows it. In `.fan-out-excludes`, `?` stands for one character of the name, escaped or not, and a raw tab or CR inside a name also works. In `.file-size-excludes` a shown name is still a glob, so a `*`, `?` or `[` in it needs a `\` before it. A space that ends a name is the one case a shown name does not cover, since a line loses it: write `?` for it in `.fan-out-excludes`, `\s` in `.file-size-excludes`.
+Copy the name as the report shows it. In `.fan-out-excludes` a glob sees the name itself and not the letters of its escapes: `*t*` does not match a tab, `?` does, and a raw tab or CR inside a name also works. In `.file-size-excludes` a shown name is still a glob, so a `*`, `?` or `[` in it needs a `\` before it. A space that ends a name is the one case a shown name does not cover, since a line loses it: write `?` for it in `.fan-out-excludes`, `\s` in `.file-size-excludes`.
 
 An exclude written before this scheme may change meaning: in `.file-size-excludes` a glob with `\n`, `\t`, `\r` or `\s` now means those characters, and in `.fan-out-excludes` a `[...]` no longer is a class. A line that stops matching shows up in the next report.
