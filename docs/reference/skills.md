@@ -8,7 +8,7 @@ status: stable
 
 # Skills at a glance
 
-Every live skill of this repo's own plugins, in marketplace order. The skills of the four upstream plugins the marketplace points at by git URL (ponytail, emil, taste-skill and vercel) are in [Upstream skills at a glance](/reference/upstream-skills.md). Invoke a skill from the host agent with its full name, `/<plugin>:<skill>`, which works whatever else you have installed. Each plugin's page has more detail.
+Every live skill of this repo's own plugins, in marketplace order. The skills of the five upstream plugins the marketplace points at by git URL (ponytail, emil, taste-skill, vercel and unslop) are in [Upstream skills at a glance](/reference/upstream-skills.md). Invoke a skill from the host agent with its full name, `/<plugin>:<skill>`, which works whatever else you have installed. Each plugin's page has more detail.
 
 The agent can also start every skill on its own from a plain request that matches its description; cron types the slash command for `/insights:digest`, `/insights:activity` and `/news:edition`.
 

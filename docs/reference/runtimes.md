@@ -36,6 +36,7 @@ Each runtime reads its own marketplace file: Claude Code reads `.claude-plugin/m
 | [emil](/reference/plugins/emil.md)                                       | yes         | no    | no     |
 | [taste-skill](/reference/plugins/taste-skill.md)                         | yes         | yes   | no     |
 | [vercel](/reference/plugins/vercel.md)                                   | yes         | no    | no     |
+| [unslop](/reference/plugins/unslop.md)                                   | yes         | no    | no     |
 | [deprecated](/reference/plugins/deprecated.md)                           | yes         | yes   | no     |
 
 ## Why some are absent from Codex
@@ -43,7 +44,7 @@ Each runtime reads its own marketplace file: Claude Code reads `.claude-plugin/m
 - **issue-loop**: its skills drive Claude Code sessions themselves (`/clear`, permission modes, Claude Code's own dialogs), and the loop was never run under Codex. Its `.codex-plugin/plugin.json` exists for the version check and the manifest rule, not for the Codex marketplace.
 - **prose-styles**: Codex has no output-style mechanism.
 - **guards** and **session-title**: their hooks use Claude Code's hook format.
-- **emil** and **vercel**: the upstream repos ship no plugin manifest at all.
+- **emil**, **vercel** and **unslop**: the upstream repos ship no plugin manifest at all.
 
 ## Why some are absent from Cursor
 
@@ -54,7 +55,7 @@ The generator skips the plugins on its `EXCLUDE` list and every upstream entry.
 - **guards**: its hook uses Claude Code's `PreToolUse` format; it would need a port to Cursor's `beforeShellExecution`.
 - **session-title**: it sets a Claude Code session title, which Cursor has no equivalent for.
 - **deprecated**: a frozen archive.
-- **ponytail**, **emil**, **taste-skill** and **vercel**: upstream repos, with no local directory to carry a generated Cursor manifest.
+- **ponytail**, **emil**, **taste-skill**, **vercel** and **unslop**: upstream repos, with no local directory to carry a generated Cursor manifest.
 
 ## Model invocation
 

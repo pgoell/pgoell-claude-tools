@@ -156,7 +156,16 @@
         "source": "url",
         "url": "https://github.com/Leonxlnx/taste-skill.git"
       },
-      "description": "Anti-slop frontend design skills: taste-driven landing pages, redesign audits, minimalist, soft, and brutalist styles, image-to-code, brand kits. Tracked upstream, not vendored."
+      "description": "Anti-slop frontend design skill: builds or redesigns pages and app screens from researched art directions, with a browser inspector. Tracked upstream, not vendored."
+    },
+    {
+      "name": "unslop",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/heydamir/unslop.git"
+      },
+      "description": "Damir Sokolovsky's redline pass that takes the AI look out of an existing screen: chooses full rework or light polish from an audit, keeps the product and its real brand. Tracked upstream, not vendored. Claude Code only.",
+      "strict": false
     },
     {
       "name": "deprecated",
