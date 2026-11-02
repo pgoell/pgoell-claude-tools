@@ -45,6 +45,7 @@ if [ "$1" = api ]; then
   [ -f "$f" ] || { echo "fake gh: HTTP 404 $path" >&2; exit 1; }
   exec jq -r "$q" "$f"
 fi
+case "$*" in *"part of #"*) cat "$FAKE/parts" 2>/dev/null; exit 0 ;; esac
 case "$1 $2 $json" in
 "issue view state") cat "$FAKE/issue_state" ;;
 "pr list number") cat "$FAKE/prs" ;;
