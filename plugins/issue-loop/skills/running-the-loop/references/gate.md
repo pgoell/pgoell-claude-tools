@@ -8,7 +8,7 @@ Step 4 of "One turn of the loop" in `SKILL.md` runs `./gate.sh 41 38 39` and rea
 
 ## What `GATE HELD` means
 
-The task ended with `HELD #N` (rule 16 of `assets/rules-ci.md`): its PR touches a code-owned path and waits for the owner's approving review. `gate.sh` reads the HELD line from `task.notified` or the screen and checks the held PR instead of failing it: open, auto-merge on, no check that fails or still runs. Its issues may stay open; they close when it lands. The other checks stay (boxes and their tests, the live commit, a clean checkout on the base branch). `GATE HELD` exits 0, like a pass.
+The task ended with `HELD #N` (rule 16 of `assets/rules-ci.md`): its PR touches a code-owned path and waits for the owner's approving review. `gate.sh` reads the HELD line from `task.notified` or the screen and checks the held PR instead of failing it: open, auto-merge on, no check that fails or still runs. Besides the PRs made since the task began, it checks each PR the HELD line names as `#N`, so a task that only fixed an older held PR passes when its line names that PR. Its issues may stay open; they close when it lands. The other checks stay (boxes and their tests, the live commit, a clean checkout on the base branch). `GATE HELD` exits 0, like a pass.
 
 Then:
 

@@ -1,5 +1,5 @@
 # gate.sh with fake gh, git, curl
-good() { rm -f "$FAKE/parts" "$FAKE/pr_state" "$FAKE/auto" "$FAKE/checks" "$L/task.notified"; : >"$STUB/screen"; echo CLOSED >"$FAKE/issue_state"; echo 5 >"$FAKE/prs"; printf -- '- [x] a Test: t1\n- [x] b Proof: t2\n' >"$FAKE/body"; echo src/app.py >"$FAKE/files"; echo abc1234 >"$FAKE/live"; : >"$FAKE/dirty"; rm -f "$FAKE/down"; }
+good() { rm -f "$FAKE/named" "$FAKE/parts" "$FAKE/pr_state" "$FAKE/auto" "$FAKE/checks" "$L/task.notified"; : >"$STUB/screen"; echo CLOSED >"$FAKE/issue_state"; echo 5 >"$FAKE/prs"; printf -- '- [x] a Test: t1\n- [x] b Proof: t2\n' >"$FAKE/body"; echo src/app.py >"$FAKE/files"; echo abc1234 >"$FAKE/live"; : >"$FAKE/dirty"; rm -f "$FAKE/down"; }
 gate() { PATH="$T/bin:$PATH" "$L/gate.sh" 7 2>&1; }
 use() { printf '{"type":"assistant","message":{"usage":{"input_tokens":%s,"cache_read_input_tokens":%s,"cache_creation_input_tokens":0}}}\nnot json\n' "$1" "$2" >"$proj/a.jsonl"; }
 gateh() { HOME="$T/home" gate; }
@@ -42,6 +42,9 @@ held; rm "$FAKE/auto"; out=$(gate); ok "a held PR without auto-merge fails" $? 1
 held; printf 'Test fail\nLint pending\n' >"$FAKE/checks"; out=$(gate); ok "a held PR with a red check fails" $? 1
 has "gate names the red check" "$out" "FAIL PR 5 held with check Test fail"; has "gate names the running check" "$out" "FAIL PR 5 held with check Lint pending"
 held; echo MERGED >"$FAKE/pr_state"; out=$(gate); ok "HELD with no open PR fails" $? 1; has "gate says no PR is held" "$out" "no PR of it is open"
+held; : >"$FAKE/prs"; out=$(gate); ok "HELD with no PR since the start and none named fails" $? 1
+held; : >"$FAKE/prs"; echo 9 >"$FAKE/named"; echo 'HELD #7: fixed the conflict in #9' >"$L/task.notified"; out=$(gate); ok "a HELD line that names an older open PR passes" $? 0; has "gate checks the named PR" "$out" "HELD PR 9: waits for the owner's review"
+held; echo 5 >"$FAKE/named"; echo 'HELD #7: fixed #5' >"$L/task.notified"; out=$(gate); [ "$(grep -c '^HELD PR 5' <<<"$out")" = 1 ]; ok "a PR both new and named is checked once" $? 0
 good; echo OPEN >"$FAKE/pr_state"; out=$(gate); has "without HELD an open PR still fails" "$out" "FAIL PR 5 not merged"
 good
 proj="$T/home/.claude/projects/$(printf %s "$(cd "$L" && pwd -P)" | sed 's/[^A-Za-z0-9]/-/g')"; mkdir -p "$proj"

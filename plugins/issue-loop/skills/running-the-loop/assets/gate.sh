@@ -26,7 +26,9 @@ for n in "$@"; do
     else no "issue $n open"; fi
   fi
 done
-for p in $(gh pr list --state all --search "created:>=$start" --json number -q '.[].number'); do
+# A HELD line may name a PR older than the task, when the task only fixed it.
+named=$({ head -1 "$S/task.notified" 2>/dev/null; screen_tail "$IMPL" 40; } | grep -E '^\s*HELD ' | grep -oE '#[0-9]+' | tr -d '#' | while read -r m; do gh pr view "$m" --json number -q .number 2>/dev/null; done)
+for p in $({ gh pr list --state all --search "created:>=$start" --json number -q '.[].number'; echo "$named"; } | sort -un); do
   state=$(gh pr view "$p" --json state -q .state)
   echo "PR $p $state $(gh pr view "$p" --json title -q .title)"
   if [ $held = 1 ] && [ "$state" = OPEN ]; then
