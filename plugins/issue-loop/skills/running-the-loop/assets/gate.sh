@@ -1,7 +1,7 @@
 #!/bin/bash
 # usage: gate.sh <issue numbers...>
 # Pass or fail for the task that next.sh started last. Exit 0 only if all holds:
-# the issues are closed (or a PR of this task says "Part of #N"), every PR made since the task began is merged with no
+# the issues are closed (or a PR of this task says "Part of #N" or "Refs #N"), every PR made since the task began is merged with no
 # open box and every ticked box names its test (Test:, Proof: or Check: on its
 # line), the live commit is the head of BASE (or every commit after it falls
 # outside LIVE_TYPES), the implementer's checkout is clean on BASE, and the live
@@ -22,7 +22,7 @@ held=0 nheld=0
 for n in "$@"; do
   if [ "$(gh issue view "$n" --json state -q .state)" != CLOSED ]; then
     if [ $held = 1 ]; then echo "issue $n open: it closes when the held PR lands"
-    elif [ -n "$(gh pr list --state all --search "created:>=$start \"part of #$n\" in:body" --json number -q '.[].number')" ]; then echo "issue $n open: this task's PR is part of it"
+    elif for w in "part of" refs; do gh pr list --state all --search "created:>=$start \"$w #$n\" in:body" --json number -q '.[].number'; done | grep -q .; then echo "issue $n open: this task's PR is part of it"
     else no "issue $n open"; fi
   fi
 done

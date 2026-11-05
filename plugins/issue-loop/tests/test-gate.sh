@@ -1,5 +1,5 @@
 # gate.sh with fake gh, git, curl
-good() { rm -f "$FAKE/named" "$FAKE/parts" "$FAKE/pr_state" "$FAKE/auto" "$FAKE/checks" "$L/task.notified"; : >"$STUB/screen"; echo CLOSED >"$FAKE/issue_state"; echo 5 >"$FAKE/prs"; printf -- '- [x] a Test: t1\n- [x] b Proof: t2\n' >"$FAKE/body"; echo src/app.py >"$FAKE/files"; echo abc1234 >"$FAKE/live"; : >"$FAKE/dirty"; rm -f "$FAKE/down"; }
+good() { rm -f "$FAKE/named" "$FAKE/parts" "$FAKE/refs" "$FAKE/pr_state" "$FAKE/auto" "$FAKE/checks" "$L/task.notified"; : >"$STUB/screen"; echo CLOSED >"$FAKE/issue_state"; echo 5 >"$FAKE/prs"; printf -- '- [x] a Test: t1\n- [x] b Proof: t2\n' >"$FAKE/body"; echo src/app.py >"$FAKE/files"; echo abc1234 >"$FAKE/live"; : >"$FAKE/dirty"; rm -f "$FAKE/down"; }
 gate() { PATH="$T/bin:$PATH" "$L/gate.sh" 7 2>&1; }
 use() { printf '{"type":"assistant","message":{"usage":{"input_tokens":%s,"cache_read_input_tokens":%s,"cache_creation_input_tokens":0}}}\nnot json\n' "$1" "$2" >"$proj/a.jsonl"; }
 gateh() { HOME="$T/home" gate; }
@@ -18,6 +18,7 @@ good; echo 'no boxes here' >"$FAKE/body"; out=$(gate); ok "gate passes a body wi
 good; printf -- '- [x] a Test: t1\n```\n- [x] example\n```\n' >"$FAKE/body"; out=$(gate); ok "gate skips a ticked box in a code block" $? 0
 good; echo OPEN >"$FAKE/issue_state"; out=$(gate); has "gate fails on an open issue" "$out" "FAIL issue 7 open"
 good; echo OPEN >"$FAKE/issue_state"; echo 5 >"$FAKE/parts"; out=$(gate); ok "a PR that is part of an open issue passes" $? 0; has "gate names the open umbrella issue" "$out" "issue 7 open: this task's PR is part of it"; hasnt "an umbrella issue is no failure" "$out" "FAIL issue 7 open"
+good; echo OPEN >"$FAKE/issue_state"; echo 5 >"$FAKE/refs"; out=$(gate); ok "a PR that says Refs #N of an open issue passes" $? 0; hasnt "Refs #N is no failure" "$out" "FAIL issue 7 open"
 good; rm -f "$FAKE/log"; echo fff0000 >"$FAKE/live"; out=$(gate); has "gate fails when live is not the head" "$out" "FAIL live is fff0000, main is abc1234"
 good; echo fff0000 >"$FAKE/live"; echo 'chore(lint): x' >"$FAKE/log"; out=$(gate); has "without LIVE_TYPES any commit after live fails" "$out" "FAIL live is fff0000"
 sed -i "s/^LIVE_TYPES=.*/LIVE_TYPES='feat|fix|perf'/" "$L/loop.env"
