@@ -233,5 +233,11 @@ rm -f "$V/01 Periodic/06 Insights/$Y.html"
 digest_cron PAGE="$V/01 Periodic/06 Insights/$Y.html"; ok "digest cron exit in the default folder" $? 0
 has "digest cron passes the default folder" "$(cat "$T/home2/args")" '--periodic "01 Periodic"'
 
+# extract.py keeps the message of a blocking hook, which sits in blockingError, not stderr
+mkdir -p "$T/xp/-x"
+printf '{"type":"attachment","sessionId":"s-hook","timestamp":"%sT10:00:00.000Z","cwd":"/x","attachment":{"type":"hook_blocking_error","hookEvent":"PostToolUse","hookName":"PostToolUse:Edit","blockingError":{"blockingError":"file-size: a.tsx is ~5008 tokens"}}}\n' "$D" >"$T/xp/-x/s-hook.jsonl"
+out=$(uv run -q "$here/../skills/digest/scripts/extract.py" --date "$D" --projects "$T/xp" --news-logs "$T/none" 2>&1)
+has "extract keeps a blocking hook's message" "$out" "PostToolUse hook failed: file-size: a.tsx is ~5008 tokens"
+
 echo "$pass passed, $fail failed"
 [ "$fail" -eq 0 ]
