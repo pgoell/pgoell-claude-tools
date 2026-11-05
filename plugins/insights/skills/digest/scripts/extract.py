@@ -179,7 +179,9 @@ def scan(path: Path, root: Path, start: date, end: date, sessions: dict[str, Ses
                 s.first = moment
             if r.get("type") == "attachment":
                 a = r.get("attachment") or {}
-                text = f"{a.get('hookEvent', 'hook')} hook failed: {a.get('stderr', '')}".strip()
+                be = a.get("blockingError")
+                msg = a.get("stderr") or (be.get("blockingError", "") if isinstance(be, dict) else "")
+                text = f"{a.get('hookEvent', 'hook')} hook failed: {msg}".strip()
                 s.errors.append(
                     {"day": day.isoformat(), "tool": a.get("hookName", "hook"), "text": text, "cmd": "", "kind": "guard"}
                 )
