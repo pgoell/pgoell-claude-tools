@@ -91,6 +91,8 @@ That line arrives in your tab looking like user input. It is not the user. Treat
 
 Say bad news as plainly as good news: over the time box, an unreviewed commit, a fault that shipped.
 
+Before a held PR goes in the report as waiting on the user, read `gh pr view N --json mergeable,statusCheckRollup`. A red check or a conflict means it is not ready: brief its fix as the next task, and name it as broken, not as waiting for review.
+
 ## What runs next
 
 A feature task opens more issues than it closes; a bug batch about breaks even. So bugs first, or the queue only grows. The one thing ahead of the bugs, after the last task's own faults, is what the user labelled "run next".
