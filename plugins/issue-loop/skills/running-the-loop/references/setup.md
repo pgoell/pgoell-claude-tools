@@ -64,7 +64,7 @@ If the host has no herdr, read `references/driver.md` and write the five driver 
 
 ## Review in CI
 
-`REVIEW_IN=ci` in `loop.env` is for a repo that reviews every PR in CI. `next.sh` then lays `assets/rules-ci.md` over rules 7, 15 and 16: no review subagent; the implementer answers each blocking thread with a reply whose first word is `Fixed`, `Rejected`, `Intentional` or `Didn't matter` and resolves it; after three rounds it ends `BLOCKED`; a PR on a code-owned path ends `HELD #N` with auto-merge on, and waits for the owner's approving review. A loop's own `## 7`, `## 15` or `## 16` in `rules.local.md` still wins over the overlay. The repo needs:
+`REVIEW_IN=ci` in `loop.env` is for a repo that reviews every PR in CI. `next.sh` then lays `assets/rules-ci.md` over rules 7, 15 and 16: no review subagent; the implementer answers each blocking thread with a reply whose first word is `Fixed`, `Rejected`, `Intentional` or `Didn't matter` and resolves it; it pushes every fix, and past a CI round cap names the commits the review did not see; a PR on a code-owned path ends `HELD #N` with auto-merge on, and waits for the owner's approving review. A loop's own `## 7`, `## 15` or `## 16` in `rules.local.md` still wins over the overlay. The repo needs:
 
 - A review job that posts blocking findings as review threads, and branch protection that requires resolved conversations and the review job.
 - Risky paths in `.github/CODEOWNERS`, and branch protection that requires a code owner's review.
