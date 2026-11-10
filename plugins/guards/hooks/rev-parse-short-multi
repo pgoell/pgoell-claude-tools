@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+# PreToolUse guard for Bash: deny `git rev-parse --short A B`.
+#
+# Why: `--short` implies `--verify`, which takes one revision, so two or more
+# always exit 128 ("fatal: Needed a single revision"). In an `&&` chain the
+# failure also skips what follows, such as a loop's `notify.sh "DONE #962"`.
+# Over 14 days this host logged 78 such errors, all but one from this form.
+#
+# A redirection (`2>/dev/null`) is not a revision, and the match stops at a
+# separator or line end. A command that only quotes the form passes or fails
+# alike; the guard only stops a command that cannot succeed.
+import json
+import re
+import sys
+
+REV = r"[ \t]+(?![0-9]*[<>])[^\s;&|<>()]+"
+PATTERN = re.compile(r"\brev-parse[ \t]+--short(?:%s){2,}" % REV)
+
+REASON = (
+    "Blocked: `git rev-parse --short` takes one revision; with two it exits 128 "
+    "and skips the rest of an && chain. Use one call per revision: "
+    "`git rev-parse --short A; git rev-parse --short B`."
+)
+
+command = json.load(sys.stdin).get("tool_input", {}).get("command", "")
+if PATTERN.search(command):
+    print(json.dumps({"hookSpecificOutput": {
+        "hookEventName": "PreToolUse",
+        "permissionDecision": "deny",
+        "permissionDecisionReason": REASON,
+    }}))

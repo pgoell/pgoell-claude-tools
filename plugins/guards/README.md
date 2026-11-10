@@ -20,3 +20,11 @@ The deny message offers two fixes:
 The hook also blocks `pgrep -f <pattern>` with a plain pattern when it sits in an `until` or `while` condition, such as `until ! pgrep -f 'capture.sh'; do sleep 5; done`. The `bash -c` running the loop holds the pattern too, so `pgrep` always finds it and the loop never ends. One such loop ran on through a 3-hour capture. The fix is the same bracket: `until ! pgrep -f '[c]apture.sh'`.
 
 `pkill` or `pgrep` without `-f`, a pattern that does not match the command's own text (a bracketed pattern on its own), a one-shot `pgrep -f` outside a loop condition, and every other command pass through untouched. A command the hook cannot parse also passes.
+
+### `rev-parse-short-multi` (PreToolUse, Bash)
+
+Blocks `git rev-parse --short` with two or more revisions, such as `git rev-parse --short HEAD origin/main`.
+
+`--short` implies `--verify`, which takes one revision, so the call always exits 128 with "fatal: Needed a single revision". In an `&&` chain the failure also skips the rest, such as a loop's closing `notify.sh "DONE #962"`. Over 14 days on one host, 78 calls failed this way, all but one in this form.
+
+The deny message offers one call per revision: `git rev-parse --short A; git rev-parse --short B`. One revision, a redirection after it (`2>/dev/null`) and `git rev-parse` without `--short` pass through untouched.

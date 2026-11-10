@@ -20,7 +20,7 @@ One page per plugin in the marketplace, in marketplace order. Each page names th
 - [structure](/reference/plugins/structure.md): cap file size and folder fan-out on commit, push, CI and edit, and set up import boundaries
 - [issue-loop](/reference/plugins/issue-loop.md): an unattended build loop over a repo's GitHub issues
 - [prose-styles](/reference/plugins/prose-styles.md): four output styles for how the agent writes prose
-- [guards](/reference/plugins/guards.md): a hook that blocks shell commands known to fail
+- [guards](/reference/plugins/guards.md): hooks that block shell commands known to fail
 - [session-title](/reference/plugins/session-title.md): a hook that names each session after folder, branch and start time
 - [ponytail](/reference/plugins/ponytail.md): the simplest code that works, tracked from upstream
 - [emil](/reference/plugins/emil.md): Emil Kowalski's design engineering skills, tracked from upstream
