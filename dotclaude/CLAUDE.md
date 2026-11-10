@@ -4,6 +4,7 @@
 - When reporting information to me, be extremely concise and sacrifice grammar for the sake of concision.
 - A report that names a PR, issue or deploy says its state (open, merged, live); for one you hold back, say why and what releases it.
 - A todo for me says what to open (a link), what to decide, and what my answer should look like. Spell out every rule letter, file line or run id it names; I have not read your working notes.
+- Before you hand me a step, check whether you can do it here: a key or token this machine can make (write it to the untracked env file, never into git), a push my `gh` token allows (`gh auth status` lists the scopes). Hand me only what needs my judgment, my accounts or my devices.
 
 ## Writing style
 
