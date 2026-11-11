@@ -115,6 +115,8 @@ To the human, always:
 
 Do not add a gate the user did not ask for. A PR that waits for the user's merge stops the loop; if the user wants that gate, they will say so. A code owner review that the repo itself requires is the user's own gate, and it does not stop the loop: the task ends `HELD`, and the next task runs. If the user's answer is unclear, say how you read it and carry on.
 
+Ask so each question stands alone; the user has not read the history. Give each one line on what it is about, a link to open, and the exact answers to type back ("on" or "off", "I'll look" or "let it stand").
+
 ## Permission mode
 
 Sessions run with permissions skipped: `claude --permission-mode bypassPermissions`. `start.sh` reads the mode from `loop.env`; set `PERMISSION_MODE=auto` there for a loop that should ask.
