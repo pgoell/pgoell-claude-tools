@@ -32,6 +32,10 @@ echo "== $(date -Is) edition $DAY for $VAULT" >>"$LOG"
 PLUGIN=()
 [ -n "${NEWS_PLUGIN_DIR:-}" ] && PLUGIN=(--plugin-dir "$NEWS_PLUGIN_DIR")
 
+# The stamp marks the run's start, so a page left by an earlier run fails.
+STAMP="$(mktemp)"
+trap 'rm -f "$STAMP"' EXIT
+
 # -p prompts nobody, so the session runs with permissions skipped.
 claude -p "/news:edition --vault \"$VAULT\" --periodic \"$PERIODIC\" --date $DAY" "${PLUGIN[@]}" \
   --model "${NEWS_MODEL:-opus}" --effort "${NEWS_EFFORT:-medium}" \
@@ -39,11 +43,23 @@ claude -p "/news:edition --vault \"$VAULT\" --periodic \"$PERIODIC\" --date $DAY
   >>"$LOG" 2>&1
 status=$?
 
-# claude can exit 0 without having written the paper; the file is the real check.
-EDITION="$VAULT/$PERIODIC/05 Newspaper/$DAY.html"
-if [ "$status" -eq 0 ] && [ ! -s "$EDITION" ]; then
-  echo "== no edition at $EDITION" >>"$LOG"
-  status=1
+# claude can exit 0 without having finished: a turn that ends in plain text
+# ends the run. The edition is done only when this run wrote the page, memory
+# holds the day (or tomorrow repeats today's stories) and the daily note links it.
+NP="$VAULT/$PERIODIC/05 Newspaper"
+EDITION="$NP/$DAY.html"
+NOTE="$VAULT/$PERIODIC/00 Daily/$DAY.md"
+if [ "$status" -eq 0 ]; then
+  if [ ! -s "$EDITION" ] || [ ! "$EDITION" -nt "$STAMP" ]; then
+    echo "== no edition from this run at $EDITION" >>"$LOG"
+    status=1
+  elif ! grep -q "\"date\": *\"$DAY\"" "$NP/memory/stories.jsonl" 2>/dev/null; then
+    echo "== edition written but not remembered in $NP/memory/stories.jsonl" >>"$LOG"
+    status=1
+  elif ! grep -qF "[[$PERIODIC/05 Newspaper/$DAY.html]]" "$NOTE" 2>/dev/null; then
+    echo "== edition written but no link in $NOTE" >>"$LOG"
+    status=1
+  fi
 fi
 echo "== $(date -Is) exit $status" >>"$LOG"
 exit "$status"
