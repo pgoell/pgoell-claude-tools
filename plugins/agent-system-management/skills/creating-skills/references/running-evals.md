@@ -15,10 +15,14 @@ Execute this task:
 - Input files: <eval files if any, or "none">
 - Save outputs to: <workspace>/iteration-<N>/eval-<id>-<name>/with_skill/outputs/
 - Outputs to save: <what the user cares about, e.g., "the .docx file", "the final CSV">
-- Save a transcript of your plan, reasoning and tool calls to: <workspace>/iteration-<N>/eval-<id>-<name>/with_skill/outputs/transcript.md
+- Save a work log to: <workspace>/iteration-<N>/eval-<id>-<name>/with_skill/outputs/transcript.md
+  List the steps you took, each tool call, and each decision with one line on why. Write it as a log of actions and decisions, not as a copy of your thinking.
+- Nobody can answer questions during this run. Carry the task through to the end. If the skill calls for the user's approval or input, stop at that point, save what you have, and write the question to the outputs folder as user_notes.md. You are done when the outputs named above are saved.
 ```
 
 **Baseline run** (same prompt, but the baseline depends on context):
+
+Every baseline brief keeps the work log and "Nobody can answer questions" lines of the with-skill brief.
 
 - **Creating a new skill**: no skill at all. Same prompt, no skill path, save to `without_skill/outputs/`.
 - **Improving an existing skill**: the old version. Before editing, snapshot the skill (`cp -r <skill-path> <workspace>/skill-snapshot/`), then point the baseline subagent at the snapshot. Save to `old_skill/outputs/`.
@@ -75,7 +79,7 @@ Once all runs are done:
    ```bash
    grep -s -c -i -w '<word>' <workspace>/iteration-N/*/with_skill/outputs/transcript.md <workspace>/iteration-N/*/with_skill/run-*/outputs/transcript.md
    ```
-   The transcript is the executor's written log of its plan and reasoning, not its raw hidden thinking. A leading word that is absent from a run's reasoning and plan (a count of 0) is a steering failure, even when every assertion passes: the agent did not think with the word, so the skill did not steer that run. Write down each miss, hand the list to the analyst pass below, and fix it before the next iteration, per `references/writing-great-skills.md`: pick a stronger word, or anchor the word at the step where it should act.
+   The transcript is the executor's work log of steps and decisions, not its thinking. A leading word that is absent from a run's log (a count of 0) is a steering failure, even when every assertion passes: no step or decision named the word, so the skill most likely did not steer that run. Write down each miss, hand the list to the analyst pass below, and fix it before the next iteration, per `references/writing-great-skills.md`: pick a stronger word, or anchor the word at the step where it should act.
 
 4. **Do an analyst pass**: read the benchmark data and surface patterns the aggregate stats might hide. See `agents/analyzer.md` (the "Analyzing Benchmark Results" section) for what to look for: things like assertions that always pass regardless of skill (non-discriminating), high-variance evals (possibly flaky), and time/token tradeoffs. Write the analyzer's notes array into the `notes` field of `iteration-N/benchmark.json` (the script leaves it `[]`), so the viewer shows them.
 

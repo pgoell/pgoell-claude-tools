@@ -1,6 +1,7 @@
 # Copy to .github/workflows/deck-feedback.yml on the default branch of the deck
 # repo. Needs a self-hosted runner on the machine that holds the worktrees and
-# runs herdr, as the same user.
+# runs herdr, as the same user. Only the repo's owner, members and collaborators
+# can hand an issue to Claude: an issue by anyone else is skipped.
 name: Deck feedback
 on:
   issues:
@@ -8,7 +9,9 @@ on:
 
 jobs:
   hand-over:
-    if: contains(github.event.issue.labels.*.name, 'deck-feedback')
+    if: >-
+      contains(github.event.issue.labels.*.name, 'deck-feedback') &&
+      contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.issue.author_association)
     runs-on: self-hosted
     steps:
       - run: python3 "$HOME/Code/pgoell-claude-tools/plugins/presentations/hosted/bridge.py"

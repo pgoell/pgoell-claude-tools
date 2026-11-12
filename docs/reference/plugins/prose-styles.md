@@ -23,7 +23,7 @@ Not in Codex or Cursor: neither has an output-style mechanism. See [Runtimes](/r
 | Style                  | What it does                                                                                                                                                        |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `prose-styles:orwell`  | Orwell's six rules from "Politics and the English Language" (1946): short word over long, no stock phrase, active voice, cut every word that can go.                |
-| `prose-styles:concise` | Maximum density: fragments allowed, articles droppable, no preamble, no closing summary. Grammar yields to brevity, facts never do.                                 |
+| `prose-styles:concise` | Maximum density: fragments allowed, articles droppable, no preamble, no recap. Grammar yields to brevity, facts never do; final reports stay in full sentences.     |
 | `prose-styles:ste`     | Simplified Technical English, condensed from ASD-STE100: one meaning per word, one instruction per step, condition before instruction. For procedures and runbooks. |
 | `prose-styles:house`   | All three combined: concision sets the shape, Orwell governs word choice, STE adds only its precision rules. Where STE and concision conflict, concision wins.      |
 

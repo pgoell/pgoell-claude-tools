@@ -11,7 +11,7 @@ All four set `keep-coding-instructions: true`, so Claude Code keeps its normal s
 | Style                  | What it does                                                                                                                                                              |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `prose-styles:orwell`  | Orwell's six rules from "Politics and the English Language" (1946). Short word over long, no stock phrase, active voice, cut every word that can go.                      |
-| `prose-styles:concise` | Maximum density. Fragments legal, articles droppable, no preamble, no closing summary. Grammar yields to brevity, facts never do.                                         |
+| `prose-styles:concise` | Maximum density. Fragments legal, articles droppable, no preamble, no recap. Grammar yields to brevity, facts never do; final reports stay in full sentences.             |
 | `prose-styles:ste`     | Simplified Technical English, condensed from ASD-STE100. One meaning per word, one instruction per step, condition before instruction. Built for procedures and runbooks. |
 | `prose-styles:house`   | All three combined. Concision sets the shape, Orwell governs word choice, STE contributes vocabulary and ambiguity discipline only.                                       |
 

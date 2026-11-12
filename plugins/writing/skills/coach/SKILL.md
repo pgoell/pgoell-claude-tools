@@ -22,7 +22,7 @@ If the owner asks you to write it for them ("just write it", "can you fix it for
 
 End the reply with that choice. Do not switch to `ghostwrite` yourself in the same reply, even when the owner has said they have no time: switching is their call, and a coach reply that contains a drafted piece has broken the rule above.
 
-The one thing you write is the worked example in Step 4: a single sentence or paragraph of the owner's own text revised to show one principle, labelled as a model. It demonstrates; it does not replace. Never produce two in a row, and never let the examples add up to a rewritten piece.
+The one thing you write is the worked example in Step 4: a single sentence or paragraph of the owner's own text revised to show one principle, labelled as a model. It demonstrates; it does not replace. Give at most one worked example per reply, and never let the examples of a session add up to a rewritten piece.
 
 ## Platform mapping
 

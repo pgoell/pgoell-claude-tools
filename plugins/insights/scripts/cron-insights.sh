@@ -35,6 +35,10 @@ echo "== $(date -Is) insights for $DAY in $VAULT" >>"$LOG"
 PLUGIN=()
 [ -n "${INSIGHTS_PLUGIN_DIR:-}" ] && PLUGIN=(--plugin-dir "$INSIGHTS_PLUGIN_DIR")
 
+# The stamp marks the run's start, so a page left by an earlier run fails.
+STAMP="$(mktemp)"
+trap 'rm -f "$STAMP"' EXIT
+
 # -p prompts nobody, so the session runs with permissions skipped.
 # insights-self-run marks this session, so tomorrow's extract skips it.
 claude -p "/insights:digest --vault \"$VAULT\" --periodic \"$PERIODIC\" --date $DAY insights-self-run" "${PLUGIN[@]}" \
@@ -43,11 +47,19 @@ claude -p "/insights:digest --vault \"$VAULT\" --periodic \"$PERIODIC\" --date $
   >>"$LOG" 2>&1
 status=$?
 
-# claude can exit 0 without having written the page; the file is the real check.
+# claude can exit 0 without having finished: a turn that ends in plain text
+# ends the run. The link in today's daily note is the protocol's last write,
+# so check it beside a page written by this run.
 PAGE="$VAULT/$PERIODIC/06 Insights/$DAY.html"
-if [ "$status" -eq 0 ] && [ ! -s "$PAGE" ]; then
-  echo "== no page at $PAGE" >>"$LOG"
-  status=1
+NOTE="$VAULT/$PERIODIC/00 Daily/$TODAY.md"
+if [ "$status" -eq 0 ]; then
+  if [ ! -s "$PAGE" ] || [ ! "$PAGE" -nt "$STAMP" ]; then
+    echo "== no page from this run at $PAGE" >>"$LOG"
+    status=1
+  elif ! grep -qF "[[$PERIODIC/06 Insights/$DAY.html]]" "$NOTE" 2>/dev/null; then
+    echo "== page written but no link in $NOTE" >>"$LOG"
+    status=1
+  fi
 fi
 echo "== $(date -Is) exit $status" >>"$LOG"
 exit "$status"
