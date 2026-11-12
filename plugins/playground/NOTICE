@@ -8,7 +8,9 @@ authored by Anthropic, licensed under the Apache License, Version 2.0:
 
   - skills/playground/SKILL.md (verbatim body except em-dashes (U+2014)
       and en-dashes (U+2013) substituted with project-lint-compliant
-      punctuation; see substitution rules below)
+      punctuation; see substitution rules below; one local change in
+      2026-11: the "Dark theme" requirement yields to a template that
+      sets its own theme)
   - skills/playground/templates/code-map.md (verbatim body, same
       em-dash/en-dash substitution applied)
   - skills/playground/templates/concept-map.md (verbatim body, same

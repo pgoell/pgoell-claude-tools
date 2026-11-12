@@ -22,7 +22,9 @@ Name the voice-note entries you checked against. Do not offer a rewrite.
 
 Offer these; run only the ones the owner wants. Run each in its own subagent where the host allows, and give it only the draft plus the prompt below. It must not see the interview, the outline, the voice note, or another reviewer's notes: blind review keeps the reviewers from converging on one opinion.
 
-Each reviewer returns at most five points, each with the line it refers to and one sentence on why it matters. No verdicts, no scores, no rewritten passages.
+Each reviewer returns at most five points. The reviewer cannot see this line, so end every prompt you send with it:
+
+> Return at most five points, the most important first. Each point: the quoted line and one or two sentences on why it matters. No verdicts, no scores, no rewritten passages.
 
 ### Asshole reader
 

@@ -34,11 +34,11 @@ Detailed findings with inline citations. Flag source credibility where relevant.
 
 ## Analysis & Insights
 
-This section must be the strongest part of the report. Synthesize across findings. What patterns emerge? What surprised you? Where does the conventional wisdom get it wrong? What would you tell a decision-maker who has 5 minutes?
+This section must be the strongest part of the report. Draw together the synthesis's pillars; add no finding the synthesis lacks. What patterns emerge? Where does the synthesis show the conventional wisdom is wrong? What would you tell a decision-maker who has 5 minutes?
 
 ## Limitations & Open Problems
 
-What this report's proposed solutions genuinely cannot solve. Be specific: attribution problems, baseline gaps, political barriers, scenarios where the frameworks break down. Address the most common real-world starting point (no baselines, no measurement culture) honestly.
+What this report's proposed solutions genuinely cannot solve. Be specific: gaps in the evidence, barriers the synthesis names, scenarios where its answers break down.
 
 ## Future Outlook
 
@@ -48,7 +48,7 @@ Specific, falsifiable predictions with timelines. "Spending will increase" is no
 
 Summary of the thesis and main supporting arguments. Actionable recommendations prioritized by impact.
 
-End with a "Starting from zero" subsection: concrete guidance for the most common real-world scenario: an organization with a few pilots, no baselines, no measurement culture, and leadership asking "is this working?" This is not the ideal path; it is the realistic one.
+End with a first practical step for the reader the brief names, drawn from the synthesis.
 
 ## Low-Confidence Claims
 
@@ -60,30 +60,6 @@ All sources with URLs and access dates
 
 ---
 
-## Quick Mode Report
-
-Use this structure for quick mode reports:
-
-# {Title}
-
-_Date: {YYYY-MM-DD}_
-
-## Executive Summary
-
-2-3 paragraphs: key findings and takeaways
-
-## Key Findings
-
-### {Subtopic}
-
-Findings with inline citations
-
-## References
-
-All sources with URLs
-
----
-
 ## Citation Style
 
 - Inline citations with links: "According to [Source Name](URL), ..."
@@ -92,5 +68,5 @@ All sources with URLs
 - Every non-obvious claim must have a citation
 - Key claims cross-referenced (2+ independent sources)
 - Use `[author estimate]` tag for any numeric threshold, range, or benchmark derived by the agent rather than cited from a source. Include reasoning.
-- Use `[original analysis]` tag for novel frameworks or concepts generated during creative synthesis (Phase 5.5). These are the agent's own thinking, not sourced.
+- Keep the `[original analysis]` tag on any framework the synthesis marks as the agent's own thinking rather than sourced.
 - Source credibility tags (`[vendor]`, `[consulting]`, etc.) must travel with the data on every reuse, not just first mention. Example: "McKinsey's 55% (consulting sample)"

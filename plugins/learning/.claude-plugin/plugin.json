@@ -1,6 +1,6 @@
 {
   "name": "learning",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Adaptive teaching, concept rebuilding and practice with persistent learner evidence and optional Kasten integration.",
   "author": {
     "name": "Pascal Göllner"

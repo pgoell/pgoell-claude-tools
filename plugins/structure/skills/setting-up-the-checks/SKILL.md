@@ -53,11 +53,11 @@ The repo carries its own copies because CI and fresh clones cannot see the plugi
 
 ## Step 3: File size offenders
 
-Run `scripts/check-file-size` bare. No output means no offenders. Otherwise show the user the `file-size:` lines and ask, file by file: split it along a deep module, as the message says, or exclude it in `.file-size-excludes` (only for files nobody edits by hand: generated, vendored, ported, data). [references/excludes.md](references/excludes.md) has the file format. A bare run sizes HEAD, so commit each split before you rerun; ask the user before you commit.
+Run `scripts/check-file-size` bare. No output means no offenders. Otherwise show the user the `file-size:` lines as one list, with a proposed choice for each, and ask once: split it along a deep module, as the message says, or exclude it in `.file-size-excludes` (only for files nobody edits by hand: generated, vendored, ported, data). [references/excludes.md](references/excludes.md) has the file format. A bare run sizes HEAD, so commit each split before you rerun; ask the user before you commit.
 
 ## Step 4: Fan-out offenders and the baseline
 
-Run `scripts/check-fan-out --all`. For each `fan-out:` line, ask the user: group the folder now, exclude it (a folder that is a list by design, such as dated logs or one folder per plugin), or accept it in the baseline. Then write the baseline from what is left:
+Run `scripts/check-fan-out --all`. Show the `fan-out:` lines as one list, with a proposed choice for each, and ask the user once: group the folder now, exclude it (a folder that is a list by design, such as dated logs or one folder per plugin), or accept it in the baseline. Then write the baseline from what is left:
 
 ```bash
 scripts/check-fan-out --update-baseline

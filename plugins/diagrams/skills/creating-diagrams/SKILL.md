@@ -81,7 +81,7 @@ node "$ENGINE/bin/archify.mjs" validate <type> diagrams/<slug>.<type>.json --qua
 
 A showcase pass reports all 9 artifact checks with 0 errors and 0 warnings; a receipt with 4 checks is basic validation, not a pass. On failure, most diagnostics name a `subject`, its `evidence`, and `supportedFixes`; `layout/constraint` diagnostics carry the fix (often a `labelAt [x, y]`) only in the message text. Change only the diagnosed subject, apply the named fix, and validate again. Fix in this order: schema and quality profile, node overlap, edges through nodes and endpoint direction, crossings and corridors and border runs and segment rhythm, label clearance.
 
-Keep going while the error count reaches a new minimum. If two rounds in a row do not improve it, stop and report the open diagnostics. A passing validation freezes the candidate: do not edit it afterward. For workflow v2 geometry questions, `validate workflow <file> --layout-json` prints the compiler's layout receipt.
+Keep going while the error count reaches a new minimum. If two rounds in a row do not improve it, stop and report the open diagnostics. A passing validation freezes the candidate for delivery: do not edit it between `validate` and `deliver`. If the review in step 6 finds a visible defect, edit the JSON and run steps 4 to 6 again, at most twice. For workflow v2 geometry questions, `validate workflow <file> --layout-json` prints the compiler's layout receipt.
 
 ### 5. Deliver
 
@@ -101,7 +101,7 @@ node "$ENGINE/bin/archify.mjs" visual-check diagrams/<slug>.html --json
 
 This opens the delivered file in headless Chrome at four desktop sizes (1440x900 up to 2048x1320), checks overflow and projected text size, and writes a receipt, a contact sheet, and light and dark PNG captures beside the artifact (`<slug>.visual-check.*`). It proves browser behavior, not polish, so its `visualReview` field always stays `pending`; your own review below is reported separately.
 
-Then look yourself. Screenshot the delivered file in both modes and open the PNGs:
+Then look yourself: open the light and dark PNGs `visual-check` wrote. Only when `visual-check` was skipped or wrote no PNGs, take your own screenshots:
 
 ```bash
 google-chrome --headless --hide-scrollbars --window-size=1600,1200 --screenshot=<scratch>/<slug>-light.png "file://<absolute path to diagrams/<slug>.html>"

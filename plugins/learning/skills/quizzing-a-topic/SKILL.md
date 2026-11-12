@@ -51,7 +51,7 @@ Turn the topic into must-understand items, organized as topic-shaped pillars:
 3. **Trade-offs and pitfalls**: the failure modes, the edge cases, the costs, the common misconceptions.
 4. **Where it applies**: when to reach for it, when not to, and how it connects to what the user already knows.
 
-Keep the same what / how / why rigor throughout. Write the checklist to the running doc (see below) before teaching; each pillar gets its own checkboxes.
+Keep the same what / how / why rigor throughout. Say in one line what you are setting up, so the learner is not left waiting in silence. Write the checklist to the session record (see below) before teaching; each pillar gets its own checkboxes.
 
 ## The teaching loop
 
@@ -61,8 +61,8 @@ Run this loop, one checklist item at a time, top to bottom:
 2. **Fill the gaps.** Correct misconceptions and add what is missing. Use a concrete example or real code whenever it makes the idea land.
 3. **Drill the why.** Ask "why" repeatedly. Why does it work this way? Why does this trade-off exist? Surface understanding is recognizing the what; mastery is being able to defend the why.
 4. **Quiz the item** (see Quiz mechanics).
-5. **Gate on demonstrated understanding.** Do not advance to the next checklist item until the current one is demonstrated. If the user stumbles, do not hand over the answer: give the smallest hint that could unblock them, then let them try again. Still stuck? Give a slightly bigger hint each time. Count hints per item. Re-teach the item in full only after three hints fail or when the user asks for it, then re-quiz with a fresh problem. Preserve the earlier hints and answer exposure; repeating the revealed problem is assisted evidence.
-6. **Finish gate, with an explicit stop.** Do not declare the topic done until every checklist item is demonstrated. If the learner stops or skips, save the gaps and end without claiming completion. Passing now is not proof of delayed retention.
+5. **Gate on demonstrated understanding.** Do not advance to the next checklist item until the current one is demonstrated, unless the learner asks to skip it: then mark it pending in the record and move to the next; never count it as demonstrated. If the user stumbles, do not hand over the answer: give the smallest hint that could unblock them, then let them try again. Still stuck? Give a slightly bigger hint each time. Count hints per item. Re-teach the item in full only after three hints fail or when the user asks for it, then re-quiz with a fresh problem. Preserve the earlier hints and answer exposure; repeating the revealed problem is assisted evidence.
+6. **Finish gate, with an explicit stop.** Do not declare the topic done until every checklist item is demonstrated. If the learner stops, save the gaps and end without claiming completion. Skipped items stay open and the topic is not done. Passing now is not proof of delayed retention.
 
 ## Quiz mechanics
 
@@ -71,7 +71,7 @@ Run this loop, one checklist item at a time, top to bottom:
 - Reveal the correct answer and the explanation only in the message **after** the user submits, never before. After a wrong pick, say it is wrong but hold the answer back: give a hint and ask the same question again (see Gate on demonstrated understanding).
 - For "restate your understanding", the open-answer rung, and other open-ended prompts, ask in prose. `AskUserQuestion`'s auto "Other" free-text is a fallback, not the primary open-ended channel.
 - Quiz incrementally: one item at a time, woven into the loop, not batched at the end.
-- When an answer key is enumerable or computable (a list, a count, a flag name, version-specific behavior), derive and verify it before asking: write a quick script, run the command, or read the authoritative doc or repo file. Do not quiz from recall on facts a tool call can settle; a wrong answer key mis-teaches with authority.
+- When an answer key is enumerable or computable (a list, a count, a flag name, version-specific behavior), derive and verify it before asking: write a quick script, run the command, or read the authoritative doc or repo file. Do not quiz from recall on facts a tool call can settle; a wrong answer key mis-teaches with authority. Until the learner has answered, keep the key out of everything they can see: your notes between tool calls, tool-call descriptions, command lines, and any record text written before the answer. Say only that you are checking the answer key.
 - Escalate difficulty **within each item** before marking it demonstrated: start with recall, move to application, then to an edge case or "what would break if" question. Ask these rungs as multiple choice. The last rung is an open answer: with no options, ask the user to explain the item in their own words, as they would to a colleague without the AI. Multiple choice tests recognition; this tests understanding. Judge the answer yourself: say what holds and what is missing, and treat a gap as a stumble. Mark the item demonstrated in this session only after the user clears the edge-case rung and the open answer. Record whether success was assisted or independent; do not label it durable mastery.
 
 ## Depth levels

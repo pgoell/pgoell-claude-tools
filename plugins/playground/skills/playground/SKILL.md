@@ -31,7 +31,7 @@ When the user asks for an interactive playground, explorer, or visual tool for a
 - **Prompt output.** Natural language, not a value dump. Only mentions non-default choices. Includes enough context to act on without seeing the playground. Updates live.
 - **Copy button.** Clipboard copy with brief "Copied!" feedback.
 - **Sensible defaults + presets.** Looks good on first load. Include 3-5 named presets that snap all controls to a cohesive combination.
-- **Dark theme.** System font for UI, monospace for code/values. Minimal chrome.
+- **Dark theme by default.** Where a template sets its own theme (code-map: light; diff-review: both, following the OS setting), the template wins. System font for UI, monospace for code/values. Minimal chrome.
 
 ## State management pattern
 

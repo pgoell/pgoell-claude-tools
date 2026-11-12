@@ -1,6 +1,6 @@
 {
   "name": "databricks",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Databricks skills: databricks-core (CLI, auth, profiles, ported from databricks/databricks-agent-skills) and databricks-docs (live docs.databricks.com lookups via WebFetch).",
   "author": {
     "name": "Pascal Göllner"
