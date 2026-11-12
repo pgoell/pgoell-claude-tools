@@ -5,6 +5,9 @@
 # three links land in the same daily note. Cron runs at the host's local
 # time; on a host not set to Europe/Berlin, put CRON_TZ=Europe/Berlin above
 # the line.
+# INSIGHTS_ACTIVITY_MODEL and INSIGHTS_ACTIVITY_EFFORT pick the model and
+# effort (default opus, medium), so a change to the interactive default does
+# not change this job.
 # INSIGHTS_PLUGIN_DIR=/path/to/plugins/insights loads the plugin from that
 # working tree instead of the installed one, to test a change the way cron runs it.
 set -uo pipefail
@@ -36,6 +39,7 @@ PLUGIN=()
 # -p prompts nobody, so the session runs with permissions skipped.
 # insights-self-run marks this session, so tomorrow's runs leave it out.
 timeout 30m claude -p "/insights:activity --vault \"$VAULT\" --periodic \"$PERIODIC\" --date $DAY insights-self-run" "${PLUGIN[@]}" \
+  --model "${INSIGHTS_ACTIVITY_MODEL:-opus}" --effort "${INSIGHTS_ACTIVITY_EFFORT:-medium}" \
   --dangerously-skip-permissions \
   >>"$LOG" 2>&1
 status=$?

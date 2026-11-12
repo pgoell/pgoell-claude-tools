@@ -14,6 +14,8 @@ if [ -f "$S/$DRIVER" ]; then . "$S/$DRIVER"; else . "$A/$DRIVER"; fi
 
 # The model for ROLE (ORCH, IMPL, CODER, REVIEW or ADVISOR) in the harness of models.env. Empty when unset.
 model() { local v="${HARNESS}_$1_MODEL"; echo "${!v:-}"; }
+# The effort for ROLE (ORCH or IMPL) in the harness of models.env. Empty when unset.
+effort() { local v="${HARNESS}_$1_EFFORT"; echo "${!v:-}"; }
 
 # has_models: true when models.env is in the loop folder. Else says the fix on stderr.
 has_models() {

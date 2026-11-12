@@ -31,6 +31,8 @@ status: stable
 
 Each wrapper runs its skill for yesterday through `claude -p` with permissions skipped (`--dangerously-skip-permissions`). The activity job stops after 30 minutes.
 
+Each wrapper also names its model and effort, so a change to your interactive default does not change the jobs. The digest runs on `fable` at `high`, since it writes standing rules; the activity page runs on `opus` at `medium`. Set `INSIGHTS_MODEL` and `INSIGHTS_EFFORT`, or `INSIGHTS_ACTIVITY_MODEL` and `INSIGHTS_ACTIVITY_EFFORT`, on the cron line to change them.
+
 ## Check it worked
 
 - Run a wrapper by hand once: `<clone>/plugins/insights/scripts/cron-insights.sh <vault>`.

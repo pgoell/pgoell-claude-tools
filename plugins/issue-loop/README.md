@@ -88,7 +88,7 @@ Read `skills/running-the-loop/references/limits.md` before you rely on the loop.
 
 Last run, 2026-10-29: 457 of 457 checks pass.
 
-`tests/test-models.sh` covers `models.env` and the models the scripts pass on.
+`tests/test-models.sh` covers `models.env` and the models and efforts the scripts pass.
 
 `tests/handover-cost.py` re-derives the handover point from real orchestrator transcripts: `uv run tests/handover-cost.py ~/.claude/projects/<loop-folder-slug>/*.jsonl`. It prints each session's start context, growth per call, cache misses and cost, then the average cost per call for a handover at 80k to 300k, and the cheapest point. Rerun it when the model, its prices or the start context change. Last run, 2026-10-18, over 14 sessions and 2,255 calls on the orchestrator model of that run: cheapest at 122k for the measured miss rate of 2% per call, 142k with no misses, 112k at 5%.
 

@@ -20,12 +20,15 @@ mkdir -p "$V" "$T/home/.local/bin"
 printf '%s\n' '#!/bin/bash' 'printf "%s\n" "$@" >"$HOME/args"' 'echo "$SHELL" >"$HOME/shell"' \
   '[ -n "${NO_PAGE:-}" ] || { mkdir -p "$(dirname "$PAGE")"; echo page >"$PAGE"; }' >"$T/home/.local/bin/claude"
 chmod +x "$T/home/.local/bin/claude"
-cron() { env -u KASTEN_PERIODIC_PATH -u NEWS_PLUGIN_DIR HOME="$T/home" NEWS_LOG_DIR="$T/log" "$@" "$here/../scripts/cron-edition.sh" "$V"; }
+cron() { env -u KASTEN_PERIODIC_PATH -u NEWS_PLUGIN_DIR -u NEWS_MODEL -u NEWS_EFFORT HOME="$T/home" NEWS_LOG_DIR="$T/log" "$@" "$here/../scripts/cron-edition.sh" "$V"; }
 
 # cron wrapper: permissions skipped, the periodic folder from kasten's variable, exit 1 with no page
 cron KASTEN_PERIODIC_PATH=P PAGE="$V/P/05 Newspaper/$DAY.html"; ok "cron exit" $? 0
 has "cron skips permissions" "$(cat "$T/home/args")" "--dangerously-skip-permissions"
 has "cron passes the periodic folder" "$(cat "$T/home/args")" '--periodic "P"'
+has "cron sets model and effort" "$(tr '\n' ' ' <"$T/home/args")" "--model opus --effort medium "
+cron KASTEN_PERIODIC_PATH=P PAGE="$V/P/05 Newspaper/$DAY.html" NEWS_MODEL=m1 NEWS_EFFORT=low
+has "cron takes model and effort from the environment" "$(tr '\n' ' ' <"$T/home/args")" "--model m1 --effort low "
 # cron sets SHELL=/bin/sh; claude must see bash, or its Bash tool runs zsh
 cron SHELL=/bin/sh KASTEN_PERIODIC_PATH=P PAGE="$V/P/05 Newspaper/$DAY.html"; ok "cron hands claude bash" "$(cat "$T/home/shell")" /bin/bash
 rm "$V/P/05 Newspaper/"*.html

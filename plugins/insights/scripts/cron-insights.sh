@@ -4,6 +4,9 @@
 # 05:30 runs before the 06:00 newspaper, so both links land in the same
 # daily note. Cron runs at the host's local time; on a host not set to
 # Europe/Berlin, put CRON_TZ=Europe/Berlin above the line.
+# INSIGHTS_MODEL and INSIGHTS_EFFORT pick the model and effort (default fable,
+# high): the digest writes standing rules, and an unset effort would follow
+# whatever the interactive default is today.
 # INSIGHTS_PLUGIN_DIR=/path/to/plugins/insights loads the plugin from that
 # working tree instead of the installed one, to test a change the way cron runs it.
 set -uo pipefail
@@ -35,6 +38,7 @@ PLUGIN=()
 # -p prompts nobody, so the session runs with permissions skipped.
 # insights-self-run marks this session, so tomorrow's extract skips it.
 claude -p "/insights:digest --vault \"$VAULT\" --periodic \"$PERIODIC\" --date $DAY insights-self-run" "${PLUGIN[@]}" \
+  --model "${INSIGHTS_MODEL:-fable}" --effort "${INSIGHTS_EFFORT:-high}" \
   --dangerously-skip-permissions \
   >>"$LOG" 2>&1
 status=$?

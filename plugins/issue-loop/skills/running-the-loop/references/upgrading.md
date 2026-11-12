@@ -35,6 +35,8 @@ The folder's `CLAUDE.md` (the user's grant) may still say "task line plus rules.
 
 Upgrade never touches `CLAUDE.md`, `CLAUDE.local.md`, the `HANDOFF` files, `ledger.tsv`, `orch-name`, the `task.*` files, or a custom driver. A custom driver stays where it is, and `DRIVER` in `loop.env` still names it.
 
+A folder made before 0.13.14 has no effort lines in `models.env`, so its sessions take the user's interactive default. Add `CLAUDE_ORCH_EFFORT=high` and `CLAUDE_IMPL_EFFORT=medium` from `assets/models.env`, and check `CLAUDE_ORCH_MODEL` against it.
+
 To go back, delete the stubs and `rules.local.md`, then move the files in `before-upgrade/` back into the folder under their names.
 
 Rules kept whole: upgrade prints "rule N: kept whole" for each rule of yours that differs from the plugin's rule beyond its `FILL:` answers. That rule no longer takes plugin changes. To take the plugin's rule again, delete its `## N` section in `rules.local.md` and answer its `FILL:` marks again as `## N.K` sections.

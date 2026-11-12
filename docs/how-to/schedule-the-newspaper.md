@@ -35,7 +35,7 @@ The edition uses the host's web search and fetch tools. The scripts make two req
 
    Cron runs at the host's local time. On a host not set to Europe/Berlin, put `CRON_TZ=Europe/Berlin` on the line above.
 
-The wrapper runs `claude -p "/news:edition --vault <vault> --periodic <periodic> --date <today>"` with permissions skipped (`--dangerously-skip-permissions`), since nobody is there to answer a prompt.
+The wrapper runs `claude -p "/news:edition --vault <vault> --periodic <periodic> --date <today>"` with permissions skipped (`--dangerously-skip-permissions`), since nobody is there to answer a prompt. It runs on `opus` at `medium`, so a change to your interactive default does not change it; set `NEWS_MODEL` and `NEWS_EFFORT` on the cron line to change them.
 
 ## Check it worked
 

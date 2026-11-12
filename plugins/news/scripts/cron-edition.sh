@@ -3,6 +3,8 @@
 #   0 6 * * * /path/to/plugins/news/scripts/cron-edition.sh /path/to/vault
 # Cron runs at the host's local time; on a host not set to Europe/Berlin, put
 # CRON_TZ=Europe/Berlin above the line (cronie) or use a systemd timer.
+# NEWS_MODEL and NEWS_EFFORT pick the model and effort (default opus, medium),
+# so a change to the interactive default does not change this job.
 # NEWS_PLUGIN_DIR=/path/to/plugins/news loads the plugin from that working
 # tree instead of the installed one, to test a change the way cron runs it.
 set -uo pipefail
@@ -32,6 +34,7 @@ PLUGIN=()
 
 # -p prompts nobody, so the session runs with permissions skipped.
 claude -p "/news:edition --vault \"$VAULT\" --periodic \"$PERIODIC\" --date $DAY" "${PLUGIN[@]}" \
+  --model "${NEWS_MODEL:-opus}" --effort "${NEWS_EFFORT:-medium}" \
   --dangerously-skip-permissions \
   >>"$LOG" 2>&1
 status=$?
