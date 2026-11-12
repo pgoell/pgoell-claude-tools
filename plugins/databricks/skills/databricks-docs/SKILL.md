@@ -32,7 +32,7 @@ Default to `docs.databricks.com/aws/en/...`. If the user has specified Azure or 
 
 - Read-only. No auth, no MCP, no Databricks CLI required.
 - Do not synthesize answers from training-data knowledge of Databricks. Always fetch.
-- If the public docs site is unreachable (network failure, DNS failure), surface that to the user; do not invent an answer.
+- If a fetch fails, retry once, then try the docs root from `references/docs-index.md` or a web search limited to docs.databricks.com. If the site still cannot be reached, say so. Do not answer from memory as if it were the docs.
 
 ## Cross-Reference
 

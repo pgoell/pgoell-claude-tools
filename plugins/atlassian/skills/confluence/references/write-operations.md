@@ -27,7 +27,7 @@ See `storage-format.md` in this folder for how to construct the body value.
 
 ## Update page
 
-**curl**: You MUST GET the page first to obtain the current version number, then PUT with `version.number + 1`. The example below sends `2` for a page at version 1; replace it with the number you computed.
+**curl**: You MUST GET the page first, for two reasons: the PUT replaces the whole body, so an edit changes the body you fetched and sends all of it back; and the PUT needs `version.number + 1`. The example below sends `2` for a page at version 1; replace it with the number you computed.
 
 ```bash
 # Step 1: GET current page (note the version number in the response)

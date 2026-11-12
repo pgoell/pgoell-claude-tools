@@ -26,7 +26,9 @@ instruction, use `learning:quizzing-a-topic`; a concept to reconstruct belongs t
 
 1. Choose one or a few precise target claims, prioritizing unresolved gaps and
    assisted attempts. Read their sources and verify the reference solution
-   before posing the problem. Hold the solution back from the learner.
+   before posing the problem. Hold the solution back from the learner: until they
+   answer, keep it out of your notes between tool calls, tool-call descriptions,
+   command lines and any record text, and say only that you are checking it.
 2. Pose a short problem that calls for those ideas without naming the method the
    learner must recall. Start with achievable difficulty, not a trick. Ask for
    the answer and a short explanation; invite confidence without requiring it.
