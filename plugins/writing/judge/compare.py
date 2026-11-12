@@ -6,8 +6,10 @@ Three steps, each a subcommand, all working on one output folder:
   run     Answer every case under every condition, each in a fresh
           `claude -p` session.
   judge   Strip the condition names, shuffle the answers of each case, and
-          have a second model apply the hard gates and score them.
-  report  Tally gate failures, ranks, scores and cost per condition.
+          have a second model apply the hard gates and score them. Each
+          case is judged several times, each time in a new shuffle.
+  report  Tally gate failures (by majority of the judgings), ranks, scores
+          and cost per condition.
 
 A condition is NAME, NAME=PREFIX or NAME=PREFIX@PLUGIN_DIR. PREFIX goes in
 front of the case prompt (a skill invocation such as /writing:ghostwrite);
@@ -147,13 +149,18 @@ def cmd_judge(args):
     with open(args.protocol) as f:
         protocol = f.read()
     os.makedirs(f"{args.out}/verdicts", exist_ok=True)
+    meta["judgings"] = max(args.judgings, meta.get("judgings", 0))
+    with open(f"{args.out}/meta.json", "w") as f:
+        json.dump(meta, f, indent=1)
     seeds = random.Random(args.seed)
-    case_seeds = {case["id"]: seeds.random() for case in cases}
+    jobs = [(case, n, seeds.random()) for case in cases for n in range(1, args.judgings + 1)]
 
-    def one(case):
-        path = f"{args.out}/verdicts/{case['id']}.json"
+    def one(job):
+        case, n, seed = job
+        name = f"{case['id']}__j{n}"
+        path = f"{args.out}/verdicts/{name}.json"
         if os.path.exists(path):
-            return case["id"] + " (kept)"
+            return name + " (kept)"
         items = []
         for cond in meta["conditions"]:
             for run in range(1, meta["runs"] + 1):
@@ -162,8 +169,8 @@ def cmd_judge(args):
                     with open(f"{args.out}/outputs/{stem}.json") as f:
                         items.append((f"{cond['name']}__{run}", json.load(f)["result"]))
                 except (OSError, KeyError, json.JSONDecodeError):
-                    return f"{case['id']} FAILED: no output for {stem}; finish `run` first"
-        random.Random(case_seeds[case["id"]]).shuffle(items)
+                    return f"{name} FAILED: no output for {stem}; finish `run` first"
+        random.Random(seed).shuffle(items)
         labels = string.ascii_uppercase[: len(items)]
         blocks = [f'<output label="{label}">\n{text}\n</output>' for label, (_, text) in zip(labels, items)]
         prompt = JUDGE_PROMPT.format(
@@ -174,7 +181,7 @@ def cmd_judge(args):
         )
         err = "no attempt"
         for _ in range(2):
-            result = claude(args.claude, prompt, args.model, f"{args.out}/work/judge-{case['id']}", tools="")
+            result = claude(args.claude, prompt, args.model, f"{args.out}/work/judge-{name}", tools="")
             try:
                 verdict = json.loads(re.search(r"\{.*\}", result["result"], re.S).group(0))
                 if set(verdict["outputs"]) != set(labels) or sorted(verdict["ranking"]) != sorted(labels):
@@ -183,55 +190,78 @@ def cmd_judge(args):
                 verdict["judge_model"] = args.model
                 with open(path, "w") as f:
                     json.dump(verdict, f, indent=1)
-                return case["id"]
+                return name
             except (KeyError, AttributeError, TypeError, ValueError) as e:
                 err = str(e) or str(result.get("error"))
-        return f"{case['id']} FAILED: {err[:200]}"
+        return f"{name} FAILED: {err[:200]}"
 
     failed = 0
     with cf.ThreadPoolExecutor(args.jobs) as pool:
-        for line in pool.map(one, cases):
+        for line in pool.map(one, jobs):
             failed += "FAILED" in line
             print(line, flush=True)
     if failed:
-        sys.exit(f"{failed} case(s) not judged; run the same command again to retry only those")
+        sys.exit(f"{failed} judging(s) missing; run the same command again to retry only those")
+
+
+def read_votes(out, case, judgings):
+    """Every judging of one case, turned round: per output, its votes."""
+    votes, judges = {}, set()
+    for n in range(1, judgings + 1):
+        try:
+            with open(f"{out}/verdicts/{case['id']}__j{n}.json") as f:
+                verdict = json.load(f)
+        except OSError:
+            sys.exit(f"no judging {n} for {case['id']}; finish `judge` first")
+        judges.add(verdict.get("judge_model", "?"))
+        for label, stem in verdict["key"].items():
+            got = verdict["outputs"][label]
+            vote = votes.setdefault(stem, {"fail": [], "req": [], "rank": [], "reason": [], "scores": {d: [] for d in DIMS}})
+            vote["fail"].append(bool(got["hard_gate_fail"]))
+            vote["req"].append(bool(got["requirements_met"]))
+            vote["rank"].append(verdict["ranking"].index(label) + 1)
+            if got["hard_gate_fail"]:
+                vote["reason"].append(got["gate_reason"])
+            for d in DIMS:
+                vote["scores"][d].append(got["scores"][d])
+    return votes, judges
 
 
 def cmd_report(args):
     with open(f"{args.out}/meta.json") as f:
         meta = json.load(f)
     names = [c["name"] for c in meta["conditions"]]
-    cases = load_cases(meta["cases"])
-    tally = {n: {"n": 0, "fail": 0, "req": 0, "rank": [], "first": 0, "scores": {d: [] for d in DIMS}, "cost": 0.0, "tokens": 0} for n in names}
+    cases, judgings = load_cases(meta["cases"]), meta.get("judgings", 1)
+    blank = {"n": 0, "fail": 0, "split": 0, "req": 0, "rank": [], "first": 0.0, "cost": 0.0, "tokens": 0}
+    tally = {n: dict(blank, rank=[], scores={d: [] for d in DIMS}) for n in names}
     rows, gates, judges = [], [], set()
     for case in cases:
-        try:
-            with open(f"{args.out}/verdicts/{case['id']}.json") as f:
-                verdict = json.load(f)
-        except OSError:
-            sys.exit(f"no verdict for {case['id']}; finish `judge` first")
-        judges.add(verdict.get("judge_model", "?"))
+        votes, seen = read_votes(args.out, case, judgings)
+        judges |= seen
         cells = {n: [] for n in names}
-        for label, stem in verdict["key"].items():
-            name = stem.rsplit("__", 1)[0]
-            out, t = verdict["outputs"][label], tally[name]
-            rank = verdict["ranking"].index(label) + 1
+        for stem, vote in sorted(votes.items()):
+            name, t = stem.rsplit("__", 1)[0], tally[stem.rsplit("__", 1)[0]]
+            against = sum(vote["fail"])
+            failed = against * 2 > judgings
+            rank = statistics.mean(vote["rank"])
             t["n"] += 1
-            t["fail"] += bool(out["hard_gate_fail"])
-            t["req"] += bool(out["requirements_met"])
+            t["fail"] += failed
+            t["split"] += 0 < against < judgings
+            t["req"] += sum(vote["req"]) * 2 > judgings
             t["rank"].append(rank)
-            t["first"] += rank == 1
-            if out["hard_gate_fail"]:
-                gates.append(f"- `{case['id']}`, {name}: {out['gate_reason']}")
-            else:
+            t["first"] += vote["rank"].count(1) / judgings
+            if against:
+                verdict = "FAILED" if failed else "passed"
+                gates.append(f"- `{case['id']}`, {name}: {verdict}, {against} of {judgings} judging(s) against. {vote['reason'][0]}")
+            if not failed:
                 for d in DIMS:
-                    t["scores"][d].append(out["scores"][d])
+                    t["scores"][d].append(statistics.mean(vote["scores"][d]))
             with open(f"{args.out}/outputs/{case['id']}__{stem}.json") as f:
                 raw = json.load(f)
             t["cost"] += raw.get("total_cost_usd") or 0
             t["tokens"] += (raw.get("usage") or {}).get("output_tokens") or 0
-            mean = statistics.mean(out["scores"][d] for d in DIMS)
-            cells[name].append(("FAIL " if out["hard_gate_fail"] else "") + f"{mean:.1f} (rank {rank})")
+            mean = statistics.mean(s for d in DIMS for s in vote["scores"][d])
+            cells[name].append(("FAIL " if failed else "") + f"{mean:.1f} (rank {rank:.1f})")
         rows.append(f"| `{case['id']}` | " + " | ".join(", ".join(cells[n]) for n in names) + " |")
 
     def avg(values):
@@ -243,12 +273,15 @@ def cmd_report(args):
     head = "| | " + " | ".join(names) + " |\n|---|" + "---|" * len(names)
     lines = [
         "# Writing skill comparison", "",
-        f"Writer model `{meta['model']}`, judge model `{', '.join(sorted(judges))}`, {len(cases)} cases, {meta['runs']} run(s) per condition.",
+        f"Writer model `{meta['model']}`, judge model `{', '.join(sorted(judges))}`, {len(cases)} cases, "
+        f"{meta['runs']} run(s) per condition, {judgings} judging(s) per case.",
+        "", "An output fails a hard gate when more than half of the judgings fail it. Scores and ranks are means over the judgings.",
         "", head,
         line("Outputs", lambda t: str(t["n"])),
         line("Hard-gate failures", lambda t: str(t["fail"])),
+        line("Outputs with a split gate vote", lambda t: str(t["split"])),
         line("Requirements met", lambda t: str(t["req"])),
-        line("Ranked first", lambda t: str(t["first"])),
+        line("Ranked first", lambda t: f"{t['first']:.1f}"),
         line("Mean rank (1 is best)", lambda t: avg(t["rank"])),
         line("Mean score, outputs that passed", lambda t: avg([s for d in DIMS for s in t["scores"][d]])),
     ]
@@ -256,8 +289,8 @@ def cmd_report(args):
     lines += [
         line("Cost (USD)", lambda t: f"{t['cost']:.2f}"),
         line("Output tokens", lambda t: str(t["tokens"])),
-        "", "## Hard-gate failures", "", *(gates or ["None."]),
-        "", "## By case", "", "Mean score and rank of each run; FAIL marks a hard-gate failure.", "",
+        "", "## Gate votes", "", *(gates or ["No judging failed any output."]),
+        "", "## By case", "", "Mean score and mean rank of each run; FAIL marks a hard-gate failure.", "",
         "| Case | " + " | ".join(names) + " |\n|---|" + "---|" * len(names), *rows, "",
     ]
     text = "\n".join(lines)
@@ -283,6 +316,7 @@ def main():
     run.add_argument("--runs", type=int, default=2)
     run.add_argument("--cases", default=f"{HERE}/cases.json")
     sub.choices["judge"].add_argument("--protocol", default=f"{HERE}/JUDGE.md")
+    sub.choices["judge"].add_argument("--judgings", type=int, default=3, help="how often to judge each case; gates go by majority")
     args = parser.parse_args()
     args.out = os.path.abspath(args.out)
     args.fn(args)

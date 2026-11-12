@@ -64,15 +64,28 @@ check "a second run keeps finished outputs" $?
 
 cmp judge --out "$TMP/o" --claude "$TMP/claude" >"$TMP/judge.log" 2>&1
 check "judge exits 0" $?
-[ "$(find "$TMP/o/verdicts" -name '*.json' | wc -l)" = "$cases" ]
-check "judge writes one verdict per case" $?
+[ "$(find "$TMP/o/verdicts" -name '*.json' | wc -l)" = $((cases * 3)) ]
+check "judge writes three judgings per case" $?
+
+# One judging of the first case now passes every answer: the gate still
+# fails by two votes to one, and the report counts the split.
+first=$(python3 -c "import json;print(json.load(open('$JUDGE/cases.json'))['cases'][0]['id'])")
+python3 - "$TMP/o/verdicts/${first}__j2.json" <<'PY'
+import json, sys
+v = json.load(open(sys.argv[1]))
+for o in v["outputs"].values():
+    o["hard_gate_fail"] = False
+json.dump(v, open(sys.argv[1], "w"))
+PY
 
 cmp report --out "$TMP/o" >"$TMP/report.log" 2>&1
 check "report exits 0" $?
 grep -q "^| Hard-gate failures | $((cases * 2)) | 0 |$" "$TMP/o/report.md"
 check "report counts the gate failures per condition" $?
-grep -q "^| Ranked first | 0 | $cases |$" "$TMP/o/report.md"
+grep -q "^| Ranked first | 0.0 | $cases.0 |$" "$TMP/o/report.md"
 check "report counts first places per condition" $?
+grep -q "^| Outputs with a split gate vote | 2 | 0 |$" "$TMP/o/report.md"
+check "report counts split gate votes" $?
 grep -q "^| Mean score, outputs that passed | n/a | 4.00 |$" "$TMP/o/report.md"
 check "report leaves failed outputs out of the mean score" $?
 

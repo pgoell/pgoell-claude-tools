@@ -12,7 +12,7 @@ Before you change a sentence, list what the draft commits to:
 - who said or found each thing ("our test suggests", "Mina thinks", "the vendor says");
 - how sure each claim is ("may", "about", "some", "in our sample");
 - scope and conditions ("on Pixel 8", "if the timing does not work");
-- structure the reader uses: headings, numbered steps, warnings, commands, tables.
+- structure the reader uses: headings, numbered steps, warnings, commands, tables. Where the draft says when a command runs ("after step 2"), a rewrite puts the command at that step, unchanged.
 
 None of these may change force. "May be about 12% faster" does not become "was about 12% faster": every hedge on a claim stays, not one of two. "Mina thinks" stays Mina's opinion. A shorter sentence that drops a condition is a wrong sentence.
 
@@ -53,16 +53,16 @@ Two tests for a sentence that sounds good:
 
 Keep what the owner could defend: an odd detail that can be checked, a real doubt or self-correction, the plain word repeated on purpose, trade language, a short sentence or a list of three concrete things, a joke or closing line the piece earned. A familiar pattern is a fault only when it repeats or carries nothing. Never add roughness, slang, typos, or doubt to seem human.
 
-When the owner gives a writing sample for voice, take its rhythm, word choice, and formality. Take no fact, event, or image from it.
+When the owner gives a writing sample for voice, take its rhythm, word choice, and formality, and let them show: sentence length, verbs, and register should move toward the sample. Take no fact, event, or image from it. Keep the words that carry a cause or a condition (because, so, if, unless); a cause left to the order of two sentences is a cause weakened.
 
-Make the smallest change that does the job. A polish is not a new argument. Leave the strongest sentence alone. If the draft already does its job, say so in a line and change little or nothing; offer one version, not a menu.
+Make the smallest change that does the job, and make sure it does the job. Protecting the facts is not protecting the words: asked for concise, end with clearly fewer words by merging sentences and cutting what carries nothing, while every hedge, scope, and attribution stays. A rewrite that only splits a sentence or swaps one connective has not answered the request. A polish is not a new argument. Leave the strongest sentence alone. If the draft already does its job, say so in a line and change little or nothing; offer one version, not a menu.
 
 Then check the result against the draft once: every protected item kept its force, nothing new appeared, the medium still works, and the ending stops on the last useful thought. Repair the weakest point once and stop. More passes make every piece sound the same.
 
 **Deliver in the first reply.** A rewrite request for text already in hand needs no interview and no outline. Give:
 
 1. the rewrite, with gaps marked `[owner: ...]`;
-2. a note of two to four lines on what changed and why. Mention something you left alone only where the owner would expect a change there. Do not defend each kept word;
+2. a note of two to four lines on what changed and why. Mention something you left alone only where the owner would expect a change there. Do not defend each kept word. Check every line of the note against the two texts before you send it: a count ("cut two words"), a "kept", an "unchanged". If a cause went from stated to implied, or a hedge moved, the note says so;
 3. at most three questions, only where an answer would let you improve a marked gap.
 
 For a file, write only the finished prose to it, keep code, data, frontmatter, and link targets as they are, and put the note in the reply.

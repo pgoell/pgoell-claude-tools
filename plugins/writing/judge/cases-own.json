@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "description": "This repository's own cases, for the jobs the Clarity set leaves out: drafting from notes, a voice note, a reader note, repository facts, and a work memo. Same shape as cases.json. Keep this set as a holdout: do not tune a skill against it.",
+  "cases": [
+    {
+      "id": "memo_leads_with_the_recommendation",
+      "mode": "draft",
+      "category": "work_document",
+      "prompt": "Write the memo to the steering group from my notes. I have no time for questions today, so work from the notes alone.",
+      "input": "Notes:\n- background: batch platform licence renews 31 March, current cost 184k per year\n- nightly jobs now take 6h40, were 4h10 a year ago\n- looked at three options: stay, move to managed Spark, rebuild on the warehouse\n- managed Spark: quote is 141k per year, migration estimate 14 weeks with two engineers\n- warehouse rebuild: no quote yet, Jonas guesses cheaper but 9 to 12 months\n- staying: vendor says a tuning engagement could help, no number given\n- I want them to approve the managed Spark migration and a start on 1 December\n- risk: the forecasting team has three jobs that use a library we have not tested on managed Spark",
+      "requirements": [
+        "Open with the recommendation and the decision asked for (approve the managed Spark migration, start 1 December), before the background.",
+        "Use every number as given: 184k, 6h40 and 4h10, 141k, 14 weeks with two engineers, 9 to 12 months, 31 March.",
+        "Keep Jonas's estimate as a guess and the vendor's claim as a claim with no number.",
+        "State the untested-library risk for the three forecasting jobs."
+      ],
+      "prohibitions": [
+        "Do not add a saving, a percentage, a total, a date or a benefit the notes do not contain, unless it is plain arithmetic on the given numbers and shown as such.",
+        "Do not state that the warehouse rebuild is cheaper, or that tuning will not help, as fact.",
+        "Do not bury the recommendation under the background."
+      ]
+    },
+    {
+      "id": "voice_note_is_followed",
+      "mode": "draft",
+      "category": "voice",
+      "prompt": "Draft the short team update from my notes, in my voice. My voice note says:\nKeep: short sentences. 'We', not 'the team'. The number before the adjective.\nAvoid: 'leverage', 'excited', rhetorical questions, exclamation marks, sign-offs like 'onwards'.\nNo questions please, I will edit it myself.",
+      "input": "Notes:\n- search latency p95 went from 820 ms to 310 ms after the index change on Tuesday\n- two customers wrote in to say search feels faster\n- the change also raised index build time from 12 to 19 minutes, we accept that for now\n- next: same change for the archive index, not scheduled yet",
+      "requirements": [
+        "Follow the Keep entries: short sentences, 'we', and numbers stated before any adjective that judges them.",
+        "Use none of the Avoid entries.",
+        "Keep all four facts with their numbers, including the cost (build time 12 to 19 minutes) and that the archive work is not scheduled."
+      ],
+      "prohibitions": [
+        "Do not add a customer name, a quote, a date beyond Tuesday, a cause, or a plan the notes do not contain.",
+        "Do not say the archive change is scheduled or coming soon.",
+        "Do not add enthusiasm or a sign-off the voice note rules out."
+      ]
+    },
+    {
+      "id": "reader_note_shapes_the_email",
+      "mode": "draft",
+      "category": "reader",
+      "prompt": "Write the email to Dana from my notes. What I know about her as a reader:\n- Who: CFO, approves any spend over 20k. Basis: owner\n- Already knows: our budget lines and the March renewal. Basis: owner\n- Needs explained: anything about Kubernetes or clusters. Basis: seen\n- Pushes back on: costs that were not in the budget. Basis: seen\nNo questions, I will send it after a quick read.",
+      "input": "Notes:\n- need her approval for 32k, one-off, for a second cluster in Frankfurt\n- reason: the one cluster we have went down for 47 minutes on 3 November and took checkout with it\n- a second cluster means checkout keeps running if one fails\n- not in this year's budget; we can take it from the unused 40k in the tooling line\n- need the answer by 21 November so the work fits before the code freeze",
+      "requirements": [
+        "Put the ask (approve 32k, one-off) and the deadline (21 November) at or near the top.",
+        "Say plainly that the cost is not in the budget and where it would come from (the unused 40k in the tooling line), since this reader pushes back on unbudgeted cost.",
+        "Explain 'cluster' in plain terms or avoid the jargon, since this reader needs it explained.",
+        "Keep the 47-minute outage on 3 November and its effect on checkout."
+      ],
+      "prohibitions": [
+        "Do not explain the budget or the March renewal to her; she knows them.",
+        "Do not add a revenue loss, a customer count, a probability, or a consequence of saying no that the notes do not contain.",
+        "Do not include the reader notes themselves in the email."
+      ]
+    },
+    {
+      "id": "pr_text_asks_for_the_why",
+      "mode": "draft",
+      "category": "repository",
+      "prompt": "Write the pull request description for this diff.",
+      "input": "```diff\n--- a/export/csv.py\n+++ b/export/csv.py\n@@ -41,9 +41,9 @@ def rows(records):\n     for r in records:\n-        if r.created_at is None:\n-            continue\n-        yield [r.id, r.name, r.created_at.isoformat()]\n+        created = r.created_at.isoformat() if r.created_at else \"\"\n+        yield [r.id, r.name, created]\n \n-def _fmt_hdr(cols):\n+def format_header(cols):\n     return \",\".join(c.upper() for c in cols)\n```",
+      "requirements": [
+        "Describe both changes correctly: rows with no created_at are now exported with an empty cell where they were skipped before, and _fmt_hdr is renamed format_header with no change in behaviour.",
+        "Ask why the change was made, or mark the reason as missing, since the diff cannot show it.",
+        "Stay short enough to paste into a pull request."
+      ],
+      "prohibitions": [
+        "Do not invent a reason, a bug report, an issue number, or a user request.",
+        "Do not claim tests were run or added, or that callers of the renamed function were updated; the diff shows neither."
+      ]
+    },
+    {
+      "id": "readme_uses_only_real_commands",
+      "mode": "draft",
+      "category": "repository",
+      "prompt": "Write the 'Quick start' section of the README for this project. You cannot run anything here; this is all you have.",
+      "input": "package.json (excerpt):\n{\n  \"name\": \"tidepool\",\n  \"engines\": { \"node\": \">=20\" },\n  \"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"tsc -b && vite build\",\n    \"test\": \"vitest run\",\n    \"seed\": \"tsx scripts/seed.ts\"\n  }\n}\n\nFiles at the root: package.json, pnpm-lock.yaml, .env.example, vite.config.ts, scripts/seed.ts, src/",
+      "requirements": [
+        "Use pnpm, since the lockfile is pnpm-lock.yaml, and only the scripts that exist: dev, build, test, seed.",
+        "State the Node requirement (20 or later).",
+        "Mention .env.example as the starting point for configuration without naming variables it might hold.",
+        "Say that the commands were not run here, or mark unverified details such as the dev server address and what seed needs."
+      ],
+      "prohibitions": [
+        "Do not invent a port, a URL, an environment variable name, a database, or a script that is not listed.",
+        "Do not state what the seed script does beyond what its name and path show, unless marked as an assumption.",
+        "Do not show command output."
+      ]
+    },
+    {
+      "id": "dictation_keeps_the_doubt",
+      "mode": "draft",
+      "category": "authorship",
+      "prompt": "Turn this voice memo into a short first draft of a blog post. No questions today, I will rewrite it myself afterwards.",
+      "input": "ok so the post is about the outage in october, the one where login broke for like an hour. what I want to say is that our runbook was fine and we still lost twenty minutes because nobody knew who was allowed to restart the auth service. I think it might have been the cache that started it but honestly we never proved that, the logs rolled over. Priya found the restart thing, she just asked in the channel who owns this and nobody answered for ages. we fixed it by putting an owner name at the top of every runbook. I'm not sure that is enough, people change teams. the point is something like: a runbook without a name on it is a wish.",
+      "requirements": [
+        "Keep the cache as an unproven suspicion and say the logs rolled over.",
+        "Keep the author's closing doubt (an owner name may not be enough because people change teams) unresolved.",
+        "Use the author's own line about a runbook without a name, or mark it as theirs to finalise.",
+        "Mark bridges or missing facts instead of filling them, and tell the author the draft is a starting point."
+      ],
+      "prohibitions": [
+        "Do not state that the cache caused the outage.",
+        "Do not add a date, a duration beyond 'about an hour' and 'twenty minutes', a customer effect, a quote from Priya, or a lesson the author did not state.",
+        "Do not resolve the doubt with a confident recommendation."
+      ]
+    },
+    {
+      "id": "review_finds_the_buried_ask",
+      "mode": "review",
+      "category": "work_document",
+      "prompt": "Review this email before I send it to the platform leads. Do not rewrite it.",
+      "input": "Hi all,\n\nFollowing the conversations we have had over the last few weeks about on-call, I wanted to share where things stand. As you know, the rota has been in place since 2023 and has served us reasonably well. There have been some concerns about fairness, in particular that the same four people cover most weekends.\n\nWe looked at the numbers. In the last quarter, four engineers covered 31 of 39 weekend shifts. Two of them have asked to come off the rota.\n\nThere are a few options, each with pros and cons. One is to pay a weekend allowance. Another is to cap weekend shifts per person. My view is that we should cap weekend shifts at two per person per quarter from January, and I would need each of you to name two more engineers for the rota by 5 December.\n\nLet me know your thoughts.\n\nBest,\nSam",
+      "requirements": [
+        "Lead with the main problem: the ask (name two more engineers by 5 December) and the proposal (cap at two weekend shifts per quarter from January) sit at the end, under the background.",
+        "Recognise the concrete evidence (31 of 39 weekend shifts, two engineers asking to leave the rota) as the strongest part and recommend keeping it.",
+        "Note that 'let me know your thoughts' weakens a request that has a deadline.",
+        "Separate what is a real fault from what is taste."
+      ],
+      "prohibitions": [
+        "Do not supply a rewritten email or a replacement paragraph.",
+        "Do not add facts, such as the cost of an allowance or the size of the team.",
+        "Do not demand a thesis, an anecdote, or more data than the email's job needs."
+      ]
+    }
+  ]
+}

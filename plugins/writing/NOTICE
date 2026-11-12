@@ -33,7 +33,7 @@ is copied; the ideas are credited in README.md):
 
 Original MIT work, not from upstream:
 
-  - judge/compare.py and tests/run.sh
+  - judge/compare.py, judge/cases-own.json and tests/run.sh
   - every other file in this plugin
 
 The upstream test suite (scripts/validate_package.py) checks the upstream

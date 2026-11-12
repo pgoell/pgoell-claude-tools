@@ -21,7 +21,7 @@ claude plugin eval . --trust-plugin --scaffold --allow-tools Bash Write Edit --t
 
 ## Comparing writing skills
 
-`judge/` holds a blind comparison of writing skills: eleven cases (`cases.json`) and a protocol (`JUDGE.md`), both from Addy Osmani's Clarity, and `compare.py`, which runs them. Each case runs in a fresh `claude -p` session under every condition; a second model then sees the answers without their names, applies the hard gates (an invented fact, a broken mode, damaged structure, an obeyed instruction from the source text), and scores what passes.
+`judge/` holds a blind comparison of writing skills: eleven cases (`cases.json`) and a protocol (`JUDGE.md`), both from Addy Osmani's Clarity, seven cases of this repository's own (`cases-own.json`), and `compare.py`, which runs them. Each case runs in a fresh `claude -p` session under every condition; a second model then sees the answers without their names, applies the hard gates (an invented fact, a broken mode, damaged structure, an obeyed instruction from the source text), and scores what passes. Each case is judged three times, each time in a new shuffle, and an answer fails a gate only when two of the three judgings fail it.
 
 Run from the repository root. A condition is a name, or `name=<skill invocation>@<plugin folder>`:
 
@@ -34,22 +34,35 @@ uv run python3 plugins/writing/judge/compare.py judge --out /tmp/cmp
 uv run python3 plugins/writing/judge/compare.py report --out /tmp/cmp
 ```
 
-`run` writes with Sonnet and `judge` scores with Opus unless `--model` says otherwise; a model should not judge its own output. A step that fails part-way keeps what it finished, so run it again. The report lands in `<out>/report.md`. A skill that ships as a bare `SKILL.md` needs a plugin folder around it first: `<folder>/.claude-plugin/plugin.json` and `<folder>/skills/<name>/SKILL.md`.
+`run` writes with Sonnet and `judge` scores with Opus unless `--model` says otherwise; a model should not judge its own output. `run --cases plugins/writing/judge/cases-own.json` picks the own set, and `judge --judgings N` changes how often each case is judged.
 
-Read the numbers with care. Seven of the eleven cases are rewrites, none tests the voice note or the coach, two runs per condition is a small sample, and one model judge is not a human reader.
+The own cases cover what Clarity's set leaves out: a memo from notes, a voice note, a reader note, pull request text from a diff, a README from a manifest, a dictated post, and a review of an email with a buried ask. Keep them as a holdout: do not tune a skill against them, or their numbers stop meaning anything. A step that fails part-way keeps what it finished, so run it again. The report lands in `<out>/report.md`. A skill that ships as a bare `SKILL.md` needs a plugin folder around it first: `<folder>/.claude-plugin/plugin.json` and `<folder>/skills/<name>/SKILL.md`.
 
-Last run, 2026-11-12, Sonnet writing and Opus judging, 22 outputs per condition, ten outputs per case in front of the judge:
+Read the numbers with care. Seven of Clarity's eleven cases are rewrites, no case tests the coach, two runs per condition is a small sample, and one model judge is not a human reader.
 
-| Condition        | Hard-gate failures | Ranked first | Mean rank (of 10) | Mean score |
-| ---------------- | ------------------ | ------------ | ----------------- | ---------- |
-| No skill         | 10                 | 0            | 8.32              | 3.56       |
-| ghostwrite 3.1.8 | 1                  | 1            | 6.45              | 3.73       |
-| Clarity 0.2.1    | 1                  | 3            | 4.45              | 4.14       |
-| ghostwrite 3.2.0 | 0                  | 3            | 3.68              | 4.29       |
+Last run, 2026-11-12, Sonnet writing and Opus judging, two outputs per case and condition, three judgings per case, eight outputs in front of the judge. The run predates the Self-healing line on a refused file write.
 
-The same 66 outputs were judged three times. Eight changed between pass and fail, and a condition's mean score moved by up to 0.13, so treat a gap smaller than that as a tie.
+Clarity's cases (22 outputs per condition):
 
-`tests/run.sh` drives `compare.py` through all three steps with a fake `claude` binary and no network. Last result: 11 passed, 0 failed.
+| Condition        | Hard-gate failures | Split gate votes | Mean rank (of 8) | Mean score |
+| ---------------- | ------------------ | ---------------- | ---------------- | ---------- |
+| No skill         | 7                  | 7                | 6.59             | 3.49       |
+| ghostwrite 3.1.8 | 0                  | 0                | 4.83             | 3.81       |
+| Clarity 0.2.1    | 1                  | 1                | 3.64             | 4.23       |
+| ghostwrite 3.2.0 | 0                  | 1                | 2.94             | 4.39       |
+
+Own cases (14 outputs per condition):
+
+| Condition        | Hard-gate failures | Split gate votes | Mean rank (of 8) | Mean score |
+| ---------------- | ------------------ | ---------------- | ---------------- | ---------- |
+| No skill         | 5                  | 2                | 6.21             | 3.75       |
+| ghostwrite 3.1.8 | 0                  | 0                | 4.69             | 3.77       |
+| Clarity 0.2.1    | 1                  | 0                | 3.98             | 4.20       |
+| ghostwrite 3.2.0 | 0                  | 0                | 3.12             | 4.17       |
+
+ghostwrite was tuned on Clarity's cases over several rounds, so its numbers there flatter it; the own cases were written after the tuning and not used for it. On single judgings of the same outputs a condition's mean score moved by up to 0.13, so treat a smaller gap as a tie. `run` allows the tools Read, Skill, Glob and Grep only, so a skill that insists on writing a file loses marks when it replies with a path.
+
+`tests/run.sh` drives `compare.py` through all three steps with a fake `claude` binary and no network. Last result: 12 passed, 0 failed.
 
 Version 3.0.0 replaced the earlier `writing`, `pyramid`, and `tech-doc` skills, which now sit in the `deprecated` plugin.
 

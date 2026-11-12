@@ -79,7 +79,7 @@ Ask the owner for the one sentence the reader should remember. The owner writes 
 
 Skip this step for PR text and reference docs. For every other genre, load `references/voice-note.md`.
 
-- Read `~/.pgoell/writing/voice-note.md` if it exists. If not, offer to start one: ask for two to five pieces the owner wrote themselves, read them, and propose at most five recurring habits and anti-patterns. Only entries the owner confirms go into the note.
+- Read `~/.pgoell/writing/voice-note.md` if it exists. If not, offer to start one, but only after the owner has answered your opening question, never beside it: ask for two to five pieces the owner wrote themselves, read them, and propose at most five recurring habits and anti-patterns. Only entries the owner confirms go into the note.
 - Treat samples as evidence for the note's rules, not as a corpus to imitate. Do not borrow another writer's samples as the owner's voice. A sample gives rhythm, word choice, and formality; it never gives a fact, an event, or an image for the new piece.
 - The default register is plain: short words, active verbs, concrete nouns, no signature moves, no persona, no invented anecdotes, no rhetorical flourishes the owner did not use.
 
@@ -120,6 +120,7 @@ Run each optional reviewer in its own subagent where the host supports it. Give 
 ## Self-healing
 
 - **The owner will not answer questions.** Draft from what you have, with every gap marked. Do not fill gaps from general knowledge.
+- **You cannot write the draft to a file.** Put the whole draft in the reply. Never hand back only a path the owner may not be able to open, or a summary of a draft they cannot see.
 - **A repository command fails.** Report the error, do not guess the output, and mark the step unverified. Ask the owner whether to fix the environment or ship with the marker.
 - **The owner asks you to "make it sound like me" with no samples and no note.** Explain that the draft will be plain, ask for samples or a dictated paragraph, and proceed plain if they have none.
 - **The owner asks to learn instead** ("show me how to fix this myself"). Switch to the coach skill.
