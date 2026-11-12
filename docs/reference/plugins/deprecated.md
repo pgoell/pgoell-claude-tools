@@ -12,7 +12,7 @@ An archive of superseded and retired skills, kept installable so old workflows k
 
 **Runtimes:** Claude Code, Codex
 
-Not in Cursor: a frozen archive has no reason to reach a new runtime. See [Runtimes](/reference/runtimes.md).
+Not in Cursor: a frozen archive has no reason to reach a new runtime. Each skill sets `metadata.internal: true`, so `npx skills add` hides it too. See [Runtimes](/reference/runtimes.md).
 
 **Source:** vendored in `plugins/deprecated/`; see the [plugin README](../../../plugins/deprecated/README.md) for details and credits. `frontend-design` is a port of the [frontend-design](https://github.com/anthropics/skills/tree/ef740771ac901e03fbca3ce4e1c453a96010f30a/skills/frontend-design) skill in Anthropic's `anthropics/skills` repository (Apache 2.0). Most former `workbench` skills derive from Jesse Vincent's [Superpowers](https://github.com/obra/superpowers) 5.0.7 (MIT), and the `crafting-html` references from Thariq Shihipar's [html-effectiveness](https://github.com/ThariqS/html-effectiveness) gallery (no license at the ported commit). See `plugins/deprecated/NOTICE`.
 

@@ -1,6 +1,8 @@
 ---
 name: tech-doc
 description: Deprecated, superseded by writing:ghostwrite (tech docs sourced from the repository). Formerly used to draft, review, and finish tutorials, how to guides, references, and explanations.
+metadata:
+  internal: true
 ---
 
 # Tech-doc Skill

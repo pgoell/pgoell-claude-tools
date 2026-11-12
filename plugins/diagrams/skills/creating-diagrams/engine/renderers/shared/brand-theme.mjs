@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
 // Brand theme bridge (added by the pgoell-claude-tools diagrams plugin).
-// Reads a theme.css that follows plugins/diagrams/themes/README.md (two
+// Reads a theme.css that follows plugins/diagrams/skills/creating-diagrams/themes/README.md (two
 // [data-theme="light"|"dark"] blocks) and returns a <style> element that
 // overrides the viewer palette in every preset. Fills and viewer-only tokens
 // the contract leaves optional are computed here as concrete rgba() values,

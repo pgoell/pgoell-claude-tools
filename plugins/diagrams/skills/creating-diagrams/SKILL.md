@@ -47,7 +47,7 @@ When unsure, run `node "$ENGINE/bin/archify.mjs" guide "<the user's scenario>" -
 
 ### 2. Resolve the theme
 
-Read `../../themes/README.md` for the theme contract and selection order: prompt choice, then `.pgoell/diagrams/config.md`, then an offer to derive from a configured presentations preset, then `classic`. Bundled themes live in `../../themes/<name>/`; local ones in `.pgoell/diagrams/themes/<name>/` at the working repo root.
+Read `themes/README.md` for the theme contract and selection order: prompt choice, then `.pgoell/diagrams/config.md`, then an offer to derive from a configured presentations preset, then `classic`. Bundled themes live in `themes/<name>/` in this skill folder; local ones in `.pgoell/diagrams/themes/<name>/` at the working repo root.
 
 - **`classic`**: pass no flag. It is the engine's built-in palette.
 - **Any other theme**: add `--theme <theme directory or theme.css>` to every `validate`, `deliver`, `preview`, and `render` command. The engine injects the theme into the artifact, computes node fills from the strokes, and uses the theme's font stack.
@@ -143,7 +143,7 @@ The fallback file has a theme toggle and SVG, PNG, and clipboard export, but no 
 ## Self-Healing
 
 - **`node: command not found` or Node below 18**: use the hand-drawn fallback, or ask the user to install Node 18+.
-- **`Brand theme ...: [data-theme="dark"] is missing ...`**: the theme file breaks the contract; add the named variables (see `../../themes/README.md`).
+- **`Brand theme ...: [data-theme="dark"] is missing ...`**: the theme file breaks the contract; add the named variables (see `themes/README.md`).
 - **`Brand theme: --x-stroke must be #rrggbb or rgb()/rgba()`**: fills are computed from strokes, so strokes need plain color values, not `var()` or `color-mix()`.
 - **`clean-flow/endpoint-side-direction` on stacked nodes although routing is automatic**: the two nodes' centers differ by a few pixels. Align their centers (same `x + width/2`).
 - **An automatic label lands inside a node on a vertical edge**: apply the `labelAt` point the diagnostic's message gives.

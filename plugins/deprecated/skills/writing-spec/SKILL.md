@@ -1,6 +1,8 @@
 ---
 name: writing-spec
 description: "Deprecated and retired without replacement. Formerly used when a design discussion is ready to be written into a spec document, before any implementation planning. Synthesizes the conversation into a spec, runs a fresh-eyes self-review subagent, and gates on user approval before handing off to writing-plans."
+metadata:
+  internal: true
 ---
 
 # Writing a Design Spec

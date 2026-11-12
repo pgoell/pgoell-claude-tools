@@ -12,7 +12,7 @@ Architecture, workflow, sequence, data-flow, and lifecycle diagrams as one self-
 
 ## Themes
 
-Every color comes from a theme. The plugin ships `classic`. Contract: [`themes/README.md`](themes/README.md).
+Every color comes from a theme. The plugin ships `classic`. Contract: [`themes/README.md`](skills/creating-diagrams/themes/README.md).
 
 To match a corporate brand, derive a theme from material you already have:
 

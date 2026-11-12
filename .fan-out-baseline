@@ -2,7 +2,7 @@
 # when it grows past its count. check-fan-out --update-baseline only
 # lowers or drops lines; to raise one, edit this file by hand.
 docs/explanation 10
-docs/how-to 15
+docs/how-to 16
 plugins/agent-system-management/evals 15
 plugins/agent-system-management/skills/creating-skills/references 11
 plugins/agent-system-management/skills/creating-skills/scripts 9

@@ -1,6 +1,8 @@
 ---
 name: presentations
 description: Deprecated, superseded by presentations:designing-presentations. Formerly used to design the content of a slide presentation, from audience brief through critiqued storyboard, producing a deck.md. Prefer the presentations plugin for all new content design.
+metadata:
+  internal: true
 ---
 
 # Presentations Skill

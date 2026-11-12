@@ -42,12 +42,12 @@ plugins/
     presets/                # Optional: brand presets (presentations only); contract in
                             #   presets/README.md. User-local presets live in the consuming
                             #   project under .pgoell/presentations/, never in this repo.
-    themes/                 # Optional: diagram themes (diagrams only); contract in
-                            #   themes/README.md. User-local: .pgoell/diagrams/themes/.
     skills/
       <service>/
         SKILL.md            # Shared skill definition, used by Claude Code, Codex and Cursor
         engine/             # Optional shipped code driven by exact commands (diagrams only)
+        themes/             # Optional: diagram themes (creating-diagrams only); contract in
+                            #   themes/README.md. User-local: .pgoell/diagrams/themes/.
         <reference>.md      # Flat reference doc (legacy layout)
         references/         # Subdirectory layout (preferred for new skills)
           <reference>.md
@@ -90,11 +90,11 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `learning` 0.5.2: `quizzing-the-session`, `quizzing-a-topic`, `surveying-blind-spots`, `rebuilding-a-concept`, `practicing-a-topic`
 - `critique` 0.1.6: `critiquing-ideas`
 - `presentations` 0.8.7: `designing-presentations`, `building-pptx-decks`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
-- `diagrams` 0.1.5: `creating-diagrams`
+- `diagrams` 0.1.6: `creating-diagrams`
 - `news` 0.11.6: `edition`, `feedback`, `tune`
 - `insights` 0.7.7: `digest`, `apply`, `activity`
 - `structure` 0.2.18: `setting-up-the-checks`, `setting-up-import-boundaries`
-- `issue-loop` 0.13.19: `running-the-loop`, `handing-over` (Claude Code only)
+- `issue-loop` 0.13.20: `running-the-loop`, `handing-over` (Claude Code only)
 - `prose-styles` 0.1.1: no skills; output styles `orwell`, `concise`, `ste`, `house` (Claude Code only)
 - `guards` 0.2.1: no skills; `PreToolUse` hooks `pkill-self-match`, `rev-parse-short-multi` (Claude Code only)
 - `session-title` 0.1.0: no skills; `SessionStart` hook `session-title` (Claude Code only)
@@ -103,7 +103,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `taste-skill` upstream: `taste-skill`
 - `vercel` upstream: `react-best-practices`, `composition-patterns`, `react-view-transitions`, `react-native-skills`, `web-design-guidelines`, `writing-guidelines`, `deploy-to-vercel`, `vercel-cli-with-tokens`, `vercel-optimize` (Claude Code only)
 - `unslop` upstream: `unslop` (Claude Code only)
-- `deprecated` 0.5.0: frozen archive of `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations`, `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode`, `writing`, `pyramid`, `tech-doc`, `frontend-design`, and the 12 former `workbench` skills (`pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`)
+- `deprecated` 0.5.1: frozen archive of `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations`, `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode`, `writing`, `pyramid`, `tech-doc`, `frontend-design`, and the 12 former `workbench` skills (`pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`)
 
 ## How to Develop a New Skill
 
@@ -147,7 +147,7 @@ User docs live in `docs/`, a Diátaxis tree in Open Knowledge Format v0.2. Read 
 
 ### Repository conventions ([repo-conventions](docs/explanation/repo-conventions.md))
 
-- **Skills are self-contained.** A SKILL.md holds everything the agent needs to use the service, except reference docs it links to.
+- **Skills are self-contained.** A SKILL.md holds everything the agent needs to use the service, except reference docs it links to. A skill reads nothing above its plugin's `skills/` folder (a sibling skill's files are fine); presentations' plugin-level `presets/` is the one known exception (#399). The `deprecated` and `issue-loop` skills set `metadata: {internal: true}` in their frontmatter; a new archived or Claude-Code-only skill does the same.
 - **Skill invocation syntax in docs is `/<plugin>:<skill>`, not `/<marketplace>:<skill>`.** Always use the fully qualified form (`/atlassian:jira`); never teach the short `/<skill>` form. `pgoell-claude-tools` appears only in `/plugin install <plugin>@pgoell-claude-tools` and `codex plugin marketplace add pgoell/pgoell-claude-tools`. Audit: `grep -rnE '/pgoell-claude-tools:[a-z]' README.md docs/` must print nothing; `grep -rnE '/(atlassian|google-workspace|research|writing|runtime-bridge|agent-system-management|terminal|playground|databricks|learning|critique|presentations|diagrams|news|insights|structure|issue-loop|ponytail|emil|vercel|taste-skill|unslop|deprecated):' docs/` should match each plugin whose skills the doc names. Keep that list to the plugins with skills in `.claude-plugin/marketplace.json`.
 - **Em-dash lint and instruction text.** U+2014 and U+2013 are forbidden in every file: skills, `references/*.html`, vendored CSS and JS, root docs. In markdown, name them by codepoint, never as literals. Repo-wide check: `grep -rnP '[\x{2014}\x{2013}]' plugins/ README.md AGENTS.md`. It is not empty: 6 older tracked files (google-workspace recipes, the archived `visualizing-options` in `deprecated`, the frozen using-superpowers snapshot) are accepted debt, plus gitignored databricks research notes. So gate on changed files: `git diff <base>..HEAD --name-only | xargs grep -nP '[\x{2014}\x{2013}]'` must print nothing, and `README.md` and `AGENTS.md` stay clean. HTML body copy may use `&mdash;`, `&#8212;`, `&ndash;`, `&#8211;`. CSS and JS comments have no escape: substitute the character at port time.
 - **SKILL.md frontmatter `description:` must not contain a colon-space unless the whole value is quoted.** Frontmatter must be strict YAML; an unquoted colon-space fails with `mapping values are not allowed here`. Rephrase (`Examples:` becomes `For example`) or quote the whole value. Validate by hand: feed the frontmatter to `uv run --with pyyaml python3 -c 'import yaml,sys; yaml.safe_load(sys.stdin)'`.

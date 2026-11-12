@@ -25,6 +25,15 @@ codex
 
 Import the repository as a team marketplace or copy a plugin folder; see [Install in Cursor](docs/how-to/install-in-cursor.md).
 
+### Other agents, with npx or bun
+
+```
+npx skills add pgoell/pgoell-claude-tools
+bunx skills add pgoell/pgoell-claude-tools
+```
+
+The [skills CLI](https://github.com/vercel-labs/skills) installs the skills (not hooks or output styles) into about 80 agents; see [Install with the skills CLI](docs/how-to/install-with-skills-cli.md).
+
 Skills run as `/<plugin>:<skill>`, for example `/research:research`. Start with the [getting started tutorial](docs/tutorials/getting-started.md). Not every plugin reaches every runtime; [runtimes](docs/reference/runtimes.md) lists which go where and why.
 
 ## Plugins

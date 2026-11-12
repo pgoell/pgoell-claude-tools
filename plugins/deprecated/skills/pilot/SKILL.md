@@ -1,6 +1,8 @@
 ---
 name: pilot
 description: Deprecated and retired without replacement. Formerly used when the user wants to ship a feature end to end with configurable human gates, from design through PR, using the .workbench/pilot.md project profile, for example "ship this feature" or "take this from idea to PR". Gate presets cover fully autonomous runs, human-driven design, and per-slice code review. Not for one phase alone, such as a spec or a plan (use using-workbench to pick the skill).
+metadata:
+  internal: true
 ---
 
 # Pilot: feature flow with composable human gates

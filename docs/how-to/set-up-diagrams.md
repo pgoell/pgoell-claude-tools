@@ -31,4 +31,4 @@ The bundled theme is `classic`. To match a brand, ask the skill to derive a them
 Name: classic
 ```
 
-The theme contract is in [themes/README.md](../../plugins/diagrams/themes/README.md). See [the diagrams reference page](/reference/plugins/diagrams.md).
+The theme contract is in [themes/README.md](../../plugins/diagrams/skills/creating-diagrams/themes/README.md). See [the diagrams reference page](/reference/plugins/diagrams.md).

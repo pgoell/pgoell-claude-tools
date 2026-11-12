@@ -3,6 +3,7 @@
 Recipes for jobs you already know you need. Each one assumes you have added the marketplace; if you have not, start with [Getting started](/tutorials/getting-started.md). Plugins not listed here need nothing beyond install.
 
 - [Install in Cursor](/how-to/install-in-cursor.md): install plugins from the Cursor Marketplace, a team marketplace, or a local copy
+- [Install with the skills CLI](/how-to/install-with-skills-cli.md): `npx skills` or `bunx skills` for Codex, Cursor, OpenCode and about 80 other agents
 - [Update plugins](/how-to/update-plugins.md): pull new plugin versions into Claude Code, Codex or Cursor
 - [Set up the atlassian plugin](/how-to/set-up-atlassian.md): an API token for Jira and Confluence, and the optional Atlassian CLI
 - [Set up the google-workspace plugin](/how-to/set-up-google-workspace.md): install and log in to the `gws` CLI for Gmail and Calendar

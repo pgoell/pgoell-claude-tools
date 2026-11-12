@@ -80,7 +80,7 @@
       "name": "diagrams",
       "source": "./plugins/diagrams",
       "description": "Draw validated, themeable architecture and flow diagrams as interactive HTML.",
-      "version": "0.1.5"
+      "version": "0.1.6"
     },
     {
       "name": "news",
@@ -98,7 +98,7 @@
       "name": "issue-loop",
       "source": "./plugins/issue-loop",
       "description": "Run an unattended build loop: one orchestrator session drives one implementer session through a repo's GitHub issues, one merged and deployed PR per task, with a gate between tasks.",
-      "version": "0.13.19"
+      "version": "0.13.20"
     },
     {
       "name": "prose-styles",
@@ -171,7 +171,7 @@
       "name": "deprecated",
       "source": "./plugins/deprecated",
       "description": "Archive of superseded and retired skills kept installable for old workflows; each skill names its replacement or says it retired.",
-      "version": "0.5.0"
+      "version": "0.5.1"
     }
   ]
 }

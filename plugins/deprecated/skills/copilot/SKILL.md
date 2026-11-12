@@ -1,6 +1,8 @@
 ---
 name: copilot
 description: Deprecated and retired without replacement. Formerly used for semi-autonomous, human-in-the-loop feature shipping where the user drove the brainstorm and spec by hand and the agent automated the plan, implementation, docs, audit, and PR using .workbench/autopilot.md.
+metadata:
+  internal: true
 ---
 
 # Copilot: human-in-the-loop feature flow

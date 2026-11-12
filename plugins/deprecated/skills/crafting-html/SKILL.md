@@ -1,6 +1,8 @@
 ---
 name: crafting-html
 description: Deprecated and retired without replacement. Formerly used when producing a standalone HTML artifact that no other workbench skill (writing-spec, writing-plans, brainstorming, systematic-debugging) or research:research covers, such as a PR walkthrough, code explainer, slide deck, status or incident report, design prototype, SVG illustration, or custom editing tool.
+metadata:
+  internal: true
 ---
 
 # Crafting HTML Artifacts

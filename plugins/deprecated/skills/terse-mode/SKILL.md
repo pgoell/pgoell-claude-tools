@@ -1,6 +1,8 @@
 ---
 name: terse-mode
 description: Deprecated and retired without replacement. Formerly used only when the user explicitly asked to switch the session into terse mode, terse-mode, less tokens mode, token saving mode, or /terse-mode.
+metadata:
+  internal: true
 ---
 
 # Terse Mode
