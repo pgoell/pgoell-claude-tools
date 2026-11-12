@@ -8,13 +8,13 @@
       "name": "atlassian",
       "source": "./plugins/atlassian",
       "description": "Use Jira and Confluence from agent workflows.",
-      "version": "2.0.8"
+      "version": "2.0.9"
     },
     {
       "name": "google-workspace",
       "source": "./plugins/google-workspace",
       "description": "Use Gmail and Calendar through gws.",
-      "version": "1.0.3"
+      "version": "1.0.4"
     },
     {
       "name": "research",
@@ -26,7 +26,7 @@
       "name": "writing",
       "source": "./plugins/writing",
       "description": "Ghostwrite pieces from the owner's own facts, or get coached to write them yourself.",
-      "version": "3.1.4"
+      "version": "3.1.5"
     },
     {
       "name": "runtime-bridge",
@@ -44,7 +44,7 @@
       "name": "terminal",
       "source": "./plugins/terminal",
       "description": "Control interactive terminal programs through tmux.",
-      "version": "0.1.1"
+      "version": "0.1.2"
     },
     {
       "name": "playground",
@@ -56,7 +56,7 @@
       "name": "databricks",
       "source": "./plugins/databricks",
       "description": "Databricks skills: databricks-core (CLI, auth, profiles, ported from databricks/databricks-agent-skills) and databricks-docs (live docs.databricks.com lookups via WebFetch).",
-      "version": "0.3.3"
+      "version": "0.3.4"
     },
     {
       "name": "learning",
@@ -74,7 +74,7 @@
       "name": "presentations",
       "source": "./plugins/presentations",
       "description": "Presentation lifecycle skills: content design, native PowerPoint decks from brand presets or client templates, HTML decks with a perfecting loop, a local deck editor, PPTX export of HTML decks, and preset extraction.",
-      "version": "0.8.1"
+      "version": "0.8.2"
     },
     {
       "name": "diagrams",
@@ -98,7 +98,7 @@
       "name": "issue-loop",
       "source": "./plugins/issue-loop",
       "description": "Run an unattended build loop: one orchestrator session drives one implementer session through a repo's GitHub issues, one merged and deployed PR per task, with a gate between tasks.",
-      "version": "0.13.14"
+      "version": "0.13.15"
     },
     {
       "name": "prose-styles",

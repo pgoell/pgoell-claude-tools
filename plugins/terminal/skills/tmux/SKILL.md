@@ -125,7 +125,7 @@ Kill the private server only after confirming no useful sessions remain:
 tmux -S "$SOCKET" kill-server
 ```
 
-Ask before killing sessions that the user may be monitoring.
+Kill a session you started once its task is done, and say that you did. Ask first only when the user said they are attached, asked you to leave it open, or the session holds unfinished work.
 
 ## Recipes
 

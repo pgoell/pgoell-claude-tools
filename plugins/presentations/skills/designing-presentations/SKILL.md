@@ -132,9 +132,11 @@ Triggered when the user provides a path to an existing `deck.md` instead of a fr
 
 Audit mode reviews content in markdown, and that is its boundary: it judges what the deck says. What a rendered deck looks like (overflow, contrast, alignment, consistency across slides) is the deck builder's perfecting loop, which works from screenshots. Run content audit before rendering; run the perfecting loop after.
 
-Audit mode is markdown-only. If the user asks to audit a PowerPoint, Keynote, or Google Slides export, ask them to paste or convert the content into a `deck.md` first. Binary slide-format import is out of scope.
+Audit mode is markdown-only. To audit a PowerPoint, Keynote, or Google Slides export, ask the user to paste or convert the content into a `deck.md` first.
 
-Audit mode skips the upstream artifacts (`audience-brief.md`, `message-architecture.md`, `storyboard.md`) which the critic personas would normally read. In their absence, the critics work from `deck.md` alone and flag any missing context they need; the user may then provide a one-paragraph audience and intent summary and request a re-run. Without `message-architecture.md`, the checks and the findings judgement use the deck header's `governing_idea` (or, failing that, the Title slide's headline) as the committed claim. A `deck.md` without a header is treated as `deck_mode: presented`, and the report says so.
+Audit mode skips the upstream artifacts (`audience-brief.md`, `message-architecture.md`, `storyboard.md`) the critics would normally read. Without them, the critics work from `deck.md` alone and flag the context they miss; the user may then give a short audience and intent summary and ask for a re-run. Without `message-architecture.md`, the checks and the findings judgement use the deck header's `governing_idea` (or, failing that, the Title slide's headline) as the committed claim. A `deck.md` without a header is treated as `deck_mode: presented`, and the report says so.
+
+The deck is the user's file: put each finding and its suggested fix in `audit-report.md` and leave `deck.md` unchanged, unless the user asked for fixes.
 
 ## State and Resume
 

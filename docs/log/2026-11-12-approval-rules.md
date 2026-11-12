@@ -1,0 +1,3 @@
+# 2026-11-12: Update
+
+atlassian 2.0.9, google-workspace 1.0.4, databricks 0.3.4, issue-loop 0.13.15, terminal 0.1.2, writing 3.1.5, presentations 0.8.2, issue #380. Approval rules now name the actions that need a yes, the routine steps that need none, and what a run with nobody present does instead of asking. Gmail asks before a send to a recipient it chose and before risky filters; Calendar asks before sharing and before changing events with guests; Jira previews a bulk transition; Databricks uses a named or single profile without asking. Jira, Confluence, Gmail and Calendar look first on a loose request. Pages changed: `reference/conventions/developing-a-skill.md`.

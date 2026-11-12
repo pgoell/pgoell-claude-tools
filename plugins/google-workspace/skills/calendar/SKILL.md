@@ -164,7 +164,10 @@ If gws is not installed or not authenticated, tell the user:
 - Default to `"calendarId": "primary"` in `--params` unless the user specifies a different calendar.
 - Use ISO 8601 / RFC 3339 format for all timestamps (e.g., `2026-03-18T14:00:00-04:00`).
 - Use `--dry-run` to preview commands before executing destructive operations.
-- Confirm with the user before deleting events or calendars.
+- No check needed: agenda, free/busy, and creating, changing or deleting an event with no guests besides the user.
+- Ask first before `acl insert` or `acl delete`, before deleting a calendar, and before creating, moving or deleting an event with guests the user did not name. With nobody there to ask, skip the step and report it.
+- On a loosely specified request, look before you write: check the agenda or free/busy before creating or moving an event, and read the event (guests, recurrence) before changing it. A request that gives every detail needs no lookup.
+- A `patch` replaces any array it sends, such as `attendees`: read the event first and send the full list.
 - When creating events with `+insert`, include timezone offset in the ISO timestamp.
 - When the user asks "what's on my calendar" or "meetings today", use `+agenda --today`.
 - When the user gives a natural-language event description, prefer `quickAdd` for simple cases and `+insert` for structured cases.
