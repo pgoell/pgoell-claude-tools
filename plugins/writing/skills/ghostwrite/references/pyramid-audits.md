@@ -62,7 +62,7 @@ If the setup cannot pass without inventing a complication, report a **mismatch**
 
 ## Reporting format
 
-Keep it short. For each audit, one line: pass, or the failure with the node it applies to and the question the owner should answer to fix it. Example:
+Keep it short. An audit that passes gets one line. An audit that fails gets one line per failure, each with the node it applies to and the question the owner should answer to fix it. Example:
 
 - Question and answer: pass.
 - MECE: siblings 2 and 3 overlap ("cost" and "budget impact" cover the same ground). Which one do you mean?

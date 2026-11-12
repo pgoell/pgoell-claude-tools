@@ -37,3 +37,5 @@ Prompts, schemas, the ledger format, and a Workflow script template for one roun
 ## The report
 
 Keep `report.md` in the run directory updated every round: findings raised, verified, rejected, auto-dismissed, fixed, plus hard-gate status and the final verdict with its evidence ("rounds 4 and 5 dry, all gates green"). Never claim the deck is done without the dry-round evidence.
+
+The message to the user is not `report.md`. Write it for someone who has not read the standards file or the ledger. Start with the deck's path. Say in plain words whether the deck passed and why (for example "two review rounds in a row found nothing new, and every hard check passes"). Name each open item in plain words with its slide number, and put the rule ID in brackets after it.

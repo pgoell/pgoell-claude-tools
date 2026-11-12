@@ -80,22 +80,22 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 
 - `atlassian` 2.0.9: `jira`, `confluence`
 - `google-workspace` 1.0.4: `gmail`, `calendar`
-- `research` 2.6.4: `research`, `running-research`
-- `writing` 3.1.5: `ghostwrite`, `coach`
+- `research` 2.6.5: `research`, `running-research`
+- `writing` 3.1.6: `ghostwrite`, `coach`
 - `runtime-bridge` 0.2.0: `claude-codex-bridge`
 - `agent-system-management` 0.7.14: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
 - `terminal` 0.1.2: `tmux`
 - `playground` 0.1.3: `playground`
 - `databricks` 0.3.3: `databricks-core`, `databricks-docs`
 - `learning` 0.5.0: `quizzing-the-session`, `quizzing-a-topic`, `surveying-blind-spots`, `rebuilding-a-concept`, `practicing-a-topic`
-- `critique` 0.1.4: `critiquing-ideas`
-- `presentations` 0.8.3: `designing-presentations`, `building-pptx-decks`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
-- `diagrams` 0.1.3: `creating-diagrams`
+- `critique` 0.1.5: `critiquing-ideas`
+- `presentations` 0.8.4: `designing-presentations`, `building-pptx-decks`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
+- `diagrams` 0.1.4: `creating-diagrams`
 - `news` 0.11.4: `edition`, `feedback`, `tune`
-- `insights` 0.7.5: `digest`, `apply`, `activity`
+- `insights` 0.7.6: `digest`, `apply`, `activity`
 - `structure` 0.2.16: `setting-up-the-checks`, `setting-up-import-boundaries`
 - `issue-loop` 0.13.17: `running-the-loop`, `handing-over` (Claude Code only)
-- `prose-styles` 0.1.0: no skills; output styles `orwell`, `concise`, `ste`, `house` (Claude Code only)
+- `prose-styles` 0.1.1: no skills; output styles `orwell`, `concise`, `ste`, `house` (Claude Code only)
 - `guards` 0.2.0: no skills; `PreToolUse` hooks `pkill-self-match`, `rev-parse-short-multi` (Claude Code only)
 - `session-title` 0.1.0: no skills; `SessionStart` hook `session-title` (Claude Code only)
 - `ponytail` upstream: `ponytail`, `ponytail-review`, `ponytail-audit`, `ponytail-debt`, `ponytail-gain`, `ponytail-help`

@@ -83,12 +83,13 @@ no verdict, so the next run tries it again.
      verdict for the line, and go on. Commit (Conventional Commits, lowercase
      subject, no AI attribution of any kind), `git push -u origin fix/insights-<id>`,
      and `gh pr create` with a body that cites the problem: title, hits,
-     evidence, and the page `<periodic>/06 Insights/<date>.html`. No
+     evidence, its cause in one or two sentences and whether that cause was
+     verified, one line for each change beyond the fix itself, and the page `<periodic>/06 Insights/<date>.html`. No
      attribution line in the body either. Never merge. Remove the worktree
      afterwards (`git -C "<repo>" worktree remove ~/Code/.worktrees/<repo name>/insights-<id>`).
      Never touch the repo's own working tree. Record `pending` with the PR
      URL; the digest turns it into `applied` when the PR merges.
-   - **Adds a todo.** Append `- [ ] <the fix in a few words> #insights ➕ <today>`
+   - **Adds a todo.** Append `- [ ] <what to do, in one full sentence that names the command, file or host> (insights #<id>) #insights ➕ <today>`
      under `## TODOs` in today's daily note (`<periodic>/00 Daily/<today>.md`),
      creating that section at the end when missing. Today means the Berlin
      date of this run.

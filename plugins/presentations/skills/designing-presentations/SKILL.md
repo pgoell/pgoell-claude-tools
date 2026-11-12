@@ -18,7 +18,7 @@ Two entry modes:
 
 ## Dependencies
 
-Nothing to install: filesystem operations only. The skill reads templates from its own `references/` directory and writes phase artifacts to the working directory. No external services, no APIs, no rendering. The one capability worth checking before Phase 5 is subagent dispatch (the Agent tool; in Cursor, the `Task` tool) for the three critic personas; when subagents are unavailable, run each persona inline in sequence, loading its prompt from `references/critic-prompts.md` and appending its findings to `audit-report.md`.
+Nothing to install, no services, no rendering: the skill reads its own `references/` and writes phase artifacts to the working directory. The one capability worth checking before Phase 5 is subagent dispatch (the Agent tool; in Cursor, the `Task` tool) for the three critic personas; when subagents are unavailable, run each persona inline in sequence, loading its prompt from `references/critic-prompts.md` and appending its findings to `audit-report.md`.
 
 ## Workflow
 
@@ -128,6 +128,8 @@ Apply the assertion-evidence pattern: the slide states (headline) and shows (vis
 
 **Pass condition:** zero accepted CRITICAL findings, or explicit user decision to proceed with known issues.
 
+**Hand over:** write for a reader who has not seen `audit-report.md`. Start with the path of `deck.md`. Name each open finding in plain words with its slide number, and put the check ID in brackets after it.
+
 ## Audit Mode
 
 Triggered when the user provides a path to an existing `deck.md` instead of a fresh request. The skill skips Phases 1 to 4 and runs Phase 5 directly against the input deck. Output `audit-report.md` is written next to the input deck unless the user supplies an output path.
@@ -151,12 +153,12 @@ Never silently overwrite a later artifact when restarting an earlier phase.
 
 ## Output Format
 
-Format: **markdown only**. There is no HTML output mode for this skill; rendering is the deck builder's job, and `deck.md` is the hand-off contract it consumes as the source brief. The full per-slide YAML schema is documented in `references/slide-brief-template.md`. The content-side `slide_type` enum is intentionally distinct from the deck builder's rendering-side slide-type catalog; the mapping is documented in `references/slide-type-catalog.md` as a recommendation, not a constraint.
+Format: **markdown only**. There is no HTML output mode for this skill; rendering is the deck builder's job, and `deck.md` is the hand-off contract it consumes as the source brief. The full per-slide YAML schema is documented in `references/slide-brief-template.md`. The content-side `slide_type` enum differs from the deck builder's slide-type catalog; `references/slide-type-catalog.md` maps the two as a recommendation, not a constraint.
 
 ## Edge Cases
 
 - **Missing prerequisite artifact on phase jump.** If the user invokes Phase 4 and `storyboard.md` is missing, ask whether to (a) run Phase 3 first, (b) accept a degraded run where Phase 4 reads the message architecture directly without a storyboard, or (c) cancel.
-- **Audit mode against a deck without YAML front-matter.** Real-world `deck.md` inputs are usually prose-outline markdown (one `## Slide N: <title>` per slide with bullet body) rather than the skill's per-slide YAML schema. When the input lacks the YAML schema, audit mode runs in **advisory mode**: the heuristic audit walks each check against the visible content as best it can (treating slide headings as `headline` values, bullets as implied body, and flagging the absence of every other required key as a structural finding), and the critic personas are **not** dispatched because they need the structural fields to operate reliably. The audit-report's "Recommended next steps" then prominently recommends reformatting the deck into the schema before a full Phase 5 dispatch. If the input _is_ in YAML schema but has missing required keys per slide, that is a true malformation: the heuristic audit reports the missing keys and stops before dispatching critics. The user fixes the structure and re-runs.
+- **Audit mode against a deck without YAML front-matter.** Real-world `deck.md` inputs are usually prose-outline markdown (one `## Slide N: <title>` per slide with bullet body) rather than the skill's per-slide YAML schema. Without the YAML schema, audit mode runs in **advisory mode**: the heuristic audit walks each check against the visible content (slide headings as `headline` values, bullets as implied body, each other missing required key a structural finding), and the critic personas are **not** dispatched, because they need the structural fields. The audit-report's "Recommended next steps" then leads with reformatting the deck into the schema before a full Phase 5 dispatch. If the input _is_ in YAML schema but has missing required keys per slide, that is a true malformation: the heuristic audit reports the missing keys and stops before dispatching critics. The user fixes the structure and re-runs.
 - **Critic gate fails twice.** See the Phase 5 gate.
 - **Slide count band breached deliberately.** The audit checklist flags the breach; if the user accepts (for example a deliberately dense training deck), record the override in `audit-report.md` under a "User overrides" heading so reviewers can see the deviation is intentional.
 - **Governing-idea sentence too long.** If the Phase 1 governing idea is longer than 20 words, ask the user to shorten before proceeding; long governing ideas almost always indicate the audience or scope is muddled.
