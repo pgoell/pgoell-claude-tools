@@ -52,7 +52,7 @@ Target format (Codex): TOML.
 name = "foo"
 description = "..."
 model = "opus-4"
-# model_reasoning_effort derived from model name (see lookup below)
+# model_reasoning_effort only when the source sets `effort` (see field map below)
 developer_instructions = """
 System prompt body in markdown.
 """
@@ -60,16 +60,16 @@ System prompt body in markdown.
 
 Field map:
 
-| Claude                                                         | Codex                                                           | Notes                                                                           |
-| -------------------------------------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| frontmatter `name`                                             | `name`                                                          | direct                                                                          |
-| frontmatter `description`                                      | `description`                                                   | direct                                                                          |
-| markdown body                                                  | `developer_instructions` (multi-line `"""..."""`)               | preserve content verbatim including leading/trailing newlines stripped          |
-| frontmatter `model`                                            | `model`                                                         | direct                                                                          |
-| frontmatter `model`                                            | `model_reasoning_effort`                                        | lookup: opus-* → "high", sonnet-* → "medium", haiku-* → "low"; if unknown, omit |
-| frontmatter `tools` (MCP-style entry like `mcp__server__tool`) | `mcp_servers` array entry `"server"`                            | dedup                                                                           |
-| frontmatter `tools` (non-MCP names like `Read`, `Bash`)        | TOML comment `# claude tools (no codex equivalent): Read, Bash` | preserve in comment                                                             |
-| frontmatter `color`                                            | dropped                                                         | Claude-only UI hint                                                             |
+| Claude                                                         | Codex                                                           | Notes                                                                          |
+| -------------------------------------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| frontmatter `name`                                             | `name`                                                          | direct                                                                         |
+| frontmatter `description`                                      | `description`                                                   | direct                                                                         |
+| markdown body                                                  | `developer_instructions` (multi-line `"""..."""`)               | preserve content verbatim including leading/trailing newlines stripped         |
+| frontmatter `model`                                            | `model`                                                         | direct                                                                         |
+| frontmatter `effort`                                           | `model_reasoning_effort`                                        | direct when the source sets it; never derive it from the model name, else omit |
+| frontmatter `tools` (MCP-style entry like `mcp__server__tool`) | `mcp_servers` array entry `"server"`                            | dedup                                                                          |
+| frontmatter `tools` (non-MCP names like `Read`, `Bash`)        | TOML comment `# claude tools (no codex equivalent): Read, Bash` | preserve in comment                                                            |
+| frontmatter `color`                                            | dropped                                                         | Claude-only UI hint                                                            |
 
 ### `.codex/agents/<name>.toml` → `.claude/agents/<name>.md`
 

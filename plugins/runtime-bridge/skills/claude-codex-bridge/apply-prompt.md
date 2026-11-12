@@ -15,7 +15,7 @@ The orchestrator runs this phase itself, in its own context (SKILL.md Step 4), a
    - **`already-aligned`**: no-op. Record `{op: <i>, status: "ok"}`.
    - **`symlink`**: create a relative symlink at `<repo_root>/<from>` pointing to `<to>` (resolved relative to the symlink's parent dir). If parent dir doesn't exist, create it. If `<from>` already exists as a regular file (not a symlink), fail this op with `wrong_target` and continue. Record success or error.
    - **`translate`**: read source at `<repo_root>/<from>`, transform per port-recipes.md rules, write to `<repo_root>/<to>`. Create parent dirs as needed. Record success or error.
-   - **`drift`**: the canonical side is given by the orchestrator's user choice (passed in via the manifest as a resolved field; if not present, fall back to `manifest.ops[i].newer`). The non-canonical side is replaced with a relative symlink to the canonical side. Existing content of the non-canonical side is overwritten. Record success or error.
+   - **`drift`**: the canonical side is the op's `canonical` field, which holds the user's choice. If `canonical` is missing, do not run this op; record it under `skipped` with the reason. The non-canonical side is replaced with a relative symlink to the canonical side. Existing content of the non-canonical side is overwritten. Record success or error.
    - **`rewire-symlink`**: replace the symlink at `<from>` so it points to `<to>`. Use `ln -sfn` semantics (atomic where possible). Record success or error.
 3. Honor manifest `skip` entries: do nothing about them; they don't appear in the apply-log.
 4. Validate your output parses as JSON. Emit only the JSON.
@@ -25,7 +25,7 @@ The orchestrator runs this phase itself, in its own context (SKILL.md Step 4), a
 - WRITE-ONLY to paths listed in `manifest.ops`. NEVER touch any other path.
 - Intermediate `mkdir -p` calls for parent dirs of op targets are permitted and not recorded.
 - Atomic where possible: prefer `ln -sfn` over `rm` + `ln -s`.
-- On error: capture the OS error message in `message`. Do not retry within this round (the reviewer will surface; the orchestrator decides on the next round).
+- On error, read the message. If the cause is yours and inside the manifest (a parent folder not created, a wrong relative target), fix it and run the op again once. If the cause is the project's state (permission denied, a regular file where a symlink should go), do not work around it: capture the OS error message in `message` and go on to the next op.
 - If a translate op's target file already exists with byte-identical content, this is success (`status: "ok"`); do not rewrite (preserves mtime).
 
 ## Round-targeted manifests
@@ -37,7 +37,7 @@ When the orchestrator runs this phase again on a focused manifest after a review
 Output ONLY the JSON apply-log, in a single fenced code block:
 
 ```json
-{ "executed": [ ... ], "skipped": [ ... ] }
+{ "executed": [ ... ], "skipped": [ ... ], "notes": [ ... ] }
 ```
 
-No prose. The reviewer reads this apply-log.
+The reviewer reads this apply-log, so keep the block pure JSON. You run in front of the user, so one line before the block (what you are applying) and one after (how many ops succeeded) are fine.

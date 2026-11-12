@@ -36,16 +36,6 @@ When subagent dispatch is unavailable (no `Agent`, `spawn_agent` or `Task` tool)
 
 ## Workflow
 
-**Prompt file location (MUST check before every phase):**
-
-Before reading any phase prompt file, run:
-
-```bash
-echo "${RUNTIME_BRIDGE_SKILL_OVERRIDE:-}"
-```
-
-If the output is a non-empty path, read ALL prompt files (`scout-prompt.md`, `apply-prompt.md`, `reviewer-prompt.md`) from that directory instead of the bundled skill directory. This is the fault-injection override used by integration tests.
-
 ### Step 1: Confirm scope and mode
 
 If the user hasn't specified, ask one consolidated question: target directory (default: cwd) and dry-run vs full execution. Skip if both are obvious from context.
@@ -72,7 +62,7 @@ Render the manifest for the user:
 - Notes (free-form).
 - If `trust_warning` is present: include the line "After apply, run `codex` once in this dir and accept the trust prompt; `.codex/` artifacts no-op on untrusted projects."
 
-For drift ops, ask the user to confirm the suggested canonical or pick the other side. If the user's original prompt already specifies a canonical-selection rule (for example "use the newer file as canonical"), apply that rule to all drift ops without re-asking per pair.
+For drift ops, ask the user to confirm the suggested canonical or pick the other side, and write the answer into the op as `canonical` (one of its `paths`). If the user's original prompt already specifies a canonical-selection rule (for example "use the newer file as canonical"), apply that rule to all drift ops without re-asking per pair.
 
 If dry-run: stop here. Print the manifest summary as the final report.
 
@@ -80,9 +70,9 @@ Otherwise: ask the user to approve the full op set. If approved, continue. If de
 
 ### Step 4: Run APPLY
 
-Read `apply-prompt.md` and follow it yourself with these inputs:
+Note the time before the first write (`date +%s`); this is `round_started_at`. Read `apply-prompt.md` and follow it yourself with these inputs:
 
-- `manifest`: the approved manifest (with any user drift selections applied).
+- `manifest`: the approved manifest (with each drift op's `canonical` set).
 - `recipes_path`: absolute path to `port-recipes.md`.
 - `repo_root`: absolute path.
 
@@ -92,9 +82,11 @@ Apply produces a JSON apply-log matching `manifest-schema.md`. Validate it parse
 
 Read `reviewer-prompt.md`. Dispatch it as a fresh subagent, with no conversation history, and these arguments:
 
-- `manifest`: the same manifest apply consumed.
-- `apply_log`: what apply returned.
+- `manifest`: the full approved manifest, every round, even when apply ran on a focused one.
+- `apply_log`: what apply returned this round.
+- `round_started_at`: the time you noted before this round's apply (Unix seconds).
 - `recipes_path`: absolute path to `port-recipes.md`.
+- `schema_path`: absolute path to `manifest-schema.md`.
 - `repo_root`: absolute path.
 
 Reviewer returns a verdict matching `manifest-schema.md`.
@@ -109,9 +101,9 @@ If verdict has issues, classify:
 - Same issue (same kind + same op_index) appears two rounds in a row: STOP. Stalling.
 - Issue requires user decision (drift the user already chose canonical for; translation key with no defensible default): STOP. Surface to user.
 - Issue requires action apply cannot perform (mark project trusted in Codex; install a missing plugin): STOP. Surface to user.
-- Otherwise (mechanical, in-scope): construct a focused manifest containing only the affected ops + the reviewer's `suggested_fix` text. Run APPLY again yourself on this focused manifest. Then dispatch a fresh REVIEWER again. Track issues across rounds for the stalling check.
+- Otherwise (mechanical, in-scope): construct a focused manifest containing only the affected ops + the reviewer's `suggested_fix` text. Note a new `round_started_at`, run APPLY again yourself on this focused manifest, then dispatch a fresh REVIEWER with the full approved manifest. Track issues across rounds for the stalling check.
 
-No fixed iteration cap. Loop until pass or break condition.
+Stop after three reviewer rounds, and report what is still open.
 
 ### Step 7: Final report
 
@@ -137,7 +129,7 @@ Print to user:
 ## Self-Healing
 
 - Manifest fails to parse twice: surface the raw scout output to the user; suggest re-running.
-- Apply errors on a specific op (e.g. `EACCES`): logged in apply-log, reviewer surfaces as `missing`, orchestrator stops with outstanding issue.
+- Apply errors on a specific op: apply fixes its own mistakes once (see `apply-prompt.md`); a cause in the project's state (e.g. `EACCES`) is logged in the apply-log, the reviewer surfaces it as `missing`, and the final report lists it as outstanding.
 - Reviewer disagrees with apply but issue kind is unclear: surface verbatim; user decides.
 - Subagent dispatch unavailable: run the reviewer inline. Manifest, apply, and review are still produced; the user still sees the two checkpoints, and the report says the review was not independent.
 

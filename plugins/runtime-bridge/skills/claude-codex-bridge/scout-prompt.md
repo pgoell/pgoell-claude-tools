@@ -39,7 +39,7 @@ Keep diffs trimmed (no more than ~40 lines per op); if longer, include first 20 
 
 ## Constraints
 
-- **READ-ONLY.** Use file read tools only. Never write, never `ln -s`, never `mkdir`.
+- **READ-ONLY.** Read tools and read-only shell commands (`find`, `stat`, `readlink`, `cat`, `jq`) are fine. Do not create, change or delete anything under `repo_root`.
 - All paths in the manifest are repo-relative (relative to `repo_root`), never absolute.
 - Plugin source paths are absolute (the user needs them to navigate).
 - If the repo is empty (no CLAUDE.md, no AGENTS.md, no `.claude`, no `.codex`, no `.agents`): return a manifest with `ops: []`, `skip: []`, `plugin_report: <discovered>`, and a single note: "No runtime context detected. Initialize one with `claude /init` or `codex /init`, then re-run."
@@ -52,4 +52,4 @@ Output ONLY the JSON manifest, in a single fenced code block:
 { ...manifest... }
 ```
 
-No prose. No commentary. Step 2 validates the manifest with `jq empty` and Step 3 renders it.
+Keep the block pure JSON. You run in front of the user, so one line before the block and one after are fine. Step 2 validates the manifest with `jq empty` and Step 3 renders it.
