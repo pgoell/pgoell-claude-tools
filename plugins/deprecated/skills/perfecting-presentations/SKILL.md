@@ -1,6 +1,8 @@
 ---
 name: perfecting-presentations
 description: Deprecated, superseded by presentations:creating-presentations, which folds this review loop in as an opt-in phase. Formerly used to review, audit, polish, or perfect an existing HTML slide deck through a strict convergence loop.
+metadata:
+  internal: true
 ---
 
 # Perfecting Presentations

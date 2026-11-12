@@ -1,6 +1,8 @@
 ---
 name: dispatching-parallel-agents
 description: Deprecated and retired without replacement. Formerly used when facing two or more independent tasks that could be worked on concurrently without shared state or sequential dependencies.
+metadata:
+  internal: true
 ---
 
 # Dispatching Parallel Agents

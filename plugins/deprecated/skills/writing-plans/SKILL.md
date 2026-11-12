@@ -1,6 +1,8 @@
 ---
 name: writing-plans
 description: "Deprecated and retired without replacement. Formerly used when a design spec or approved requirements need to become a concrete, step-by-step implementation plan before code changes."
+metadata:
+  internal: true
 ---
 
 # Writing Plans

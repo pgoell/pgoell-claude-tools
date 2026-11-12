@@ -1,6 +1,8 @@
 ---
 name: subagent-driven-development
 description: Deprecated and retired without replacement. Formerly used when executing an implementation plan with fresh subagents, task ownership, and review gates in the current session.
+metadata:
+  internal: true
 ---
 
 # Subagent-Driven Development

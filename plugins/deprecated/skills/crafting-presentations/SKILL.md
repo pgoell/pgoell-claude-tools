@@ -1,6 +1,8 @@
 ---
 name: crafting-presentations
 description: Deprecated, superseded by presentations:creating-presentations. Formerly used to build a multi-slide HTML presentation with slide-type templates, a deck-stage engine, and an optional two-window presenter view. Prefer the presentations plugin for all new decks.
+metadata:
+  internal: true
 ---
 
 # Crafting Presentations

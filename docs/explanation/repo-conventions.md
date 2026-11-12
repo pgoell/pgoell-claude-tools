@@ -33,6 +33,10 @@ A third shape is the script template. `issue-loop:running-the-loop` ships `asset
 
 Each SKILL.md holds everything the host agent needs to use the service without reading other files, except reference docs it links to. An agent that loads a skill should be able to act on one read.
 
+The same holds for files. The [`skills` CLI](https://github.com/vercel-labs/skills) (`npx skills add`, `bunx skills add`) installs into about 80 agents by copying one skill folder at a time. A path such as `../../themes/` that climbs to the plugin root breaks there, while a sibling path such as `../edition/references/` works when the user installs the whole plugin. So bundled assets live inside the skill that owns them: the diagram themes moved into `creating-diagrams/themes/` in 2026-11 (#398). The presentations presets still sit at the plugin root, because that plugin is being rebuilt (#399) and its presets are due to change shape.
+
+The same CLI shows every `SKILL.md` it finds unless the frontmatter sets `metadata.internal: true`. The archived skills and the Claude-Code-only `issue-loop` skills set it, so other agents do not get offered skills they cannot use.
+
 ## Skill invocation syntax in docs is `/<plugin>:<skill>`, not `/<marketplace>:<skill>`
 
 Claude Code resolves skill calls by `plugin:skill` (for example `/atlassian:jira`, `/research:research`), not by marketplace name. The marketplace name `pgoell-claude-tools` appears only as the `@pgoell-claude-tools` suffix in `/plugin install <plugin>@<marketplace>` lines and in `codex plugin marketplace add pgoell/pgoell-claude-tools`; it cannot prefix a skill call.

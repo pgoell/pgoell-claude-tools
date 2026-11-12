@@ -18,6 +18,8 @@ Each archived skill starts its description with "Deprecated, superseded by" and 
 
 A skill retired with nothing to replace it starts its description with "Deprecated and retired without replacement" and its banner says "Retired without replacement" instead.
 
+Its frontmatter also sets `metadata.internal: true`, so the `skills` CLI (`npx skills add`) leaves it out of its list unless `INSTALL_INTERNAL_SKILLS=1` is set. The marketplaces still install it.
+
 The skill is frozen. Nobody extends it or fixes it. Its references to its old siblings point inside `deprecated`, so the archive stays whole on its own.
 
 ## The batches

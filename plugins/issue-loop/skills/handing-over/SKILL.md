@@ -1,6 +1,8 @@
 ---
 name: handing-over
 description: Use when the orchestrator of an issue loop must pass the loop to a fresh session, because its context passed 120k tokens at a break between tasks or 150k at any time, or the user says "hand over", "start a fresh orchestrator", or "your context is full, pass it on". Not for starting a loop (use running-the-loop).
+metadata:
+  internal: true
 ---
 
 # Handing Over

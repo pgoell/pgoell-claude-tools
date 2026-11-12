@@ -1,6 +1,8 @@
 ---
 name: crafting-design-systems
 description: Deprecated and retired without replacement. Formerly used when the user wants to create or edit a workbench design system, a directory of CSS variable overrides, optional components, and optional images that themes HTML output from workbench producer skills.
+metadata:
+  internal: true
 ---
 
 # Crafting Design Systems

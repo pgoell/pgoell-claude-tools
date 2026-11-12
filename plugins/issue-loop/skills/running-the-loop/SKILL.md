@@ -1,6 +1,8 @@
 ---
 name: running-the-loop
 description: Use when the user wants an unattended build loop over a repo's GitHub issues, with this session as the orchestrator that drives one implementer session task after task, for example "run the issue loop on this repo" or "work through the open issues unattended", or when a handover's first message tells this session to take over a loop. Not for building one feature in this session, and not for passing the loop to a new session (use handing-over).
+metadata:
+  internal: true
 ---
 
 # Running the Loop

@@ -1,6 +1,6 @@
 # Theming
 
-The theme contract (variables, rules, selection order) lives in `../../../themes/README.md` at the plugin root. This file covers the two jobs around it: applying a theme to a diagram, and deriving a new theme from brand material you already have.
+The theme contract (variables, rules, selection order) lives in `../themes/README.md`, in this skill folder. This file covers the two jobs around it: applying a theme to a diagram, and deriving a new theme from brand material you already have.
 
 ## Applying a theme
 

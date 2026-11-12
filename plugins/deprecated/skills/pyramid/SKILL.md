@@ -1,6 +1,8 @@
 ---
 name: pyramid
 description: Deprecated, superseded by writing:ghostwrite (pyramid audits for work documents) and writing:coach (structure drill). Formerly used to structure memos, recommendations, briefings, and decision documents with the Pyramid Principle.
+metadata:
+  internal: true
 ---
 
 # Pyramid Skill

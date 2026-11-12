@@ -1,6 +1,8 @@
 ---
 name: test-driven-development
 description: "Deprecated and retired without replacement. Formerly used when implementing any feature, bugfix, refactor, or behavior change before writing implementation code. Enforces test-first RED-GREEN-REFACTOR discipline."
+metadata:
+  internal: true
 ---
 
 # Test-Driven Development

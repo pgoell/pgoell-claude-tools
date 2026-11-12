@@ -1,6 +1,8 @@
 ---
 name: frontend-design
 description: Deprecated, superseded by taste-skill:taste-skill in Claude Code, taste-skill:design-taste-frontend in Codex. Formerly used to create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, or applications. Generates creative, polished code that avoids generic AI aesthetics.
+metadata:
+  internal: true
 ---
 
 > **Deprecated.** Superseded by `taste-skill:taste-skill` in Claude Code, `taste-skill:design-taste-frontend` in Codex. For animation and UI craft in Claude Code, `emil:emil-design-eng` (not in Codex). This copy is archived and no longer maintained.

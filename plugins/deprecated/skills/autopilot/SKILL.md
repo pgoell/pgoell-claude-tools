@@ -1,6 +1,8 @@
 ---
 name: autopilot
 description: Deprecated and retired without replacement. Formerly autopilot for autonomous feature shipping from brainstorm to PR using .workbench/autopilot.md.
+metadata:
+  internal: true
 ---
 
 # Autopilot: autonomous feature flow

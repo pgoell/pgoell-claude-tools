@@ -94,7 +94,7 @@ in this repository's words, MIT):
       marker geometry, and SVG text sizes follow upstream 2's
       resources/template.html; the semantic class names and CSS custom
       property names follow upstream 1's template.
-  - themes/classic/theme.css: dark values from upstream 2's palette,
+  - skills/creating-diagrams/themes/classic/theme.css: dark values from upstream 2's palette,
       light values from upstream 1's classic light palette, with the
       same --arrow contrast fix as above.
   - skills/creating-diagrams/references/diagram-types.md and
@@ -103,6 +103,6 @@ in this repository's words, MIT):
       upstreams for hand drawing.
 
 Original work under this repository's MIT license: SKILL.md,
-references/theming.md, themes/README.md, README.md, both plugin
+references/theming.md, skills/creating-diagrams/themes/README.md, README.md, both plugin
 manifests, renderers/shared/brand-theme.mjs, and every part of the
 files above not attributed here.

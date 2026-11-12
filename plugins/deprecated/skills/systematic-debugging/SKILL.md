@@ -1,6 +1,8 @@
 ---
 name: systematic-debugging
 description: Deprecated and retired without replacement. Formerly used when encountering any bug, test failure, or unexpected behavior, before proposing fixes
+metadata:
+  internal: true
 ---
 
 # Systematic Debugging

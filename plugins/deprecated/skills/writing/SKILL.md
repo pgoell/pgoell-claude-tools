@@ -1,6 +1,8 @@
 ---
 name: writing
 description: Deprecated, superseded by writing:ghostwrite (drafting) and writing:coach (learning to write). Formerly used to draft, review, and finish long form prose, essays, talks, newsletters, memos, and briefings.
+metadata:
+  internal: true
 ---
 
 # Writing Skill

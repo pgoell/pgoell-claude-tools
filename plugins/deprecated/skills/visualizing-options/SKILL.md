@@ -1,6 +1,8 @@
 ---
 name: visualizing-options
 description: "Deprecated and retired without replacement. Formerly used when a design discussion needs visual options shown in a browser: mockups, layout comparisons, wireframes, or architecture diagrams that the user can click to choose between. Spawns a local server and renders content fragments."
+metadata:
+  internal: true
 ---
 
 # Visualizing Design Options

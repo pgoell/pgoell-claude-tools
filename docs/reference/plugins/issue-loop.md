@@ -12,7 +12,7 @@ An unattended build loop over a repo's GitHub issues. One Claude Code session, t
 
 **Runtimes:** Claude Code
 
-Not in Codex or Cursor: its skills drive Claude Code sessions themselves (`/clear`, permission modes, Claude Code's own dialogs), and the loop was never run anywhere else. See [Runtimes](/reference/runtimes.md).
+Not in Codex or Cursor: its skills drive Claude Code sessions themselves (`/clear`, permission modes, Claude Code's own dialogs), and the loop was never run anywhere else. Its skills set `metadata.internal: true`, so `npx skills add` hides them too. See [Runtimes](/reference/runtimes.md).
 
 **Source:** vendored in `plugins/issue-loop/`; see the [plugin README](../../../plugins/issue-loop/README.md) for details and credits.
 

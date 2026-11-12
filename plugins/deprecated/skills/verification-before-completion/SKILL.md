@@ -1,6 +1,8 @@
 ---
 name: verification-before-completion
 description: Deprecated and retired without replacement. Formerly used when about to claim work is complete, fixed, passing, ready, or safe to merge, especially before commits, pushes, PRs, or handoff summaries.
+metadata:
+  internal: true
 ---
 
 # Verification Before Completion

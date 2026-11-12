@@ -1,6 +1,8 @@
 ---
 name: exporting-decks-to-pptx
 description: Deprecated, superseded by presentations:exporting-presentations-to-pptx. Formerly used to export an HTML deck into a native, editable PowerPoint file (.pptx). Prefer the presentations plugin for all new exports.
+metadata:
+  internal: true
 ---
 
 # Exporting Decks to PPTX

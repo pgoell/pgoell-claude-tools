@@ -24,7 +24,7 @@ Architecture, workflow, sequence, data-flow and lifecycle diagrams as one self-c
 
 ## Themes
 
-Every color comes from a theme; the contract is in [themes/README.md](../../../plugins/diagrams/themes/README.md). The plugin ships `classic`. The skill can derive a brand theme from a presentations preset or straight from a `.pptx` or `.potx` file, and saves it under `.pgoell/diagrams/themes/<name>/` in your repo.
+Every color comes from a theme; the contract is in [themes/README.md](../../../plugins/diagrams/skills/creating-diagrams/themes/README.md). The plugin ships `classic`. The skill can derive a brand theme from a presentations preset or straight from a `.pptx` or `.potx` file, and saves it under `.pgoell/diagrams/themes/<name>/` in your repo.
 
 ## Evals
 

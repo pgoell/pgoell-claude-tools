@@ -1,6 +1,8 @@
 ---
 name: brainstorming
 description: "Deprecated and retired without replacement. Formerly used before creative work to grill the user toward a shared design concept through exhaustive sequential question and answer."
+metadata:
+  internal: true
 ---
 
 # Brainstorming Ideas Into Designs

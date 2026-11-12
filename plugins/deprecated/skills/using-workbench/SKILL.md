@@ -1,6 +1,8 @@
 ---
 name: using-workbench
 description: Deprecated and retired without replacement. Formerly loaded Workbench skill rules and chose the right Workbench skill.
+metadata:
+  internal: true
 ---
 
 > **Deprecated.** Retired without replacement. This copy is archived and no longer maintained.
