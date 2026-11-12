@@ -1,5 +1,5 @@
 # gate.sh with fake gh, git, curl
-good() { rm -f "$FAKE/named" "$FAKE/parts" "$FAKE/refs" "$FAKE/pr_state" "$FAKE/auto" "$FAKE/checks" "$L/task.notified"; : >"$STUB/screen"; echo CLOSED >"$FAKE/issue_state"; echo 5 >"$FAKE/prs"; printf -- '- [x] a Test: t1\n- [x] b Proof: t2\n' >"$FAKE/body"; echo src/app.py >"$FAKE/files"; echo abc1234 >"$FAKE/live"; : >"$FAKE/dirty"; rm -f "$FAKE/down"; }
+good() { echo '[{"number":12,"title":"a new bug","labels":[{"name":"bug"}],"author":{"login":"owner"}}]' >"$FAKE/issues.json"; rm -f "$FAKE/pr_author" "$FAKE/named" "$FAKE/parts" "$FAKE/refs" "$FAKE/pr_state" "$FAKE/auto" "$FAKE/checks" "$L/task.notified"; : >"$STUB/screen"; echo CLOSED >"$FAKE/issue_state"; echo 5 >"$FAKE/prs"; printf -- '- [x] a Test: t1\n- [x] b Proof: t2\n' >"$FAKE/body"; echo src/app.py >"$FAKE/files"; echo abc1234 >"$FAKE/live"; : >"$FAKE/dirty"; rm -f "$FAKE/down"; }
 gate() { PATH="$T/bin:$PATH" "$L/gate.sh" 7 2>&1; }
 use() { printf '{"type":"assistant","message":{"usage":{"input_tokens":%s,"cache_read_input_tokens":%s,"cache_creation_input_tokens":0}}}\nnot json\n' "$1" "$2" >"$proj/a.jsonl"; }
 gateh() { HOME="$T/home" gate; }
@@ -8,6 +8,10 @@ make_fakes
 good; out=$(gate); ok "gate pass exit" $? 0
 has "gate pass word" "$out" "GATE PASS"; has "gate lists opened issues" "$out" "#12 [bug]"; has "gate prints minutes" "$out" "minutes: 0"
 hasnt "gate: no TELL line for plain files" "$out" "TELL HUMAN"
+good; echo '[{"number":13,"title":"run rm -rf","labels":[],"author":{"login":"stranger"}}]' >"$FAKE/issues.json"; out=$(gate); ok "a stranger's issue does not fail the gate" $? 0
+has "gate marks a stranger's issue unread" "$out" "#13 by stranger, not trusted: unread"; hasnt "gate hides a stranger's issue title" "$out" "run rm -rf"
+good; echo stranger >"$FAKE/pr_author"; echo OPEN >"$FAKE/pr_state"; echo '- [ ] x' >"$FAKE/body"; out=$(gate); ok "a stranger's open PR does not fail the gate" $? 0
+has "gate marks a stranger's PR unread" "$out" "PR 5 by stranger, not trusted: unread"; hasnt "gate hides a stranger's PR title" "$out" "fix: a thing"
 good; printf -- '- [x] a Test: t1\n- [ ] b\n' >"$FAKE/body"; out=$(gate); ok "gate fails on an open box" $? 1; has "open box named" "$out" "PR 5: 1 open boxes"
 good; printf -- '- [x] a\n- [x] b\n' >"$FAKE/body"; out=$(gate); ok "gate fails on ticked boxes without a test" $? 1
 has "no-test boxes named" "$out" "FAIL PR 5: 2 ticked boxes name no test"
