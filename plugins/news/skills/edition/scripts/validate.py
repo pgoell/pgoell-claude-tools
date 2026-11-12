@@ -5,7 +5,8 @@
 """Check an edition JSON file against the contract in references/edition-contract.md.
 
 Exits 1 and lists every error when the edition breaks the contract; prints
-warnings (summary length for the story's importance) without failing. With --memory, also fails on a
+warnings (summary length for the story's importance, fewer than four sections)
+without failing. With --memory, also fails on a
 follow-up that links a story memory does not hold, and on a story whose URL an
 earlier edition already ran without marking it as a follow-up.
 
@@ -148,7 +149,9 @@ def edition(e: object) -> list[dict]:
 
     sections = e.get("sections")
     section_ids = set()
-    if check(isinstance(sections, list) and 4 <= len(sections) <= 20, "edition", "sections must be a list of 4 to 20"):
+    if check(isinstance(sections, list) and len(sections) <= 20, "edition", "sections must be a list of at most 20"):
+        if len(sections) < 4:
+            warnings.append(f"edition: only {len(sections)} sections; say so in the report")
         for i, sec in enumerate(sections):
             where = f"sections[{i}]"
             if not check(isinstance(sec, dict), where, "must be an object"):

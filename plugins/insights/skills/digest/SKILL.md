@@ -36,9 +36,11 @@ Below, `ARGS` stands for `--vault "<vault>" --periodic "<periodic>" --date <date
    lines with no verdict. Then
    `uv run "${CLAUDE_SKILL_DIR}/scripts/remember.py" ARGS --check-prs`: a
    `pending` fix whose PR merged becomes `applied` as of the merge date, one
-   whose PR closed unmerged becomes `rejected`. Report what it prints.
+   whose PR closed unmerged becomes `rejected`. Keep what it prints for the
+   final report.
 2. **Apply reviewed notes.** For each date in `to_apply`, follow
-   `../apply/SKILL.md` with that date. This is how a review done on the phone
+   `../apply/SKILL.md` with that date; after the last, go on with step 3. Apply is one
+   step here, not the whole run. This is how a review done on the phone
    takes effect the next morning. A note still under `## Proposed` is never
    applied here: only the user's own `/insights:apply` treats it as kept.
 3. **Read feedback.** `IN/feedback.md` and `IN/memory/rules.md`. Turn each

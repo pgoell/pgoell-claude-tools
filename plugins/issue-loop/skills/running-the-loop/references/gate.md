@@ -1,6 +1,6 @@
 # The gate and the report
 
-Step 4 of "One turn of the loop" in `SKILL.md` runs `./gate.sh 41 38 39` and reads the implementer's report. This page says what a pass means and what to read.
+Step 4 of "One turn of the loop" in `SKILL.md` runs `./gate.sh 41 38 39` and reads the implementer's report. This page says what a pass, a hold and a fail mean, and what to read.
 
 ## What `GATE PASS` means
 
@@ -17,6 +17,10 @@ Then:
 - Send the next task. Never approve, label or merge the PR yourself, and never ask the implementer to.
 - Look at each held PR at every break (`gh pr view <PR> --json state,reviewDecision`). Once it is merged, its release and live proof run next (`references/queue.md`). If the owner asked for changes, that is the next task: continue the PR.
 - A held PR the owner has approved lands next, ahead of every other merge. A merge ahead of it can conflict, and the push that fixes the conflict dismisses the approval.
+
+## What `GATE FAIL` means
+
+Each `FAIL` line is the next task. An open box, an unmerged PR or an open issue: brief the same issues again, with the `FAIL` lines in the task line. `live app does not answer`: the way back runs first, and the user hears at once. A dirty checkout or a wrong branch: look at what is there before you clean it, and tell the user if it is not the task's own work. After two failed gates on the same issues, list them for the user and go on with the next queue item. Never loosen the gate to pass it.
 
 ## Reading the report
 
