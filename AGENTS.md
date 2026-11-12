@@ -89,7 +89,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `databricks` 0.3.5: `databricks-core`, `databricks-docs`
 - `learning` 0.5.2: `quizzing-the-session`, `quizzing-a-topic`, `surveying-blind-spots`, `rebuilding-a-concept`, `practicing-a-topic`
 - `critique` 0.1.6: `critiquing-ideas`
-- `presentations` 0.8.6: `designing-presentations`, `building-pptx-decks`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
+- `presentations` 0.8.7: `designing-presentations`, `building-pptx-decks`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
 - `diagrams` 0.1.5: `creating-diagrams`
 - `news` 0.11.5: `edition`, `feedback`, `tune`
 - `insights` 0.7.6: `digest`, `apply`, `activity`
