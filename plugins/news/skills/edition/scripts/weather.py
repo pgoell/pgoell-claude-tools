@@ -8,8 +8,9 @@ Reads `weather:` in config/topics.yaml (place, latitude, longitude) and, when
 <newspaper>/<date>.json has `weather: null`, asks Open-Meteo's free forecast
 API (no key) for that day and writes `{place, summary, high_c, low_c}` back
 into the JSON. A weather block already in the JSON is left alone, and
-`weather: null` in topics.yaml turns the box off. This is the one network
-request the scripts make, and only when an edition is being built.
+`weather: null` in topics.yaml turns the box off. It runs only when an
+edition is being built; `tables.py` and `refetch.py` also fetch (README,
+"Network").
 """
 
 import json

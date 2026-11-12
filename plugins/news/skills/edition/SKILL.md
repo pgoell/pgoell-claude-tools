@@ -77,7 +77,8 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
    the lead's included, as three paragraphs: a one-sentence lede, then
    `Warum das wichtig ist:` (`Why it matters:` in English) with one or two
    sentences, then `Die Details:` (`The details:`) with the rest. The word
-   ranges stay the same. "Why it matters" analyses one level above the lede:
+   ranges stay the same, so at importance 1 write only the lede and `Warum das
+   wichtig ist:`. "Why it matters" analyses one level above the lede:
    a consequence, a second-order effect, who wins or loses, or what the story
    means for the reader's `interests` and sections. It never adds a fact,
    number or quote; those go in the details. When no real "so what" exists,
@@ -147,10 +148,10 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
     `Zeitung: [[<periodic>/05 Newspaper/<date>.html]]` to the daily note above
     its first `##` heading, once, creating the note in kasten's format if it is
     missing.
-13. **Report** in under ten lines: the page path, stories per section, the
-    lead and what the lead check found (facts held, rewritten, or swapped),
-    follow-ups, feedback applied, questions left in the feedback note,
-    sections that came up empty, and any fallback or warning.
+13. **Report** one line each, skipping any with nothing to say: the page path,
+    stories per section, the lead and what the lead check found (facts held,
+    rewritten, or swapped), follow-ups, feedback applied, questions left in the
+    feedback note, sections that came up empty, and any fallback or warning.
 
 ## Platform mapping
 
@@ -183,8 +184,8 @@ Cursor: gather with one `Task` call per section, several `Task` calls in one mes
 
 ## Rules
 
-- Never invent a story, a quote, a date or an image. Every story has a URL you
-  fetched in this run.
+- Never invent a story, a quote, a date or an image. Every story has a URL a
+  gatherer fetched in this run.
 - Never write to the vault outside `NP` and the one daily note.
 - Config in the vault is the reader's. Change it only through feedback items,
   with one exception: the `blocked_sources` line Self-Healing adds after two

@@ -147,9 +147,10 @@ before the 06:00 newspaper, add these lines to the crontab:
 ```
 
 The first wrapper runs
-`claude -p "/insights:digest --vault <vault> --periodic <periodic> --date <yesterday>"`
+`claude -p "/insights:digest --vault <vault> --periodic <periodic> --date <yesterday> insights-self-run"`
 with `--dangerously-skip-permissions`, since nobody is there to answer a
-prompt. It logs to `~/.local/state/insights/<date>.log` (`INSIGHTS_LOG_DIR`
+prompt. The `insights-self-run` token marks the session, so the next day's
+extract skips it. It logs to `~/.local/state/insights/<date>.log` (`INSIGHTS_LOG_DIR`
 changes that; `INSIGHTS_PLUGIN_DIR` loads the plugin from a working tree to
 test a change), and exits non-zero when claude fails or no page was written.
 It runs on `fable` at `high` (`INSIGHTS_MODEL` and `INSIGHTS_EFFORT` change

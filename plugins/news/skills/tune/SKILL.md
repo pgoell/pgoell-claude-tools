@@ -39,8 +39,9 @@ under the rules in `../edition/references/feedback-rules.md`; read it first.
    4. Freshness: how old a story may be per section.
    5. Interests and avoid lists.
    6. Design: list the installed designs (`ls "${CLAUDE_SKILL_DIR}/../edition/designs/"`,
-      folders holding a `template.html.j2`), then title, tagline and colour
-      or font overrides.
+      folders holding a `template.html.j2`). Read `designs/README.md` there and
+      each design's `NOTES.md`, where there is one, to say in a line what each looks like.
+      Then title, tagline and colour or font overrides.
 4. **Write the config** with the smallest edits that carry the answers, keep
    comments and order, and check the YAML parses. Add one changelog line per
    change to `NP/memory/changelog.md`.

@@ -118,6 +118,6 @@ The extractor reads Claude Code transcripts (`~/.claude/projects`) only.
 
 - Never write to the vault outside `IN` and today's daily note. Applying a
   reviewed note (step 2) writes where `../apply/SKILL.md` says.
-- Never put health, mood, money, relationships or client names on the page,
-  even when the digest holds them.
+- Never put health, mood, money, private life or client names on the page,
+  even when the digest holds them (`references/judging.md` has the row).
 - Never kill, delete or reset anything to verify a cause. Look only.

@@ -17,7 +17,7 @@ status: stable
 - A clone of this repository on the host (`<clone>` below), for the wrapper script.
 - Your vault path (`<vault>` below).
 
-The edition uses the host's web search and fetch tools. The scripts make two requests of their own: the day's forecast from Open-Meteo (free, no key) and, for a section that lists `tables:`, league tables from sportschau.de.
+The edition uses the host's web search and fetch tools. The scripts make three kinds of request of their own: the day's forecast from Open-Meteo (free, no key), for a section that lists `tables:`, league tables from sportschau.de, and the lead story's URL again, to check its facts.
 
 ## Steps
 

@@ -36,7 +36,7 @@ problem and the next digest judges by:
 
 | Verdict        | When                                                                    | `ref` / `reason` / `until`                   |
 | -------------- | ----------------------------------------------------------------------- | -------------------------------------------- |
-| `applied`      | a todo or feedback line was added                                       | `ref`: "todo" or "feedback"                  |
+| `applied`      | a todo or feedback line was added, or the PR merged                     | `ref`: "todo", "feedback" or the PR URL      |
 | `pending`      | a PR was opened or found open; it counts as applied only once it merges | `ref`: the PR URL                            |
 | `already-done` | the fix is in place already, nothing to change                          | `reason`: what you checked                   |
 | `deferred`     | the user says not now (other work first, waiting on something)          | `reason`, and `until`: what ends the wait    |

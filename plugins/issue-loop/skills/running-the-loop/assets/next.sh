@@ -116,5 +116,5 @@ drv_send "$IMPL" "/clear"
 nap 6
 drv_send "$IMPL" "$(cat "$S/task.md")"
 nap 30
-answer_go_ahead "$IMPL"
+answer_go_ahead "$IMPL" "go (typed by next.sh for the brief above only; the standing order is the user's word)"
 echo "$IMPL $(drv_status "$IMPL")"
