@@ -82,7 +82,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `google-workspace` 1.0.5: `gmail`, `calendar`
 - `research` 2.6.6: `research`, `running-research`
 - `writing` 3.1.7: `ghostwrite`, `coach`
-- `runtime-bridge` 0.2.0: `claude-codex-bridge`
+- `runtime-bridge` 0.2.1: `claude-codex-bridge`
 - `agent-system-management` 0.7.16: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
 - `terminal` 0.1.3: `tmux`
 - `playground` 0.1.3: `playground`
