@@ -42,6 +42,8 @@ What goes in, and what the successor cannot get from anywhere else:
 
 Leave out the story of how you got here. The ledger has it.
 
+Before you write, review the rules sessions added to `rules.local.md` since the last handover (`brief-rules.md` in `running-the-loop`: a slip seen twice becomes a rule). Drop each one a script, CI job or hook now catches, so the brief does not grow with every handover. Tell the user which you dropped and what catches each, and note it in `HANDOFF.md`.
+
 **3. Start the successor.** The takeover rests on the user's standing order, not on your say: `CLAUDE.md` in the loop folder, put there by the user with `grant.sh` (`running-the-loop`, "The standing order"). A successor that starts in the loop folder has that order as its own instructions. Check it is there (`. ./lib.sh; has_grant CLAUDE.md && echo granted`). If it is not, do not write it: tell the user that the successor will wait for their go until they run `grant.sh`, and go on.
 
 Write the first message to a file and start a session whose working folder is the loop folder:

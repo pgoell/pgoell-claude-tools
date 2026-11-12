@@ -34,11 +34,11 @@ These apply when the note is silent:
 
 ## Keep
 
-- <habit>. Evidence: "<short quote from the owner's own writing>"
+- <habit>. [Applies to: <genre>.] Evidence: "<short quote from the owner's own writing>"
 
 ## Avoid
 
-- <anti-pattern>. Evidence: <where it came from: sample, edit log, owner said so>
+- <anti-pattern>. [Applies to: <genre>.] Evidence: <where it came from: sample, edit log, owner said so>
 
 ## Standards
 
@@ -53,7 +53,9 @@ These apply when the note is silent:
 
 ## Logging edits
 
-After the owner edits a draft, compare their version with yours. Log edits that show a preference (word choice, sentence shape, what they cut, what they added), not typo fixes. When the same pattern appears in two or more pieces, propose it as an entry and add it only when the owner confirms. If the owner says outright "always do X", that counts as confirmed; still show the wording you will save.
+After the owner edits a draft, compare their version with yours. Log edits that show a preference (word choice, sentence shape, what they cut, what they added), not typo fixes. When the same pattern appears in two or more pieces, propose it as an entry and add it only when the owner confirms. If the owner says outright "always do X", that counts as confirmed; still show the wording you will save. Add "Applies to: <genre>" when the owner or the evidence ties the habit to one genre.
+
+The log also works against old entries. When the owner's edits go against an entry in two pieces, propose to narrow it (to a genre, a reader, a length) or drop it, and change it only when the owner confirms.
 
 ## Where a lesson goes
 
