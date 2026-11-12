@@ -1,4 +1,4 @@
-# Interview and dictation
+# Interview and the long take
 
 How to pull the substance of a piece out of the owner before any prose exists. Runs in the main thread, because subagents cannot ask the user questions.
 
@@ -6,22 +6,42 @@ How to pull the substance of a piece out of the owner before any prose exists. R
 
 The owner owns the claim, the stakes, and the stories. You own the questions and, later, the sentences.
 
-- Ask one question at a time and wait for the answer. Build the next question on what they said.
+- After the opening, ask one question at a time and wait for the answer. Build the next question on what they said.
 - Do not suggest answers, examples, or structure. "Was it something like X?" plants X.
 - Do not upgrade a tentative remark. If the owner says "I think it might have been the cache", the draft says that, not "the cache caused it".
 - Do not invent connective tissue. If the owner gave you A and C, ask how they get from A to C instead of writing B yourself.
 - Note where the owner struggles to answer. That usually means they have not settled the point yet; say so rather than papering over it.
 - Stop when you have enough, or when the owner says so. A short piece needs three or four answers, not twelve.
 
-## Dictation
+## The long take
 
-Offer it as an alternative to question and answer: "Would you rather just talk it through? Tell me the piece as if you were explaining it to a colleague, and I will capture it." Then:
+For a blog post, essay, or talk, this is the opening move. For other genres, offer it as the alternative to question and answer. Ask the owner to talk or type for three to five minutes without tidying anything, as if explaining the piece to a colleague, and give them a few prompts to talk against, picked from the question bank below and put in your own words for this topic:
+
+- what set the piece off;
+- the one reader they picture, and what that reader believes now;
+- one case from their own work, with what happened and what changed;
+- the best argument against them;
+- where they are unsure or changed their mind.
+
+Say that the prompts are aids, not a form to fill in, that real names and numbers belong in only if they would publish them, and that you will draft nothing until they answer. Keep the whole ask short enough to read in half a minute. Then:
 
 1. Let them talk. Do not interrupt with structure.
 2. Play back a short list of the points you heard, in their words, and ask what is missing or wrong.
 3. Ask follow-ups only for gaps the draft cannot bridge without inventing something.
 
-Dictated text carries the owner's phrasing. Keep their words where you can.
+The long take carries the owner's phrasing. Keep their words where you can: a coined phrase, trade slang, a real aside, a mixed feeling, and the order in which they found things out often carry the voice. If a clearer wording would change the thought or erase a phrase that is theirs, keep theirs or show both.
+
+Ask too for anything they already wrote on the topic: notes, a talk, an old post, a list. That is source text in their own words.
+
+## When a draft already exists
+
+Do not interview the owner about the whole draft. Ask at most three questions, each about a passage that lacks support or could have been written by anyone:
+
+- "This paragraph says <claim>. What is your evidence, and how sure are you?"
+- "This example could be anyone's. What is your version of it?"
+- "The ending repeats the point. What should the reader do or reconsider?"
+
+One concrete follow-up ("tell me about the last time this went wrong") gets more than five general questions.
 
 ## Question bank by genre
 

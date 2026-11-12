@@ -54,7 +54,7 @@ plugins/
                             #   stub and after skills ship. plugins/databricks/references/research/
                             #   is gitignored and local-only: never force-add it.
     tests/                  # Optional self-contained check of shipped scripts, run by hand
-                            #   (issue-loop, insights, news, research, agent-system-management, structure:
+                            #   (issue-loop, insights, news, research, agent-system-management, structure, writing:
                             #   tests/run.sh with fakes or fixtures, no network;
                             #   presentations: tests/run.sh drives deck fixtures in headless Chrome;
                             #   atlassian: tests/run.sh parses the JSON bodies of its examples)
@@ -80,7 +80,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `atlassian` 2.0.11: `jira`, `confluence`
 - `google-workspace` 1.0.5: `gmail`, `calendar`
 - `research` 2.6.7: `research`, `running-research`
-- `writing` 3.1.8: `ghostwrite`, `coach`
+- `writing` 3.2.0: `ghostwrite`, `coach`
 - `runtime-bridge` 0.2.1: `claude-codex-bridge`
 - `agent-system-management` 0.7.16: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
 - `terminal` 0.1.3: `tmux`
