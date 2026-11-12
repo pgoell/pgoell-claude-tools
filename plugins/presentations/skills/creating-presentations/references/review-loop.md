@@ -127,12 +127,17 @@ For each slide, answer each question yes or no:
 Then read the probe notes (hints, not findings; confirm each on the screenshot before
 reporting it): <for-judges.json path>
 
-Report only the "yes" answers, one finding per flaw per slide, citing the F item and saying
-exactly where on the slide it is (which element, which edge). No overall score, no taste,
-no rewrites. An empty list is a valid answer.
+The probe notes also hold copy warnings (kind `copy`, each with a rule ID such as T4 or
+W1). For each one, read the words on the screenshot and decide whether the warning holds
+on this slide.
+
+Report only the "yes" answers, one finding per flaw per slide, citing the F item (or, for
+a copy warning, the rule ID from the note) and saying exactly where on the slide it is
+(which element, which edge). No overall score, no taste, no rewrites. An empty list is a
+valid answer.
 ```
 
-The findings schema is the one below, with `rule` holding the F item.
+The findings schema is the one above, with `rule` holding the F item or the copy rule ID.
 
 ## Pairwise prompt
 
@@ -170,7 +175,7 @@ Run it once as (A = first, B = second) and once swapped. Both calls pick the sam
 ```
 
 - Key: `<rule>:<slide>:<first six significant words of the evidence, lowercased>`.
-- Statuses: `rejected` (verifier refuted it), `fixed` (confirmed and resolved).
+- Statuses: `rejected` (verifier refuted it), `fixed` (confirmed and resolved), `needs-user` (confirmed, but the fix needs something only the user has, such as an image or speaker notes). Record a `needs-user` finding once, list it in the final message with the slide and what is needed, and leave it out of the dry-round count.
 - Before verification each round, drop any new finding whose key matches a `rejected` entry; it was already litigated. A match against a `fixed` entry stays in: that is a regression and should alarm, not be dismissed.
 - Slide indices shift when slides are added or removed; after any such fix, re-key the ledger by slide content, not position (or accept a few re-litigated findings that round).
 
@@ -182,7 +187,7 @@ round R:
   judges x4 in parallel             (fresh subagents)
   ledger filter                     (drop re-litigated rejections)
   verify each survivor              (adversarial; 3-way majority for blockers / strict mode)
-  fix = hard-gate failures + upheld findings at or above threshold
+  fix = hard-gate failures + upheld findings at or above threshold, minus needs-user ones
   if fix list empty: dryRounds += 1 else dryRounds = 0; apply fixes
   done when dryRounds == 2, or round == cap (default 5, then report open items)
 ```
@@ -191,7 +196,7 @@ Fix discipline: smallest change that resolves the citation, hard gates first, on
 
 ## Workflow script (one invocation per round)
 
-The main session runs hard gates and screenshots first, then invokes this per round with `args = { standardsPath, deckPath, screenshots: [...], rejectedKeys: [...], strict: false }`. It returns confirmed and rejected findings; the main session updates the ledger, fixes, and decides termination.
+The main session runs hard gates and screenshots first, then invokes this per round with `args = { standardsPath, deckPath, screenshots: [...], forJudgesPath, rejectedKeys: [...], strict: false }`, where `forJudgesPath` is the probe notes file (`for-judges.json`) the judges read alongside the screenshots. It returns confirmed and rejected findings; the main session updates the ledger, fixes, and decides termination.
 
 ```js
 export const meta = {
@@ -206,7 +211,7 @@ const FINDINGS = { /* findings schema from above */ }
 const VERDICT = { /* verdict schema from above */ }
 const DIMENSIONS = ['narrative', 'clarity', 'visual', 'delivery']
 const key = (f) => `${f.rule}:${f.slide}:` + f.evidence.toLowerCase().split(/\W+/).filter(w => w.length > 2).slice(0, 6).join(' ')
-const judgePrompt = (dim) => `...judge template above, filled with args.standardsPath contents, ${dim}, args.screenshots, args.deckPath...`
+const judgePrompt = (dim) => `...judge template above, filled with args.standardsPath contents, ${dim}, args.screenshots, args.deckPath, args.forJudgesPath...`
 const verifyPrompt = (f) => `...verifier template above, filled with the finding and its slide screenshot...`
 
 const results = await pipeline(

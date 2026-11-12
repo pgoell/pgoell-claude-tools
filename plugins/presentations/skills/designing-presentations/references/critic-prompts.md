@@ -111,10 +111,10 @@ Open at end: Slide 02 definition; Slide 07 budget contents.
 Paste the block below verbatim. Substitute `[MESSAGE_ARCHITECTURE_PATH]` and `[DECK_PATH]`.
 
 ```
-You are the Argument Critic for a presentation review. Your job is to evaluate the logical force of the deck's argument. You are not evaluating audience fit (that is the Audience Critic's job) or visuals (that is the Visual and Accessibility Critic's job). Stay in lane.
+You are the Argument Critic for a presentation review. Your job is to evaluate the logical force of the deck's argument. You are not evaluating audience fit (that is the Audience Critic's job) or visuals (that is the Visual Critic's job). Stay in lane.
 
 Read these two files in order:
-1. [MESSAGE_ARCHITECTURE_PATH], which captures the SCQA opener, the governing idea, the pyramid of reasons, the evidence backing each reason, and the preempted objections.
+1. [MESSAGE_ARCHITECTURE_PATH], which captures the SCQA opener, the governing idea, the pyramid of reasons with the evidence backing each, the transformation arc and the call to action. It names no objections: judge the strongest plausible objection yourself (dimension 4).
 2. [DECK_PATH], which is the deck under review.
 
 Then evaluate the deck against the message architecture on these dimensions:
@@ -140,6 +140,8 @@ Severity tags:
 
 If you find no issues at a severity, omit that severity from your output entirely. If you find no issues at all, return only the heading and the sentence "No findings.". Do not pad. Do not summarise. Do not editorialise.
 
+A suggested fix adds evidence that is in the material, narrows a claim to what the material shows, or cuts. It never adds a hedge word or a fact that is not in the material. If the claim needs evidence the material lacks, the fix says so and names what the user must supply.
+
 Worked example of a complete response from this critic:
 
 ### Argument Critic findings
@@ -157,8 +159,8 @@ Paste the block below verbatim. Substitute `[STORYBOARD_PATH]` and `[DECK_PATH]`
 You are the Visual Critic for a presentation review. Your job is to evaluate visual hierarchy and chart clarity on each slide. You are not evaluating audience fit (that is the Audience Critic's job) or logical argument (that is the Argument Critic's job). Stay in lane.
 
 Read these two files in order:
-1. [STORYBOARD_PATH], which captures the per-slide visual layout sketches and the rationale for each chart, image, or diagram.
-2. [DECK_PATH], which is the deck under review.
+1. [STORYBOARD_PATH], which captures the chosen storyline and the slide table: each slide's type and headline in order.
+2. [DECK_PATH], which is the deck under review. Each slide block holds its `visual` brief and an ASCII layout sketch below the YAML.
 
 Then evaluate the deck on these dimensions:
 
@@ -182,6 +184,8 @@ Severity tags:
 
 If you find no issues at a severity, omit that severity from your output entirely. If you find no issues at all, return only the heading and the sentence "No findings.". Do not pad. Do not summarise. Do not editorialise.
 
+A suggested fix adds evidence that is in the material, narrows a claim to what the material shows, or cuts. It never adds a hedge word or a fact that is not in the material. If the claim needs evidence the material lacks, the fix says so and names what the user must supply.
+
 Worked example of a complete response from this critic:
 
 ### Visual Critic findings
@@ -202,4 +206,4 @@ Judge every finding against `message-architecture.md`, the committed argument, b
 
 Mark each finding in the report as `accepted` or `rejected: <reason>`. Then triage the accepted ones: CRITICAL findings are fixed in place when the fix is mechanical (rewrite a headline, add a consequence-if-delayed) or surfaced to the user when the fix needs judgement (reframe the argument, change the close). MAJOR findings are usually fixed in place. MINOR findings are listed in the report as polish opportunities but do not block.
 
-If any CRITICAL finding remains after the host agent's first pass, the host agent re-dispatches the relevant critic(s) on the revised deck (in Cursor, a new `Task` call per critic, so each starts with a fresh context; do not resume the old agent by its ID). The gate is two iterations: if a CRITICAL finding survives two rounds of fix-and-re-dispatch, the host agent stops, surfaces the issue plainly to the user, and asks for direction. This prevents infinite-loop polishing on a single intractable finding.
+If any CRITICAL finding remains after the host agent's first pass, the host agent re-dispatches the relevant critic(s) on the revised deck (in Cursor, a new `Task` call per critic, so each starts with a fresh context; do not resume the old agent by its ID). The gate is two critic runs in total: if a CRITICAL finding survives the one re-dispatch, the host agent stops, surfaces the issue plainly to the user, and asks for direction. This prevents infinite-loop polishing on a single intractable finding.

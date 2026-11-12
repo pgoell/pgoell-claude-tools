@@ -84,10 +84,10 @@ pres.addSection({ title: 'The evidence' });          // from SectionDivider slid
 const s = pres.addSlide({ masterName: L.TITLE_ONLY, sectionTitle: 'The evidence' });
 s.addText(block.headline, { placeholder: 'title' }); // the headline verbatim, as the dominant heading
 s.addText(block.sources, { placeholder: 'source' });
-s.addNotes(block.speaker_notes);                     // plain text, once per slide
+s.addNotes(notesText(block.speaker_notes));          // the five sub-keys joined as text, once per slide
 ```
 
-Fill placeholders by name with no position, size or color, so the layout decides. A block's short `title` label, when present, goes in a small text box above the title zone at the caption size in `--fg-muted`; it never takes the dominant position. Sections without a `sectionTitle` on every slide land in a stray "Default" section.
+`speaker_notes` is a mapping of five sub-keys (`slide-brief-template.md` in `designing-presentations`); `notesText` joins their values in schema order, one paragraph each, without the key names. Fill placeholders by name with no position, size or color, so the layout decides. A block's short `title` label, when present, goes in a small text box above the title zone at the caption size in `--fg-muted`; it never takes the dominant position. Sections without a `sectionTitle` on every slide land in a stray "Default" section.
 
 ## Proof objects
 

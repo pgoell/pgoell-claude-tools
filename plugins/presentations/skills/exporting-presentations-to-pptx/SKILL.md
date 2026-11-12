@@ -55,7 +55,7 @@ Without LibreOffice or a container engine, deliver the `.pptx` and state plainly
 
 ## Adversarial review (optional)
 
-For a high-stakes client file, offer one reviewer subagent per slide, dispatched in parallel. Each gets the HTML slide screenshot, the PPTX render of the same slide, the token list, and the list of intended differences (typo fixes, font substitution, the stand-in fonts), and reports findings by severity. Check any surprising color claim against the XML (`unzip -p deck.pptx ppt/slides/slideN.xml | grep srgbClr`): sampling thin antialiased glyphs gives false color findings.
+For a high-stakes client file, offer one reviewer subagent per slide, dispatched in parallel; say how many slides that is, since each reviewer costs a full subagent run. Each gets the HTML slide screenshot, the PPTX render of the same slide, the token list, and the list of intended differences (typo fixes, font substitution, the stand-in fonts), and reports findings by severity. Check any surprising color claim against the XML (`unzip -p deck.pptx ppt/slides/slideN.xml | grep srgbClr`): sampling thin antialiased glyphs gives false color findings.
 
 ## Content fidelity
 

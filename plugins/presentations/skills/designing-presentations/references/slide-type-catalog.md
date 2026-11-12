@@ -147,7 +147,7 @@ ASCII layout sketch:
 
 Example sentence headline: "Month-end close has lengthened from 5 to 9 days over the last six quarters."
 
-Speaker-note pattern: read the headline as written, point to the highlighted comparison in the chart and name the magnitude, name the reference line if present, then connect to the next slide in one sentence.
+Speaker-note pattern: restate the headline for the ear, not word for word, point to the highlighted comparison in the chart and name the magnitude, name the reference line if present, then connect to the next slide in one sentence.
 
 ---
 

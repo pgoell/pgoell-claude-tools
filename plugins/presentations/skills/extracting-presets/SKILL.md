@@ -93,7 +93,7 @@ Official logo and wordmark downloads need their own care; follow [references/bra
 
 `manifest.md` is the preset's single home for provenance: who the preset serves, the sources with their dates, what the preset covers, the extraction decisions (divergences recorded as found, with the resolution, including type lifted to the floors and chrome dropped), and what is missing (no official logo yet, no dark variant, closing slide pending). Add one direction line naming the generic default the preset's look avoids (for example, "deep navy and one warm accent; avoids the off-white, lime, and sans-everything default"), so a reader can tell the brand apart from the stock look. Every other preset file stays rule-only and may point here; provenance written anywhere else costs tokens on every deck build.
 
-Cite sources as durable references a reader can follow: the brand portal URL and page path with the capture date. Never reference provided files by name (a local PDF, a template on someone's disk); they do not ship with the repo, so everything relevant is extracted into the preset and the live portal is the only reference back.
+Cite sources as durable references a reader can follow: the brand portal URL and page path with the capture date. Prefer the portal over provided files (a local PDF, a template on someone's disk), which do not ship with the repo. When a provided file is the only source, cite it by title, version and date as the brand owner names it, never by its local path.
 
 ### 7. Verify
 
