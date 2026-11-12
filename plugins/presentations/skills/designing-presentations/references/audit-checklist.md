@@ -101,9 +101,8 @@ How to check:
 
 1. Count `Slide` blocks in `deck.md` (one block per slide).
    ```
-   grep -cE '^---\s*$' deck.md
+   grep -cE '^## Slide [0-9]+:' deck.md
    ```
-   Adjust the divider pattern to match the deck's actual block boundary.
 2. Read `genre` and `duration_minutes` from `audience-brief.md`.
 3. Look up the recommended band for that genre/duration pair in `time-budget.md`.
 4. Compare. If the count is outside the band, flag a violation.

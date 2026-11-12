@@ -4,7 +4,7 @@ Applies to every written surface of a deck built on this preset: titles, body, l
 
 ## Rules
 
-1. **The title states the claim.** A content-slide title is one sentence: sentence case, no terminal period, no colon label ("Key findings:"), at most two lines and about 15 words, carrying the number that proves it. Test: could this title sit on a slide with different data? If yes, rewrite it. A colon that joins two clauses is fine; only the colon label is banned.
+1. **The title states the claim.** A content-slide title is one sentence: sentence case, no terminal period, no colon label ("Key findings:"), at most two lines and about 15 words, carrying its proof in words (twice as many, most, just one); numerals go in the body. Test: could this title sit on a slide with different data? If yes, rewrite it. A colon that joins two clauses is fine; only the colon label is banned.
 2. **Split, never shrink.** If the title will not fit in two lines at `--fs-h1`, split the slide or cut words; never reduce the title size.
 3. **Titles alone tell the story.** Read only the titles in order: they must form the argument. Executive summary lines map one to one, in order, onto later titles.
 4. **Group like with like.** Grouped points are the same kind of idea, in a logical order. No placeholder titles such as "There are three problems".

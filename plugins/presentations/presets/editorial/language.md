@@ -21,10 +21,10 @@ Use only facts, figures, names, and arithmetic that appear in the source materia
 
 ## Before and after
 
-| Before                   | After                                                                                | What changed                                                          |
-| ------------------------ | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
-| Churn Analysis           | Churn concentrates in the first 90 days; customers who reach month four rarely leave | Two clauses joined by a semicolon carry the finding                   |
-| Cycling data 2022-2025   | Winter bike trips on protected corridors tripled in three years                      | Dataset label becomes what the data shows; dates move to the subtitle |
-| Industry Sales 2020-2025 | Industry sales will double by 2025                                                   | Title case label becomes a sentence-case claim                        |
-| Road safety results      | Collisions involving cyclists on the protected corridors fell by half                | Names the measure, the place, and the size of the change              |
-| Q4 Sales Data            | Sales jumped 40% in Q4                                                               | Label becomes a short claim                                           |
+| Before                   | After                                                                 | What changed                                                          |
+| ------------------------ | --------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Churn Analysis           | Churn concentrates in the first 90 days of a contract                 | The label becomes the finding, one claim with no semicolon            |
+| Cycling data 2022-2025   | Winter bike trips on protected corridors tripled in three years       | Dataset label becomes what the data shows; dates move to the subtitle |
+| Industry Sales 2020-2025 | Industry sales will double by 2025                                    | Title case label becomes a sentence-case claim                        |
+| Road safety results      | Collisions involving cyclists on the protected corridors fell by half | Names the measure, the place, and the size of the change              |
+| Q4 Sales Data            | Sales jumped 40% in Q4                                                | Label becomes a short claim                                           |
