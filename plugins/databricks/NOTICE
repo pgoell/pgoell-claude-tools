@@ -51,6 +51,12 @@ Mechanical edits applied at port time (databricks-core only):
     plumbing) and skills/databricks-core/assets/ (referenced only by the
     dropped agents/ file).
 
+Later local edits (databricks-core SKILL.md):
+
+  - "Profile Selection": replaced the rule never to auto-select a profile
+    with named exceptions (a profile the user named or chose, a single
+    profile), and added which commands run without asking.
+
 NOT ported from upstream (out of scope for this PR): databricks-apps,
 databricks-dabs, databricks-jobs, databricks-lakebase,
 databricks-model-serving, databricks-pipelines,

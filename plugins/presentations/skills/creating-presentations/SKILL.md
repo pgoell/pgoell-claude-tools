@@ -27,6 +27,8 @@ Before writing any slide, resolve which preset styles the deck:
 4. Otherwise choose among the bundled presets in `presets/` at the plugin root (`../../presets/` relative to this skill's directory) by the deck's use, state the choice and the reason in one line, and name the alternatives. `analytical` for decks read by or presented to decision makers, `keynote` for stage talks in dark rooms (and any `deck_mode: keynote`), `product` for launches and engineering all-hands, `editorial` for data stories and research readouts, `workshop` for training and mixed or low-vision audiences, `technical` for engineering deep dives, architecture reviews, design docs presented live, and incident reviews, and `default` when nothing points elsewhere. When the use is unclear and the user is present, ask. The table in `../../presets/README.md` under "Bundled presets" is the reference.
 5. A brand the user names but no preset covers: offer the `extracting-presets` skill to build one from their brand material, and use a bundled preset only after they agree.
 
+When no user is reachable, none of these questions stops the run. With several local presets, pick the one whose manifest fits the deck's use, and say which and why. For a named brand no preset covers, use the bundled preset that fits the use and say that the brand has no preset yet.
+
 Once the preset is resolved, read `references/preset-contents.md`: the eight things a preset contributes (variable files, guidelines, `language.md`, assets, icons, fonts, the slide gallery) and how to consume each one.
 
 ## Choose a visual direction

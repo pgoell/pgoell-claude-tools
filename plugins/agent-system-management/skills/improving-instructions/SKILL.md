@@ -110,8 +110,8 @@ Format:
 **Issues:**
 - [List specific problems]
 
-**Recommended additions:**
-- [List what should be added]
+**Recommended changes:**
+- [Lines to add, rewrite or remove]
 
 #### 2. ./packages/api/AGENTS.md (Package-specific)
 ...
@@ -123,7 +123,7 @@ After outputting the quality report, ask user for confirmation before updating.
 
 **Update Guidelines (Critical):**
 
-1. **Propose targeted additions** (unless the user asked for a trim, see item 4): focus on genuinely useful info:
+1. **Propose additions, rewrites and removals** in every audit. Narrow or delete a line before adding one beside it: a stale rule, a rule a hook or CI job now enforces, or a bare "never X" that blocked real work. A caution that stays says when it applies and why. For additions (unless the user asked for a trim, see item 4), focus on genuinely useful info:
    - Commands or workflows discovered during analysis
    - Gotchas or non-obvious patterns found in code
    - Package relationships that weren't clear
@@ -151,9 +151,10 @@ After outputting the quality report, ask user for confirmation before updating.
 `````markdown
 ### Update: ./AGENTS.md
 
-**Why:** Build command was missing, causing confusion about how to run the project.
+**Why:** The build command was missing, and `make` no longer builds the project.
 
 ````diff
+- Run `make` before testing.
 + ## Quick Start
 +
 + ```bash

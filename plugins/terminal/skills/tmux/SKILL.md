@@ -125,7 +125,7 @@ Kill the private server only after confirming no useful sessions remain:
 tmux -S "$SOCKET" kill-server
 ```
 
-Ask before killing sessions that the user may be monitoring.
+Kill a session you started once its task is done, and say that you did. Ask first only when the user said they are attached, asked you to leave it open, or the session holds unfinished work.
 
 ## Recipes
 
@@ -181,7 +181,9 @@ Rules for nested agents:
 - Wait several seconds before judging a blank pane. Agent CLIs may start MCP servers or render full-screen UI slowly.
 - Prefer plain text prompts and explicit commands.
 - Do not paste secrets into panes.
-- Expect manual intervention for auth, trust, model selection, plugin prompts, and permission prompts.
+- A nested session is a full agent session on the user's default model and costs as much. Give it one self-contained prompt: the goal, the paths, what is already known, and what to print when it is done.
+- A quiet pane is not proof of done: capture it and check for the result you asked it to print.
+- Do not answer the nested agent's auth, trust, model selection, plugin or permission prompts yourself; tell the user how to attach (`tmux -S "$SOCKET" attach -t "$SESSION"`).
 - Prefer host-native subagent tools when the goal is normal delegation.
 
 ## Self-Healing

@@ -57,27 +57,9 @@ reports() { grep -qF "file-size: $1 " <<<"$ERR"; }
 
 line() { printf 'file-size: %s is ~%s tokens (bytes/4); the limit is 5000.' "$1" "$2"; }
 
-EXPECTED_GUIDANCE="$(printf '%s\n' \
-  'Big files cost agents: they read them in pieces and lose track. Do not fix this' \
-  'by cutting the file into parts by line count, or by moving code into' \
-  'pass-through wrappers, barrel files or a utils grab bag. That gives many' \
-  'shallow modules, and a reader then has to open all of them.' \
-  '' \
-  'Split along a deep module instead (John Ousterhout, "A Philosophy of Software' \
-  'Design"): a module whose interface is small next to what it hides.' \
-  '1. List what the file does. Find a group of functions that share state or' \
-  '   knowledge the rest of the file does not need.' \
-  '2. Move that group into its own module behind a few functions. Callers should' \
-  '   not need to know how it works inside.' \
-  '3. Check: if the new module'"'"'s interface is nearly as big as its body, or every' \
-  '   caller still reaches into its details, you picked the wrong line. Try again.' \
-  '- Tests: split by the behaviour or module under test, one file per unit,' \
-  '  shared fixtures in one helper.' \
-  '- Docs: split by topic into a folder with an index page that links them.' \
-  '- Data (word lists, fixtures): move it into a data file and add it to the' \
-  '  exclude list, if no person or agent edits it by hand.' \
-  '- Skills: a SKILL.md over the limit moves step detail into references/ and' \
-  '  links it from the step that needs it.')"
+# The cksum of the guidance text below the file lines. It pins the text word for
+# word: a change to it on purpose updates this number.
+GUIDANCE_CKSUM='156280308 1673'
 
 # A2/A5 over fails, A4 message.
 fresh
@@ -89,8 +71,8 @@ if [ "$RC" -eq 1 ] && grep -qxF "$(line big.md 5001)" <<<"$ERR"; then
 else
   bad "A2/A5 over limit fails with the file line (rc=$RC)"
 fi
-expected_all="$(line big.md 5001)"$'\n\n'"$EXPECTED_GUIDANCE"
-if [ "$ERR" = "$expected_all" ]; then
+if [ "$(head -n 1 <<<"$ERR")" = "$(line big.md 5001)" ] && [ "$(sed -n 2p <<<"$ERR")" = "" ] &&
+  [ "$(tail -n +3 <<<"$ERR" | cksum)" = "$GUIDANCE_CKSUM" ]; then
   ok "A4 guidance text matches word for word"
 else
   bad "A4 guidance text matches word for word"

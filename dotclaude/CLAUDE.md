@@ -1,7 +1,7 @@
 # User Preferences
 
 - Never add AI attribution lines to commits, PRs, or code (no "Generated with", no "Co-Authored-By: Claude", etc.)
-- When reporting information to me, be extremely concise and sacrifice grammar for the sake of concision.
+- Reports to me are short: answer first, no preamble, no recap of what I already know. Write full sentences. I read a report cold, without your tool calls or notes, so name each thing in plain words and keep every fact I need to act on: state, failure, caveat, exact path or link. In a quick exchange, fragments are fine.
 - A report that names a PR, issue or deploy says its state (open, merged, live); for one you hold back, say why and what releases it.
 - A todo for me says what to open (a link), what to decide, and what my answer should look like. Spell out every rule letter, file line or run id it names; I have not read your working notes.
 - Before you hand me a step, check whether you can do it here: a key or token this machine can make (write it to the untracked env file, never into git), a push my `gh` token allows (`gh auth status` lists the scopes). Hand me only what needs my judgment, my accounts or my devices.

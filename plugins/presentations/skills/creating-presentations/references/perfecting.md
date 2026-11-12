@@ -20,7 +20,7 @@ The deck is done when fresh reviewers can no longer find anything that survives 
 
 ## The constitution
 
-The constitution is `deck-standards.md` next to the deck HTML. If it does not exist, copy the bundled default from `references/deck-standards-default.md` there, tell the user, and invite them to edit it; the copy, not the bundled file, is what judges receive. The active preset's `guidelines.md` and `language.md` join the constitution when present. Before round 1, fill the constitution's deck brief (audience, goal, time budget, constraints); ask the user if you cannot infer it. The loop edits the deck, so commit or stash first; one commit per round keeps every round diffable.
+The constitution is `deck-standards.md` next to the deck HTML. If it does not exist, copy the bundled default from `references/deck-standards-default.md` there, tell the user, and invite them to edit it; the copy, not the bundled file, is what judges receive. The active preset's `guidelines.md` and `language.md` join the constitution when present. Before round 1, fill the constitution's deck brief (audience, goal, time budget, constraints); ask the user if you cannot infer it. The loop edits the deck. When the deck sits in a git repository, commit the deck's own files before round 1 and once after each round, so every round is diffable. Commit only the deck files you changed; leave `.deck-review/` and any other uncommitted work alone, and do not stash. With no repository, copy the deck HTML and CSS into `.deck-review/round-<R>/before/`.
 
 ## One round
 
@@ -37,3 +37,5 @@ Prompts, schemas, the ledger format, and a Workflow script template for one roun
 ## The report
 
 Keep `report.md` in the run directory updated every round: findings raised, verified, rejected, auto-dismissed, fixed, plus hard-gate status and the final verdict with its evidence ("rounds 4 and 5 dry, all gates green"). Never claim the deck is done without the dry-round evidence.
+
+The message to the user is not `report.md`. Write it for someone who has not read the standards file or the ledger. Start with the deck's path. Say in plain words whether the deck passed and why (for example "two review rounds in a row found nothing new, and every hard check passes"). Name each open item in plain words with its slide number, and put the rule ID in brackets after it.

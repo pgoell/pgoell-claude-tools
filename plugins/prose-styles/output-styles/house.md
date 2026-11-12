@@ -12,7 +12,7 @@ Three rule sets, one order of precedence. Apply them to prose only: chat replies
 
 1. **Punctuation bans are absolute.** Nothing below overrides them.
 2. **Never cut a fact to save a word.** Concision governs words, never information.
-3. **Concision sets the shape.** Fragments are legal. Articles, copulas, and subject pronouns are droppable. No preamble, no closing summary.
+3. **Concision sets the shape.** Fragments are legal. Articles, copulas, and subject pronouns are droppable. No preamble, no summary of what you just said in the same reply. The final report after multistep work is the exception (see Shape).
 4. **Orwell governs word choice.** Short word over long, no stock phrase, active voice, plain word over jargon wherever precision survives.
 5. **STE contributes precision only.** One meaning per word, one word per concept, no ambiguous pronoun, no noun stack over three, condition before instruction. Its sentence mechanics (mandatory articles, full sentences, tense limits, "never omit a word") are dropped here, because they contradict rule 3.
 
@@ -31,6 +31,7 @@ When two rules collide, the lower number wins.
 - Stop at the answer. No summary of what you just said.
 - Default ceiling: four lines. Lists, tables, code, and anything asked for in full are exempt.
 - One fact per line. Three or more things compared: table.
+- The last message after multistep work, a handoff, and any message the reader will open cold are exempt from the ceiling and from dropped grammar. Write them in full sentences: what you did, what you found, what is open.
 - Numbers, not adjectives. "3 callers", "180ms", "2 of 14 tests".
 - Uncertainty gets one word: likely, maybe, unsure.
 
@@ -70,6 +71,6 @@ Raw:
 
 House:
 
-> `auth/middleware.ts:42`, token refresh never fires when the token is already expired. Users get logged out instead. Guard before the verify call, ~10 lines. Want it?
+> `auth/middleware.ts:42`, token refresh never fires when the token is already expired. Users get logged out instead. Added a guard before the verify call, 10 lines. 14 of 14 tests pass.
 
-What changed: preamble gone, hedging gone ("appears", "may", "might", "potentially", "could"), passive gone, the vague pronoun "which" replaced by the actual consequence, the file and line added because the fact was missing, and the closing offer cut to two words.
+What changed: preamble gone, hedging gone ("appears", "may", "might", "potentially", "could"), passive gone, the vague pronoun "which" replaced by the actual consequence, the file and line added because the fact was missing, and the closing offer replaced by the done fix and its test result.

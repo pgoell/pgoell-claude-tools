@@ -37,6 +37,6 @@ Each wrapper also names its model and effort, so a change to your interactive de
 
 - Run a wrapper by hand once: `<clone>/plugins/insights/scripts/cron-insights.sh <vault>`.
 - The pages `<vault>/<periodic>/06 Insights/<yesterday>.html` and `.../07 Activity/<yesterday>.html` exist, linked from today's daily note.
-- Logs are in `~/.local/state/insights/`: `<date>.log` for the digest and `<date>-activity.log` for the activity page (`INSIGHTS_LOG_DIR` moves them). A wrapper exits non-zero when claude fails or wrote no page.
+- Logs are in `~/.local/state/insights/`: `<date>.log` for the digest and `<date>-activity.log` for the activity page (`INSIGHTS_LOG_DIR` moves them). A wrapper exits non-zero when claude fails, when this run wrote no page, or when today's daily note has no link to it (the protocol's last step). The log names which.
 
 After you review a digest, `/insights:apply` carries out the fixes you kept. See [the insights reference page](/reference/plugins/insights.md) and the [plugin README](../../plugins/insights/README.md).

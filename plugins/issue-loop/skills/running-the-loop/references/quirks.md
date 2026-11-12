@@ -46,7 +46,6 @@ A subagent's chained command once reverted a folder of source files that another
 - The implementer has a checkout of its own. The orchestrator and every side session work elsewhere and only read it.
 - Never cut in on a working implementer with a second task. Queue it.
 - Tell the implementer about open PRs that are not its own: "PRs #A and #B are open and not yours: leave them alone".
-- The brief forbids chaining `git checkout` or `git restore` with other commands.
 
 ## Leftover agent worktrees
 

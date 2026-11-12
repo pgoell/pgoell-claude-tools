@@ -4,6 +4,8 @@ Phase 5 dispatches three critic personas as parallel subagents (the Agent tool; 
 
 The prompt blocks are written to be self-contained: pasted verbatim into a dispatch, they tell the critic what to read, how to think, and how to format the response. Do not rewrite them for tone; the determinism is the point.
 
+In audit mode an input file may not exist. Then replace the sentence that reads it with: "No [audience brief | message architecture | storyboard] exists. Work from the deck alone, and start your findings with one line naming what you had to assume."
+
 ## Findings severity
 
 Every finding the critics return is tagged with one of three severities. The host agent uses the severities to decide whether to fix-in-place, surface to the user, or accept.
