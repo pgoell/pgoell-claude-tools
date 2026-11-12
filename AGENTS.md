@@ -96,7 +96,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `structure` 0.2.17: `setting-up-the-checks`, `setting-up-import-boundaries`
 - `issue-loop` 0.13.18: `running-the-loop`, `handing-over` (Claude Code only)
 - `prose-styles` 0.1.1: no skills; output styles `orwell`, `concise`, `ste`, `house` (Claude Code only)
-- `guards` 0.2.0: no skills; `PreToolUse` hooks `pkill-self-match`, `rev-parse-short-multi` (Claude Code only)
+- `guards` 0.2.1: no skills; `PreToolUse` hooks `pkill-self-match`, `rev-parse-short-multi` (Claude Code only)
 - `session-title` 0.1.0: no skills; `SessionStart` hook `session-title` (Claude Code only)
 - `ponytail` upstream: `ponytail`, `ponytail-review`, `ponytail-audit`, `ponytail-debt`, `ponytail-gain`, `ponytail-help`
 - `emil` upstream: `emil-design-eng`, `animate`, `review-animations`, `improve-animations`, `prototype`, and 10 more (Claude Code only)
