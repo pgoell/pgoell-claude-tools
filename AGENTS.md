@@ -46,8 +46,7 @@ plugins/
       <service>/
         SKILL.md            # Shared skill definition, used by Claude Code, Codex and Cursor
         engine/             # Optional shipped code driven by exact commands (diagrams only)
-        themes/             # Optional: diagram themes (creating-diagrams only); contract in
-                            #   themes/README.md. User-local: .pgoell/diagrams/themes/.
+        themes/             # Optional: diagram themes (creating-diagrams); see themes/README.md
         <reference>.md      # Flat reference doc (legacy layout)
         references/         # Subdirectory layout (preferred for new skills)
           <reference>.md
@@ -147,7 +146,7 @@ User docs live in `docs/`, a Diátaxis tree in Open Knowledge Format v0.2. Read 
 
 ### Repository conventions ([repo-conventions](docs/explanation/repo-conventions.md))
 
-- **Skills are self-contained.** A SKILL.md holds everything the agent needs to use the service, except reference docs it links to. A skill reads nothing above its plugin's `skills/` folder (a sibling skill's files are fine); presentations' plugin-level `presets/` is the one known exception (#399). The `deprecated` and `issue-loop` skills set `metadata: {internal: true}` in their frontmatter; a new archived or Claude-Code-only skill does the same.
+- **Skills are self-contained.** A SKILL.md holds everything the agent needs to use the service, except reference docs it links to. It reads nothing above its plugin's `skills/` folder (siblings are fine; presentations `presets/` excepted, #399). Archived and Claude-Code-only skills set `metadata.internal: true`.
 - **Skill invocation syntax in docs is `/<plugin>:<skill>`, not `/<marketplace>:<skill>`.** Always use the fully qualified form (`/atlassian:jira`); never teach the short `/<skill>` form. `pgoell-claude-tools` appears only in `/plugin install <plugin>@pgoell-claude-tools` and `codex plugin marketplace add pgoell/pgoell-claude-tools`. Audit: `grep -rnE '/pgoell-claude-tools:[a-z]' README.md docs/` must print nothing; `grep -rnE '/(atlassian|google-workspace|research|writing|runtime-bridge|agent-system-management|terminal|playground|databricks|learning|critique|presentations|diagrams|news|insights|structure|issue-loop|ponytail|emil|vercel|taste-skill|unslop|deprecated):' docs/` should match each plugin whose skills the doc names. Keep that list to the plugins with skills in `.claude-plugin/marketplace.json`.
 - **Em-dash lint and instruction text.** U+2014 and U+2013 are forbidden in every file: skills, `references/*.html`, vendored CSS and JS, root docs. In markdown, name them by codepoint, never as literals. Repo-wide check: `grep -rnP '[\x{2014}\x{2013}]' plugins/ README.md AGENTS.md`. It is not empty: 6 older tracked files (google-workspace recipes, the archived `visualizing-options` in `deprecated`, the frozen using-superpowers snapshot) are accepted debt, plus gitignored databricks research notes. So gate on changed files: `git diff <base>..HEAD --name-only | xargs grep -nP '[\x{2014}\x{2013}]'` must print nothing, and `README.md` and `AGENTS.md` stay clean. HTML body copy may use `&mdash;`, `&#8212;`, `&ndash;`, `&#8211;`. CSS and JS comments have no escape: substitute the character at port time.
 - **SKILL.md frontmatter `description:` must not contain a colon-space unless the whole value is quoted.** Frontmatter must be strict YAML; an unquoted colon-space fails with `mapping values are not allowed here`. Rephrase (`Examples:` becomes `For example`) or quote the whole value. Validate by hand: feed the frontmatter to `uv run --with pyyaml python3 -c 'import yaml,sys; yaml.safe_load(sys.stdin)'`.
