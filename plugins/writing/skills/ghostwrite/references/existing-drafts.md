@@ -62,7 +62,7 @@ Then check the result against the draft once: every protected item kept its forc
 **Deliver in the first reply.** A rewrite request for text already in hand needs no interview and no outline. Give:
 
 1. the rewrite, with gaps marked `[owner: ...]`;
-2. a note of two to four lines on what changed and why. Mention something you left alone only where the owner would expect a change there. Do not defend each kept word. Check every line of the note against the two texts before you send it: a count ("cut two words"), a "kept", an "unchanged". If a cause went from stated to implied, or a hedge moved, the note says so;
+2. a note of two to four lines on what changed and why. Mention something you left alone only where the owner would expect a change there. Do not defend each kept word. Say what kind of change you made, and give no counts of words, sentences, or paragraphs: they come out wrong. Check every "kept" and "unchanged" against the two texts before you send it. If a cause went from stated to implied, or a hedge moved, the note says so;
 3. at most three questions, only where an answer would let you improve a marked gap.
 
 For a file, write only the finished prose to it, keep code, data, frontmatter, and link targets as they are, and put the note in the reply.
@@ -92,5 +92,7 @@ Rules for the findings:
 - Run `tells.md` as your lens, but phrase passes 1 to 3 as questions, since you cannot see the sources.
 - Do not supply the missing fact in a suggestion, and check your suggestion for the fault you named.
 - A few findings that matter beat a long list of watched words.
+- The house punctuation rule governs prose you write. It is not a finding on the owner's draft unless they ask for it.
+- Locate a passage by quoting it, never by counting ("the fourth paragraph").
 
 Write the review in plain words for the owner. Do not name passes, steps, or routes, do not list the checks that found nothing, and do not offer the optional reviewers unless the owner asks for a deeper review.
