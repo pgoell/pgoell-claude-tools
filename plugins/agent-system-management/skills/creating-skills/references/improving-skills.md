@@ -12,4 +12,4 @@ Read this when you turn the user's feedback and the run transcripts into a revis
 
 5. **Micro-test contested wording.** When you're unsure whether a line earns its place, test the wording itself before a full rerun: fresh-context single-shot reps against a no-guidance control, and if the control doesn't exhibit the failure, delete the line instead of authoring guidance. `references/bulletproofing.md` has the full protocol, plus the interrogation script for when an agent violates a rule despite having the skill.
 
-This task is pretty important (we are trying to create billions a year in economic value here!) and your thinking time is not the blocker; take your time and really mull things over. I'd suggest writing a draft revision and then looking at it anew and making improvements. Really do your best to get into the head of the user and understand what they want and need.
+Write a draft revision and then looking at it anew and making improvements. Really do your best to get into the head of the user and understand what they want and need.

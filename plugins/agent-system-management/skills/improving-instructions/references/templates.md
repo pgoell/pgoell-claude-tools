@@ -33,17 +33,16 @@ Document the essential commands for working with the project.
 
 Describe the project structure so Claude understands where things live.
 
-```markdown
+````markdown
 ## Architecture
-```
 
+```
 <root>/
-
-<dir>/    # <purpose>
   <dir>/    # <purpose>
-  <dir>/    # <purpose>
+    <dir>/    # <purpose>
+    <dir>/    # <purpose>
 ```
-```
+````
 
 ### Key Files
 
@@ -123,7 +122,7 @@ Document development workflow patterns.
 
 ## Template: Project Root (Minimal)
 
-```markdown
+````markdown
 # <Project Name>
 
 <One-line description>
@@ -135,34 +134,34 @@ Document development workflow patterns.
 | `<command>` | <description> |
 
 ## Architecture
-```
 
+```
 <structure>
 ```
 
 ## Gotchas
 
 - <gotcha>
-
 ````
+
 ---
 
 ## Template: Project Root (Comprehensive)
 
-```markdown
+````markdown
 # <Project Name>
 
 <One-line description>
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
+| Command     | Description   |
+| ----------- | ------------- |
 | `<command>` | <description> |
 
 ## Architecture
-````
 
+```
 <structure with descriptions>
 ```
 
@@ -185,25 +184,25 @@ Document development workflow patterns.
 ## Gotchas
 
 - <gotcha>
-
 ````
+
 ---
 
 ## Template: Package/Module
 
 For packages within a monorepo or distinct modules.
 
-```markdown
+````markdown
 # <Package Name>
 
 <Purpose of this package>
 
 ## Usage
-````
-
-<import/usage example>
 
 ```
+<import/usage example>
+```
+
 ## Key Exports
 
 - `<export>` - <purpose>
@@ -215,7 +214,7 @@ For packages within a monorepo or distinct modules.
 ## Notes
 
 - <important note>
-```
+````
 
 ---
 

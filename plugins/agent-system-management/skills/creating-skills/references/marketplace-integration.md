@@ -62,7 +62,14 @@ if [ -n "${PLUGIN_DIR:-}" ]; then
 fi
 
 if command -v gtimeout &>/dev/null; then _to="gtimeout 60"; elif command -v timeout &>/dev/null; then _to="timeout 60"; else _to=""; fi
-$_to claude -p "$PROMPT" $plugin_flag --verbose --output-format stream-json > "$LOG_FILE" 2>&1 || true
+# EFFORT: pass the session's effort, so the test matches real use.
+status=0
+$_to claude -p "$PROMPT" $plugin_flag --effort "${EFFORT:-medium}" --verbose --output-format stream-json > "$LOG_FILE" 2>&1 || status=$?
+if [ "$status" -eq 124 ]; then
+    # A timeout is no answer: neither a trigger nor a quiet pass.
+    echo "  [SKIP] Claude did not answer within 60 seconds"
+    exit 2
+fi
 
 SKILL_PATTERN="\"skill\":\"([^\"]*:)?${EXPECTED_SKILL}\""
 if grep -qE "$SKILL_PATTERN" "$LOG_FILE"; then
@@ -81,7 +88,7 @@ else
 fi
 ```
 
-The grep pattern matches both bare and plugin-namespaced skill names (`"skill":"creating-skills"` and `"skill":"claude-setup:creating-skills"`). Trigger tests cost tens of seconds each, so wire them into PR checks, not per-commit hooks.
+The grep pattern matches both bare and plugin-namespaced skill names (`"skill":"creating-skills"` and `"skill":"agent-system-management:creating-skills"`). Exit code 2 means Claude did not answer in time: rerun that test, and count it as neither pass nor fail. Trigger tests cost tens of seconds each, so wire them into PR checks, not per-commit hooks.
 
 ## Commit conventions
 

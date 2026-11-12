@@ -28,7 +28,7 @@ An academic prompt ("what does the skill say?") only makes the agent recite the 
 - **Force a concrete choice.** Offer explicit options spanning full compliance at a cost, the tempting violation, and a partial middle, then end with "Choose A, B, or C." Use specific times, real file paths, actual consequences, and "What do you do?", never "What should you do?".
 - **No easy outs.** The agent must not be able to defer ("I'd ask the user") without picking an option.
 - **Frame it as real work.** Prefix with "This is a real scenario. Choose and act." An agent that detects a quiz performs compliance instead of revealing its behavior.
-- **A compliant baseline means an under-pressured scenario.** If the agent follows the rule with no skill loaded, the scenario tests nothing: stack another pressure and rerun before concluding the rule is obvious.
+- **A compliant baseline is a result.** If the agent follows the rule with no skill loaded under the three stacked pressures above, and those pressures could happen in real use, stop: the model already follows the rule. State the rule once with its reason. Add a further pressure only to match a failure someone saw in real work.
 
 ## Plugging loopholes
 
@@ -89,11 +89,11 @@ The skill is bulletproof when, under maximum stacked pressure, the agent chooses
 
 LLMs respond to the same compliance principles as humans; in a 28,000-conversation study, persuasion techniques more than doubled compliance (33% to 72%). Sources: Cialdini, _Influence_ (2021); Meincke et al., "Call Me A Jerk: Persuading AI to Comply with Objectionable Requests" (2025). Match the register to the skill type:
 
-| Skill type           | Use                                                                                                                           | Avoid               |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| Discipline-enforcing | Authority ("No exceptions"), commitment (announce the skill, forced choices), social proof ("X without Y fails. Every time.") | Liking, reciprocity |
-| Guidance / technique | Moderate authority, unity ("we")                                                                                              | Heavy authority     |
-| Collaborative        | Unity, commitment                                                                                                             | Authority, liking   |
-| Pure reference       | Clarity only                                                                                                                  | All persuasion      |
+| Skill type           | Use                                                                                                                                                                                                        | Avoid               |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| Discipline-enforcing | Authority ("No exceptions" only for a rule that has none; write a real exception as its own conditional), commitment (announce the skill, forced choices), social proof ("X without Y fails. Every time.") | Liking, reciprocity |
+| Guidance / technique | Moderate authority, unity ("we")                                                                                                                                                                           | Heavy authority     |
+| Collaborative        | Unity, commitment                                                                                                                                                                                          | Authority, liking   |
+| Pure reference       | Clarity only                                                                                                                                                                                               | All persuasion      |
 
 Phrase requirements as trigger-action pairs: "when X, do Y" executes near-automatically, while "generally do Y" requires the agent to notice applicability each time. Sequence-bound wording ("before proceeding", "immediately after X") prevents a step from being acknowledged, postponed, and dropped. Never use liking (flattery breeds sycophancy) and rarely reciprocity. One ethics gate: use a technique only if it would still serve the user's genuine interests were it fully transparent.
