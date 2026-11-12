@@ -51,9 +51,11 @@ no verdict, so the next run tries it again.
 
 1. **Read the decision.** `uv run "${CLAUDE_SKILL_DIR}/../digest/scripts/review.py" ARGS`
    prints `state`, `handled`, `kept`, `no`, `dropped`, `unsure`, `unmatched`
-   and `other`. Stop when `state` is `done`: every line has a verdict. Stop
-   when it is `proposed` and this run came from the digest; go on when the
-   user ran apply. `handled` lists problems an earlier run already settled;
+   and `other`. End this apply run for the date when `state` is `done`
+   (every line has a verdict), or when it is `proposed` and the digest called
+   you; go on when the user ran apply. When the digest called you, ending
+   here means going back to its next date or its step 3, not ending the
+   session. `handled` lists problems an earlier run already settled;
    leave them alone, so a partly applied note picks up where it stopped.
    `unmatched` lines carry an id that is not on the page and `unsure`
    problems may be what they meant: record nothing for either and list them
@@ -74,7 +76,11 @@ no verdict, so the next run tries it again.
      The worktree sits outside the repo, so the repo's `.gitignore` needs no
      entry. Make the change from the problem's `fix` in that worktree. Run the repo's own format, lint and test commands: the
      `mise run` tasks where a `mise.toml` exists (`mise tasks` lists them),
-     else what its instructions name. Commit (Conventional Commits, lowercase
+     else what its instructions name. If a check fails because of your change,
+     fix the change. If it also fails on the untouched default branch, open
+     the PR anyway and say so in its body. If you cannot tell which within a
+     few tries, write `not done: <the failing check>` in `## Done`, record no
+     verdict for the line, and go on. Commit (Conventional Commits, lowercase
      subject, no AI attribution of any kind), `git push -u origin fix/insights-<id>`,
      and `gh pr create` with a body that cites the problem: title, hits,
      evidence, and the page `<periodic>/06 Insights/<date>.html`. No
@@ -112,8 +118,10 @@ no verdict, so the next run tries it again.
    One line per line settled or tried this run, plus the answer to any
    question the user asked under it. Memory, not this section, decides what
    a later run skips.
-6. **Report**: PRs opened with URLs, todos and feedback lines added,
-   verdicts recorded by kind, lines not matched, anything not done and why.
+6. **Report**, when the user ran apply: PRs opened with URLs, todos and
+   feedback lines added, verdicts recorded by kind, lines not matched,
+   anything not done and why. When the digest called you, write no report
+   here: keep these facts for the digest's final report and go back to it.
 
 ## Platform mapping
 
@@ -127,9 +135,16 @@ no verdict, so the next run tries it again.
 - **`gh` not logged in or push refused**: leave the worktree, write
   `not done: <the error>` in `## Done`, record no verdict for that line, and
   go on with the rest.
-- **The branch exists already**: a PR for this id is open or was. Check with
-  `gh pr list --head fix/insights-<id> --state all`; link it as `pending` if
-  open, `applied` if merged, instead of opening a second.
+- **The branch exists already**: `worktree add -b` fails. Check
+  `gh pr list --head fix/insights-<id> --state all` and act on what it shows:
+  - an open PR: record `pending` with its URL;
+  - a merged PR: record `applied` with its URL;
+  - a PR closed unmerged: record `rejected` with "PR closed unmerged" as the
+    reason, and open no new one;
+  - no PR: an earlier run stopped before or at the push. Go on in the
+    worktree it left, or add one on the existing branch
+    (`git worktree add <path> fix/insights-<id>`, no `-b`), finish the change
+    and its checks, then push and open the PR as above.
 - **The fix no longer applies** (the file moved, the rule is there now):
   record `already-done` with what you checked as the reason.
 

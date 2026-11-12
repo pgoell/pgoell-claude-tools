@@ -141,11 +141,14 @@ Dispatched agent prompt:
     - `unresolved`: you could not tell, or the page no longer covers the
       claim. Give the reason.
 
-    Fetch each URL once. Never retry. A 404, timeout, paywall, moved or
-    changed page, a page that no longer has the passage, or a fetch-tool
-    refusal (reddit.com and web.archive.org are always refused) is
-    `unresolved` with that reason. Never stall the review on one URL; go on
-    to the next.
+    Fetch each URL once. Retry one time only after a timeout or a server
+    error (5xx). A 404, paywall, moved or changed page, or a page that no
+    longer has the passage is `unresolved` with that reason; do not retry
+    those. WebFetch always refuses reddit.com and web.archive.org: read
+    Reddit with curl from https://arctic-shift.photon-reddit.com/api/
+    (posts/search, comments/search) and archived pages with curl from
+    web.archive.org, as the researchers do. Treat the page as unread only if
+    curl fails too. Never stall the review on one URL; go on to the next.
 
     A `rejected` claim is a critical issue; an `unresolved` claim is minor.
     Give both the id `refetch-<claim-slug>` and keep it while the claim stays

@@ -12,6 +12,10 @@ which feedback means what, which stories matter, what is new, and the writing.
 
 This may run headless from cron (`claude -p`). Never stop to ask a question
 during an edition. Decide, and say what you decided in the final report.
+In a headless run a message with no tool call ends the run. The edition is
+done only after step 12: the page is rendered, remembered and linked. Until
+then, put any note in the same message as your next tool call, and send the
+report last.
 
 ## Arguments
 
@@ -42,7 +46,8 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
    afterwards; this edition already follows the new config.
 4. **Gather.** Read `references/gathering.md`. Start one gatherer per section
    with the section brief from that file, all at once. Each gatherer returns
-   candidates as JSON. The weather comes later from `weather.py`.
+   candidates as JSON and a `failed:` line; log each failed domain as
+   Self-Healing says. The weather comes later from `weather.py`.
 5. **Select and dedupe.** Per section, keep up to `max_stories`:
    - Drop a candidate that an earlier edition already ran (same URL, or the
      same event by entities and key facts in `recent.py` output) unless it
@@ -84,10 +89,14 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
 7. **Assemble** `NP/<date>.json` per `references/edition-contract.md`: `title`
    and `tagline` from design.yaml, `date_display` in German ("Mittwoch, 7.
    Oktober 2026"), `number` and `previous` from step 1, sections in config
-   order (skip a section with no stories; keep 4 to 20) with `local: true` on
+   order (skip a section with no stories and no briefs; at most 20; with
+   fewer than four, build the paper with what there is and say so in the
+   report) with `local: true` on
    a section whose topics.yaml entry has it, `weather: null` unless you have
    something better than a forecast, and `feedback_hint` as
-   `Feedback: <periodic>/05 Newspaper/feedback.md`. Keep a candidate's
+   `Feedback: <periodic>/05 Newspaper/feedback.md`. A section that has only
+   briefs (a depth-1 section, or one whose stories were all cut) stays in
+   with `stories: []`, so its briefs keep their section. Keep a candidate's
    `bracket` on its story. Then
    `uv run "${CLAUDE_SKILL_DIR}/scripts/weather.py" ARGS` fills a null
    `weather` from Open-Meteo for topics.yaml's `weather` place (one request,
@@ -116,7 +125,9 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
      two hold, rewrite the facts and summary from that text; when the text
      gives fewer than two facts for the story, swap the lead as above.
 9. **Validate.** `uv run "${CLAUDE_SKILL_DIR}/scripts/validate.py" "NP/<date>.json" --memory "NP/memory/stories.jsonl"`.
-   Fix every error and run it again until it reports 0 errors. A repeated URL
+   Fix every error and run it again until it reports 0 errors. If an error
+   is still there after two fixes, drop the story it names, run it again, and
+   say so in the report. A repeated URL
    means drop the story or make it a real follow-up. It also fails on a
    `published` day before the section's `freshness_days` window or after the
    edition date: take the date from the article's own meta or text, or drop
