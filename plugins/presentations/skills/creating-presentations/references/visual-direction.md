@@ -40,7 +40,7 @@ Pick the deck's most important content slide (the one carrying the governing ide
 ## 3. Choose
 
 - **Interactive:** show the sheet and the specs, and let the user pick (or mix: "Ledger colors with the Route map layout").
-- **Autonomous:** compare two at a time with the pairwise prompt in `review-loop.md` (fresh subagent, two calls with the order swapped). Start with the quiet direction as the incumbent; a challenger replaces it only when both calls pick the challenger. A tie keeps the incumbent. Criteria: fits the subject and audience in the deck brief, passes the palette-swap test, reads well at a glance (S8, S10), and the accent does one job (V2). Report which direction won and why.
+- **Autonomous:** compare two at a time with the pairwise prompt in `review-loop.md` (fresh subagent, two calls with the order swapped). Each challenger costs two subagents; tell the user the count in one line, then go on. Start with the quiet direction as the incumbent; a challenger replaces it only when both calls pick the challenger. A tie keeps the incumbent. Criteria: fits the subject and audience in the deck brief, passes the palette-swap test, reads well at a glance (S8, S10), and the accent does one job (V2). Report which direction won and why.
 
 ## 4. Lock the tokens
 

@@ -20,6 +20,8 @@ A critic that shares the author's context shares the author's framing, and agree
 | Full (default) | 8 core frames, plus any conditional frame whose trigger holds | Any request without "quick"         |
 | Quick          | pre-mortem, steelman-opponent, outside-view                   | The user says quick, fast, or short |
 
+Cost: full mode starts 9 to 13 subagents (the frames plus one synthesis), quick mode 4. Before you dispatch, tell the user the count in one line and that "quick" gets the small run, then go on without waiting.
+
 Frame texts, triggers, the brief template, and the synthesis prompt are in `references/frames.md`. Read it before step 1 and send its texts verbatim.
 
 ## Protocol

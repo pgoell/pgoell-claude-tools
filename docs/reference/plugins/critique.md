@@ -26,7 +26,9 @@ One skill that critiques an idea, plan, decision, claim or situation from severa
 
 | Mode           | Frames                                                                                                                                                                                                                                                   | Subagents |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| Full (default) | Eight core frames (pre-mortem, steelman opponent, outside view, steelman proponent, second-order effects, incentives, alternatives, assumption audit), plus conditional frames such as Chesterton's fence and a Fermi estimate when their trigger holds. | 9 or more |
+| Full (default) | Eight core frames (pre-mortem, steelman opponent, outside view, steelman proponent, second-order effects, incentives, alternatives, assumption audit), plus conditional frames such as Chesterton's fence and a Fermi estimate when their trigger holds. | 9 to 13   |
 | Quick          | Pre-mortem, steelman opponent, outside view. Say "quick", "fast" or "short".                                                                                                                                                                             | 4         |
+
+Before it sends any subagent, the skill tells you the count in one line and that "quick" gets the small run, then goes on without waiting.
 
 The frame texts, triggers, brief template and synthesis prompt live in `plugins/critique/skills/critiquing-ideas/references/frames.md`.
