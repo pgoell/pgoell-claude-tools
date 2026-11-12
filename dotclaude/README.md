@@ -8,6 +8,6 @@ Link the file into place:
 ln -sf ~/Code/pgoell-claude-tools/dotclaude/CLAUDE.md ~/.claude/CLAUDE.md
 ```
 
-This repo is public, so private or machine-local sections (work accounts, hosts, credentials paths) go in `~/.claude/CLAUDE.private.md`. `CLAUDE.md` imports that file on its last line, and it stays out of git.
+This repo is public, so private sections (work accounts, hosts, credentials paths) go in `~/.claude/CLAUDE.private.md`. `CLAUDE.md` imports that file on its last line, and it stays out of git.
 
 Hooks do not belong here. Put them in the [`guards`](../plugins/guards/) plugin.
