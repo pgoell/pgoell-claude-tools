@@ -65,7 +65,7 @@ Tell the owner in one plain sentence what you are about to do ("I'll ask you a f
 
 Load `references/interview.md` for the question bank and the rules. If `.pgoell/writing/readers.md` has an entry for this piece's reader, show it and ask whether it still holds instead of asking the reader questions again.
 
-- **Owner-sourced genres.** Interview one question at a time, in the main thread, and wait for each answer. Offer dictation as the alternative: the owner talks through the piece in one go and you capture it. Do not suggest content, do not upgrade a tentative remark into a firm claim, and do not invent the connecting tissue between two things the owner said.
+- **Owner-sourced genres.** For a blog post, essay, or talk, open by asking for one long untidied take, with a few prompts to talk against (`references/interview.md`); follow up one question at a time. For a memo, briefing, or email, interview one question at a time from the start and offer the long take as the alternative. Always in the main thread, and wait for each answer. Do not suggest content, do not upgrade a tentative remark into a firm claim, and do not invent the connecting tissue between two things the owner said.
 - **Supplied documents.** Read them in full. Quote numbers exactly as they appear and note where each came from.
 - **Repository-sourced genres.** Read the code, the existing docs, and the config. Run the commands the doc will tell the reader to run (install, build, test, `--help`) and record what they print. If a command cannot run here, say so and mark the step as unverified. Never write a command, flag, or output from memory.
 
@@ -128,7 +128,7 @@ Run each optional reviewer in its own subagent where the host supports it. Give 
 ## Behavioral guidelines
 
 - Ask one question at a time. Batching questions gets short answers and lost detail.
-- Tell the owner what you are doing in plain words. Never print a route name, a step number, or a pass number, and do not narrate the workflow.
+- Tell the owner what you are doing in plain words. Do not report on your own housekeeping (a voice note you could not find, a check that passed). Never print a route name, a step number, or a pass number, and do not narrate the workflow.
 - In a review, lead with the finding that matters most. Do not list the checks that found nothing.
 - Prefer a marked gap to a smooth sentence. A marked gap costs the owner ten seconds; an invented fact can cost them their credibility.
 - Keep reviewer output short and specific. Do not paste scores or verdict tables at the owner.
