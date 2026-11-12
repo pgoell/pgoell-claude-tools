@@ -2,7 +2,7 @@
 
 This audit runs inline in the main session before the critic personas dispatch in Phase 5. Checks A to E are form checks: each states what to look for, how to look for it (grep pattern, YAML parse rule), and which slide types are exempt. Checks F to K are written-output checks: each one writes its working into `audit-report.md` (a retelling, a table, a sequence) before it judges. The written output is the point; a check that only answers "pass" is self-grading, and same-model self-grading is weak.
 
-Every violation is recorded in `audit-report.md` under `### Heuristic findings`, one numbered item per violation. The host agent then fixes each violation in place or surfaces it to the user when the fix needs judgement. Only after the heuristic audit settles does the host agent dispatch the three critic personas (see `critic-prompts.md`).
+Every violation is recorded in `audit-report.md` under `### Heuristic findings`, one numbered item per violation. The host agent then fixes each violation in place or surfaces it to the user when the fix needs judgement. In audit mode the deck is the user's: record each fix as a suggestion and leave `deck.md` unchanged, unless the user asked for fixes. Only after the heuristic audit settles does the host agent dispatch the three critic personas (see `critic-prompts.md`).
 
 ## Check A: Headline is a sentence, not a topic noun
 

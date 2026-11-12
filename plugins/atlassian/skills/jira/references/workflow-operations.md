@@ -70,6 +70,8 @@ acli jira workitem link create --inward-key KEY-123 --outward-key KEY-456 --type
 
 ## Bulk Operations
 
+First run the same JQL as a search and compare the count and keys with the request. If the set is what the user asked for, run the bulk command without asking. If it is larger than expected, show the list and ask; with nobody there to ask, skip it and report the list.
+
 **acli** (transition all matching issues at once):
 
 ```bash

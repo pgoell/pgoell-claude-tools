@@ -20,7 +20,7 @@ The deck is done when fresh reviewers can no longer find anything that survives 
 
 ## The constitution
 
-The constitution is `deck-standards.md` next to the deck HTML. If it does not exist, copy the bundled default from `references/deck-standards-default.md` there, tell the user, and invite them to edit it; the copy, not the bundled file, is what judges receive. The active preset's `guidelines.md` and `language.md` join the constitution when present. Before round 1, fill the constitution's deck brief (audience, goal, time budget, constraints); ask the user if you cannot infer it. The loop edits the deck, so commit or stash first; one commit per round keeps every round diffable.
+The constitution is `deck-standards.md` next to the deck HTML. If it does not exist, copy the bundled default from `references/deck-standards-default.md` there, tell the user, and invite them to edit it; the copy, not the bundled file, is what judges receive. The active preset's `guidelines.md` and `language.md` join the constitution when present. Before round 1, fill the constitution's deck brief (audience, goal, time budget, constraints); ask the user if you cannot infer it. The loop edits the deck. When the deck sits in a git repository, commit the deck's own files before round 1 and once after each round, so every round is diffable. Commit only the deck files you changed; leave `.deck-review/` and any other uncommitted work alone, and do not stash. With no repository, copy the deck HTML and CSS into `.deck-review/round-<R>/before/`.
 
 ## One round
 

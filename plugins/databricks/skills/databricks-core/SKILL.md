@@ -16,12 +16,15 @@ Core skill for Databricks CLI, authentication, and data exploration.
 
 ## Profile Selection - CRITICAL
 
-**NEVER auto-select a profile.**
+Do not pick among several profiles on your own: a wrong pick runs commands against the wrong workspace.
 
-1. List profiles: `databricks auth profiles`
-2. Present ALL profiles to user with workspace URLs
-3. Let user choose (even if only one exists)
-4. Offer to create new profile if needed
+1. Use the profile the user named in this request or chose earlier in this session, and say which one you use.
+2. Otherwise list profiles: `databricks auth profiles`
+3. If exactly one exists, use it and say so.
+4. If several exist, list them with their workspace URLs and ask once.
+5. Offer to create a new profile if needed.
+
+Run read-only commands (list, get, discover-schema, SELECT) without asking. Ask before `bundle deploy` or `bundle run` to a target the user did not name, and before SQL that writes, alters or drops.
 
 ## Claude Code - IMPORTANT
 

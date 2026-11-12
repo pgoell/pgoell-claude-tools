@@ -6,13 +6,13 @@ ADF is required for curl write operations (create issue descriptions, add commen
 
 ## Create Issue
 
-**Before creating a user story, task, or research/design ticket, ask the user:**
+**Before creating a user story, task, or research/design ticket, ask the user once per session, and only when they gave neither a template nor the ticket's structure:**
 
 > Do you have a ticket template or writing guide you'd like me to follow (e.g., a team standard for Description + Acceptance Criteria)?
 >
 > If not, I can use the default template in `ticket-template.md`. It structures Context, Deliverable, Scope, Stakeholders, Timebox, References, and Acceptance Criteria checkboxes.
 
-If the user has their own template, follow it. If they opt into the default (or don't have one), read `ticket-template.md` in this folder and structure the `--summary`, `--description`, and acceptance criteria fields according to it. For trivial bug reports or quick one-line tasks, skip the prompt unless the user explicitly asks for a structured ticket.
+If the user has their own template, follow it. If they opt into the default (or don't have one), read `ticket-template.md` in this folder and structure the `--summary`, `--description`, and acceptance criteria fields according to it. For trivial bug reports or quick one-line tasks, skip the prompt unless the user explicitly asks for a structured ticket. If nobody is there to answer, use the default template and say so.
 
 **curl** (requires ADF body for description, see `adf-format.md` in this folder):
 

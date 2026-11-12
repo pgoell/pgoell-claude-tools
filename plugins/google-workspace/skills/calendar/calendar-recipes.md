@@ -82,11 +82,11 @@ gws calendar events insert --params '{"calendarId": "primary"}' --json '{
 
 Common RRULE patterns:
 
-- `RRULE:FREQ=DAILY` — every day
-- `RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR` — Mon/Wed/Fri
-- `RRULE:FREQ=MONTHLY;BYMONTHDAY=1` — first of every month
-- `RRULE:FREQ=WEEKLY;COUNT=10` — weekly for 10 occurrences
-- `RRULE:FREQ=WEEKLY;UNTIL=20261231T000000Z` — weekly until end of year
+- `RRULE:FREQ=DAILY`: every day
+- `RRULE:FREQ=WEEKLY;BYDAY=MO,WE,FR`: Mon/Wed/Fri
+- `RRULE:FREQ=MONTHLY;BYMONTHDAY=1`: first of every month
+- `RRULE:FREQ=WEEKLY;COUNT=10`: weekly for 10 occurrences
+- `RRULE:FREQ=WEEKLY;UNTIL=20261231T000000Z`: weekly until end of year
 
 ## All-Day Events
 
@@ -108,8 +108,10 @@ Note: end date is exclusive (March 21 means the event covers only March 20).
 # Change title
 gws calendar events patch --params '{"calendarId": "primary", "eventId": "<id>"}' --json '{"summary": "New Title"}'
 
-# Add attendee
-gws calendar events patch --params '{"calendarId": "primary", "eventId": "<id>"}' --json '{"attendees": [{"email": "new@example.com"}]}'
+# Add attendee: patch replaces the whole attendees array, so read the
+# current list first and send it back with the new guest added
+gws calendar events get --params '{"calendarId": "primary", "eventId": "<id>"}'
+gws calendar events patch --params '{"calendarId": "primary", "eventId": "<id>"}' --json '{"attendees": [{"email": "existing@example.com"}, {"email": "new@example.com"}]}'
 
 # Change time
 gws calendar events patch --params '{"calendarId": "primary", "eventId": "<id>"}' --json '{"start": {"dateTime": "2026-03-19T10:00:00-04:00"}, "end": {"dateTime": "2026-03-19T11:00:00-04:00"}}'
