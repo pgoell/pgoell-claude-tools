@@ -91,10 +91,10 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `critique` 0.1.6: `critiquing-ideas`
 - `presentations` 0.8.6: `designing-presentations`, `building-pptx-decks`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
 - `diagrams` 0.1.5: `creating-diagrams`
-- `news` 0.11.5: `edition`, `feedback`, `tune`
-- `insights` 0.7.6: `digest`, `apply`, `activity`
+- `news` 0.11.6: `edition`, `feedback`, `tune`
+- `insights` 0.7.7: `digest`, `apply`, `activity`
 - `structure` 0.2.18: `setting-up-the-checks`, `setting-up-import-boundaries`
-- `issue-loop` 0.13.18: `running-the-loop`, `handing-over` (Claude Code only)
+- `issue-loop` 0.13.19: `running-the-loop`, `handing-over` (Claude Code only)
 - `prose-styles` 0.1.1: no skills; output styles `orwell`, `concise`, `ste`, `house` (Claude Code only)
 - `guards` 0.2.0: no skills; `PreToolUse` hooks `pkill-self-match`, `rev-parse-short-multi` (Claude Code only)
 - `session-title` 0.1.0: no skills; `SessionStart` hook `session-title` (Claude Code only)
