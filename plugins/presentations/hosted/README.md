@@ -74,4 +74,5 @@ files the session reads from disk.
 - A branch checked out in a worktree outside the repo folder is listed and cannot be opened: the container mounts the repo folder only.
 - The container renders screenshots with the fonts it has. A deck that relies on a font installed on the host shows a fallback there.
 - `bridge.py` starts Claude on `DECK_MODEL` at `DECK_EFFORT` (default `opus` and `medium`; set them in the workflow's `env` to change), and in your default permission mode. A session already running in the worktree keeps its own model and effort.
+- The workflow hands over only issues by the repo's owner, members and collaborators (`author_association`). An issue by anyone else gets no run.
 - A new session in a folder Claude does not trust yet stops at the trust question, and the prompt is lost. Trust the repo folder once by hand.

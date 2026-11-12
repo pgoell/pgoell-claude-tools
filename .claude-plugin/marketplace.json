@@ -8,19 +8,19 @@
       "name": "atlassian",
       "source": "./plugins/atlassian",
       "description": "Use Jira and Confluence from agent workflows.",
-      "version": "2.0.8"
+      "version": "2.0.9"
     },
     {
       "name": "google-workspace",
       "source": "./plugins/google-workspace",
       "description": "Use Gmail and Calendar through gws.",
-      "version": "1.0.3"
+      "version": "1.0.4"
     },
     {
       "name": "research",
       "source": "./plugins/research",
       "description": "Research complex topics and produce sourced reports.",
-      "version": "2.6.3"
+      "version": "2.6.4"
     },
     {
       "name": "writing",
@@ -68,13 +68,13 @@
       "name": "critique",
       "source": "./plugins/critique",
       "description": "Critique ideas, plans, and decisions through independent thinking frames, one fresh subagent each, with verdicts shown word for word and one decision.",
-      "version": "0.1.3"
+      "version": "0.1.4"
     },
     {
       "name": "presentations",
       "source": "./plugins/presentations",
       "description": "Presentation lifecycle skills: content design, native PowerPoint decks from brand presets or client templates, HTML decks with a perfecting loop, a local deck editor, PPTX export of HTML decks, and preset extraction.",
-      "version": "0.8.2"
+      "version": "0.8.3"
     },
     {
       "name": "diagrams",
@@ -86,19 +86,19 @@
       "name": "news",
       "source": "./plugins/news",
       "description": "Build a personal daily newspaper in a kasten vault, linked from the daily note, shaped by your feedback.",
-      "version": "0.11.3"
+      "version": "0.11.4"
     },
     {
       "name": "insights",
       "source": "./plugins/insights",
       "description": "Find what went wrong in yesterday's Claude Code sessions and newspaper runs, with one concrete fix per problem on a page in a kasten vault.",
-      "version": "0.7.4"
+      "version": "0.7.5"
     },
     {
       "name": "issue-loop",
       "source": "./plugins/issue-loop",
       "description": "Run an unattended build loop: one orchestrator session drives one implementer session through a repo's GitHub issues, one merged and deployed PR per task, with a gate between tasks.",
-      "version": "0.13.16"
+      "version": "0.13.17"
     },
     {
       "name": "prose-styles",

@@ -11,12 +11,17 @@
 # HELD, exit 0, in place of GATE PASS: the held PR is open with auto-merge on and
 # no check that fails or runs, and its issues may stay open. The HELD line is
 # read where wait.sh reads the DONE line: task.notified and the screen.
+# Issues and PRs by an author outside trusted_authors (lib.sh) print as
+# "not trusted: unread": their title and body are never shown or checked.
 # Needs: gh (logged in), git, jq, curl, GNU date.
 . "$(dirname "$0")/lib.sh"
 start=$(cat "$S/task.start")
 cd "$REPO" || exit 2
 bad=0
 no() { echo "FAIL $*"; bad=1; }
+who=$(trusted_authors) || no "cannot resolve the trusted authors: set TRUSTED_AUTHORS in loop.env"
+in=$(trusted_jq $who)
+trusted() { case " $who " in *" $1 "*) return 0 ;; esac; return 1; }
 held=0 nheld=0
 { head -1 "$S/task.notified" 2>/dev/null; screen_tail "$IMPL" 40; } | grep -qE '^\s*HELD ' && held=1
 for n in "$@"; do
@@ -29,6 +34,8 @@ done
 # A HELD line may name a PR older than the task, when the task only fixed it.
 named=$({ head -1 "$S/task.notified" 2>/dev/null; screen_tail "$IMPL" 40; } | grep -E '^\s*HELD ' | grep -oE '#[0-9]+' | tr -d '#' | while read -r m; do gh pr view "$m" --json number -q .number 2>/dev/null; done)
 for p in $({ gh pr list --state all --search "created:>=$start" --json number -q '.[].number'; echo "$named"; } | sort -un); do
+  author=$(gh pr view "$p" --json author -q .author.login)
+  trusted "$author" || { echo "PR $p by $author, not trusted: unread"; continue; }
   state=$(gh pr view "$p" --json state -q .state)
   echo "PR $p $state $(gh pr view "$p" --json title -q .title)"
   if [ $held = 1 ] && [ "$state" = OPEN ]; then
@@ -71,7 +78,7 @@ if [ -n "$ALIVE_URL" ]; then
   curl -fsS -o /dev/null "$ALIVE_URL" || no "live app does not answer"
 fi
 echo "issues opened since start:"
-gh issue list --state all --limit 50 --search "created:>=$start" --json number,title,labels -q '.[]|"  #\(.number) [\([.labels[].name]|join(","))] \(.title)"'
+gh issue list --state all --limit 50 --search "created:>=$start" --json number,title,labels,author -q ".[] | if .author.login | IN(${in:-\"\"}) then \"  #\(.number) [\([.labels[].name] | join(\",\"))] \(.title)\" else \"  #\(.number) by \(.author.login), not trusted: unread\" end"
 echo "minutes: $((($(date +%s) - $(date -d "$start" +%s)) / 60))"
 # The orchestrator cannot see its own context size: read it from the newest
 # transcript of a session started in this folder. It never fails the gate.
