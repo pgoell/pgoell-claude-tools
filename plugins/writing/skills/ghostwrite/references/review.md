@@ -1,6 +1,6 @@
 # Review: one round, reported to the owner
 
-One round of notes on the draft. Every reviewer reports; none rewrites. The owner reads the notes and decides what to change.
+One round of notes on a draft you wrote in this session. Every reviewer reports; none rewrites. The owner reads the notes and decides what to change. For a draft the owner brings and asks you to review, use `existing-drafts.md` instead.
 
 Why no automatic redraft: model judges agree poorly with expert readers on prose, favor model-written text, and model revision pushes every writer's voice the same way even when told not to. The owner is the only reliable signal.
 
@@ -46,4 +46,4 @@ Compare the fresh reader's one-sentence summary with the owner's throughline and
 
 ## Presenting the notes
 
-Show the tell check first, then the voice check, then each reviewer's points under its name, unchanged. Then ask: "Which of these do you want to act on?" Apply only what the owner picks, in the way the owner describes. If the owner asks you to decide, give your recommendation and still wait for a yes.
+Open with one or two sentences on the finding that matters most across all the notes. Then show the tell check, the voice check, and each reviewer's points under its name, unchanged. Leave out any check that found nothing. Then ask: "Which of these do you want to act on?" Apply only what the owner picks, in the way the owner describes. If the owner asks you to decide, give your recommendation and still wait for a yes.

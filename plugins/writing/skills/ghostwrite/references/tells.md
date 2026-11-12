@@ -86,6 +86,6 @@ Anything under Avoid in the voice note, and any tell the owner has asked you to 
 
 ## Reporting
 
-List findings in draft order: the quoted line, the pass it falls under, and one sentence on what is missing or added. No severity labels, no scores. Report at most ten; if there are more, say how many and show the ten that carry the most weight, passes 1 to 3 first.
+List the finding that matters most first, then the rest in draft order: the quoted line, the kind of problem in plain words ("states a cause you only suspected", never "Pass 2"), and one sentence on what is missing or added. No severity labels, no scores. Do not mention a pass that found nothing. Report at most ten; if there are more, say how many and show the ten that carry the most weight, passes 1 to 3 first.
 
 No single finding proves the piece reads as generated. When the owner confirms a tell they want caught every time, add it to the voice note's Avoid list.

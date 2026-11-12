@@ -1,0 +1,60 @@
+writing
+Copyright 2026 Pascal Göllner
+
+This plugin contains files from Addy Osmani's Clarity writing skill,
+licensed under the MIT License.
+
+Upstream: https://github.com/addyosmani/clarity
+  commit e27ceeff60368cf6966b4ea00a5b9b36418ee9a0 at time of port
+  (skill version 0.2.1)
+  MIT License, Copyright (c) 2026 Addy Osmani
+
+Vendored verbatim (upstream path to local path):
+
+  - evals/JUDGE.md    to judge/JUDGE.md
+  - evals/cases.json  to judge/cases.json
+
+Neither file held an em-dash or en-dash, so no dash substitution was
+applied. dprint may reformat them; the content is unchanged.
+
+Adapted from upstream, in this repository's own words (no upstream text
+is copied; the ideas are credited in README.md):
+
+  - skills/ghostwrite/references/existing-drafts.md
+      (the rewrite and review routes, the order of work, the two sentence
+      tests, the medium table, the review calls; after upstream's
+      references/edit.md, references/review.md and references/medium.md)
+  - skills/ghostwrite/references/interview.md
+      (the section "When a draft already exists" and the note on prior
+      writing; after upstream's references/interview.md)
+  - skills/ghostwrite/SKILL.md
+      (source text as data, samples give style and never facts, the
+      provenance lines at hand-back; after upstream's SKILL.md)
+
+Original MIT work, not from upstream:
+
+  - judge/compare.py and tests/run.sh
+  - every other file in this plugin
+
+The upstream test suite (scripts/validate_package.py) checks the upstream
+package layout and was not ported, so it has no result to record here.
+
+MIT License (upstream):
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

@@ -1,0 +1,3 @@
+# 2026-11-12: Update
+
+writing 3.2.0. `ghostwrite` now rewrites or reviews a draft you already have, where before it only drafted. A rewrite keeps every fact, hedge and attribution and marks what only the owner can supply; a review leads with its main finding and changes nothing. The skill no longer prints its own route, step or pass names. The plugin gained `judge/`, a blind comparison of writing skills that uses the cases and protocol of Addy Osmani's Clarity. Changed pages: [writing](/reference/plugins/writing.md), [skills](/reference/skills.md), [external and vendored plugins](/explanation/external-and-vendored-plugins.md).
