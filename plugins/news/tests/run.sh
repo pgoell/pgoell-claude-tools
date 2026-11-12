@@ -16,9 +16,13 @@ has() { if grep -qF -- "$3" <<<"$2"; then pass=$((pass + 1)); else fail=$((fail 
 V="$T/vault"
 DAY=$(TZ=Europe/Berlin date +%F)
 mkdir -p "$V" "$T/home/.local/bin"
-# the fake records its args and writes the page at $PAGE unless NO_PAGE is set
+# the fake records its args and writes the page at $PAGE unless NO_PAGE is set,
+# a memory line for the day unless NO_MEMORY is, and the daily-note link unless NO_LINK is
 printf '%s\n' '#!/bin/bash' 'printf "%s\n" "$@" >"$HOME/args"' 'echo "$SHELL" >"$HOME/shell"' \
-  '[ -n "${NO_PAGE:-}" ] || { mkdir -p "$(dirname "$PAGE")"; echo page >"$PAGE"; }' >"$T/home/.local/bin/claude"
+  'np=$(dirname "$PAGE"); day=$(basename "$PAGE" .html); per=$(basename "$(dirname "$np")")' \
+  '[ -n "${NO_PAGE:-}" ] || { mkdir -p "$np"; echo page >"$PAGE"; }' \
+  '[ -n "${NO_MEMORY:-}" ] || { mkdir -p "$np/memory"; echo "{\"date\": \"$day\"}" >>"$np/memory/stories.jsonl"; }' \
+  '[ -n "${NO_LINK:-}" ] || { mkdir -p "$np/../00 Daily"; echo "Zeitung: [[$per/05 Newspaper/$day.html]]" >>"$np/../00 Daily/$day.md"; }' >"$T/home/.local/bin/claude"
 chmod +x "$T/home/.local/bin/claude"
 cron() { env -u KASTEN_PERIODIC_PATH -u NEWS_PLUGIN_DIR -u NEWS_MODEL -u NEWS_EFFORT HOME="$T/home" NEWS_LOG_DIR="$T/log" "$@" "$here/../scripts/cron-edition.sh" "$V"; }
 
@@ -33,6 +37,13 @@ has "cron takes model and effort from the environment" "$(tr '\n' ' ' <"$T/home/
 cron SHELL=/bin/sh KASTEN_PERIODIC_PATH=P PAGE="$V/P/05 Newspaper/$DAY.html"; ok "cron hands claude bash" "$(cat "$T/home/shell")" /bin/bash
 rm "$V/P/05 Newspaper/"*.html
 cron KASTEN_PERIODIC_PATH=P PAGE="$V/P/05 Newspaper/$DAY.html" NO_PAGE=1; ok "cron exit with no page" $? 1
+echo old >"$V/P/05 Newspaper/$DAY.html"; touch -d '1 hour ago' "$V/P/05 Newspaper/$DAY.html"
+cron KASTEN_PERIODIC_PATH=P PAGE="$V/P/05 Newspaper/$DAY.html" NO_PAGE=1; ok "cron exit with an old page" $? 1
+rm -rf "$V/P"
+cron KASTEN_PERIODIC_PATH=P PAGE="$V/P/05 Newspaper/$DAY.html" NO_MEMORY=1; ok "cron exit with no memory line" $? 1
+rm -rf "$V/P"
+cron KASTEN_PERIODIC_PATH=P PAGE="$V/P/05 Newspaper/$DAY.html" NO_LINK=1; ok "cron exit with no link" $? 1
+has "cron logs the missing link" "$(cat "$T/log/$DAY.log")" "edition written but no link"
 # without the variable the wrapper looks in 01 Periodic
 cron PAGE="$V/01 Periodic/05 Newspaper/$DAY.html"; ok "cron exit in the default folder" $? 0
 has "cron passes the default folder" "$(cat "$T/home/args")" '--periodic "01 Periodic"'

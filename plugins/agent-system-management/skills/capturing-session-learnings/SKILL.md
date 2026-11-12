@@ -6,7 +6,7 @@ tools: Read, Glob, Grep, Bash, Edit
 
 # Agents.md Session Capture
 
-Review the current session for context that was missing and would have helped the host agent. Propose targeted additions to the right agent-instruction file by scope.
+Review the current session for context that was missing and would have helped the host agent. Propose targeted changes to the right agent-instruction file by scope: new lines, and old lines narrowed or removed.
 
 ## Platform Adaptation
 
@@ -28,7 +28,7 @@ What context was missing during this session that would have helped the host age
 - Code style patterns followed
 - Testing approaches that worked
 - Environment / configuration quirks
-- Warnings or gotchas encountered
+- Warnings or gotchas encountered (one failure is not a standing rule unless it repeats or the user asks for one)
 - Tool preferences (e.g. "always use ripgrep over grep here")
 
 ## Step 2: Discover candidate files
@@ -63,7 +63,9 @@ Decide where each addition belongs before drafting it:
 
 If a learning is generic enough to apply to other projects, route it to the user-global file rather than this project's AGENTS.md. Avoid duplication: if a rule already exists in the user-global file, don't restate it project-locally.
 
-## Step 4: Draft additions
+## Step 4: Draft changes
+
+Before drafting a line, search the target file for one on the same subject. If one exists, change it (narrow, widen or delete it) instead of adding a second line beside it.
 
 **Keep it concise**, one line per concept. Agent-instruction files are part of the prompt, so brevity matters.
 
@@ -75,11 +77,11 @@ Avoid:
 - Obvious information
 - One-off fixes unlikely to recur
 
-When a learning takes the form of a prohibition, capture the reason or the preferred alternative in the same line. A bare "do not X" does not generalize to the next session; "prefer Y over X because Z" does.
+A caution says when it applies, what to do and why, in the same line. A bare "do not X" reads as absolute in every later session; "prefer Y over X when W, because Z" does not. Prefer "ask before X" or "do X unless Y" to "never X".
 
 ## Step 5: Show proposed changes
 
-For each addition:
+For each change:
 
 ````markdown
 ### Update: ./AGENTS.md
@@ -87,7 +89,8 @@ For each addition:
 **Why:** [one-line reason]
 
 ```diff
-+ [the addition; keep it brief]
+- [the old line, when you change or delete one]
++ [the new line; keep it brief]
 ```
 ````
 

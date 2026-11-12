@@ -71,6 +71,7 @@
 - Commands work as documented
 - File references accurate
 - Tech stack current
+- Cautions still have a reason that holds
 
 **10 points**: Mostly current, minor staleness
 

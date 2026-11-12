@@ -41,7 +41,8 @@ Read `memory/problems.jsonl` (one line per fingerprint) and
   `verdict_date` is `doc`: the fix went out and did not hold. Count only the
   `series` days after that date; hits on or before it say nothing about the
   fix. Propose a stronger fix (a hook instead of a sentence), never the same
-  one again.
+  one again. A hook that replaces a sentence removes that sentence in the
+  same change.
 - A fingerprint with verdict `pending` has a PR open (`ref`). Its fix has not
   gone out, so its hits never mean the fix failed. Keep its status from the
   rules below, say in `why` that the PR is open, and propose no new fix while
@@ -116,6 +117,10 @@ A repo exists when `git -C <path> rev-parse` succeeds; projects under `~/Code`
 are named after their folder. Never propose writing to `~/.claude/projects/*/memory/`:
 it is input, not a destination.
 
-The fix is the exact text: the lines to add under the heading they belong to,
-the hook's core, the command. Keep instruction lines short; long instruction
-files lower adherence. A hook must let through what it does not recognise.
+The fix is the exact text: the lines to add, change or remove under the
+heading they belong to, the hook's core, the command. Keep instruction files
+short, but never cut a rule's scope or reason to save words: a generated rule
+says where it applies and why. Prefer "ask before X" or "do X unless Y" to a
+bare "never X", which later sessions read as absolute. When a rule or guard
+stopped real work, the fix narrows or deletes it; never add a second rule to
+work around the first. A hook must let through what it does not recognise.

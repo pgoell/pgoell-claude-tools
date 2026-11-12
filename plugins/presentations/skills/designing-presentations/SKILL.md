@@ -24,6 +24,8 @@ Nothing to install, no services, no rendering: the skill reads its own `referenc
 
 Five phases, each writing its own artifact to the working directory. File presence determines state: a phase is complete iff its artifact file exists and is non-empty. The user may resume at any later phase if the upstream artifacts are present.
 
+**With no user reachable**, no question stops the run: a resume takes the next phase, a missing artifact's phase runs first, the Phase 5 gate marks the deck ready with known issues and lists the open CRITICAL findings atop `audit-report.md`.
+
 Working directory: a `<topic-slug>/` directory under the current project unless the user names one. The built deck later lives in the same directory, so design artifacts and deck stay together. The topic slug comes from the user's intake (Phase 1) and is kebab-cased.
 
 ### Step 1: Intake
@@ -157,11 +159,11 @@ Format: **markdown only**. There is no HTML output mode for this skill; renderin
 
 - **Missing prerequisite artifact on phase jump.** If the user invokes Phase 4 and `storyboard.md` is missing, ask whether to (a) run Phase 3 first, (b) accept a degraded run where Phase 4 reads the message architecture directly without a storyboard, or (c) cancel.
 - **Audit mode against a deck without YAML front-matter.** Real-world `deck.md` inputs are usually prose-outline markdown (one `## Slide N: <title>` per slide with bullet body) rather than the skill's per-slide YAML schema. When the input lacks the YAML schema, audit mode runs in **advisory mode**: the heuristic audit walks each check against the visible content as best it can (treating slide headings as `headline` values, bullets as implied body, and flagging the absence of every other required key as a structural finding), and the critic personas are **not** dispatched because they need the structural fields to operate reliably. The audit-report's "Recommended next steps" then prominently recommends reformatting the deck into the schema before a full Phase 5 dispatch. If the input _is_ in YAML schema but has missing required keys per slide, that is a true malformation: the heuristic audit reports the missing keys and stops before dispatching critics. The user fixes the structure and re-runs.
-- **Critic gate fails twice.** Present remaining CRITICAL findings to the user; ask whether to mark ready with known issues, pause, or cancel.
+- **Critic gate fails twice.** See the Phase 5 gate.
 - **Slide count band breached deliberately.** The audit checklist flags the breach; if the user accepts (for example a deliberately dense training deck), record the override in `audit-report.md` under a "User overrides" heading so reviewers can see the deviation is intentional.
 - **Governing-idea sentence too long.** If the Phase 1 governing idea is longer than 20 words, ask the user to shorten before proceeding; long governing ideas almost always indicate the audience or scope is muddled.
 - **Genre mismatch.** If genre and length combine implausibly (for example a 5-minute training session), surface the mismatch at Phase 1 and ask whether the user meant a pitch or a quick demo.
-- **Dash discipline.** This skill body, its references, and every artifact it writes contain no U+2014 (em-dash) or U+2013 (en-dash) characters; the deck builders' lint enforces the same rule, so copy written here survives the build unchanged.
+- **Dash discipline.** This skill, its references and every artifact it writes contain no U+2014 or U+2013 dashes; the deck builders' lint enforces the same rule, so copy written here survives the build.
 
 ## Key Principles
 
