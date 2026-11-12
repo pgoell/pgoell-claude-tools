@@ -49,7 +49,7 @@ for f in check-file-size check-fan-out structure-hook; do
 done
 ```
 
-The repo carries its own copies because CI and fresh clones cannot see the plugin's install path. The hook calls the two checks from its own folder, so keep all three together. On a rerun this step is the update. Never touch an existing `.file-size-excludes`, `.fan-out-excludes` or `.fan-out-baseline`; they belong to the repo. If a script of that name exists but is another tool's, stop and ask before you overwrite it.
+The repo carries its own copies because CI and fresh clones cannot see the plugin's install path. The hook calls the two checks from its own folder, so keep all three together. On a rerun this step is the update. This step never overwrites or resets an existing `.file-size-excludes`, `.fan-out-excludes` or `.fan-out-baseline`; they belong to the repo. Steps 3 and 4 change them only as the user chooses. If a script of that name exists but is another tool's, stop and ask before you overwrite it.
 
 ## Step 3: File size offenders
 

@@ -93,7 +93,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `diagrams` 0.1.4: `creating-diagrams`
 - `news` 0.11.4: `edition`, `feedback`, `tune`
 - `insights` 0.7.6: `digest`, `apply`, `activity`
-- `structure` 0.2.16: `setting-up-the-checks`, `setting-up-import-boundaries`
+- `structure` 0.2.17: `setting-up-the-checks`, `setting-up-import-boundaries`
 - `issue-loop` 0.13.18: `running-the-loop`, `handing-over` (Claude Code only)
 - `prose-styles` 0.1.1: no skills; output styles `orwell`, `concise`, `ste`, `house` (Claude Code only)
 - `guards` 0.2.0: no skills; `PreToolUse` hooks `pkill-self-match`, `rev-parse-short-multi` (Claude Code only)
