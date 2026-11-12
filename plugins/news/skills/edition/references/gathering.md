@@ -60,7 +60,7 @@ Section: <name> (id <id>). Edition date: <YYYY-MM-DD>. Window: stories published
 on or after <edition date minus freshness_days>.
 Queries: <queries>. Sources to check first: <sources with notes>.
 Exclude: <exclude>, plus the reader's avoid list: <avoid>. Weigh: <interests>.
-Never fetch these domains: <blocked_sources>.
+Skip these domains, which refused scripted fetches: <blocked_sources>.
 Already reported (do not return these unless something new happened):
 <recent.py output for this section>
 

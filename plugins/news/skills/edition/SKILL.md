@@ -155,9 +155,11 @@ Cursor: gather with one `Task` call per section, several `Task` calls in one mes
   would drift.
 - **A source returns 401, 403, 429 or times out**: move on to the next source
   or to secondary coverage. Do not retry more than once. Append each failed
-  domain to `NP/memory/source-failures.md` as `- <date> <domain> <code>`. If the
-  file holds the domain from the previous edition, add it to `blocked_sources`
-  and log it in the changelog.
+  domain to `NP/memory/source-failures.md` as `- <date> <domain> <code>`. Block
+  a domain only when it refused (401, 403 or 429) in this edition and in the
+  previous one; a timeout never blocks. Add it to `blocked_sources` as
+  `- <domain> # <date>, refused <code> twice` and log it in the changelog. The
+  reader can unblock it with `/news:tune sources`.
 - **A section comes up empty**: leave it out of this edition and say so. Never
   pad it with old stories.
 - **validate.py fails on a follow-up href**: the earlier story id is not in
@@ -170,4 +172,6 @@ Cursor: gather with one `Task` call per section, several `Task` calls in one mes
 - Never invent a story, a quote, a date or an image. Every story has a URL you
   fetched in this run.
 - Never write to the vault outside `NP` and the one daily note.
-- Config in the vault is the reader's. Change it only through feedback items.
+- Config in the vault is the reader's. Change it only through feedback items,
+  with one exception: the `blocked_sources` line Self-Healing adds after two
+  refusals.
