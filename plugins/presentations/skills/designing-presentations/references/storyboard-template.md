@@ -51,7 +51,7 @@ If the audience brief names a S.T.A.R. moment, give it its own slide and record 
 
 ## Title-only read-through
 
-Read only the chosen headlines, in order, and write three sentences a listener would use to retell the deck: situation, complication, resolution. Then one line: does the resolution sentence state the governing idea? Show this section, with the assumptions below, to the user before Phase 4.
+Read only the chosen headlines, in order, and write three sentences a listener would use to retell the deck: situation, complication, resolution. Then one line: does the resolution sentence state the governing idea? Show this section, with the assumptions below, to the user before Phase 4. Wait for an answer only when an assumed field is the decision or the strongest objection; otherwise go on. Unattended, list the assumptions in the final report.
 
 **Assumptions:** list every `(assumed)` field from the audience brief, the decision and strongest objection first. Write "none" if none.
 
