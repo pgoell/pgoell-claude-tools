@@ -31,14 +31,14 @@ rm "$STUB/start_status"
 
 # models: the implementer's model for the session named IMPL, the orchestrator's for the rest
 models=$(cat "$L/models.env")
-sed -i -e 's/^CLAUDE_ORCH_MODEL=.*/CLAUDE_ORCH_MODEL=orch-m/' -e 's/^CLAUDE_IMPL_MODEL=.*/CLAUDE_IMPL_MODEL=impl-m/' -e 's/^CLAUDE_ADVISOR_MODEL=.*/CLAUDE_ADVISOR_MODEL=adv-m/' "$L/models.env"
+sed -i -e 's/^CLAUDE_ORCH_MODEL=.*/CLAUDE_ORCH_MODEL=orch-m/' -e 's/^CLAUDE_IMPL_MODEL=.*/CLAUDE_IMPL_MODEL=impl-m/' -e 's/^CLAUDE_ADVISOR_MODEL=.*/CLAUDE_ADVISOR_MODEL=adv-m/' -e 's/^CLAUDE_ORCH_EFFORT=.*/CLAUDE_ORCH_EFFORT=orch-e/' -e 's/^CLAUDE_IMPL_EFFORT=.*/CLAUDE_IMPL_EFFORT=impl-e/' "$L/models.env"
 "$L/start.sh" orch2 "$L" "o" "$T/msg" >/dev/null 2>&1
-ok "start passes the orchestrator model" "$(cat "$STUB/start_models")" "orch-m|adv-m"
+ok "start passes the orchestrator model" "$(cat "$STUB/start_models")" "orch-m|adv-m|orch-e"
 "$L/start.sh" impl "$L" "i" "$T/msg" >/dev/null 2>&1
-ok "start passes the implementer model" "$(cat "$STUB/start_models")" "impl-m|adv-m"
+ok "start passes the implementer model" "$(cat "$STUB/start_models")" "impl-m|adv-m|impl-e"
 sed -i 's/^CLAUDE_ADVISOR_MODEL=.*/CLAUDE_ADVISOR_MODEL=/' "$L/models.env"
 "$L/start.sh" orch2 "$L" "o" "$T/msg" >/dev/null 2>&1
-ok "an empty advisor model passes no flag" "$(cat "$STUB/start_models")" "orch-m|"
+ok "an empty advisor model passes no flag" "$(cat "$STUB/start_models")" "orch-m||orch-e"
 printf '%s\n' "$models" >"$L/models.env"
 
 # IMPL_ENV_FILE: the implementer's own credentials, for its session only

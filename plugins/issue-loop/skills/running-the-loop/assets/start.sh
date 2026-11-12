@@ -10,6 +10,7 @@
 # The model comes from models.env: the implementer's model for the session
 # named IMPL in loop.env, the orchestrator's model for any other. The advisor
 # model goes in with --advisor for this session; an empty value passes no flag.
+# The effort comes from models.env the same way, by role; empty passes no flag.
 # IMPL_ENV_FILE in loop.env, when set, names a file of KEY=value lines (such
 # as GH_TOKEN for a bot account) that the driver loads into the implementer's
 # shell before claude starts: the implementer's environment only, never this
@@ -22,6 +23,7 @@ has_models || exit 3
 [ "$1" = "$IMPL" ] && role=IMPL || role=ORCH
 SESSION_MODEL=$(model $role)
 ADVISOR_MODEL=$(model ADVISOR)
+SESSION_EFFORT=$(effort $role)
 SESSION_ENV_FILE=
 if [ $role = IMPL ] && [ -n "${IMPL_ENV_FILE:-}" ]; then
   f=$(realpath -e "$IMPL_ENV_FILE" 2>/dev/null) && [ -f "$f" ] || { echo "IMPL_ENV_FILE $IMPL_ENV_FILE in loop.env is no file" >&2; exit 3; }

@@ -6,6 +6,8 @@ ISSUE_NUMBER, ISSUE_URL, ISSUE_BODY and DECK_REPO_PATH in the environment. A
 Claude session already running in the issue's worktree gets the prompt;
 otherwise herdr opens a workspace on the worktree and starts one. Claude must
 already trust the worktree's folder, or the new session stops at that question.
+A new session runs on DECK_MODEL at DECK_EFFORT (default opus, medium), so a
+change to the interactive default does not change it; a running one keeps its own.
 """
 import json
 import os
@@ -41,7 +43,8 @@ if not tree.is_relative_to(repo) or not (tree / ".git").exists():
 pane = next((a["pane_id"] for a in herdr("agent", "list")["agents"] if a["agent"] == "claude" and Path(a["cwd"]) == tree), None)
 if not pane:
     pane = herdr("workspace", "create", "--cwd", str(tree), "--label", f"deck: {tree.name}", "--no-focus")["root_pane"]["pane_id"]
-    herdr("agent", "start", f"deck-feedback-{number}", "--kind", "claude", "--pane", pane)
+    herdr("agent", "start", f"deck-feedback-{number}", "--kind", "claude", "--pane", pane,
+          "--", "--model", os.environ.get("DECK_MODEL", "opus"), "--effort", os.environ.get("DECK_EFFORT", "medium"))
 
 herdr("agent", "prompt", pane,
       f"Deck feedback arrived as GitHub issue #{number} ({os.environ['ISSUE_URL']}) for `{deck}` in this worktree. "

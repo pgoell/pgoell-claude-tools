@@ -4,14 +4,14 @@
 test_models() {
 local models d hits bad
 models=$(cat "$L/models.env")
-d=$(. "$skill/assets/models.env"; echo "$HARNESS $CLAUDE_ORCH_MODEL $CLAUDE_IMPL_MODEL $CLAUDE_CODER_MODEL $CLAUDE_REVIEW_MODEL $CLAUDE_ADVISOR_MODEL $REVIEW_NOT")
-ok "models.env ships the issue's defaults" "$d" "CLAUDE opus opus haiku opus fable haiku"
+d=$(. "$skill/assets/models.env"; echo "$HARNESS $CLAUDE_ORCH_MODEL $CLAUDE_IMPL_MODEL $CLAUDE_CODER_MODEL $CLAUDE_REVIEW_MODEL $CLAUDE_ADVISOR_MODEL $REVIEW_NOT $CLAUDE_ORCH_EFFORT $CLAUDE_IMPL_EFFORT")
+ok "models.env ships the issue's defaults" "$d" "CLAUDE fable opus haiku opus fable haiku high medium"
 
 # a reason is a comment with "empty" above the value, in the same block
 bad=$(awk '
   /^$/ { reason = 0; next }
   /^#/ { if (/empty/) reason = 1; next }
-  /^CODEX_[A-Z]+_MODEL=/ { if ($0 !~ /=$/ || !reason) print $0 }
+  /^CODEX_[A-Z]+_(MODEL|EFFORT)=/ { if ($0 !~ /=$/ || !reason) print $0 }
 ' "$skill/assets/models.env")
 ok "every empty Codex value has a reason" "$bad" ""
 
@@ -75,18 +75,19 @@ chmod +x "$T/bin2/herdr"
 (
   PATH="$T/bin2:$PATH"; LOOP_SLEEP_SCALE=0; nap() { :; }
   . "$skill/assets/driver-herdr.sh"
-  SESSION_MODEL=m1 ADVISOR_MODEL=a1 PERMISSION_MODE=auto
+  SESSION_MODEL=m1 SESSION_EFFORT=e1 ADVISOR_MODEL=a1 PERMISSION_MODE=auto
   drv_start s1 "$T" lbl >/dev/null
 )
-has "herdr driver passes --model and --advisor" "$(cat "$T/herdr_args")" "--permission-mode auto --model m1 --advisor a1"
+has "herdr driver passes --model and --advisor" "$(cat "$T/herdr_args")" "--permission-mode auto --model m1 --effort e1 --advisor a1"
 (
   PATH="$T/bin2:$PATH"; LOOP_SLEEP_SCALE=0; nap() { :; }
   . "$skill/assets/driver-herdr.sh"
-  SESSION_MODEL= ADVISOR_MODEL= PERMISSION_MODE=auto
+  SESSION_MODEL= SESSION_EFFORT= ADVISOR_MODEL= PERMISSION_MODE=auto
   drv_start s1 "$T" lbl >/dev/null
 )
 args=$(cat "$T/herdr_args")
 ok "herdr driver passes no flag for empty models" "${args##*--permission-mode}" " auto"
 hasnt "no --model for an empty model" "$args" "--model"
+hasnt "no --effort for an empty effort" "$args" "--effort"
 hasnt "no --advisor for an empty advisor" "$args" "--advisor"
 }

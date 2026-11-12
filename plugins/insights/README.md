@@ -152,10 +152,13 @@ with `--dangerously-skip-permissions`, since nobody is there to answer a
 prompt. It logs to `~/.local/state/insights/<date>.log` (`INSIGHTS_LOG_DIR`
 changes that; `INSIGHTS_PLUGIN_DIR` loads the plugin from a working tree to
 test a change), and exits non-zero when claude fails or no page was written.
+It runs on `fable` at `high` (`INSIGHTS_MODEL` and `INSIGHTS_EFFORT` change
+them), so a change to the interactive default does not change the job.
 Cron uses the host's time zone; on a host not set to Europe/Berlin, add
 `CRON_TZ=Europe/Berlin` above the line.
 `cron-activity.sh` does the same for `/insights:activity`, also with
-permissions skipped, stops after 30 minutes, and logs to
+permissions skipped, on `opus` at `medium` (`INSIGHTS_ACTIVITY_MODEL` and
+`INSIGHTS_ACTIVITY_EFFORT`), stops after 30 minutes, and logs to
 `~/.local/state/insights/<date>-activity.log`. `KASTEN_PERIODIC_PATH` names
 the periodic folder for both wrappers (`01 Periodic` when unset); each passes
 it to its skill and looks for its page there.

@@ -27,9 +27,9 @@ drv_read() {
 }
 
 # Start a Claude Code session NAME in a new tab with working folder CWD and tab
-# label LABEL, in the permission mode from loop.env. It reads SESSION_MODEL and
-# ADVISOR_MODEL, which start.sh sets, and passes --model and --advisor only for
-# a value that is not empty. SESSION_ENV_FILE, when start.sh sets it, is a file
+# label LABEL, in the permission mode from loop.env. It reads SESSION_MODEL,
+# SESSION_EFFORT and ADVISOR_MODEL, which start.sh sets, and passes --model,
+# --effort and --advisor only for a value that is not empty. SESSION_ENV_FILE, when start.sh sets it, is a file
 # of KEY=value lines that the tab's shell loads before claude starts, so only
 # that session gets them; the path goes through the pane, never the values.
 # Print a handle that drv_read accepts (here: the pane id).
@@ -43,6 +43,6 @@ drv_start() {
     herdr pane run "$pane" "set -a; . $(printf %q "$SESSION_ENV_FILE"); set +a" >/dev/null || return 1
     nap 2
   fi
-  herdr agent start "$1" --kind claude --pane "$pane" -- --permission-mode "${PERMISSION_MODE:-bypassPermissions}" ${SESSION_MODEL:+--model "$SESSION_MODEL"} ${ADVISOR_MODEL:+--advisor "$ADVISOR_MODEL"} >/dev/null || return 1
+  herdr agent start "$1" --kind claude --pane "$pane" -- --permission-mode "${PERMISSION_MODE:-bypassPermissions}" ${SESSION_MODEL:+--model "$SESSION_MODEL"} ${SESSION_EFFORT:+--effort "$SESSION_EFFORT"} ${ADVISOR_MODEL:+--advisor "$ADVISOR_MODEL"} >/dev/null || return 1
   echo "$pane"
 }
