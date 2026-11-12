@@ -83,7 +83,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `research` 2.6.6: `research`, `running-research`
 - `writing` 3.1.7: `ghostwrite`, `coach`
 - `runtime-bridge` 0.2.0: `claude-codex-bridge`
-- `agent-system-management` 0.7.15: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
+- `agent-system-management` 0.7.16: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
 - `terminal` 0.1.3: `tmux`
 - `playground` 0.1.3: `playground`
 - `databricks` 0.3.4: `databricks-core`, `databricks-docs`

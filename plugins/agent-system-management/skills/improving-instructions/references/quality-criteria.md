@@ -116,5 +116,5 @@
 - Generic advice not specific to the project
 - "TODO" items never completed
 - Duplicate info across multiple CLAUDE.md files
-- Bare prohibitions: "do not X" rules with no stated reason and no preferred alternative. The agent cannot generalize from a ban alone; flag for rewrite as intent plus alternative. Keep the hard-ban form only where the action is destructive, irreversible, or security-sensitive.
+- Bare prohibitions: "do not X" rules with no stated reason and no preferred alternative. The agent cannot generalize from a ban alone; flag for rewrite as intent plus alternative. Keep the hard-ban form only where the action is destructive, irreversible, or security-sensitive. Where the owner wants the action done after a check, rewrite "never X" as "ask before X".
 - Constraint accretion: defensive rules guarding against failure modes nobody has observed recently. If neither the file nor the user can name the concrete failure a rule prevents, propose deleting it; a shorter file of reasons outperforms a longer file of bans.

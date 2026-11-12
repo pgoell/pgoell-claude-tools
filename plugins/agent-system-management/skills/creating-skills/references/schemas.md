@@ -203,7 +203,7 @@ Output from `scripts/aggregate_benchmark.py`. Located at `<skill>-workspace/iter
   "metadata": {
     "skill_name": "pdf",
     "skill_path": "/path/to/pdf",
-    "executor_model": "claude-sonnet-4-20250514",
+    "executor_model": "claude-opus-5-5",
     "analyzer_model": "most-capable-model",
     "timestamp": "2026-01-15T10:30:00Z",
     "evals_run": [1, 2, 3],

@@ -32,16 +32,20 @@ Sort each rule by how binding it is:
 
 Then sort each passage by content:
 
-| Content                                                    | Default                                                   |
-| ---------------------------------------------------------- | --------------------------------------------------------- |
-| Non-obvious domain constraint, or a fragile required order | Keep                                                      |
-| Useful optional expert advice                              | Condense, mark optional                                   |
-| General knowledge, ordinary engineering advice             | Delete                                                    |
-| Rule already enforced by system or repo instructions       | Delete                                                    |
-| Duplicate instruction or example                           | Keep the clearest one                                     |
-| Project- or incident-specific rule in a general skill      | Move or delete                                            |
-| Stale, unverifiable, or overclaimed fact                   | Verify, qualify, or delete                                |
-| Detail one variant needs                                   | Move to a reference the skill loads only for that variant |
+| Content                                                      | Default                                                   |
+| ------------------------------------------------------------ | --------------------------------------------------------- |
+| Non-obvious domain constraint, or a fragile required order   | Keep                                                      |
+| Useful optional expert advice                                | Condense, mark optional                                   |
+| General knowledge, ordinary engineering advice               | Delete                                                    |
+| Rule already enforced by system or repo instructions         | Delete                                                    |
+| Duplicate instruction or example                             | Keep the clearest one                                     |
+| Project- or incident-specific rule in a general skill        | Move or delete                                            |
+| Stale, unverifiable, or overclaimed fact                     | Verify, qualify, or delete                                |
+| Detail one variant needs                                     | Move to a reference the skill loads only for that variant |
+| Subagent use with no condition and no word on cost           | Flag and ask the user                                     |
+| Thinking order ("think hard", "answer without deliberating") | Flag and ask the user                                     |
+| Fixed word or sentence cap on prose                          | Flag and ask the user                                     |
+| Broad approval or stop rule ("ask before anything big")      | Flag and ask the user; propose the exact actions          |
 
 Record which row justified each material keep, move, or delete. Never dress up a house preference as a provider or tool requirement.
 

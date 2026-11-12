@@ -1,7 +1,6 @@
 ---
 name: improving-instructions
 description: Audit and improve AGENTS.md and CLAUDE.md files across project and user scopes. Use when the user wants an instruction file checked, scored or fixed, or wants an overlong AGENTS.md or CLAUDE.md cut down, trimmed or shortened. To save what was learned in this session, use capturing-session-learnings instead.
-tools: Read, Glob, Grep, Bash, Edit
 ---
 
 # Agents.md Improver
@@ -188,6 +187,10 @@ See [references/update-guidelines.md](references/update-guidelines.md) for full 
 8. **Duplicate rules**: same rule stated in both project and user-global file
 9. **Bare prohibitions**: "do not X" rules with no reason or alternative attached; propose restating as intent plus the preferred alternative
 10. **Constraint accretion**: defensive rules whose failure mode no longer occurs; propose deletion when nobody can name what the rule prevents
+11. **Standing delegation**: a line that tells the agent to use subagents with no condition and no word on cost; flag and ask the user
+12. **Thinking orders**: "think hard", "think step by step", "answer without deliberating"; flag and ask the user, since effort settings now do this job
+13. **Hard prose limits**: a fixed word or sentence cap; flag and ask the user whether the cap still serves every report it covers
+14. **Broad approval or stop rules**: "ask before anything big", "stop at the first error"; flag and ask the user, proposing the exact actions that need approval
 
 ## User Tips to Share
 

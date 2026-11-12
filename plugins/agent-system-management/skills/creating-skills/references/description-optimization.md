@@ -54,10 +54,11 @@ python -m scripts.run_loop \
   --skill-path <path-to-skill> \
   --model <model-id-powering-this-session> \
   --max-iterations 5 \
+  --timeout 90 \
   --verbose
 ```
 
-Use the model ID from your system prompt (the one powering the current session) so the triggering test matches what the user actually experiences.
+Use the model ID from your system prompt (the one powering the current session) so the triggering test matches what the user actually experiences. The scripts count a query that times out as "did not trigger", and at high effort the first tool call comes late, so keep `--timeout` at 90 seconds or more. If many queries fail at once, read the log for timeouts before you rewrite the description.
 
 While it runs, periodically tail the output to give the user updates on which iteration it's on and what the scores look like.
 
