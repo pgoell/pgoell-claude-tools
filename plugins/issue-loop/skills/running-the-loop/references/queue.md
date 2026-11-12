@@ -21,4 +21,4 @@ After a task that rebuilt a data path (how the product saves, loads or moves sto
 
 ## When you learn something
 
-When you learn something, change the brief: a fault you saw twice becomes a clause in the next task line, and a fault that will come again becomes a rule in `rules.local.md`. Tell the user when you add a rule.
+When you learn something, change the brief as `references/brief-rules.md` says: a slip seen once is named in the next task line; a slip seen twice, or a fault that reached live, becomes a rule in `rules.local.md`. Tell the user when you add a rule.

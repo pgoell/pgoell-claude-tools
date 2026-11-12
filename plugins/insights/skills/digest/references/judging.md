@@ -111,7 +111,9 @@ verified cause, or it becomes `Watch only` with the check that would settle it.
 | The newspaper's sources, sections or writing     | `05 Newspaper/feedback.md`                                     | Adds a feedback line |
 | The newspaper's code or cron wrapper             | `pgoell-claude-tools/plugins/news`                             | Opens a PR           |
 | Fading, or a cause you could not verify          | nothing yet                                                    | Watch only           |
-| Health, mood, money, people, client names        | nowhere: no card, no `seen` row                                |                      |
+| Health, mood, money, private life, client names  | nowhere: no card, no `seen` row                                |                      |
+
+That row is about substance: a problem that only names a person who did something (a commit author, a PR reviewer) still gets its card.
 
 A repo exists when `git -C <path> rev-parse` succeeds; projects under `~/Code`
 are named after their folder. Never propose writing to `~/.claude/projects/*/memory/`:

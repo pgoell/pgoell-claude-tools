@@ -45,4 +45,4 @@ Six designs ship, plus `plain`, the fallback when the configured design is missi
 
 ## Network
 
-Gathering uses the host's web search and fetch tools. The scripts make two requests of their own while an edition is built: the day's forecast from Open-Meteo (free, no key; `weather: null` in `topics.yaml` turns it off) and, for a section that lists `tables:`, league tables from sportschau.de.
+Gathering uses the host's web search and fetch tools. The scripts make three kinds of request of their own while an edition is built: the day's forecast from Open-Meteo (free, no key; `weather: null` in `topics.yaml` turns it off), for a section that lists `tables:`, league tables from sportschau.de, and the lead story's URL again, to check its facts.

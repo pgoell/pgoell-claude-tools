@@ -86,19 +86,19 @@
       "name": "news",
       "source": "./plugins/news",
       "description": "Build a personal daily newspaper in a kasten vault, linked from the daily note, shaped by your feedback.",
-      "version": "0.11.5"
+      "version": "0.11.6"
     },
     {
       "name": "insights",
       "source": "./plugins/insights",
       "description": "Find what went wrong in yesterday's Claude Code sessions and newspaper runs, with one concrete fix per problem on a page in a kasten vault.",
-      "version": "0.7.6"
+      "version": "0.7.7"
     },
     {
       "name": "issue-loop",
       "source": "./plugins/issue-loop",
       "description": "Run an unattended build loop: one orchestrator session drives one implementer session through a repo's GitHub issues, one merged and deployed PR per task, with a gate between tasks.",
-      "version": "0.13.18"
+      "version": "0.13.19"
     },
     {
       "name": "prose-styles",

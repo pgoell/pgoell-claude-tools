@@ -82,12 +82,13 @@ Each design lives in `skills/edition/designs/<name>/` as `template.html.j2`
 ## Network
 
 Gathering reads the web through `WebSearch`, `WebFetch` and `curl`, which is
-the job you ask for. The scripts make two requests of their own:
+the job you ask for. The scripts make three kinds of request of their own:
 `weather.py` asks Open-Meteo (free, no key) for the day's forecast at
 topics.yaml's `weather` point, and only while an edition is being built and
 its weather is still empty. Set `weather: null` in topics.yaml to turn it off.
 `tables.py` fetches the league tables a section lists under `tables:` from
-sportschau.de, also only while an edition is being built.
+sportschau.de, also only while an edition is being built. `refetch.py` fetches
+the lead story's URL again, so the edition can check the lead's facts.
 
 ## Setup
 
