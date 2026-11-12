@@ -10,7 +10,7 @@
 
 ### Orwell's rules (1946)
 
-Govern prose: docs, PR text, messages. Never touch code or technical terms; swap in everyday words only where precision survives. Review every prose output against these rules before delivering.
+Govern prose: docs, PR text, messages. Never touch code or technical terms; swap in everyday words only where precision survives. Review docs, PR text and final reports against these rules before delivering.
 
 1. Never use a metaphor, simile or other figure of speech which you are used to seeing in print.
 2. Never use a long word where a short one will do.
@@ -21,7 +21,7 @@ Govern prose: docs, PR text, messages. Never touch code or technical terms; swap
 
 ### Punctuation
 
-- Never use em-dashes (U+2014) or en-dashes (U+2013) in prose under any circumstance.
+- Never use em-dashes (U+2014) or en-dashes (U+2013) in prose you write. Text you quote from a file, a command or a person stays as it is.
 - Never use the interpunct / middle dot (·) as a separator (e.g., "Engineer · Acme"). Use a comma, "at", a line break, or rephrase ("Engineer at Acme").
 - Never use hyphens (-) as sentence punctuation (e.g., " - " standing in for a comma or dash mid-sentence).
 - Rewrite with commas, periods, colons, semicolons, parentheses, or by splitting into separate sentences.
@@ -67,9 +67,8 @@ One shared headless Chrome runs as the systemd user unit `chrome-devtools.servic
 - Page IDs are local to this session and change after a browser restart. Call `list_pages` again.
 - Close your page when the work is done.
 - For work that must not touch the shared logins, use `new_page` with `isolatedContext`.
-- Never kill Chrome and never remove `Singleton*` files. If a call returns "Could not connect to Chrome", check `systemctl --user status chrome-devtools.service` and tell the user. Restart (`systemctl --user restart chrome-devtools.service`) only when the user says so: a restart closes every session's pages. A timer restarts the unit every Sunday at 04:30.
+- Never kill Chrome and never remove `Singleton*` files. If a call returns "Could not connect to Chrome", check `systemctl --user status chrome-devtools.service`, say what it shows in your report, and carry on with the work that does not need the browser. Restart (`systemctl --user restart chrome-devtools.service`) only when the user says so: a restart closes every session's pages. A timer restarts the unit every Sunday at 04:30.
 - After a login, wait 35 seconds before any restart, so Chrome writes the cookie to disk.
-- A session started before 2026-10-09 still has the old plugin server and gets "The browser is already running for …chrome-profile". That session needs a restart; carry on without the browser until then.
 
 ## Subagents and workflows
 

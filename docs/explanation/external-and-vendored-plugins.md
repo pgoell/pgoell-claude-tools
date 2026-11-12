@@ -8,7 +8,7 @@ status: stable
 
 # External and vendored plugins
 
-The marketplace lists two kinds of plugin. Most live in this repository under `plugins/<name>/`. Four are only an entry in the marketplace file that points at someone else's repository.
+The marketplace lists two kinds of plugin. Most live in this repository under `plugins/<name>/`. Five are only an entry in the marketplace file that points at someone else's repository.
 
 ## Vendored plugins
 

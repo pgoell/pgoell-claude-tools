@@ -53,7 +53,7 @@ A markdown file that needs to talk about the characters names them by codepoint 
 
 Skill frontmatter must parse as strict YAML. An unquoted scalar holding a colon followed by a space (for example `description: Use when X. Examples: "..."`) reads as a nested mapping and fails with `mapping values are not allowed here`. Rephrase (`Examples:` becomes `For example`) or quote the whole value. Double quotes inside an unquoted value are fine as long as the value does not start with one.
 
-No automated check exists since 2026-07, so validate by hand: feed the frontmatter block to `python3 -c 'import yaml,sys; yaml.safe_load(sys.stdin)'`. The `learning:quizzing-a-topic` description hit this at its 0.1.0 add and was fixed by replacing `Examples:` with `For example`.
+No automated check exists since 2026-07, so validate by hand: feed the frontmatter block to `uv run --with pyyaml python3 -c 'import yaml,sys; yaml.safe_load(sys.stdin)'`. The `learning:quizzing-a-topic` description hit this at its 0.1.0 add and was fixed by replacing `Examples:` with `For example`.
 
 ## Lazy auth, never print secrets
 
