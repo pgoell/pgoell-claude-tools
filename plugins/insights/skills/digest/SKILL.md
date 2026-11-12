@@ -43,15 +43,20 @@ Below, `ARGS` stands for `--vault "<vault>" --periodic "<periodic>" --date <date
    step here, not the whole run. This is how a review done on the phone
    takes effect the next morning. A note still under `## Proposed` is never
    applied here: only the user's own `/insights:apply` treats it as kept.
-3. **Read feedback.** `IN/feedback.md` and `IN/memory/rules.md`. Turn each
-   bullet under `## Open` into a rule line at the end of `rules.md`
-   (`- D: the rule (from: the feedback, short)`) when it says something a
-   rule can use. A bullet that ends `(recorded: <verdict>)` came from apply,
+3. **Read feedback.** `IN/feedback.md` and `IN/memory/rules.md`. Turn a
+   bullet under `## Open` into a rule only when its words reach past one
+   problem; a verdict on one problem is not a rule. Write the rule at the end
+   of `rules.md` as
+   `- D: the rule; applies to <scope>[; until <condition>] (from: the feedback, short)`.
+   When a rule on the same subject exists, change that line instead of
+   adding one. A bullet that ends `(recorded: <verdict>)` came from apply,
    which recorded its verdict already: never record it again. Only a
    `no: #id reason` bullet the user wrote here by hand becomes a `rejected`
    verdict (step 9 records it). Move the bullet to the
    top of `## Applied` as `- D: <the words> -> <what changed>`. Follow every
-   rule in `rules.md` from here on.
+   rule in `rules.md` from here on, each within its scope. Note each rule
+   whose `until` has passed for the report; leave it in place for the user
+   to delete.
 4. **Extract.**
    `uv run "${CLAUDE_SKILL_DIR}/scripts/extract.py" --date D --private "<vault>" --out /tmp/insights-D.json`.
    It takes seconds and prints how many shapes it kept. Read the whole digest:
@@ -82,7 +87,7 @@ Below, `ARGS` stands for `--vault "<vault>" --periodic "<periodic>" --date <date
     beside the newspaper's `Zeitung:` line, once.
 11. **Report** in under ten lines: the page path, problems by status and
     group, which causes were verified, the PRs and todos from step 2, feedback
-    applied, skipped files, and any warning.
+    applied, rules whose `until` has passed, skipped files, and any warning.
 
 ## Platform mapping
 

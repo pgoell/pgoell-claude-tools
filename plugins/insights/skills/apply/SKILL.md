@@ -105,8 +105,8 @@ no verdict, so the next run tries it again.
 4. **Pass on the reasons.** Each `no` reason, each deferral and each `other`
    line goes under `## Open` in `IN/feedback.md` as
    `- <date> #<id>: <the words> (recorded: <verdict>)`; the next digest
-   turns them into rules and, seeing `recorded:`, does not record the
-   verdict again. Write a `no` line with no reason there only if it says
+   turns those whose words reach past one problem into rules and, seeing
+   `recorded:`, does not record the verdict again. Write a `no` line with no reason there only if it says
    something a rule could use.
 5. **Close the note.** Append to `IN/<date>.md`, under the existing `## Done`
    when there is one, else under a new one:
