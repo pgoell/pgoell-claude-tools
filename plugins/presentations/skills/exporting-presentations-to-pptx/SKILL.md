@@ -61,6 +61,10 @@ For a high-stakes client file, offer one reviewer subagent per slide, dispatched
 
 Reproduce the deck verbatim, with two exceptions: fix obvious typos and report each fix, and apply the preset's `language.md` (or the default preset's) to any text you must genuinely rewrite. Slide numbering, footer labels, and which slides carry no footer come from the HTML.
 
+## Hand over
+
+Write the message for someone who saw none of the checks. Start with the `.pptx` path. Then say which checks ran and their result (or that the layout went unchecked, and why), list every typo you fixed, and name each open difference in plain words with its slide number.
+
 ## Self-Healing
 
 - The probe returns nothing: the dump finished before fonts loaded; raise `--virtual-time-budget`, or serve the deck over HTTP and measure from there.

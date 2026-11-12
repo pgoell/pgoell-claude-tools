@@ -35,7 +35,7 @@ This governs prose only. Code, identifiers, CLI flags, config keys, and quoted o
 ## Sentences
 
 - One idea per sentence.
-- Maximum 20 words in an instruction. Maximum 25 in description.
+- Aim for 20 words or fewer in an instruction and 25 in description. Go over when a split would part a condition from its instruction.
 - Put the condition first. "If the checksum does not match, stop the import", not "Stop the import if the checksum does not match".
 - Never omit a word to make the sentence shorter. Clarity outranks length in this style.
 

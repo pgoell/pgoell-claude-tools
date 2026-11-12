@@ -112,7 +112,7 @@ google-chrome --headless --hide-scrollbars --window-size=1600,1200 --force-dark-
 
 ### 7. Report
 
-Briefly: the HTML path and JSON source path, diagram type, theme (and whether derived this session), validation summary (`9/9 showcase, 0 errors, 0 warnings`), artifact SHA-256, browser check result, visual review result, repair rounds used, and anything drawn from assumption rather than source. Never report success for a non-zero command or a review you did not do.
+Report in plain sentences, in this order: where the HTML is and what it shows; what you drew from assumption instead of source; which checks ran and their result (validation, browser check, visual review, repair rounds), and which you skipped; the theme (and whether you derived it this session) and the JSON source path. Give the SHA-256 only if the user asks. This report replaces the handoff block in `delivery-contract.md`. Never report success for a non-zero command or a review you did not do.
 
 ## More engine commands
 

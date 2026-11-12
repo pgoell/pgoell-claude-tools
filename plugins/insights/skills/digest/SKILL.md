@@ -80,7 +80,9 @@ Below, `ARGS` stands for `--vault "<vault>" --periodic "<periodic>" --date <date
     beside the newspaper's `Zeitung:` line, once.
 11. **Report** in under ten lines: the page path, problems by status and
     group, which causes were verified, the PRs and todos from step 2, feedback
-    applied, skipped files, and any warning.
+    applied, skipped files, and any warning. Write full sentences. Name a
+    status by its page label and a group by its heading; do not use this
+    skill's own words (shape, fingerprint, seen row) in the report.
 
 ## Platform mapping
 
