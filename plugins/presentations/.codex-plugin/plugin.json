@@ -1,6 +1,6 @@
 {
   "name": "presentations",
-  "version": "0.8.1",
+  "version": "0.8.5",
   "description": "Design and build slide decks as native PowerPoint or HTML, styled from brand presets",
   "author": { "name": "Pascal Göllner" },
   "license": "MIT",

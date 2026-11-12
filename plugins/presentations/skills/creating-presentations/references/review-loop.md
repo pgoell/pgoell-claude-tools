@@ -187,7 +187,7 @@ round R:
   done when dryRounds == 2, or round == cap (default 5, then report open items)
 ```
 
-Fix discipline: smallest change that resolves the citation, hard gates first, one commit per round so every round is diffable.
+Fix discipline: smallest change that resolves the citation, hard gates first, one commit per round so every round is diffable (only the deck files you changed, never `.deck-review/` or other uncommitted work; with no repository, copy the deck HTML and CSS into `.deck-review/round-<R>/before/`).
 
 ## Workflow script (one invocation per round)
 

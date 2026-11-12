@@ -5,7 +5,8 @@ Compact reference for READMEs, how-to guides, tutorials, reference pages, explan
 ## Sourcing rules
 
 - Read the code and the existing docs before writing anything. Quote names, flags, paths, and defaults exactly as the code has them.
-- Run every command the doc tells the reader to run, where the environment allows: install, build, test, the CLI's `--help`, the example itself. Paste real output, trimmed if long.
+- Run the commands the doc tells the reader to run that only read, build or test locally: a project-local install, build, test, the CLI's `--help`, the example itself. Paste real output, trimmed if long.
+- Ask the owner before a command that installs outside the project, deploys, deletes, migrates data, or calls a remote or paid service. If the owner says no, or nobody is there to ask, mark the step `[unverified: not run, changes state]`.
 - A command you could not run is marked `[unverified: <reason>]`. A value you could not find is `<unknown>`.
 - Rationale ("we chose X because") comes from the owner or an existing doc, never from you. Without a source, leave it out or mark `[owner: why X?]`.
 - PR descriptions: what changed comes from the diff and commit messages; how it was tested comes from commands you ran or the owner reported; why comes from the owner.

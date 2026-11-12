@@ -2,7 +2,7 @@
 
 Fill this in first, before any slide work. The audience brief constrains every other artifact (message architecture, storyboard, slide briefs) and prevents drift toward a deck that is technically correct but lands wrong for the room.
 
-The brief is short on purpose. Resist the urge to write a stakeholder dossier; keep each field to the minimum that disciplines later decisions. If a field is hard to answer, that is signal: it usually means the deck does not yet have a clear audience, a clear governing idea, or a clear ask. Stop and resolve the gap before moving to message architecture.
+The brief is short on purpose. Resist the urge to write a stakeholder dossier; keep each field to the minimum that disciplines later decisions. If a field is hard to answer, that is signal: it usually means the deck does not yet have a clear audience, a clear governing idea, or a clear ask. Resolve the gap before moving to message architecture: ask when a user is reachable; otherwise mark the field `(assumed)` as below and go on.
 
 ## Sourced or assumed
 

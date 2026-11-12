@@ -23,7 +23,8 @@ under the rules in `../edition/references/feedback-rules.md`; read it first.
    `mkdir -p /tmp/news-tune && cp "NP/config/topics.yaml" "NP/config/design.yaml" /tmp/news-tune/`.
 2. **Show the current shape** in a compact table: each section with depth,
    `max_stories`, `freshness_days`, query count and source names; then
-   `interests`, `avoid`, the design, title and tagline. Add what the last two
+   `interests`, `avoid`, `blocked_sources` with the date and reason of each,
+   the design, title and tagline. Add what the last two
    weeks of memory show (`uv run "${CLAUDE_SKILL_DIR}/../edition/scripts/recent.py" --vault "<vault>" --days 14`):
    stories per section, and sections that often came up empty.
 3. **Interview**, one question per message, multiple choice where it fits,
@@ -33,7 +34,8 @@ under the rules in `../edition/references/feedback-rules.md`; read it first.
    2. Depth and length per section (1 briefs, 2 short, 3 full) and
       `max_stories`.
    3. Sources: per section, which to add or drop; offer what the empty
-      sections suggest.
+      sections suggest. List the blocked domains and offer to unblock any
+      the reader wants tried again.
    4. Freshness: how old a story may be per section.
    5. Interests and avoid lists.
    6. Design: list the installed designs (`ls "${CLAUDE_SKILL_DIR}/../edition/designs/"`,

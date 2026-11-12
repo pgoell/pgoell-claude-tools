@@ -78,24 +78,24 @@ containers/dev/             # Podman-first dev container (run-dev, egress proxy,
 
 One line per plugin: name, version, skills. Descriptions live in `docs/reference/plugins/<name>.md`. `upstream` marks an external git-URL entry, which has no version.
 
-- `atlassian` 2.0.8: `jira`, `confluence`
-- `google-workspace` 1.0.3: `gmail`, `calendar`
-- `research` 2.6.2: `research`, `running-research`
-- `writing` 3.1.4: `ghostwrite`, `coach`
+- `atlassian` 2.0.10: `jira`, `confluence`
+- `google-workspace` 1.0.5: `gmail`, `calendar`
+- `research` 2.6.5: `research`, `running-research`
+- `writing` 3.1.7: `ghostwrite`, `coach`
 - `runtime-bridge` 0.2.0: `claude-codex-bridge`
-- `agent-system-management` 0.7.12: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
-- `terminal` 0.1.1: `tmux`
+- `agent-system-management` 0.7.14: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
+- `terminal` 0.1.3: `tmux`
 - `playground` 0.1.3: `playground`
-- `databricks` 0.3.3: `databricks-core`, `databricks-docs`
+- `databricks` 0.3.4: `databricks-core`, `databricks-docs`
 - `learning` 0.5.0: `quizzing-the-session`, `quizzing-a-topic`, `surveying-blind-spots`, `rebuilding-a-concept`, `practicing-a-topic`
-- `critique` 0.1.3: `critiquing-ideas`
-- `presentations` 0.8.1: `designing-presentations`, `building-pptx-decks`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
-- `diagrams` 0.1.3: `creating-diagrams`
-- `news` 0.11.1: `edition`, `feedback`, `tune`
-- `insights` 0.7.2: `digest`, `apply`, `activity`
+- `critique` 0.1.5: `critiquing-ideas`
+- `presentations` 0.8.5: `designing-presentations`, `building-pptx-decks`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
+- `diagrams` 0.1.4: `creating-diagrams`
+- `news` 0.11.4: `edition`, `feedback`, `tune`
+- `insights` 0.7.6: `digest`, `apply`, `activity`
 - `structure` 0.2.17: `setting-up-the-checks`, `setting-up-import-boundaries`
-- `issue-loop` 0.13.14: `running-the-loop`, `handing-over` (Claude Code only)
-- `prose-styles` 0.1.0: no skills; output styles `orwell`, `concise`, `ste`, `house` (Claude Code only)
+- `issue-loop` 0.13.18: `running-the-loop`, `handing-over` (Claude Code only)
+- `prose-styles` 0.1.1: no skills; output styles `orwell`, `concise`, `ste`, `house` (Claude Code only)
 - `guards` 0.2.0: no skills; `PreToolUse` hooks `pkill-self-match`, `rev-parse-short-multi` (Claude Code only)
 - `session-title` 0.1.0: no skills; `SessionStart` hook `session-title` (Claude Code only)
 - `ponytail` upstream: `ponytail`, `ponytail-review`, `ponytail-audit`, `ponytail-debt`, `ponytail-gain`, `ponytail-help`
@@ -130,7 +130,7 @@ User docs live in `docs/`, a Diátaxis tree in Open Knowledge Format v0.2. Read 
 - **Fan-out.** At most 7 entries per folder: `mise-tasks/check-fan-out` runs like file size, and on each edit. See [structure](docs/reference/plugins/structure.md).
 - Lefthook hooks run only where `lefthook install` ran (check `ls .git/hooks`; only sample files means nothing runs). So run `dprint fmt` on every markdown or JSON file you touched, plus the manual greps below, before committing.
 - Run `dprint check` bare from the repo root; a path argument makes it find no files.
-- PRs target `master` and merge as one squash commit; an agent stops once CI is green and leaves the merge to the owner. Branch names take a Conventional Commits type prefix (`feat/`, `fix/`, `docs/`, `chore/`, ...). Do not commit specs or plans. Run Python through `uv` (`uv run --with pyyaml python3 ...`), never bare `python`.
+- PRs target `master` and merge as one squash commit. An agent carries a change to an open PR without asking: branch, commit, push, open the PR, and fix CI. It stops once CI is green and leaves the merge to the owner. Branch names take a Conventional Commits type prefix (`feat/`, `fix/`, `docs/`, `chore/`, ...). Do not commit specs or plans. Run Python through `uv` (`uv run --with pyyaml python3 ...`), never bare `python`.
 - Nothing tests skill behavior; until evals (see `agent-system-management:creating-skills`) cover a skill, check it by hand. The manual greps (dash lint, frontmatter YAML, invocation syntax) are the only structural gates.
 
 ## Design Decisions

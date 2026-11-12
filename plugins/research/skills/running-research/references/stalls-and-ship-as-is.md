@@ -10,7 +10,7 @@ The review loops of `SKILL.md` send you here: the synthesis loop (Steps 5 and 6)
 
 ## The message
 
-Send all of this, then wait for the user's answer:
+Send all of this, then wait for the user's answer. Open with one plain sentence: "The synthesis review has stopped after round N and needs your choice" (or "The report review" for the writer loop), with "it found the same problems twice" at a stall. Then:
 
 - The open critical issue ids, each with one line on what is wrong, then any minor ids.
 - What you tried (which gap-fills or rewrites ran), and what closed since iteration 1. At a stall, say the last round closed none of these ids.
@@ -34,7 +34,7 @@ The cost line depends on the loop.
 
 Step 11 tells the user, in this order:
 
-1. Total iterations of each loop and the final paths (`report.html` and `report.md`; `report.md` alone for markdown or a failed render).
+1. Where the report is (`report.html` and `report.md`; `report.md` alone for markdown or a failed render) and its thesis in one sentence.
 2. Every critical issue left open, from the newest review of each loop. A loop ends with a critical issue only after a `ship as-is`, so this prints nothing on a clean run:
 
    ```bash
@@ -48,3 +48,6 @@ Step 11 tells the user, in this order:
 3. Any minor issues from those same reviews.
 4. Every claim or pillar `synthesis.md` labels `Confidence: low (refuted)`, and whether the check or the refetch contradicted it.
 5. Every claim still there in other words whose old text a check found wrong: listed `REFUTED` in `claim-checks.md`, or marked `rejected` in a `REFETCH:` block. Say: reworded, not checked again. Leave out a claim whose text now has a `confirmed` mark or an outcome other than `NOT-CHECKED`.
+6. Last, the number of review rounds each loop ran.
+
+Name each open issue by what is wrong in plain words; put its id in brackets after it.

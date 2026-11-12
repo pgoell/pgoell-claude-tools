@@ -40,6 +40,6 @@ The wrapper runs `claude -p "/news:edition --vault <vault> --periodic <periodic>
 ## Check it worked
 
 - The page `<vault>/<periodic>/05 Newspaper/<date>.html` exists, and the day's daily note links it.
-- The log is `~/.local/state/news/<date>.log` (`NEWS_LOG_DIR` moves it). The wrapper exits non-zero when claude fails or wrote no edition.
+- The log is `~/.local/state/news/<date>.log` (`NEWS_LOG_DIR` moves it). The wrapper exits non-zero when claude fails, when this run wrote no edition, when `memory/stories.jsonl` holds no line for the day, or when the daily note has no link to it. The log names which.
 
 To change what the paper covers, use `/news:feedback` or `/news:tune`. See [the news reference page](/reference/plugins/news.md) and the [plugin README](../../plugins/news/README.md), which shows the six designs.

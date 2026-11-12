@@ -35,7 +35,7 @@ api_fixture() { printf '%s\n' "$2" >"$FAKE/api/${1//\//_}.json"; }
 make_fakes() {
 cat >"$T/bin/gh" <<'GH'
 #!/bin/bash
-json=""; for ((i = 1; i <= $#; i++)); do [ "${!i}" = --json ] && { j=$((i + 1)); json=${!j}; }; done
+json="" q=.; for ((i = 1; i <= $#; i++)); do case ${!i} in --json) j=$((i + 1)); json=${!j} ;; -q) j=$((i + 1)); q=${!j} ;; esac; done
 # gh api PATH [--paginate] [--jq F]: F run by jq over $FAKE/api/<PATH with _ for />.json.
 # user answers only with a GH_TOKEN, as the real one answers only for a login.
 if [ "$1" = api ]; then
@@ -55,10 +55,11 @@ case "$1 $2 $json" in
 "pr view autoMergeRequest") cat "$FAKE/auto" 2>/dev/null ;;
 "pr checks name,bucket") cat "$FAKE/checks" 2>/dev/null ;;
 "pr view title") echo "fix: a thing" ;;
+"pr view author") cat "$FAKE/pr_author" 2>/dev/null || echo owner ;;
 "pr view body") cat "$FAKE/body" ;;
 "pr view files") cat "$FAKE/files" ;;
 "run list headSha,conclusion") cat "$FAKE/live" ;;
-"issue list number,title,labels") echo "  #12 [bug] a new bug" ;;
+"issue list number,title,labels,author") jq -r "$q" "$FAKE/issues.json" ;;
 *) echo "fake gh: $*" >&2; exit 1 ;;
 esac
 GH

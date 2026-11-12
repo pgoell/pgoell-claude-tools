@@ -111,7 +111,7 @@ Key principles:
 - **Exact commands.** Copy-pasteable commands, not pseudocode.
 - **Auth is lazy.** Run the operation first, diagnose auth failures in Self-Healing. Never print credential values.
 - **Prefer helpers over raw API** when the CLI has convenience commands.
-- **Confirm before destructive ops.** Always ask before deleting.
+- **Name the operations that need a yes.** List them in the skill (for example: delete an issue, send mail to someone the user did not name, delete an event others are invited to), and name the routine steps that need none. Removing something the skill made in the same run needs none. Say what an unattended run does in place of asking: skip the step and report it.
 - **Platform-aware tool names.** When a skill uses orchestration tools, include a short Claude Code and Codex mapping instead of hardcoding one runtime.
 - **Self-healing is critical.** Tell the agent how to debug failures.
 

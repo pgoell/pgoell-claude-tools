@@ -23,7 +23,8 @@ All paths sit under `<vault>/<periodic>/05 Newspaper/`:
 | The reader says                       | Change                                                                                                      |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | more like #id                         | add the story's main entities or theme to `interests`; raise its section's `max_stories` by 1 if it was cut |
-| less like #id, not interested in X    | add the theme to `avoid`, or to that section's `exclude` when it is section-specific                        |
+| less like #id, fewer stories on X     | add `fewer X; still run <what stays>` to `avoid`, or to that section's `exclude` when section-specific      |
+| none of X, not interested in X        | add `no X` to `avoid`, or to that section's `exclude` when it is section-specific                           |
 | add a place, company, person, topic   | add queries to the closest section; a new beat gets a new section only when the reader asks for one         |
 | source X is paywalled, broken, bad    | remove it from `sources` or move its domain to `blocked_sources`; note a free alternative if known          |
 | use source X                          | add it to that section's `sources` with a one-line `notes`                                                  |
@@ -34,13 +35,16 @@ All paths sit under `<vault>/<periodic>/05 Newspaper/`:
 | look, colours, fonts, design          | `design.yaml` (`design`, or `overrides` tokens such as `accent`, `font-body`)                               |
 
 Make the smallest change that does what the reader asked. Never delete a
-section, a source or an interest the item did not name.
+section, a source or an interest the item did not name. "Less" is not "none":
+a "less like" item names what still runs, and the edition keeps running it.
 
 ## Recording it
 
 For each applied item:
 
-1. Edit the YAML, keeping its comments and order.
+1. Edit the YAML, keeping its comments and order. Each line you add ends with
+   `# YYYY-MM-DD, "<the reader's words>"`, so a later tune can see why it is
+   there.
 2. Move the bullet from `## Open` to the top of `## Applied` as
    `- YYYY-MM-DD: <the reader's words> -> <what changed>`.
 3. Append `- YYYY-MM-DD: <what changed> (<the reader's words, short>)` to

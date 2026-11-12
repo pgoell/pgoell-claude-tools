@@ -203,38 +203,50 @@ echo '{"needs":[],"shipped":{}}' >"$N"
 out=$(render); ok "render exit with sources down" $? 0
 has "page names the gaps" "$(cat "$V/01 Periodic/07 Activity/$D.html")" "Unavailable on this run: github, ci, usage, vault."
 
-# cron wrapper: permissions skipped, the periodic folder from kasten's variable, exit 1 with no page
-mkdir -p "$T/home/.local/bin" "$V/P/07 Activity"
-printf '#!/bin/bash\nprintf "%%s\\n" "$@" >"$HOME/args"\necho "$SHELL" >"$HOME/shell"\n[ -n "${NO_PAGE:-}" ] || echo page >"%s/P/07 Activity/$(TZ=Europe/Berlin date -d yesterday +%%F).html"\n' "$V" >"$T/home/.local/bin/claude"
-chmod +x "$T/home/.local/bin/claude"
-cron() { env -u INSIGHTS_ACTIVITY_MODEL -u INSIGHTS_ACTIVITY_EFFORT HOME="$T/home" KASTEN_PERIODIC_PATH=P INSIGHTS_LOG_DIR="$T/log" "$here/../scripts/cron-activity.sh" "$V"; }
+# cron wrappers: permissions skipped, the periodic folder from kasten's variable,
+# exit 1 with no page from this run or no link in today's daily note. The fake
+# writes $PAGE unless NO_PAGE is set and adds $LINK to $NOTE unless NO_LINK is.
+Y=$(TZ=Europe/Berlin date -d yesterday +%F)
+TD=$(TZ=Europe/Berlin date +%F)
+fake() {
+  mkdir -p "$1/.local/bin"
+  printf '%s\n' '#!/bin/bash' 'printf "%s\n" "$@" >"$HOME/args"' 'echo "$SHELL" >"$HOME/shell"' \
+    '[ -n "${NO_PAGE:-}" ] || { mkdir -p "$(dirname "$PAGE")"; echo page >"$PAGE"; }' \
+    '[ -n "${NO_LINK:-}" ] || { mkdir -p "$(dirname "$NOTE")"; echo "x: $LINK" >>"$NOTE"; }' >"$1/.local/bin/claude"
+  chmod +x "$1/.local/bin/claude"
+}
+fake "$T/home"
+AP="$V/P/07 Activity/$Y.html" AN="$V/P/00 Daily/$TD.md" AL="[[P/07 Activity/$Y.html]]"
+cron() { env -u INSIGHTS_ACTIVITY_MODEL -u INSIGHTS_ACTIVITY_EFFORT HOME="$T/home" KASTEN_PERIODIC_PATH=P INSIGHTS_LOG_DIR="$T/log" PAGE="$AP" NOTE="$AN" LINK="$AL" "$@" "$here/../scripts/cron-activity.sh" "$V"; }
 cron; ok "cron exit" $? 0
 has "cron skips permissions" "$(cat "$T/home/args")" "--dangerously-skip-permissions"
 has "cron passes the periodic folder" "$(cat "$T/home/args")" '--periodic "P"'
 has "cron sets model and effort" "$(tr '\n' ' ' <"$T/home/args")" "--model opus --effort medium "
-SHELL=/bin/sh cron; ok "cron hands claude bash" "$(cat "$T/home/shell")" /bin/bash
-rm "$V/P/07 Activity/"*.html; NO_PAGE=1 cron; ok "cron exit with no page" $? 1
+cron SHELL=/bin/sh; ok "cron hands claude bash" "$(cat "$T/home/shell")" /bin/bash
+rm "$AP" "$AN"; cron NO_PAGE=1; ok "cron exit with no page" $? 1
+rm -f "$AN"; echo old >"$AP"; touch -d '1 hour ago' "$AP"
+cron NO_PAGE=1; ok "cron exit with an old page" $? 1
+rm -f "$AP" "$AN"; cron NO_LINK=1; ok "cron exit with no link" $? 1
+has "cron logs the missing link" "$(cat "$T/log/$TD-activity.log")" "page written but no link"
 
-# digest cron wrapper: the same rules, yesterday's page under 06 Insights;
-# this fake writes the page at $PAGE unless NO_PAGE is set
-Y=$(TZ=Europe/Berlin date -d yesterday +%F)
-mkdir -p "$T/home2/.local/bin"
-printf '%s\n' '#!/bin/bash' 'printf "%s\n" "$@" >"$HOME/args"' 'echo "$SHELL" >"$HOME/shell"' \
-  '[ -n "${NO_PAGE:-}" ] || { mkdir -p "$(dirname "$PAGE")"; echo page >"$PAGE"; }' >"$T/home2/.local/bin/claude"
-chmod +x "$T/home2/.local/bin/claude"
+fake "$T/home2"
 digest_cron() { env -u KASTEN_PERIODIC_PATH -u INSIGHTS_PLUGIN_DIR -u INSIGHTS_MODEL -u INSIGHTS_EFFORT HOME="$T/home2" INSIGHTS_LOG_DIR="$T/log" "$@" "$here/../scripts/cron-insights.sh" "$V"; }
-digest_cron KASTEN_PERIODIC_PATH=P PAGE="$V/P/06 Insights/$Y.html"; ok "digest cron exit" $? 0
+DP="$V/P/06 Insights/$Y.html" DN="$V/P/00 Daily/$TD.md" DL="[[P/06 Insights/$Y.html]]"
+dc() { digest_cron KASTEN_PERIODIC_PATH=P PAGE="$DP" NOTE="$DN" LINK="$DL" "$@"; }
+dc; ok "digest cron exit" $? 0
 has "digest cron skips permissions" "$(cat "$T/home2/args")" "--dangerously-skip-permissions"
 has "digest cron passes the periodic folder" "$(cat "$T/home2/args")" '--periodic "P"'
 has "digest cron sets model and effort" "$(tr '\n' ' ' <"$T/home2/args")" "--model fable --effort high "
-digest_cron KASTEN_PERIODIC_PATH=P PAGE="$V/P/06 Insights/$Y.html" INSIGHTS_MODEL=m1 INSIGHTS_EFFORT=low
+dc INSIGHTS_MODEL=m1 INSIGHTS_EFFORT=low
 has "digest cron takes model and effort from the environment" "$(tr '\n' ' ' <"$T/home2/args")" "--model m1 --effort low "
-digest_cron SHELL=/bin/sh KASTEN_PERIODIC_PATH=P PAGE="$V/P/06 Insights/$Y.html"; ok "digest cron hands claude bash" "$(cat "$T/home2/shell")" /bin/bash
-rm "$V/P/06 Insights/$Y.html"
-digest_cron KASTEN_PERIODIC_PATH=P PAGE="$V/P/06 Insights/$Y.html" NO_PAGE=1; ok "digest cron exit with no page" $? 1
+dc SHELL=/bin/sh; ok "digest cron hands claude bash" "$(cat "$T/home2/shell")" /bin/bash
+rm "$DP"; dc NO_PAGE=1; ok "digest cron exit with no page" $? 1
+echo old >"$DP"; touch -d '1 hour ago' "$DP"; dc NO_PAGE=1; ok "digest cron exit with an old page" $? 1
+rm -f "$DP" "$DN"; dc NO_LINK=1; ok "digest cron exit with no link" $? 1
 # without the variable the wrapper looks in 01 Periodic
 rm -f "$V/01 Periodic/06 Insights/$Y.html"
-digest_cron PAGE="$V/01 Periodic/06 Insights/$Y.html"; ok "digest cron exit in the default folder" $? 0
+digest_cron PAGE="$V/01 Periodic/06 Insights/$Y.html" NOTE="$V/01 Periodic/00 Daily/$TD.md" LINK="[[01 Periodic/06 Insights/$Y.html]]"
+ok "digest cron exit in the default folder" $? 0
 has "digest cron passes the default folder" "$(cat "$T/home2/args")" '--periodic "01 Periodic"'
 
 # extract.py keeps the message of a blocking hook, which sits in blockingError, not stderr
