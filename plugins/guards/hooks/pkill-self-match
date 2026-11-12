@@ -17,6 +17,8 @@
 #
 # Heredoc bodies are removed and `#` is an ordinary character, since a quote or
 # a # in a body would hide the pkill from the lexer.
+# The deny text brackets the first letter or digit, not the first character,
+# and says when a pattern is already bracketed, so its example works.
 # Fails open: a command shlex cannot parse (stray quote) passes.
 import json
 import re
@@ -36,15 +38,64 @@ PKILL_REASON = (
     "Blocked: `pkill -f {pattern}` also matches the `bash -c` running this "
     "command, so it kills your own shell (exit 144). Instead, stop the process "
     "by port with `fuser -k <port>/tcp`, or run the pkill in a Bash call of its "
-    "own with the first letter bracketed: `pkill -f '[{first}]{rest}'`."
+    "own with the first letter bracketed: `pkill -f '{bracketed}'`."
+)
+
+PKILL_BRACKETED_REASON = (
+    "Blocked: `pkill -f {pattern}` is already bracketed, but another part of "
+    "the same command names the process, so the pattern matches the `bash -c` "
+    "running it and kills your own shell (exit 144). Run the pkill in a Bash "
+    "call of its own, or stop the process by port with `fuser -k <port>/tcp`."
+)
+
+PKILL_PLAIN_REASON = (
+    "Blocked: `pkill -f {pattern}` also matches the `bash -c` running this "
+    "command, so it kills your own shell (exit 144). Stop the process by port "
+    "with `fuser -k <port>/tcp`, or run the pkill in a Bash call of its own "
+    "with one letter of the pattern in a bracket class, such as `[u]`."
 )
 
 PGREP_REASON = (
     "Blocked: `pgrep -f {pattern}` in a loop condition also matches the "
     "`bash -c` running this loop, so it always finds a process and the loop "
     "never ends. Bracket the first letter of the pattern so it cannot match "
-    "itself: `until ! pgrep -f '[{first}]{rest}'`."
+    "itself: `until ! pgrep -f '{bracketed}'`."
 )
+
+PGREP_BRACKETED_REASON = (
+    "Blocked: `pgrep -f {pattern}` in a loop condition is already bracketed, "
+    "but another part of the same command names the process, so it matches "
+    "the `bash -c` running this loop and the loop never ends. Keep only the "
+    "bracketed form in this command."
+)
+
+PGREP_PLAIN_REASON = (
+    "Blocked: `pgrep -f {pattern}` in a loop condition also matches the "
+    "`bash -c` running this loop, so the loop never ends. Put one letter of "
+    "the pattern in a bracket class, such as `[u]`, so it cannot match itself."
+)
+
+
+def bracketed(pattern):
+    """Bracket the first letter or digit, or return None when there is none."""
+    match = re.search(r"[A-Za-z0-9]", pattern)
+    if not match or (match.start() > 0 and pattern[match.start() - 1] == "\\"):
+        return None
+    i = match.start()
+    return pattern[:i] + "[" + pattern[i] + "]" + pattern[i + 1 :]
+
+
+def reason_for(name, pattern):
+    pkill = name == "pkill"
+    if pattern.startswith("["):
+        template = PKILL_BRACKETED_REASON if pkill else PGREP_BRACKETED_REASON
+        return template.format(pattern=shlex.quote(pattern))
+    fixed = bracketed(pattern)
+    if fixed is None:
+        template = PKILL_PLAIN_REASON if pkill else PGREP_PLAIN_REASON
+        return template.format(pattern=shlex.quote(pattern))
+    template = PKILL_REASON if pkill else PGREP_REASON
+    return template.format(pattern=shlex.quote(pattern), bracketed=fixed)
 
 
 def segments(command):
@@ -111,9 +162,7 @@ def main():
                 continue
             pattern = self_matching_pattern(part[i + 1 :])
             if pattern and own_text_matches(pattern, command):
-                reason = (PKILL_REASON if name == "pkill" else PGREP_REASON).format(
-                    pattern=shlex.quote(pattern), first=pattern[0], rest=pattern[1:]
-                )
+                reason = reason_for(name, pattern)
                 print(json.dumps({"hookSpecificOutput": {
                     "hookEventName": "PreToolUse",
                     "permissionDecision": "deny",

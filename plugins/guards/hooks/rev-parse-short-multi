@@ -6,15 +6,23 @@
 # failure also skips what follows, such as a loop's `notify.sh "DONE #962"`.
 # Over 14 days this host logged 78 such errors, all but one from this form.
 #
-# A redirection (`2>/dev/null`) is not a revision, and the match stops at a
-# separator or line end. A command that only quotes the form passes or fails
-# alike; the guard only stops a command that cannot succeed.
+# The command is split with shlex, as in pkill-self-match, and only a `git`
+# command word followed by `rev-parse` counts. A commit message or a search
+# pattern that quotes the form passes, and so does a redirection
+# (`2>/dev/null`). Heredoc bodies are removed. Fails open: a command shlex
+# cannot parse (stray quote) passes.
 import json
 import re
+import shlex
 import sys
 
-REV = r"[ \t]+(?![0-9]*[<>])[^\s;&|<>()]+"
-PATTERN = re.compile(r"\brev-parse[ \t]+--short(?:%s){2,}" % REV)
+HEREDOC = re.compile(r"""<<-?\s*(['"]?)(\w+)\1[^\n]*\n.*?^\s*\2\s*$""", re.M | re.S)
+SEPARATORS = {";", "&&", "||", "|", "&", "(", ")"}
+# Words that may stand before the command word of a simple command.
+PREFIXES = {"if", "then", "else", "elif", "do", "while", "until", "!", "time", "command", "env", "{"}
+ASSIGNMENT = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
+# git options before the subcommand that take a separate value.
+GIT_WITH_VALUE = {"-C", "-c", "--git-dir", "--work-tree", "--namespace"}
 
 REASON = (
     "Blocked: `git rev-parse --short` takes one revision; with two it exits 128 "
@@ -22,10 +30,81 @@ REASON = (
     "`git rev-parse --short A; git rev-parse --short B`."
 )
 
-command = json.load(sys.stdin).get("tool_input", {}).get("command", "")
-if PATTERN.search(command):
-    print(json.dumps({"hookSpecificOutput": {
-        "hookEventName": "PreToolUse",
-        "permissionDecision": "deny",
-        "permissionDecisionReason": REASON,
-    }}))
+
+def segments(command):
+    """Split a command into simple commands, respecting quotes."""
+    command = HEREDOC.sub("", command)
+    lexer = shlex.shlex(command.replace("\n", ";"), posix=True, punctuation_chars=True)
+    lexer.whitespace_split = True
+    lexer.commenters = ""
+    segment = []
+    for token in lexer:
+        if token in SEPARATORS:
+            yield segment
+            segment = []
+        else:
+            segment.append(token)
+    yield segment
+
+
+def is_redirect(token):
+    return bool(token) and set(token) <= set("<>&")
+
+
+def rev_parse_args(part):
+    """Return the args after `git ... rev-parse`, or None when this is not that command."""
+    i = 0
+    while i < len(part) and (part[i] in PREFIXES or ASSIGNMENT.match(part[i])):
+        i += 1
+    if i >= len(part) or part[i].strip("`").rsplit("/", 1)[-1] != "git":
+        return None
+    i += 1
+    while i < len(part) and part[i].startswith("-"):
+        i += 2 if part[i] in GIT_WITH_VALUE else 1
+    if i >= len(part) or part[i] != "rev-parse":
+        return None
+    return part[i + 1 :]
+
+
+def too_many_revisions(args):
+    short = False
+    revisions = 0
+    skip = False
+    for j, token in enumerate(args):
+        if skip:
+            skip = False
+            continue
+        if is_redirect(token):
+            skip = True
+            continue
+        if token.isdigit() and j + 1 < len(args) and is_redirect(args[j + 1]):
+            continue
+        if token == "--":
+            break
+        if token == "--short" or token.startswith("--short="):
+            short = True
+        elif not token.startswith("-"):
+            revisions += 1
+    return short and revisions >= 2
+
+
+def main():
+    command = json.load(sys.stdin).get("tool_input", {}).get("command", "")
+    if "rev-parse" not in command:
+        return
+    try:
+        parts = list(segments(command))
+    except ValueError:
+        return
+    for part in parts:
+        args = rev_parse_args(part)
+        if args is not None and too_many_revisions(args):
+            print(json.dumps({"hookSpecificOutput": {
+                "hookEventName": "PreToolUse",
+                "permissionDecision": "deny",
+                "permissionDecisionReason": REASON,
+            }}))
+            return
+
+
+main()

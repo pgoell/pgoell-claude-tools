@@ -17,7 +17,7 @@ The deny message offers two fixes:
 - Stop the process by port: `fuser -k 8765/tcp`.
 - Bracket the first letter of the pattern and run the `pkill` in a Bash call of its own: `pkill -f '[u]vicorn app:app'`. The class still matches the process, but the text `[u]vicorn` does not match itself. A later plain mention in the same call, such as `pkill -f '[p]ytest x' ; pytest x`, matches the pattern again, so the hook blocks it too: it tests each pattern against the command's own text.
 
-The hook also blocks `pgrep -f <pattern>` with a plain pattern when it sits in an `until` or `while` condition, such as `until ! pgrep -f 'capture.sh'; do sleep 5; done`. The `bash -c` running the loop holds the pattern too, so `pgrep` always finds it and the loop never ends. One such loop ran on through a 3-hour capture. The fix is the same bracket: `until ! pgrep -f '[c]apture.sh'`.
+The hook also blocks `pgrep -f <pattern>` with a plain pattern when it sits in an `until` or `while` condition, such as `until ! pgrep -f 'capture.sh'; do sleep 5; done`. The `bash -c` running the loop holds the pattern too, so `pgrep` always finds it and the loop never ends. One such loop ran on through a 3-hour capture. The fix is the same bracket: `until ! pgrep -f '[c]apture.sh'`. The deny message brackets the first letter or digit (`'.*[u]vicorn'`), and for a pattern that is already bracketed it says to run the call on its own instead.
 
 `pkill` or `pgrep` without `-f`, a pattern that does not match the command's own text (a bracketed pattern on its own), a one-shot `pgrep -f` outside a loop condition, and every other command pass through untouched. A command the hook cannot parse also passes.
 
@@ -27,4 +27,4 @@ Blocks `git rev-parse --short` with two or more revisions, such as `git rev-pars
 
 `--short` implies `--verify`, which takes one revision, so the call always exits 128 with "fatal: Needed a single revision". In an `&&` chain the failure also skips the rest, such as a loop's closing `notify.sh "DONE #962"`. Over 14 days on one host, 78 calls failed this way, all but one in this form.
 
-The deny message offers one call per revision: `git rev-parse --short A; git rev-parse --short B`. One revision, a redirection after it (`2>/dev/null`) and `git rev-parse` without `--short` pass through untouched.
+The deny message offers one call per revision: `git rev-parse --short A; git rev-parse --short B`. One revision, a redirection after it (`2>/dev/null`) and `git rev-parse` without `--short` pass through untouched. Only a `git` command word followed by `rev-parse` counts, so a commit message or a search pattern that quotes the form passes too.
