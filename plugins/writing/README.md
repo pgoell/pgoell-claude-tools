@@ -38,14 +38,16 @@ uv run python3 plugins/writing/judge/compare.py report --out /tmp/cmp
 
 Read the numbers with care. Seven of the eleven cases are rewrites, none tests the voice note or the coach, two runs per condition is a small sample, and one model judge is not a human reader.
 
-Last run, 2026-11-12, Sonnet writing and Opus judging, 22 outputs per condition, before the last wording changes to `existing-drafts.md`:
+Last run, 2026-11-12, Sonnet writing and Opus judging, 22 outputs per condition, ten outputs per case in front of the judge:
 
-| Condition        | Hard-gate failures | Ranked first | Mean rank (of 8) | Mean score |
-| ---------------- | ------------------ | ------------ | ---------------- | ---------- |
-| No skill         | 5                  | 0            | 6.41             | 3.52       |
-| Clarity 0.2.1    | 1                  | 2            | 3.45             | 4.17       |
-| ghostwrite 3.1.8 | 0                  | 3            | 4.64             | 3.81       |
-| ghostwrite 3.2.0 | 0                  | 6            | 3.50             | 4.20       |
+| Condition        | Hard-gate failures | Ranked first | Mean rank (of 10) | Mean score |
+| ---------------- | ------------------ | ------------ | ----------------- | ---------- |
+| No skill         | 10                 | 0            | 8.32              | 3.56       |
+| ghostwrite 3.1.8 | 1                  | 1            | 6.45              | 3.73       |
+| Clarity 0.2.1    | 1                  | 3            | 4.45              | 4.14       |
+| ghostwrite 3.2.0 | 0                  | 3            | 3.68              | 4.29       |
+
+The same 66 outputs were judged three times. Eight changed between pass and fail, and a condition's mean score moved by up to 0.13, so treat a gap smaller than that as a tie.
 
 `tests/run.sh` drives `compare.py` through all three steps with a fake `claude` binary and no network. Last result: 11 passed, 0 failed.
 
