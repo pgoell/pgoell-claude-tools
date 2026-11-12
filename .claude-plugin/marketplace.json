@@ -8,13 +8,13 @@
       "name": "atlassian",
       "source": "./plugins/atlassian",
       "description": "Use Jira and Confluence from agent workflows.",
-      "version": "2.0.9"
+      "version": "2.0.10"
     },
     {
       "name": "google-workspace",
       "source": "./plugins/google-workspace",
       "description": "Use Gmail and Calendar through gws.",
-      "version": "1.0.4"
+      "version": "1.0.5"
     },
     {
       "name": "research",
@@ -44,7 +44,7 @@
       "name": "terminal",
       "source": "./plugins/terminal",
       "description": "Control interactive terminal programs through tmux.",
-      "version": "0.1.2"
+      "version": "0.1.3"
     },
     {
       "name": "playground",

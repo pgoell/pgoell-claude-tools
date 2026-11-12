@@ -78,13 +78,13 @@ containers/dev/             # Podman-first dev container (run-dev, egress proxy,
 
 One line per plugin: name, version, skills. Descriptions live in `docs/reference/plugins/<name>.md`. `upstream` marks an external git-URL entry, which has no version.
 
-- `atlassian` 2.0.9: `jira`, `confluence`
-- `google-workspace` 1.0.4: `gmail`, `calendar`
+- `atlassian` 2.0.10: `jira`, `confluence`
+- `google-workspace` 1.0.5: `gmail`, `calendar`
 - `research` 2.6.5: `research`, `running-research`
 - `writing` 3.1.7: `ghostwrite`, `coach`
 - `runtime-bridge` 0.2.0: `claude-codex-bridge`
 - `agent-system-management` 0.7.14: `improving-instructions`, `capturing-session-learnings`, `creating-skills`
-- `terminal` 0.1.2: `tmux`
+- `terminal` 0.1.3: `tmux`
 - `playground` 0.1.3: `playground`
 - `databricks` 0.3.4: `databricks-core`, `databricks-docs`
 - `learning` 0.5.0: `quizzing-the-session`, `quizzing-a-topic`, `surveying-blind-spots`, `rebuilding-a-concept`, `practicing-a-topic`
