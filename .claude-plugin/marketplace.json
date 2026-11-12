@@ -32,7 +32,7 @@
       "name": "runtime-bridge",
       "source": "./plugins/runtime-bridge",
       "description": "Align Claude Code and Codex project configuration.",
-      "version": "0.2.0"
+      "version": "0.2.1"
     },
     {
       "name": "agent-system-management",
