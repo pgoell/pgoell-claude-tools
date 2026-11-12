@@ -143,8 +143,9 @@ Dispatched agent prompt:
       curl from https://arctic-shift.photon-reddit.com/api/ (posts/search,
       comments/search), and archived pages with curl from web.archive.org.
       If curl fails too, say the thread exists and was not read.
-    - Saturation unclear: when in doubt, run one more round. False stops are
-      worse than over-investigation.
+    - Saturation unclear: run one more round, once. If it adds nothing new,
+      stop and note what stayed open. False stops are worse than
+      over-investigation, but one extra round is enough to rule one out.
 
     ## Final Step
 

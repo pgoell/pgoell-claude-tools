@@ -20,7 +20,7 @@
       "name": "research",
       "source": "./plugins/research",
       "description": "Research complex topics and produce sourced reports.",
-      "version": "2.6.2"
+      "version": "2.6.3"
     },
     {
       "name": "writing",
@@ -38,7 +38,7 @@
       "name": "agent-system-management",
       "source": "./plugins/agent-system-management",
       "description": "Audit AGENTS.md / CLAUDE.md, capture session learnings, and create Claude Code, Codex and Cursor skills.",
-      "version": "0.7.12"
+      "version": "0.7.13"
     },
     {
       "name": "terminal",
@@ -62,19 +62,19 @@
       "name": "learning",
       "source": "./plugins/learning",
       "description": "Adaptive teaching, concept rebuilding and practice with durable learning records and optional Kasten integration.",
-      "version": "0.5.0"
+      "version": "0.5.1"
     },
     {
       "name": "critique",
       "source": "./plugins/critique",
       "description": "Critique ideas, plans, and decisions through independent thinking frames, one fresh subagent each, with verdicts shown word for word and one decision.",
-      "version": "0.1.3"
+      "version": "0.1.4"
     },
     {
       "name": "presentations",
       "source": "./plugins/presentations",
       "description": "Presentation lifecycle skills: content design, native PowerPoint decks from brand presets or client templates, HTML decks with a perfecting loop, a local deck editor, PPTX export of HTML decks, and preset extraction.",
-      "version": "0.8.1"
+      "version": "0.8.2"
     },
     {
       "name": "diagrams",
@@ -86,7 +86,7 @@
       "name": "news",
       "source": "./plugins/news",
       "description": "Build a personal daily newspaper in a kasten vault, linked from the daily note, shaped by your feedback.",
-      "version": "0.11.1"
+      "version": "0.11.2"
     },
     {
       "name": "insights",

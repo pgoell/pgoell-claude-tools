@@ -85,6 +85,11 @@ handoff, and the session that wrote the plan is best placed to carry it out.
 Not for a lookup you could do in one grep, and say what you found rather than
 that you asked something.
 
+A subagent starts with none of your context and can cost as much as the main
+session. Brief each one with the goal, what you have ruled out, the files to
+read and the form of the answer you need back. This permission does not ask for
+the costliest modes, such as a max-level review; ask before those.
+
 To drive other Claude sessions through a list of GitHub issues, use the
 issue-loop plugin (`issue-loop:running-the-loop`). One implementer session at a
 time. Start it with `--permission-mode bypassPermissions`, the default in

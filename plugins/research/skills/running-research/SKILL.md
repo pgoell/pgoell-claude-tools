@@ -58,7 +58,7 @@ mkdir -p {OUTPUT_PATH}/research
 
 ### Step 2: Plan (orchestrator-internal)
 
-YOU plan, not an agent. Decompose the brief into sub-questions and cluster them into coherent topics. As many clusters as the brief demands; each cluster should be deep enough to warrant a dedicated researcher. Cluster slugs must be unique and avoid colliding with reserved names (`synthesis`, `gap-N-*`, `synthesis-review-N`, `draft-review-N`). A slug must not be `claim-checks` or start with `report`, `summary`, `findings` or `analysis` (see File Layout).
+YOU plan, not an agent. Decompose the brief into sub-questions and cluster them into coherent topics. As many clusters as the brief demands; a cluster earns its own researcher only when its sub-questions need sources the other clusters will not read. Merge the rest. Cluster slugs must be unique and avoid colliding with reserved names (`synthesis`, `gap-N-*`, `synthesis-review-N`, `draft-review-N`). A slug must not be `claim-checks` or start with `report`, `summary`, `findings` or `analysis` (see File Layout).
 
 A brief field that reads `open (user skipped)` is yours to choose. Pick what serves the rest of the brief, and list each choice under `## Open fields` in plan.md, so the user sees it. From here on, BRIEF holds the text of brief.md followed by that list.
 
@@ -96,6 +96,8 @@ Sub-questions:
 
 ...
 ```
+
+Tell the user the size of the run in one line (how many researchers, each running several search rounds), then go on without waiting.
 
 Use the progress list to seed: "Spawn researchers", "Synthesize", "Review synthesis", "Check claims", "Write report", "Review report". Mark tasks completed as the pipeline progresses.
 

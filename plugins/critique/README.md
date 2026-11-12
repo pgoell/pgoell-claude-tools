@@ -28,4 +28,4 @@ First A/B run (2026-09-30, 168 subagents, about 10M tokens): four arms (a plain 
 
 ## Cost
 
-Full mode runs 9 or more subagents per call (8 core frames, any conditional frames, 1 synthesis); quick mode runs 4.
+Full mode runs 9 to 13 subagents per call (8 core frames, any conditional frames, 1 synthesis); quick mode runs 4.

@@ -96,7 +96,9 @@
 
 1. Read the CLAUDE.md file completely
 2. Cross-reference with actual codebase:
-   - Run documented commands (mentally or actually)
+   - Run documented commands that only read or build locally. For a command
+     that deploys, migrates, deletes, publishes or sends anything, check that
+     its target exists; do not run it.
    - Check if referenced files exist
    - Verify architecture descriptions
 3. Score each criterion

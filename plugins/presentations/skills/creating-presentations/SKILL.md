@@ -105,7 +105,7 @@ To change a finished deck by hand, or to point at elements instead of describing
 
 ## Perfecting the deck
 
-A strict reviewer that does not stop at "looks good". The loop dispatches fresh judge and verifier subagents every round (`Task` calls in Cursor), so it is token intensive; it runs only on the user's go-ahead. A request to review, audit, polish, or perfect the deck is that go-ahead. After building a deck and running the render check, offer the loop instead of starting it: name the cost (several subagents per round, typically a few rounds) and wait for a yes.
+A strict reviewer that does not stop at "looks good". The loop dispatches fresh judge and verifier subagents every round (`Task` calls in Cursor), so it is token intensive; it runs only on the user's go-ahead. A request to review, audit, polish, or perfect the deck is that go-ahead. After building a deck and running the render check, offer the loop instead of starting it: name the cost (each round runs four judges plus one verifier per finding, three per blocker, for up to five rounds; a first round on a rough deck can mean dozens of subagents) and wait for a yes.
 
 Once the loop has its go-ahead, read `references/perfecting.md` before round 1: the three rules that keep the loop convergent, when the loop stops (the hard gates, two dry rounds, and the round cap), the constitution (`deck-standards.md` next to the deck) and its deck brief, the five steps of one round, severity and strict mode, and the `report.md` each round updates. It links `references/review-loop.md` for the judge and verifier prompts.
 

@@ -43,6 +43,9 @@ an earlier story is just `2026-10-06.html#2026-10-06-bnd-01`.
 4. **Gather.** Read `references/gathering.md`. Start one gatherer per section
    with the section brief from that file, all at once. Each gatherer returns
    candidates as JSON. The weather comes later from `weather.py`.
+   Gathering is well-specified reading: where the host lets you pick a model
+   per subagent, use a smaller one than the session's. Gather a depth-1
+   section yourself instead of starting an agent for it.
 5. **Select and dedupe.** Per section, keep up to `max_stories`:
    - Drop a candidate that an earlier edition already ran (same URL, or the
      same event by entities and key facts in `recent.py` output) unless it
