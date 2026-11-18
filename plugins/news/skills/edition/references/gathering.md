@@ -60,7 +60,10 @@ Section: <name> (id <id>). Edition date: <YYYY-MM-DD>. Window: stories published
 on or after <edition date minus freshness_days>.
 Queries: <queries>. Sources to check first: <sources with notes>.
 Exclude: <exclude>, plus the reader's avoid list: <avoid>. Weigh: <interests>.
-Skip these domains, which refused scripted fetches: <blocked_sources>.
+Skip these domains, which refused scripted fetches: <blocked_sources>. Where
+the search tool takes a block list (`blocked_domains` in Claude Code's
+WebSearch), pass these domains to every search, and fetch no URL on them that a
+search or a page links to.
 Already reported (do not return these unless something new happened):
 <already_reported>
 <recent.py output for this section>
