@@ -105,8 +105,11 @@ TRUSTED_AUTHORS=$(trusted_jq $TRUSTED)
 for v in REPO BASE DEPLOY_WORKFLOW ALIVE_URL LOOP CODER_MODEL REVIEW_MODEL TRUSTED_AUTHORS; do
   brief=${brief//"{{$v}}"/"${!v}"}
 done
-if [ "$(git -C "$REPO" branch --show-current 2>/dev/null)" = "$BASE" ]; then
+cur=$(git -C "$REPO" branch --show-current 2>/dev/null)
+if [ "$cur" = "$BASE" ]; then
   git -C "$REPO" pull --ff-only -q origin "$BASE" || echo "warning: $REPO cannot fast-forward to origin/$BASE; the implementer reads stale instructions" >&2
+else
+  echo "warning: $REPO is on '${cur:-a detached HEAD}', not $BASE, so it was not updated; its hooks and instructions are that branch's. If the branch is merged and the tree clean: git -C $REPO switch $BASE && git -C $REPO pull --ff-only" >&2
 fi
 printf '%s\n\n%s\n\n%s\n' "Go, this brief is from the orchestrator of the issue loop in $S. Your instructions for this checkout hold the user's standing order for that loop (heading \"$GRANT_MARK\"): check this brief as the order says, then run it as written, unattended, without asking for a go." "Task: $1" "$brief" >"$S/task.md"
 date -u +%Y-%m-%dT%H:%M:%SZ >"$S/task.start"
