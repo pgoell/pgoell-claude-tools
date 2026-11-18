@@ -89,6 +89,12 @@ session. Brief each one with the goal, what you have ruled out, the files to
 read and the form of the answer you need back. This permission does not ask for
 the costliest modes, such as a max-level review; ask before those.
 
+When I ask for a new thread, session or tab, start a Claude Code session in a
+new herdr tab of the current workspace (`herdr tab create --cwd <dir>`, then
+`herdr agent start <name> --kind claude --pane <pane> -- --model <model>`), not
+a subagent: only a session takes an exact model version and stays open for me
+to talk to. Ask when my words fit both.
+
 To drive other Claude sessions through a list of GitHub issues, use the
 issue-loop plugin (`issue-loop:running-the-loop`). One implementer session at a
 time. Start it with `--permission-mode bypassPermissions`, the default in
