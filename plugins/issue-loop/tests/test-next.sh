@@ -70,8 +70,9 @@ g clone -q "$T/origin.git" "$T/other" && g -C "$T/other" commit -q --allow-empty
 ok "next fast-forwards REPO on BASE" "$(git -C "$T/repo" log -1 --format=%s)" two
 g -C "$T/other" commit -q --allow-empty -m three && g -C "$T/other" push -q origin main
 g -C "$T/repo" checkout -q -b feature
-"$L/next.sh" --force "t" >/dev/null 2>&1
+err=$("$L/next.sh" --force "t" 2>&1 >/dev/null)
 ok "next leaves REPO alone off BASE" "$(git -C "$T/repo" log -1 --format=%s)" two
+has "next warns that REPO is off BASE" "$err" "is on 'feature', not main"
 g -C "$T/repo" checkout -q main && g -C "$T/repo" remote remove origin
 rm -rf "$T/origin.git" "$T/other"
 }
