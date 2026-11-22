@@ -99,9 +99,9 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `ponytail` upstream: `ponytail`, `ponytail-review`, `ponytail-audit`, `ponytail-debt`, `ponytail-gain`, `ponytail-help`
 - `emil` upstream: `emil-design-eng`, `animate`, `review-animations`, `improve-animations`, `prototype`, and 10 more (Claude Code only)
 - `taste-skill` upstream: `taste-skill`
-- `vercel` upstream: `react-best-practices`, `composition-patterns`, `react-view-transitions`, `react-native-skills`, `web-design-guidelines`, `writing-guidelines`, `deploy-to-vercel`, `vercel-cli-with-tokens`, `vercel-optimize` (Claude Code only)
+- `vercel` upstream: `react-best-practices`, `composition-patterns`, `react-view-transitions`, `react-native-skills`, `web-design-guidelines`, and 4 more (Claude Code only)
 - `unslop` upstream: `unslop` (Claude Code only)
-- `evals` upstream: `evals-start`, `eval-audit`, `error-discovery`, `generate-synthetic-data`, `write-code-eval`, `write-judge-prompt`, `validate-evaluator`, `evaluate-rag`, `build-review-interface`
+- `evals` upstream: `evals-start`, `eval-audit`, `error-discovery`, and 6 more
 - `pstack` 0.15.46 (mirror): `poteto-mode`, `no-comments`, and 56 more
 - `deprecated` 0.5.1: frozen archive of `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations`, `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode`, `writing`, `pyramid`, `tech-doc`, `frontend-design`, and the 12 former `workbench` skills (`pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`)
 
