@@ -168,6 +168,14 @@
       "strict": false
     },
     {
+      "name": "evals",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/ai-evals-course/evals-skills.git"
+      },
+      "description": "Shreya Shankar and Hamel Husain's skills for product evals: error discovery on traces, eval audits, synthetic data, code checks, LLM judges and their validation, RAG evals. Tracked upstream, not vendored."
+    },
+    {
       "name": "pstack",
       "source": "./plugins/pstack",
       "description": "Lauren Tan's agent workflow skills, mirrored from Cursor's plugin repo: poteto-mode playbooks, no-comments with the Comment Sicko subagent, architect, interrogate, tdd, and 24 principle skills. Most run as slash commands only.",

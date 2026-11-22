@@ -1,6 +1,6 @@
 # pgoell-claude-tools
 
-A plugin marketplace for Claude Code, Codex and Cursor. Its plugins ship skills, output styles and hooks. Each skill lives in one directory that all three runtimes share, so no skill is copied per runtime. The marketplace lists 26 plugins: 20 kept in this repository, 5 tracked from upstream repositories, and the `deprecated` archive of superseded skills, which the count includes.
+A plugin marketplace for Claude Code, Codex and Cursor. Its plugins ship skills, output styles and hooks. Each skill lives in one directory that all three runtimes share, so no skill is copied per runtime. The marketplace lists 28 plugins: 21 kept in this repository, 6 tracked from upstream repositories, and the `deprecated` archive of superseded skills, which the count includes.
 
 ## Install
 
@@ -83,6 +83,7 @@ Tracked from upstream, not vendored:
 - [taste-skill](docs/reference/plugins/taste-skill.md): frontend design skills against generic output.
 - [vercel](docs/reference/plugins/vercel.md): Vercel's React, Next.js and deploy skills.
 - [unslop](docs/reference/plugins/unslop.md): takes the AI look out of an existing screen.
+- [evals](docs/reference/plugins/evals.md): Shreya Shankar and Hamel Husain's skills for product evals.
 
 Mirrored from upstream, synced weekly:
 

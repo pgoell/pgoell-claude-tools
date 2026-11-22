@@ -8,7 +8,7 @@ status: stable
 
 # Runtimes
 
-Each runtime reads its own marketplace file: Claude Code reads `.claude-plugin/marketplace.json`, Codex reads `.agents/plugins/marketplace.json`, and Cursor reads `.cursor-plugin/marketplace.json`, which `mise run sync-cursor-manifests` generates from the other two. All 25 plugins ship to Claude Code; 19 ship to Codex and 16 to Cursor.
+Each runtime reads its own marketplace file: Claude Code reads `.claude-plugin/marketplace.json`, Codex reads `.agents/plugins/marketplace.json`, and Cursor reads `.cursor-plugin/marketplace.json`, which `mise run sync-cursor-manifests` generates from the other two. All 28 plugins ship to Claude Code; 21 ship to Codex and 17 to Cursor.
 
 | Plugin                                                                   | Claude Code | Codex | Cursor |
 | ------------------------------------------------------------------------ | ----------- | ----- | ------ |
@@ -37,6 +37,7 @@ Each runtime reads its own marketplace file: Claude Code reads `.claude-plugin/m
 | [taste-skill](/reference/plugins/taste-skill.md)                         | yes         | yes   | no     |
 | [vercel](/reference/plugins/vercel.md)                                   | yes         | no    | no     |
 | [unslop](/reference/plugins/unslop.md)                                   | yes         | no    | no     |
+| [evals](/reference/plugins/evals.md)                                     | yes         | yes   | no     |
 | [pstack](/reference/plugins/pstack.md)                                   | yes         | yes   | yes    |
 | [deprecated](/reference/plugins/deprecated.md)                           | yes         | yes   | no     |
 
@@ -56,7 +57,7 @@ The generator skips the plugins on its `EXCLUDE` list and every upstream entry.
 - **guards**: its hook uses Claude Code's `PreToolUse` format; it would need a port to Cursor's `beforeShellExecution`.
 - **session-title**: it sets a Claude Code session title, which Cursor has no equivalent for.
 - **deprecated**: a frozen archive.
-- **ponytail**, **emil**, **taste-skill**, **vercel** and **unslop**: upstream repos, with no local directory to carry a generated Cursor manifest.
+- **ponytail**, **emil**, **taste-skill**, **vercel**, **unslop** and **evals**: upstream repos, with no local directory to carry a generated Cursor manifest.
 
 ## The skills CLI
 

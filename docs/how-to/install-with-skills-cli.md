@@ -10,7 +10,7 @@ status: stable
 
 The [`skills` CLI](https://github.com/vercel-labs/skills) copies skills into the folder each agent reads, for about 80 agents, among them Claude Code, Codex, Cursor, OpenCode, Windsurf, Goose and Gemini CLI. It reads `.claude-plugin/marketplace.json`, so it finds every skill in this repository without extra setup. Use it for an agent this repository has no marketplace for, or when you want the skills without the plugin system.
 
-It installs skills only. Hooks (`guards`, `session-title`), output styles (`prose-styles`) and the five upstream entries (`ponytail`, `emil`, `taste-skill`, `vercel`, `unslop`) do not come with it; install the upstream ones from their own repositories. The `pstack` mirror does come with it, without its subagents. Skills run under their bare names, so `/research:research` becomes the `research` skill.
+It installs skills only. Hooks (`guards`, `session-title`), output styles (`prose-styles`) and the six upstream entries (`ponytail`, `emil`, `taste-skill`, `vercel`, `unslop`, `evals`) do not come with it; install the upstream ones from their own repositories. The `pstack` mirror does come with it, without its subagents. Skills run under their bare names, so `/research:research` becomes the `research` skill.
 
 ## Pick a runner
 
