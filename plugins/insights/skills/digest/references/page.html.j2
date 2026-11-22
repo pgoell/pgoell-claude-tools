@@ -35,7 +35,7 @@
     <div class="sec"><span class="eyebrow">Fix</span>
       <div class="fix"><pre>{% for t, line in p.fix %}<span class="{{ {'a': 'add', 'd': 'del'}.get(t, '') }}">{{ line }}</span>{% if not loop.last %}
 {% endif %}{% endfor %}</pre>
-        <div class="fix-foot"><span class="dest">Goes to <code>{{ p.destination }}</code>{% if p.destination_note %}, {{ p.destination_note }}{% endif %}</span><span class="action">{{ p.action }}</span></div>
+        <div class="fix-foot"><span class="dest">Goes to <code>{{ p.destination }}</code>{% if p.destination_note %}, {{ p.destination_note }}{% endif %}</span><span class="action">{{ p.action }}{% if p.form %}, {{ p.form }}{% endif %}</span></div>
       </div>
     </div>
     <div class="evidence">Evidence: {{ p.evidence | join(", ") }}</div>

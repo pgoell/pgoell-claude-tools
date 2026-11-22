@@ -90,7 +90,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `presentations` 0.8.7: `designing-presentations`, `building-pptx-decks`, `creating-presentations`, `editing-presentations`, `exporting-presentations-to-pptx`, `extracting-presets`
 - `diagrams` 0.1.6: `creating-diagrams`
 - `news` 0.11.7: `edition`, `feedback`, `tune`
-- `insights` 0.7.7: `digest`, `apply`, `activity`
+- `insights` 0.8.0: `digest`, `apply`, `activity`
 - `structure` 0.2.18: `setting-up-the-checks`, `setting-up-import-boundaries`
 - `issue-loop` 0.13.21: `running-the-loop`, `handing-over` (Claude Code only)
 - `prose-styles` 0.1.1: no skills; output styles `orwell`, `concise`, `ste`, `house` (Claude Code only)

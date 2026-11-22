@@ -1,0 +1,3 @@
+# 2026-11-22: Update
+
+insights 0.8.0. The digest's judging gains a ranked form of the fix: `code`, then `check`, then `hook`, and `prose` last; a problem whose rule already failed moves one form up, and a fact about one repo goes to its tasks, config or checks before its instruction file. Each problem that opens a pull request carries `form`, which the page shows; from the page of 2026-11-23 on, `render.py` refuses a pull-request card with no form and a prose fix with no reason in `destination_note`, while day files from before still render. `tests/digest.sh` covers the check, and the README states the test counts of 2026-11-22. Pages changed: `reference/plugins/insights.md`.

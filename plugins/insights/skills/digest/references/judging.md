@@ -40,9 +40,9 @@ Read `memory/problems.jsonl` (one line per fingerprint) and
 - A fingerprint with verdict `applied` that still hits after its
   `verdict_date` is `doc`: the fix went out and did not hold. Count only the
   `series` days after that date; hits on or before it say nothing about the
-  fix. Propose a stronger fix (a hook instead of a sentence), never the same
-  one again. A hook that replaces a sentence removes that sentence in the
-  same change.
+  fix. Propose a stronger fix, one form up where there is one (see Form of
+  the fix), never the same one again. A hook that replaces a sentence removes
+  that sentence in the same change.
 - A fingerprint with verdict `pending` has a PR open (`ref`). Its fix has not
   gone out, so its hits never mean the fix failed. Keep its status from the
   rules below, say in `why` that the PR is open, and propose no new fix while
@@ -81,9 +81,9 @@ Grep the destination first. `rg -n -i '<key words>'` over:
 - `~/.claude/projects/<project folder>/memory/`;
 - the hooks in `~/Code/pgoell-claude-tools/plugins/guards/hooks/`.
 
-If the rule is there, the problem is `doc` and the fix is a hook, a rewording
-or a move to where the agent reads it before acting, never the same sentence
-again.
+If the rule is there, the problem is `doc` and the fix moves one form up.
+Reword the sentence or move it to where the agent reads it before acting only
+when no higher form fits, and never propose the same sentence again.
 
 ## Verify the cause
 
@@ -98,20 +98,40 @@ showed a live session's MCP owned that browser, so the hook would have broken
 a working session. A fix that kills, deletes or resets something needs a
 verified cause, or it becomes `Watch only` with the check that would settle it.
 
+## Form of the fix
+
+Take the first form that works. A sentence comes last, because nothing fails
+when an agent skips it.
+
+1. `code`: change the repo so the mistake cannot happen: one task or script
+   for the job, a config value, one source for a hand-kept list, the
+   misleading example deleted.
+2. `check`: a lint rule, type, test or CI step that fails on the mistake and
+   names the remedy. Where old cases exist, it fails on new ones only, and
+   the fix says how many old ones remain.
+3. `hook`: a guard at the moment of the action, for a command trap or an act
+   that cannot be undone.
+4. `prose`: a line in an instruction file or skill, for judgement and
+   preferences that nothing can test.
+
+Set `form` to the first of these the fix holds. A `prose` fix says in
+`destination_note`, in a few words, why 1 to 3 do not fit ("how reports to
+the user read", "the repo has no lint", "too big for one PR: 40 old errors").
+
 ## Destination and action
 
-| Problem                                          | Destination                                                    | Action               |
-| ------------------------------------------------ | -------------------------------------------------------------- | -------------------- |
-| Agent behaviour across projects                  | `pgoell-claude-tools/dotclaude/CLAUDE.md`                      | Opens a PR           |
-| A rule that exists and fails; a command trap     | a hook in `pgoell-claude-tools/plugins/guards/`                | Opens a PR           |
-| A skill or plugin of this marketplace misbehaves | that plugin in `pgoell-claude-tools`                           | Opens a PR           |
-| A fact about one repo: build, test, a quirk      | that repo's `CLAUDE.md` or `AGENTS.md`, wherever it keeps them | Opens a PR           |
-| Host gap: a tool missing, a package to install   | the daily note's `## TODOs`                                    | Adds a todo          |
-| A project decision or open loop in the vault     | the daily note's `## TODOs`, naming the project note           | Adds a todo          |
-| The newspaper's sources, sections or writing     | `05 Newspaper/feedback.md`                                     | Adds a feedback line |
-| The newspaper's code or cron wrapper             | `pgoell-claude-tools/plugins/news`                             | Opens a PR           |
-| Fading, or a cause you could not verify          | nothing yet                                                    | Watch only           |
-| Health, mood, money, private life, client names  | nowhere: no card, no `seen` row                                |                      |
+| Problem                                                     | Destination                                                                                               | Action               |
+| ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------- |
+| Agent behaviour across projects, where only a sentence fits | `pgoell-claude-tools/dotclaude/CLAUDE.md`                                                                 | Opens a PR           |
+| A rule that exists and fails; a command trap                | a hook in `pgoell-claude-tools/plugins/guards/`                                                           | Opens a PR           |
+| A skill or plugin of this marketplace misbehaves            | that plugin in `pgoell-claude-tools`                                                                      | Opens a PR           |
+| A fact about one repo: build, test, a quirk                 | that repo: its tasks, config or checks first, else its `CLAUDE.md` or `AGENTS.md`, wherever it keeps them | Opens a PR           |
+| Host gap: a tool missing, a package to install              | the daily note's `## TODOs`                                                                               | Adds a todo          |
+| A project decision or open loop in the vault                | the daily note's `## TODOs`, naming the project note                                                      | Adds a todo          |
+| The newspaper's sources, sections or writing                | `05 Newspaper/feedback.md`                                                                                | Adds a feedback line |
+| The newspaper's code or cron wrapper                        | `pgoell-claude-tools/plugins/news`                                                                        | Opens a PR           |
+| Fading, or a cause you could not verify                     | nothing yet                                                                                               | Watch only           |
+| Health, mood, money, private life, client names             | nowhere: no card, no `seen` row                                                                           |                      |
 
 That row is about substance: a problem that only names a person who did something (a commit author, a PR reviewer) still gets its card.
 
