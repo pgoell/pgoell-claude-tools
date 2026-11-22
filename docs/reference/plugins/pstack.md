@@ -14,6 +14,8 @@ Lauren Tan's ("poteto") agent workflow skills: `/pstack:poteto-mode` picks a pla
 
 Not in Codex: the upstream ships no Codex manifest. Not in this repo's Cursor marketplace either, because Cursor's own marketplace offers `pstack` directly. See [Runtimes](/reference/runtimes.md).
 
+For Codex or another agent, `npx skills add cursor/plugins` (or `bunx`) installs the skills straight from upstream; it finds all 58, plus the two of Cursor's `origin-apps`. It copies skills only, so `/pstack:no-comments` and the other skills that start a subagent lose `comment-sicko` and `poteto-agent`. `npx skills add pgoell/pgoell-claude-tools` skips upstream entries and does not offer pstack.
+
 **Source:** upstream, not vendored: a `git-subdir` entry that tracks [cursor/plugins](https://github.com/cursor/plugins) `main` unpinned, folder `harness/pstack/claude-code`, which upstream generates for Claude Code from `pstack/` (MIT, copyright 2026 Lauren Tan).
 
 **Setup:** None beyond install. `/pstack:setup-pstack` picks the model and reasoning budget for each role. The plugin adds about 4,700 tokens to every session.
