@@ -40,9 +40,9 @@ Read `memory/problems.jsonl` (one line per fingerprint) and
 - A fingerprint with verdict `applied` that still hits after its
   `verdict_date` is `doc`: the fix went out and did not hold. Count only the
   `series` days after that date; hits on or before it say nothing about the
-  fix. Propose a stronger fix, one form up where there is one (see Form of
-  the fix), never the same one again. A hook that replaces a sentence removes
-  that sentence in the same change.
+  fix. Propose a stronger fix, in a higher form where there is one (see Form
+  of the fix), never the same one again. A hook that replaces a sentence
+  removes that sentence in the same change.
 - A fingerprint with verdict `pending` has a PR open (`ref`). Its fix has not
   gone out, so its hits never mean the fix failed. Keep its status from the
   rules below, say in `why` that the PR is open, and propose no new fix while
@@ -81,9 +81,10 @@ Grep the destination first. `rg -n -i '<key words>'` over:
 - `~/.claude/projects/<project folder>/memory/`;
 - the hooks in `~/Code/pgoell-claude-tools/plugins/guards/hooks/`.
 
-If the rule is there, the problem is `doc` and the fix moves one form up.
-Reword the sentence or move it to where the agent reads it before acting only
-when no higher form fits, and never propose the same sentence again.
+If the rule is there, the problem is `doc`: the sentence did not hold, so take
+the first higher form that works (see Form of the fix). Reword the sentence or
+move it to where the agent reads it before acting only when no higher form
+fits, and never propose the same sentence again.
 
 ## Verify the cause
 
