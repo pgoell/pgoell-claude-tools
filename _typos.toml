@@ -30,4 +30,5 @@ ist = "ist"
 [files]
 # The news designs print German page chrome ("Foto", "Juli", "Sie"), which an
 # English spell check cannot read.
-extend-exclude = ["plugins/news/skills/edition/designs/*/*.j2"]
+# plugins/pstack mirrors upstream text verbatim (mise-tasks/sync-pstack).
+extend-exclude = ["plugins/news/skills/edition/designs/*/*.j2", "plugins/pstack/**"]

@@ -8,7 +8,7 @@ status: stable
 
 # Upstream skills at a glance
 
-Every skill from the six plugins the marketplace points at by git URL (ponytail, emil, taste-skill, vercel, unslop and pstack), in marketplace order. Their authors maintain them upstream; the skills of this repo's own plugins are in [Skills at a glance](/reference/skills.md). Invoke a skill with its full name, `/<plugin>:<skill>`. Most pstack skills run only as slash commands. The names are Claude Code's; Codex names the taste-skill skill differently, and [taste-skill](/reference/plugins/taste-skill.md) lists both.
+Every skill from the five plugins the marketplace points at by git URL (ponytail, emil, taste-skill, vercel and unslop) and from pstack, which it mirrors, in marketplace order. Their authors maintain them upstream; the skills of this repo's own plugins are in [Skills at a glance](/reference/skills.md). Invoke a skill with its full name, `/<plugin>:<skill>`. Most pstack skills run only as slash commands. The names are Claude Code's; Codex names the taste-skill skill differently, and [taste-skill](/reference/plugins/taste-skill.md) lists both.
 
 | Skill                                        | Plugin                                           | What it does                                                                                     |
 | -------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------ |

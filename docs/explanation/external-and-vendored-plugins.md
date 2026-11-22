@@ -16,18 +16,17 @@ A vendored plugin's files sit in this repository. Every change to it goes throug
 
 ## External plugins
 
-`ponytail`, `emil`, `taste-skill`, `vercel`, `unslop` and `pstack` have no folder under `plugins/`. Their marketplace entries hold a git URL:
+`ponytail`, `emil`, `taste-skill`, `vercel` and `unslop` have no folder under `plugins/`. Their marketplace entries hold a git URL:
 
-| Plugin        | Upstream                                                                          | Runtimes              |
-| ------------- | --------------------------------------------------------------------------------- | --------------------- |
-| `ponytail`    | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail)             | Claude Code and Codex |
-| `emil`        | [emilkowalski/skill](https://github.com/emilkowalski/skill)                       | Claude Code           |
-| `taste-skill` | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill)                   | Claude Code and Codex |
-| `vercel`      | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills)           | Claude Code           |
-| `unslop`      | [heydamir/unslop](https://github.com/heydamir/unslop)                             | Claude Code           |
-| `pstack`      | [cursor/plugins](https://github.com/cursor/plugins), `harness/pstack/claude-code` | Claude Code           |
+| Plugin        | Upstream                                                                | Runtimes              |
+| ------------- | ----------------------------------------------------------------------- | --------------------- |
+| `ponytail`    | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail)   | Claude Code and Codex |
+| `emil`        | [emilkowalski/skill](https://github.com/emilkowalski/skill)             | Claude Code           |
+| `taste-skill` | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill)         | Claude Code and Codex |
+| `vercel`      | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) | Claude Code           |
+| `unslop`      | [heydamir/unslop](https://github.com/heydamir/unslop)                   | Claude Code           |
 
-`ponytail`, `emil`, `taste-skill`, `vercel` and `pstack` are MIT licensed; `unslop` is CC BY 4.0, whose credit stays in the upstream files this repo links to. This shape fits when an upstream is permissive and you want its whole surface (skills, commands, hooks) as its author ships it, not a copy of the skill text.
+The first four are MIT licensed; `unslop` is CC BY 4.0, whose credit stays in the upstream files this repo links to. This shape fits when an upstream is permissive and you want its whole surface (skills, commands, hooks) as its author ships it, not a copy of the skill text.
 
 None of the entries pins a commit or a version. When you refresh the marketplace you get whatever the upstream's `main` holds that day. That has three consequences:
 
@@ -35,7 +34,18 @@ None of the entries pins a commit or a version. When you refresh the marketplace
 - Code you have not reviewed runs on your machine after a refresh. `ponytail`, for example, ships hooks that run in every session. If that matters to you, read the upstream change before you update.
 - This repository's rules (the dash lint, the version lockstep, the frontmatter checks) do not cover upstream files, because none are copied here.
 
-`emil`, `vercel` and `unslop` are Claude Code only: they ship no plugin manifest at all. `pstack` is Claude Code only too: its repo ships a Cursor and a Claude Code manifest but no Codex one. `taste-skill` shipped no Codex manifest when it was added; upstream added one on 2026-10-13, and the Codex marketplace has listed it since 2026-10-18.
+`emil`, `vercel` and `unslop` are Claude Code only: they ship no plugin manifest at all. `taste-skill` shipped no Codex manifest when it was added; upstream added one on 2026-10-13, and the Codex marketplace has listed it since 2026-10-18.
+
+## Synced mirrors
+
+`pstack` has a folder under `plugins/` that no one writes by hand. `mise run sync-pstack` copies [cursor/plugins](https://github.com/cursor/plugins) `harness/pstack/claude-code` (the Claude Code tree upstream generates from `pstack/`, MIT, copyright Lauren Tan) into `plugins/pstack/` at a commit, adds the `.codex-plugin/plugin.json` upstream lacks, writes `NOTICE` with the commit, sets the version from upstream in `.claude-plugin/marketplace.json` and `AGENTS.md`, and regenerates the Cursor manifests. The `Sync pstack mirror` workflow runs it every Monday and opens or updates one pull request when upstream changed.
+
+A git-URL entry was tried first (2026-11-22) and reached Claude Code only: Codex installs a git folder only when it holds a Codex manifest, and the skills CLI offers only local entries. A mirror reaches all four (Claude Code, Codex, Cursor, the skills CLI), and the owner asked that every entry support all of them. The cost:
+
+- The mirror lags upstream by up to a week, or until the sync pull request merges.
+- The bytes are upstream's, so this repo's text rules skip `plugins/pstack/`: file size, fan-out, dprint and typos exclude it, and the model-invocation check passes over it (most pstack skills are slash-command only). It still holds U+2014 dashes, accepted like the `deprecated` debt.
+- The version lockstep still applies. A sync pull request whose upstream changed files without a new version fails the version check, which is the cue to read the change.
+- The skills CLI and Codex copy skills only, so the `comment-sicko` and `poteto-agent` subagents exist only in Claude Code and Cursor.
 
 ## Ports with attribution
 
@@ -70,7 +80,7 @@ Four consequences:
 
 The docs sites for a new plugin still apply, minus any `plugins/<name>/README.md`, since there is no local folder.
 
-Two later entries (2026-10) broke the both-runtimes condition and went into `.claude-plugin/marketplace.json` only, with [Runtimes](/reference/runtimes.md) saying why, the same shape `prose-styles` uses. `taste-skill` (`Leonxlnx/taste-skill`, MIT, added for trial) shipped only `.claude-plugin/plugin.json`. Upstream added `.codex-plugin/plugin.json` on 2026-10-13, so on 2026-10-18 it joined `.agents/plugins/marketplace.json` as well. `emil` (`emilkowalski/skill`, MIT) ships no manifest at all, so its entry sets `"strict": false`: the marketplace entry serves as the manifest and Claude Code finds `skills/` by convention. A third, `vercel` (`vercel-labs/agent-skills`), has the same no-manifest shape. Its license is MIT per the repo README and skill frontmatter, with no `LICENSE` file; that is fine for a linked plugin because nothing is vendored, but a port would need the LICENSE file read first. `unslop` (`heydamir/unslop`, CC BY 4.0, license read from its `LICENSE`) followed on 2026-11-02 in the same no-manifest shape, after it beat `taste-skill` on one trial screen by keeping the existing brand; both stay, because `taste-skill` also builds new pages. `pstack` (`cursor/plugins`, MIT, copyright Lauren Tan, license read from `pstack/LICENSE`) followed on 2026-11-22. It is the first entry with a `git-subdir` source: the Cursor plugin repo holds several plugins, and Claude Code installs a copy generated into `harness/pstack/claude-code/`, which carries its own `.claude-plugin/plugin.json`, so the entry needs no `strict: false`. Cursor users get `pstack` from Cursor's own marketplace.
+Two later entries (2026-10) broke the both-runtimes condition and went into `.claude-plugin/marketplace.json` only, with [Runtimes](/reference/runtimes.md) saying why, the same shape `prose-styles` uses. `taste-skill` (`Leonxlnx/taste-skill`, MIT, added for trial) shipped only `.claude-plugin/plugin.json`. Upstream added `.codex-plugin/plugin.json` on 2026-10-13, so on 2026-10-18 it joined `.agents/plugins/marketplace.json` as well. `emil` (`emilkowalski/skill`, MIT) ships no manifest at all, so its entry sets `"strict": false`: the marketplace entry serves as the manifest and Claude Code finds `skills/` by convention. A third, `vercel` (`vercel-labs/agent-skills`), has the same no-manifest shape. Its license is MIT per the repo README and skill frontmatter, with no `LICENSE` file; that is fine for a linked plugin because nothing is vendored, but a port would need the LICENSE file read first. `unslop` (`heydamir/unslop`, CC BY 4.0, license read from its `LICENSE`) followed on 2026-11-02 in the same no-manifest shape, after it beat `taste-skill` on one trial screen by keeping the existing brand; both stay, because `taste-skill` also builds new pages.
 
 Claude Code names a plugin skill after its folder, not its frontmatter `name:`. This was checked at install: taste-skill's `skills/taste-skill/` with `name: design-taste-frontend` loads as `taste-skill:taste-skill`. So docs name external skills by folder. Codex takes the frontmatter `name:` instead: an install on 2026-10-18 showed the same skill as `taste-skill:design-taste-frontend`. So the taste-skill page lists the Codex names beside the Claude Code ones. Upstream skills with `disable-model-invocation: true` (three in `emil`) run only as slash commands.
 

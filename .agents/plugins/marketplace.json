@@ -293,6 +293,22 @@
       }
     },
     {
+      "name": "pstack",
+      "source": {
+        "source": "local",
+        "path": "./plugins/pstack"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools",
+      "interface": {
+        "displayName": "pstack",
+        "shortDescription": "Lauren Tan's agent workflows, no-comments and principle skills"
+      }
+    },
+    {
       "name": "deprecated",
       "source": {
         "source": "local",

@@ -83,6 +83,9 @@ Tracked from upstream, not vendored:
 - [taste-skill](docs/reference/plugins/taste-skill.md): frontend design skills against generic output.
 - [vercel](docs/reference/plugins/vercel.md): Vercel's React, Next.js and deploy skills.
 - [unslop](docs/reference/plugins/unslop.md): takes the AI look out of an existing screen.
+
+Mirrored from upstream, synced weekly:
+
 - [pstack](docs/reference/plugins/pstack.md): Lauren Tan's agent workflow skills, among them `no-comments`.
 
 Archive:

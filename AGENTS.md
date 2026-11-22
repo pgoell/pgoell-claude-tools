@@ -101,7 +101,7 @@ One line per plugin: name, version, skills. Descriptions live in `docs/reference
 - `taste-skill` upstream: `taste-skill`
 - `vercel` upstream: `react-best-practices`, `composition-patterns`, `react-view-transitions`, `react-native-skills`, `web-design-guidelines`, `writing-guidelines`, `deploy-to-vercel`, `vercel-cli-with-tokens`, `vercel-optimize` (Claude Code only)
 - `unslop` upstream: `unslop` (Claude Code only)
-- `pstack` upstream: `poteto-mode`, `no-comments`, and 56 more (Claude Code only)
+- `pstack` 0.15.46 (mirror): `poteto-mode`, `no-comments`, and 56 more
 - `deprecated` 0.5.1: frozen archive of `crafting-presentations`, `perfecting-presentations`, `exporting-decks-to-pptx`, `presentations`, `autopilot`, `copilot`, `dispatching-parallel-agents`, `terse-mode`, `writing`, `pyramid`, `tech-doc`, `frontend-design`, and the 12 former `workbench` skills (`pilot`, `using-workbench`, `brainstorming`, `writing-spec`, `writing-plans`, `visualizing-options`, `test-driven-development`, `subagent-driven-development`, `systematic-debugging`, `verification-before-completion`, `crafting-html`, `crafting-design-systems`)
 
 ## How to Develop a New Skill
@@ -154,7 +154,7 @@ User docs live in `docs/`, a Diátaxis tree in Open Knowledge Format v0.2. Read 
 
 ### Skill design patterns ([skill-design-patterns](docs/explanation/skill-design-patterns.md))
 
-- **Every skill is model-invocable.** No skill in this repo sets `disable-model-invocation` or ships an `agents/openai.yaml` with `allow_implicit_invocation: false` (the user's wish, 2026-10-19); `validate-plugin-schema` fails on the flag. Every description stays under about 100 words (500 characters). Upstream entries (`emil`) are outside this rule.
+- **Every skill is model-invocable.** No skill in this repo sets `disable-model-invocation` or ships an `agents/openai.yaml` with `allow_implicit_invocation: false` (the user's wish, 2026-10-19); `validate-plugin-schema` fails on the flag. Every description stays under about 100 words (500 characters). Upstream entries (`emil`) and mirrors (`pstack`) are outside it.
 
 ### Task-specific rules (`docs/reference/conventions/`)
 
@@ -162,7 +162,7 @@ Read the page when the task is of its kind; each page states its rules in full a
 
 - Shipping code in a skill ("Skills may ship code"): [developing-a-skill](docs/reference/conventions/developing-a-skill.md).
 - Porting from an upstream repo (license shapes, "Upstream-port attribution", dash substitution): [ports-and-licenses](docs/reference/conventions/ports-and-licenses.md).
-- Adding a git-URL entry or retiring a skill to `deprecated`: [external-and-deprecated-plugins](docs/reference/conventions/external-and-deprecated-plugins.md).
+- Adding a git-URL entry or mirror, or retiring a skill to `deprecated`: [external-and-deprecated-plugins](docs/reference/conventions/external-and-deprecated-plugins.md).
 - Adding, splitting or grouping skills ("One skill per service", workflow protocols, the `agents/` slot, "Unregistered plugin directories", sibling references, producer/renderer pairs): [skill-design-patterns](docs/reference/conventions/skill-design-patterns.md).
 - Changing a skill that writes HTML, a template's CSS variables, a presentations preset or a diagram theme: [html-producers-presets-and-themes](docs/reference/conventions/html-producers-presets-and-themes.md).
 - Adding an output style or a plugin without skills: [plugins-without-skills](docs/reference/conventions/plugins-without-skills.md).

@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+#MISE description="Mirror pstack from cursor/plugins into plugins/pstack at a commit (default: main) and refresh its manifests"
+set -euo pipefail
+
+# plugins/pstack is a mirror, not a port: every byte under it except
+# .codex-plugin/, .cursor-plugin/ and NOTICE comes from upstream's generated
+# Claude Code tree, harness/pstack/claude-code in cursor/plugins. Never edit
+# the mirrored files; re-run this task. It writes the Codex manifest (upstream
+# ships none), NOTICE with the commit, the version in
+# .claude-plugin/marketplace.json and AGENTS.md, and the Cursor manifests.
+#
+# Usage: mise run sync-pstack              mirror upstream main
+#        mise run sync-pstack -- <sha>     mirror one commit
+
+REF="${1:-main}"
+REPO="https://github.com/cursor/plugins.git"
+SUBDIR="harness/pstack/claude-code"
+DEST="plugins/pstack"
+
+work="$(mktemp -d)"
+trap 'rm -rf "$work"' EXIT
+
+git -c advice.detachedHead=false clone -q --filter=blob:none --no-checkout "$REPO" "$work/up"
+git -C "$work/up" sparse-checkout set --no-cone "/$SUBDIR/"
+git -C "$work/up" checkout -q "$REF"
+sha="$(git -C "$work/up" rev-parse HEAD)"
+src="$work/up/$SUBDIR"
+[ -f "$src/.claude-plugin/plugin.json" ] || {
+  echo "sync-pstack: $SUBDIR has no .claude-plugin/plugin.json at $sha" >&2
+  exit 1
+}
+
+find "$DEST" -mindepth 1 -maxdepth 1 ! -name .codex-plugin ! -name .cursor-plugin ! -name NOTICE \
+  -exec rm -rf {} + 2>/dev/null || true
+mkdir -p "$DEST/.codex-plugin"
+cp -a "$src/." "$DEST/"
+
+version="$(jq -r .version "$DEST/.claude-plugin/plugin.json")"
+
+jq --arg v "$version" '{
+  name, version: $v, description, author, license, homepage, repository, keywords,
+  skills: "./skills/",
+  interface: {
+    displayName: "pstack",
+    shortDescription: "Lauren Tan'"'"'s agent workflows, no-comments and principle skills",
+    developerName: .author.name,
+    category: "Developer Tools",
+    capabilities: ["Interactive", "Write"],
+    defaultPrompt: ["Use $poteto-mode for this task", "Use $no-comments on my diff"],
+    screenshots: []
+  }
+}' "$DEST/.claude-plugin/plugin.json" >"$DEST/.codex-plugin/plugin.json"
+
+cat >"$DEST/NOTICE" <<EOF
+pstack, mirrored from https://github.com/cursor/plugins
+Path: $SUBDIR (generated upstream from pstack/)
+Commit: $sha
+License: MIT, Copyright (c) 2026 Lauren Tan (see LICENSE, copied verbatim)
+
+Every file in this folder except .codex-plugin/, .cursor-plugin/ and this
+NOTICE is a verbatim copy of that path at that commit, written by
+mise-tasks/sync-pstack. No text was changed: no dash substitution, no edits.
+.codex-plugin/plugin.json is generated from .claude-plugin/plugin.json.
+EOF
+
+tmp="$work/market.json"
+jq --arg v "$version" '(.plugins[] | select(.name == "pstack") | .version) = $v' \
+  .claude-plugin/marketplace.json >"$tmp" && mv "$tmp" .claude-plugin/marketplace.json
+sed -i -E "s/^- \`pstack\` [0-9]+\.[0-9]+\.[0-9]+ \(mirror\)/- \`pstack\` $version (mirror)/" AGENTS.md
+
+mise-tasks/sync-cursor-manifests
+echo "Mirrored pstack $version from $sha."

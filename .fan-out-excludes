@@ -8,6 +8,8 @@ plugins
 docs/reference/plugins
 # one file per docs change, by design (docs/log.md)
 docs/log
+# mirrored upstream, written by mise-tasks/sync-pstack
+plugins/pstack/**
 # frozen archive
 plugins/deprecated/**
 # one folder per eval case, a list by design

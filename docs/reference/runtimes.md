@@ -37,7 +37,7 @@ Each runtime reads its own marketplace file: Claude Code reads `.claude-plugin/m
 | [taste-skill](/reference/plugins/taste-skill.md)                         | yes         | yes   | no     |
 | [vercel](/reference/plugins/vercel.md)                                   | yes         | no    | no     |
 | [unslop](/reference/plugins/unslop.md)                                   | yes         | no    | no     |
-| [pstack](/reference/plugins/pstack.md)                                   | yes         | no    | no     |
+| [pstack](/reference/plugins/pstack.md)                                   | yes         | yes   | yes    |
 | [deprecated](/reference/plugins/deprecated.md)                           | yes         | yes   | no     |
 
 ## Why some are absent from Codex
@@ -46,7 +46,6 @@ Each runtime reads its own marketplace file: Claude Code reads `.claude-plugin/m
 - **prose-styles**: Codex has no output-style mechanism.
 - **guards** and **session-title**: their hooks use Claude Code's hook format.
 - **emil**, **vercel** and **unslop**: the upstream repos ship no plugin manifest at all.
-- **pstack**: the upstream ships Cursor and Claude Code manifests, no Codex one.
 
 ## Why some are absent from Cursor
 
@@ -57,14 +56,14 @@ The generator skips the plugins on its `EXCLUDE` list and every upstream entry.
 - **guards**: its hook uses Claude Code's `PreToolUse` format; it would need a port to Cursor's `beforeShellExecution`.
 - **session-title**: it sets a Claude Code session title, which Cursor has no equivalent for.
 - **deprecated**: a frozen archive.
-- **ponytail**, **emil**, **taste-skill**, **vercel**, **unslop** and **pstack**: upstream repos, with no local directory to carry a generated Cursor manifest.
+- **ponytail**, **emil**, **taste-skill**, **vercel** and **unslop**: upstream repos, with no local directory to carry a generated Cursor manifest.
 
 ## The skills CLI
 
-`npx skills add pgoell/pgoell-claude-tools` (or `bunx`) reads `.claude-plugin/marketplace.json` and offers every local skill to about 80 agents, outside the three marketplaces above. It skips upstream entries and carries no hooks or output styles. The `deprecated` and `issue-loop` skills set `metadata.internal: true`, so the CLI hides them unless `INSTALL_INTERNAL_SKILLS=1` is set. It copies one skill folder at a time, so a skill must not read files above its plugin's `skills/` folder; the presentations presets are the one known exception. See [Install with the skills CLI](/how-to/install-with-skills-cli.md).
+`npx skills add pgoell/pgoell-claude-tools` (or `bunx`) reads `.claude-plugin/marketplace.json` and offers every local skill to about 80 agents, outside the three marketplaces above. It skips upstream entries and carries no hooks or output styles. It offers the `pstack` mirror's skills, without its subagents. The `deprecated` and `issue-loop` skills set `metadata.internal: true`, so the CLI hides them unless `INSTALL_INTERNAL_SKILLS=1` is set. It copies one skill folder at a time, so a skill must not read files above its plugin's `skills/` folder; the presentations presets are the one known exception. See [Install with the skills CLI](/how-to/install-with-skills-cli.md).
 
 ## Model invocation
 
-Every skill in this repo is model-invocable in all three runtimes: none sets `disable-model-invocation` (Claude Code, Cursor) or ships an `agents/openai.yaml` with `allow_implicit_invocation: false` (Codex). Upstream entries such as `emil` and `pstack` follow their own rules.
+Every skill in this repo is model-invocable in all three runtimes: none sets `disable-model-invocation` (Claude Code, Cursor) or ships an `agents/openai.yaml` with `allow_implicit_invocation: false` (Codex). Upstream entries such as `emil`, and the `pstack` mirror, follow their own rules.
 
 Why one skill directory serves all three runtimes: [Shared skills](/explanation/shared-skills.md).
