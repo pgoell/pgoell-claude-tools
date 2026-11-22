@@ -1,0 +1,9 @@
+pstack, mirrored from https://github.com/cursor/plugins
+Path: harness/pstack/claude-code (generated upstream from pstack/)
+Commit: 7a583913eb1b8d1a0ee76753d1a2cf072e7b54f9
+License: MIT, Copyright (c) 2026 Lauren Tan (see LICENSE, copied verbatim)
+
+Every file in this folder except .codex-plugin/, .cursor-plugin/ and this
+NOTICE is a verbatim copy of that path at that commit, written by
+mise-tasks/sync-pstack. No text was changed: no dash substitution, no edits.
+.codex-plugin/plugin.json is generated from .claude-plugin/plugin.json.

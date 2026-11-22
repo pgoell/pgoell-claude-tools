@@ -168,6 +168,12 @@
       "strict": false
     },
     {
+      "name": "pstack",
+      "source": "./plugins/pstack",
+      "description": "Lauren Tan's agent workflow skills, mirrored from Cursor's plugin repo: poteto-mode playbooks, no-comments with the Comment Sicko subagent, architect, interrogate, tdd, and 24 principle skills. Most run as slash commands only.",
+      "version": "0.15.46"
+    },
+    {
       "name": "deprecated",
       "source": "./plugins/deprecated",
       "description": "Archive of superseded and retired skills kept installable for old workflows; each skill names its replacement or says it retired.",

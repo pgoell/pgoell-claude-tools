@@ -86,6 +86,11 @@
       "name": "structure",
       "source": "./plugins/structure",
       "description": "Keep a repo easy for agents to read: cap authored files at 5000 tokens, cap folders at 7 entries, warn Claude Code at edit time, and set up import boundaries between modules."
+    },
+    {
+      "name": "pstack",
+      "source": "./plugins/pstack",
+      "description": "Lauren Tan's agent workflow skills, mirrored from Cursor's plugin repo: poteto-mode playbooks, no-comments with the Comment Sicko subagent, architect, interrogate, tdd, and 24 principle skills. Most run as slash commands only."
     }
   ]
 }

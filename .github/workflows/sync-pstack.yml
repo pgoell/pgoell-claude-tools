@@ -1,0 +1,60 @@
+name: Sync pstack mirror
+
+# Re-mirrors plugins/pstack from cursor/plugins main and opens or updates one
+# pull request when upstream changed. A pull request opened with the default
+# GITHUB_TOKEN starts no workflows, so PR validation would not run on it; set
+# the MIRROR_PR_TOKEN secret (a token with contents and pull-requests write)
+# to have the checks run.
+on:
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sync-pstack
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BRANCH: chore/sync-pstack
+      GH_TOKEN: ${{ secrets.MIRROR_PR_TOKEN || github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.MIRROR_PR_TOKEN || github.token }}
+      - uses: jdx/mise-action@v2
+      - run: mise run sync-pstack
+      - id: diff
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "pstack mirror is up to date." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "version=$(jq -r .version plugins/pstack/.claude-plugin/plugin.json)" >> "$GITHUB_OUTPUT"
+            echo "sha=$(sed -n 's/^Commit: //p' plugins/pstack/NOTICE)" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.diff.outputs.changed == 'true'
+        env:
+          VERSION: ${{ steps.diff.outputs.version }}
+          SHA: ${{ steps.diff.outputs.sha }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$BRANCH"
+          git commit -q -m "chore(pstack): sync mirror to $VERSION" -m "Upstream cursor/plugins commit $SHA."
+          git push --force origin "$BRANCH"
+          body="Re-mirrors \`plugins/pstack\` from cursor/plugins \`$SHA\` (pstack $VERSION), written by \`mise run sync-pstack\`. Read the upstream change before you merge: the mirror runs unreviewed upstream text and agents. If the version check fails, upstream changed files without bumping its version."
+          if [ "$(gh pr list --head "$BRANCH" --state open --json number --jq length)" = 0 ]; then
+            gh pr create --base master --head "$BRANCH" --title "chore(pstack): sync mirror to $VERSION" --body "$body"
+          else
+            gh pr edit "$BRANCH" --title "chore(pstack): sync mirror to $VERSION" --body "$body"
+          fi

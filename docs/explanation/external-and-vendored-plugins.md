@@ -36,6 +36,17 @@ None of the entries pins a commit or a version. When you refresh the marketplace
 
 `emil`, `vercel` and `unslop` are Claude Code only: they ship no plugin manifest at all. `taste-skill` shipped no Codex manifest when it was added; upstream added one on 2026-10-13, and the Codex marketplace has listed it since 2026-10-18.
 
+## Synced mirrors
+
+`pstack` has a folder under `plugins/` that no one writes by hand. `mise run sync-pstack` copies [cursor/plugins](https://github.com/cursor/plugins) `harness/pstack/claude-code` (the Claude Code tree upstream generates from `pstack/`, MIT, copyright Lauren Tan) into `plugins/pstack/` at a commit, adds the `.codex-plugin/plugin.json` upstream lacks, writes `NOTICE` with the commit, sets the version from upstream in `.claude-plugin/marketplace.json` and `AGENTS.md`, and regenerates the Cursor manifests. The `Sync pstack mirror` workflow runs it every Monday and opens or updates one pull request when upstream changed.
+
+A git-URL entry was tried first (2026-11-22) and reached Claude Code only: Codex installs a git folder only when it holds a Codex manifest, and the skills CLI offers only local entries. A mirror reaches all four (Claude Code, Codex, Cursor, the skills CLI), and the owner asked that every entry support all of them. The cost:
+
+- The mirror lags upstream by up to a week, or until the sync pull request merges.
+- The bytes are upstream's, so this repo's text rules skip `plugins/pstack/`: file size, fan-out, dprint and typos exclude it, and the model-invocation check passes over it (most pstack skills are slash-command only). It still holds U+2014 dashes, accepted like the `deprecated` debt.
+- The version lockstep still applies. A sync pull request whose upstream changed files without a new version fails the version check, which is the cue to read the change.
+- The skills CLI and Codex copy skills only, so the `comment-sicko` and `poteto-agent` subagents exist only in Claude Code and Cursor.
+
 ## Ports with attribution
 
 A port copies upstream files into this repository and records where they came from. The upstream license decides the paperwork: a `LICENSE`, a `NOTICE` that maps each copied file to its source and commit, and a Credits section in the plugin's README.

@@ -9,5 +9,8 @@
 plugins/diagrams/skills/creating-diagrams/engine/**
 plugins/agent-system-management/skills/creating-skills/eval-viewer/viewer.html
 
+# mirrored upstream, written by mise-tasks/sync-pstack
+plugins/pstack/**
+
 # frozen archive
 plugins/deprecated/**

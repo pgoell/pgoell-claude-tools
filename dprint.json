@@ -5,7 +5,8 @@
   "excludes": [
     "mise.lock",
     ".github/cursor-validate/**",
-    "plugins/diagrams/skills/creating-diagrams/engine/**"
+    "plugins/diagrams/skills/creating-diagrams/engine/**",
+    "plugins/pstack/**"
   ],
   "plugins": [
     "https://plugins.dprint.dev/json-0.23.0.wasm",

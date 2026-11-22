@@ -74,8 +74,9 @@ for codex_manifest in plugins/*/.codex-plugin/plugin.json; do
 done
 
 # Every skill stays model-invocable (AGENTS.md, "Every skill is model-invocable").
-# Upstream entries have no folder under plugins/, so this covers only our own.
-if user_only="$(grep -l '^disable-model-invocation: *true' plugins/*/skills/*/SKILL.md)"; then
+# Upstream entries have no folder under plugins/, and plugins/pstack mirrors
+# upstream verbatim (mise-tasks/sync-pstack), so this covers only our own.
+if user_only="$(grep -l '^disable-model-invocation: *true' plugins/*/skills/*/SKILL.md | grep -v '^plugins/pstack/')"; then
   echo "✗ these skills set disable-model-invocation: true:" >&2
   printf '  - %s\n' $user_only >&2
   status=1
