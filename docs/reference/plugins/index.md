@@ -26,5 +26,6 @@ One page per plugin in the marketplace, in marketplace order. Each page names th
 - [emil](/reference/plugins/emil.md): Emil Kowalski's design engineering skills, tracked from upstream
 - [vercel](/reference/plugins/vercel.md): Vercel's React, Next.js and deploy skills, tracked from upstream
 - [unslop](/reference/plugins/unslop.md): takes the AI look out of an existing screen, tracked from upstream
+- [pstack](/reference/plugins/pstack.md): Lauren Tan's agent workflow skills, tracked from upstream
 - [taste-skill](/reference/plugins/taste-skill.md): frontend design against generic UI, tracked from upstream
 - [deprecated](/reference/plugins/deprecated.md): the frozen archive of superseded skills

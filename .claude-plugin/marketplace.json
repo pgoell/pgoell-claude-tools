@@ -168,6 +168,15 @@
       "strict": false
     },
     {
+      "name": "pstack",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/cursor/plugins.git",
+        "path": "harness/pstack/claude-code"
+      },
+      "description": "Lauren Tan's agent workflow skills from Cursor's plugin repo: poteto-mode playbooks, no-comments with the Comment Sicko subagent, architect, interrogate, tdd, and 24 principle skills. Most run as slash commands only. Tracked upstream, not vendored. Claude Code only."
+    },
+    {
       "name": "deprecated",
       "source": "./plugins/deprecated",
       "description": "Archive of superseded and retired skills kept installable for old workflows; each skill names its replacement or says it retired.",
