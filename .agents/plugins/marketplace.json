@@ -293,6 +293,22 @@
       }
     },
     {
+      "name": "evals",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/ai-evals-course/evals-skills.git"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity",
+      "interface": {
+        "displayName": "Evals Skills",
+        "shortDescription": "Product evals: trace review, judges, validation"
+      }
+    },
+    {
       "name": "pstack",
       "source": {
         "source": "local",

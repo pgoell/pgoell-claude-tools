@@ -8,7 +8,7 @@ status: stable
 
 # Upstream skills at a glance
 
-Every skill from the five plugins the marketplace points at by git URL (ponytail, emil, taste-skill, vercel and unslop) and from pstack, which it mirrors, in marketplace order. Their authors maintain them upstream; the skills of this repo's own plugins are in [Skills at a glance](/reference/skills.md). Invoke a skill with its full name, `/<plugin>:<skill>`. Most pstack skills run only as slash commands. The names are Claude Code's; Codex names the taste-skill skill differently, and [taste-skill](/reference/plugins/taste-skill.md) lists both.
+Every skill from the six plugins the marketplace points at by git URL (ponytail, emil, taste-skill, vercel, unslop and evals) and from pstack, which it mirrors, in marketplace order. Their authors maintain them upstream; the skills of this repo's own plugins are in [Skills at a glance](/reference/skills.md). Invoke a skill with its full name, `/<plugin>:<skill>`. Most pstack skills run only as slash commands. The names are Claude Code's; Codex names the taste-skill skill differently, and [taste-skill](/reference/plugins/taste-skill.md) lists both.
 
 | Skill                                        | Plugin                                           | What it does                                                                                     |
 | -------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
@@ -44,6 +44,15 @@ Every skill from the five plugins the marketplace points at by git URL (ponytail
 | `/vercel:vercel-cli-with-tokens`             | [vercel](/reference/plugins/vercel.md)           | Drive the Vercel CLI with access tokens.                                                         |
 | `/vercel:vercel-optimize`                    | [vercel](/reference/plugins/vercel.md)           | Tune cost and performance of deployed Vercel projects.                                           |
 | `/unslop:unslop`                             | [unslop](/reference/plugins/unslop.md)           | Audit an existing screen for the AI look, then polish it or rework it in nine ordered passes.    |
+| `/evals:evals-start`                         | [evals](/reference/plugins/evals.md)             | Entry point: route an evals request to the skill that fits.                                      |
+| `/evals:eval-audit`                          | [evals](/reference/plugins/evals.md)             | Audit an eval pipeline and rank its problems.                                                    |
+| `/evals:error-discovery`                     | [evals](/reference/plugins/evals.md)             | Review traces in a built review app and group the notes into failure modes.                      |
+| `/evals:generate-synthetic-data`             | [evals](/reference/plugins/evals.md)             | Create varied synthetic test inputs from dimension tuples.                                       |
+| `/evals:write-code-eval`                     | [evals](/reference/plugins/evals.md)             | Write code checks for failure modes with objective rules.                                        |
+| `/evals:write-judge-prompt`                  | [evals](/reference/plugins/evals.md)             | Design an LLM judge for a criterion code cannot check.                                           |
+| `/evals:validate-evaluator`                  | [evals](/reference/plugins/evals.md)             | Calibrate an LLM judge against human labels.                                                     |
+| `/evals:evaluate-rag`                        | [evals](/reference/plugins/evals.md)             | Evaluate retrieval and generation quality in a RAG pipeline.                                     |
+| `/evals:build-review-interface`              | [evals](/reference/plugins/evals.md)             | Build a browser interface for reviewing and labelling traces.                                    |
 | `/pstack:poteto-mode`                        | [pstack](/reference/plugins/pstack.md)           | Pick a playbook for a non-trivial task and work in poteto's style.                               |
 | `/pstack:poteto-help`                        | [pstack](/reference/plugins/pstack.md)           | Find the skill, playbook or principle for a task.                                                |
 | `/pstack:in-your-own-words`                  | [pstack](/reference/plugins/pstack.md)           | Restate the user's goal and problem before work starts.                                          |
