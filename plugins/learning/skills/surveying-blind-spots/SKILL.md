@@ -1,6 +1,6 @@
 ---
 name: surveying-blind-spots
-description: Use when the user is about to start work in a codebase area or field they do not know well and wants a blind-spot pass, a survey of their unknown unknowns, gotchas, and dead ends, before they write a prompt or plan. For example "I know nothing about the auth module, find my blind spots" or "what don't I know about color grading". Not for tutoring to mastery; that is quizzing-a-topic.
+description: Use when the user is about to start work in a codebase area or field they do not know well and wants a blind-spot pass, a survey of their unknown unknowns, gotchas, and dead ends, before they write a prompt or plan. For example "I know nothing about the auth module, find my blind spots" or "what don't I know about color grading". Not for tutoring to mastery; that is teaching-a-topic.
 ---
 
 # Surveying Blind Spots
@@ -13,7 +13,7 @@ The user cannot ask about what they cannot name. Explore the target on their beh
 
 ## When NOT to invoke
 
-- The user wants to be taught and quizzed to mastery. Use `learning:quizzing-a-topic`.
+- The user wants to be taught and quizzed to mastery. Use `learning:teaching-a-topic`.
 - The user is ready to converge a design through Q and A. Skip this pass and work through the design with the user, one question at a time; this skill feeds that work.
 - The user wants a cited multi-source report. Use `research:research`.
 
@@ -48,4 +48,4 @@ Deliver in chat, ordered by how likely each item is to burn the user:
 4. Better prompts: two or three rewritten versions of the user's stated goal that bake in what the pass found, ready to paste into a fresh session.
 5. Open questions: what the pass could not resolve, and where the answer likely lives.
 
-Keep the briefing scannable. Close by offering, not forcing, the follow-ups: `learning:quizzing-a-topic` to verify understanding, or working through the design with the user, one question at a time.
+Keep the briefing scannable. Close by offering, not forcing, the follow-ups: `learning:teaching-a-topic` to verify understanding, or working through the design with the user, one question at a time.

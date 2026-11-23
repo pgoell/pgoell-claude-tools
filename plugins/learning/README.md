@@ -4,14 +4,14 @@ Adaptive teaching, concept rebuilding and practice with durable evidence of what
 
 ## Skills
 
-- `/learning:quizzing-the-session`: Build a problem/solution/impact checklist from the current session and recent git activity, then teach and quiz you to mastery. Also fits right before a PR or merge, to confirm you can represent the work in review.
-- `/learning:quizzing-a-topic`: The same teaching engine pointed at any topic or theme you name.
+- `/learning:teaching-the-session`: Build a problem/solution/impact checklist from the current session and recent git activity, then teach and quiz you to mastery. Also fits right before a PR or merge, to confirm you can represent the work in review.
+- `/learning:teaching-a-topic`: The same teaching engine pointed at any topic or theme you name.
 - `/learning:surveying-blind-spots`: A pre-work blind-spot pass over a codebase area or field you do not know. Surfaces unknown unknowns, gotchas, and dead ends, then hands you rewritten prompts that bake in what it found. A briefing, not a quiz.
 - `/learning:rebuilding-a-concept`: Learn a concept by rebuilding it from the problem that forced it, then breaking your version with counterexamples and repairing it. The textbook version comes last, as a comparison. Works for maths and for designs such as data models or architecture patterns.
 
 - `/learning:practicing-a-topic`: Revisit prior learning with one adaptive problem at a time, unfamiliar cues, minimal hints and dated evidence of independent or assisted performance.
 
-The two quizzing skills have the assistant assess what you already know, fill the gaps, and quiz you item by item: multiple choice via AskUserQuestion for the early rungs, with the correct option shuffled and hidden until you submit, and a last check where you explain the item in your own words, with no options. When you get stuck, you get the smallest hint that could help, not the answer; a full re-teach comes only after three hints fail or when you ask. An explicit stop saves open gaps rather than declaring mastery. Predictions precede explanations, and later recall is assessed separately from immediate performance.
+The two teaching skills have the assistant assess what you already know, fill the gaps, and quiz you item by item: multiple choice via AskUserQuestion for the early rungs, with the correct option shuffled and hidden until you submit, and a last check where you explain the item in your own words, with no options. When you get stuck, you get the smallest hint that could help, not the answer; a full re-teach comes only after three hints fail or when you ask. An explicit stop saves open gaps rather than declaring mastery. Predictions precede explanations, and later recall is assessed separately from immediate performance.
 
 ## Persistent learning records
 
@@ -21,7 +21,7 @@ See [Learn and practice with Kasten](#learn-and-practice-with-kasten) below for 
 
 ## Inspiration
 
-These skills are an original adaptation, "stolen like an artist", of Thariq Shihipar's work: the two quizzing skills from his "Learn Quiz" gist (<https://gist.github.com/ThariqS/1389dcdff9eba4789887a2211370f06b>), and the blind-spot pass from the "find your unknowns" techniques in his AI Engineer talk on working with new model generations. No upstream text is vendored verbatim; the concepts are reimplemented in this repo's conventions.
+These skills are an original adaptation, "stolen like an artist", of Thariq Shihipar's work: the two teaching skills from his "Learn Quiz" gist (<https://gist.github.com/ThariqS/1389dcdff9eba4789887a2211370f06b>), and the blind-spot pass from the "find your unknowns" techniques in his AI Engineer talk on working with new model generations. No upstream text is vendored verbatim; the concepts are reimplemented in this repo's conventions.
 
 `rebuilding-a-concept` draws on Otto Toeplitz's genetic method (1927) and Imre Lakatos's _Proofs and Refutations_ (1976), written in this repo's own words. Original work is MIT licensed.
 
@@ -41,7 +41,7 @@ In a Kasten chat pane whose Claude Code can load this plugin, or in a connected
 agent host with Kasten tools, send:
 
 ```text
-/learning:quizzing-a-topic Teach me the adaptive learning workflow from this source note:
+/learning:teaching-a-topic Teach me the adaptive learning workflow from this source note:
 00 Inbox/Agent Harness for Learning Things.md.
 Focus on diagnosis, practice and evidence. Keep the record in this vault.
 ```
