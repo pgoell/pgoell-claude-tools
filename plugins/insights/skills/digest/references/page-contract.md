@@ -38,6 +38,7 @@ marked **checked** and refuses to render until they hold.
       "destination": "pgoell-claude-tools/plugins/guards",
       "destination_note": "a PreToolUse hook",
       "action": "Opens a PR",
+      "form": "hook",
       "target": {
         "repo": "/path/to/repo",
         "path": "plugins/guards/hooks/"
@@ -98,6 +99,10 @@ marked **checked** and refuses to render until they hold.
 - `action`: `Opens a PR`, `Adds a todo`, `Adds a feedback line` or
   `Watch only` (**checked**). `Opens a PR` needs `target.repo`, the absolute
   path of the repository (**checked**), and `target.path`, the file or folder.
+- `form`: `code`, `check`, `hook` or `prose`, on every `Opens a PR` problem
+  (**checked**); `references/judging.md` says which. A `prose` fix needs a
+  `destination_note` (**checked**). Both checks start with the page of
+  2026-11-23; a day file from before has no `form` and still renders.
 - `evidence`: session ids (8 characters) with the Berlin time where it helps,
   or `edition 10-08` for a newspaper run.
 

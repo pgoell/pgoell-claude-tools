@@ -22,6 +22,8 @@ from common import BERLIN, TEMPLATE, WINDOW, analysed_day, base_parser, insights
 
 STATUSES = ("doc", "rec", "new", "fade")
 ACTIONS = ("Opens a PR", "Adds a todo", "Adds a feedback line", "Watch only")
+FORMS = ("code", "check", "hook", "prose")
+FORM_SINCE = "2026-11-23"  # day files from before carry no form and must still render
 REQUIRED = ("id", "fingerprint", "group", "status", "kind", "title", "yesterday", "series", "projects", "what", "why",
             "verified", "fix", "destination", "action", "evidence")
 
@@ -48,6 +50,11 @@ def problems_errors(page: dict) -> list[str]:
             errors.append(f"{where}: series must hold {WINDOW} daily counts, oldest first")
         if p.get("action") == "Opens a PR" and not (p.get("target") or {}).get("repo"):
             errors.append(f"{where}: 'Opens a PR' needs target.repo")
+        if p.get("action") == "Opens a PR" and str(page.get("date", "")) >= FORM_SINCE:
+            if p.get("form") not in FORMS:
+                errors.append(f"{where}: 'Opens a PR' needs form, one of {FORMS}")
+            elif p["form"] == "prose" and not p.get("destination_note"):
+                errors.append(f"{where}: a prose fix says in destination_note why no code, check or hook fits")
         for line in p.get("fix", []):
             if not (isinstance(line, list) and len(line) == 2 and line[0] in ("a", "d", "c")):
                 errors.append(f"{where}: fix lines are [\"a\"|\"d\"|\"c\", text]")

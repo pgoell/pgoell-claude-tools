@@ -16,7 +16,9 @@ wrong in my sessions yesterday"); cron runs `/insights:digest` and
   reads 14 days of transcripts through `extract.py`, groups recurring errors,
   guard refusals and typed corrections into problems, checks memory and the
   files a fix would go to, verifies causes where a check is cheap, and writes
-  the page, the review note and memory. The date is the day analysed,
+  the page, the review note and memory. A fix that opens a pull request names
+  its form: `code`, `check`, `hook` or `prose`, tried in that order, and a
+  prose fix says why nothing stronger fits. The date is the day analysed,
   yesterday in Berlin by default. It first applies any review note you
   finished since the last run.
 - `/insights:apply [--vault PATH] [--date YYYY-MM-DD] [--periodic FOLDER]`:
@@ -180,13 +182,19 @@ user's bullets and a mention under a heading stay), a run with `gh` and
 written; `cron-insights.sh` also looks in `01 Periodic` when the variable is
 unset.
 
-Last run, 2026-10-19: 72 of 72 checks pass.
-
-The digest and apply skills have no test.
+Last run, 2026-11-22: 95 of 95 checks pass.
 
 `tests/digest.sh` runs `review.py` and `remember.py` against one problem
 proposed on two days: a verdict on the later id settles the earlier id's
-line, and a verdict for the earlier id never replaces it.
+line, and a verdict for the earlier id never replaces it. It also runs
+`render.py`'s check on `form`: from the page of 2026-11-23 on, a pull-request
+card with no form, or a prose fix with no reason in `destination_note`, is
+refused; a day file from before renders with no form.
+
+Last run, 2026-11-22: 15 of 15 checks pass.
+
+No test covers what the model itself does in digest and apply: the judging
+and the pull requests.
 
 ## Evals
 
