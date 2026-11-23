@@ -1,6 +1,6 @@
 ---
 name: rebuilding-a-concept
-description: Use when the user wants to learn a concept by rebuilding how it came to exist and then trying to break it, rather than being handed the finished definition. Joins Toeplitz's genetic method with Lakatos's proofs and refutations. For example "help me rebuild why limits exist", "derive Euler's formula with me, then break it", or "why does event sourcing look like this? Let me build it myself first". Not for quizzing to mastery; that is quizzing-a-topic.
+description: Use when the user wants to learn a concept by rebuilding how it came to exist and then trying to break it, rather than being handed the finished definition. Joins Toeplitz's genetic method with Lakatos's proofs and refutations. For example "help me rebuild why limits exist", "derive Euler's formula with me, then break it", or "why does event sourcing look like this? Let me build it myself first". Not for quizzing to mastery; that is teaching-a-topic.
 ---
 
 # Rebuilding a Concept
@@ -17,7 +17,7 @@ This is slower than reading the finished theory. The payoff is that the user kno
 ## When NOT to invoke
 
 - The user wants the definition now, or a quick explanation. Just answer.
-- The user wants to be taught and quizzed to mastery on a topic. Use `learning:quizzing-a-topic`.
+- The user wants to be taught and quizzed to mastery on a topic. Use `learning:teaching-a-topic`.
 - The user wants a survey of what they do not know before starting work. Use `learning:surveying-blind-spots`.
 
 ## The two ideas behind it
@@ -66,8 +66,8 @@ Beyond maths, the same loop for a data model: "orders keep showing the wrong pri
 
 ## The persistent learning record
 
-Read [learning-record.md](../quizzing-a-topic/references/learning-record.md) and
-[storage.md](../quizzing-a-topic/references/storage.md) before starting. Apply
+Read [learning-record.md](../teaching-a-topic/references/learning-record.md) and
+[storage.md](../teaching-a-topic/references/storage.md) before starting. Apply
 their retrieval, record and storage rules, including early checkpoints. Keep the
 problem, each version of the learner's rule, the counterexamples, repairs,
 explicit assumptions and canonical comparison in that record. Give claims

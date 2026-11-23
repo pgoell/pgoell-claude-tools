@@ -62,7 +62,7 @@
       "name": "learning",
       "source": "./plugins/learning",
       "description": "Adaptive teaching, concept rebuilding and practice with durable learning records and optional Kasten integration.",
-      "version": "0.5.3"
+      "version": "0.6.0"
     },
     {
       "name": "critique",

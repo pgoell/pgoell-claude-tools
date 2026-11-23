@@ -10,8 +10,8 @@ Ask one problem at a time and adapt to the learner's observed reasoning.
 
 ## Load the evidence
 
-Read [learning-record.md](../quizzing-a-topic/references/learning-record.md) and
-[storage.md](../quizzing-a-topic/references/storage.md). Apply their record,
+Read [learning-record.md](../teaching-a-topic/references/learning-record.md) and
+[storage.md](../teaching-a-topic/references/storage.md). Apply their record,
 destination, evidence and write rules. Load the named record or sources and
 relevant prior attempts. Create a new practice record linked to the earlier one;
 resume the same practice record only when asked to continue it.
@@ -19,7 +19,7 @@ resume the same practice record only when asked to continue it.
 If no history is available, begin with one diagnostic problem on the named topic
 and mark prior understanding unknown. Ask one scope question only if the topic
 is unbounded. Never invent a prior lesson. If the user actually wants first
-instruction, use `learning:quizzing-a-topic`; a concept to reconstruct belongs to
+instruction, use `learning:teaching-a-topic`; a concept to reconstruct belongs to
 `learning:rebuilding-a-concept`. Reuse user-supplied problems when requested.
 
 ## Practice loop

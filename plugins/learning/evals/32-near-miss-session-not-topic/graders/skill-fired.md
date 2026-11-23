@@ -1,5 +1,5 @@
 ---
 type: tool_used
 tool: Skill
-input_match: learning:quizzing-the-session
+input_match: learning:teaching-the-session
 ---

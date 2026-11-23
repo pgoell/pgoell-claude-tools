@@ -50,7 +50,7 @@ The manifest `license:` (in both `.claude-plugin/plugin.json` and `.codex-plugin
 
 A plugin that rebuilds an upstream idea (for example from an unlicensed gist) in this repo's own words, copying no upstream text, is original MIT work, not a port. It ships MIT `LICENSE` and a README with an `## Inspiration` (or Credits) section that links the source and names the author, and no `NOTICE` or `LICENSE-upstream`: there are no copied files to map and no dashes to substitute.
 
-The `learning` plugin (`quizzing-the-session`, `quizzing-a-topic`), adapted from Thariq Shihipar's "Learn Quiz" gist, is the model. Its SKILL.md bodies are rewritten, not copied. Choose this shape only when you truly rewrote the content: once you paste upstream text it is a port, and the port rules apply.
+The `learning` plugin (`teaching-the-session`, `teaching-a-topic`), adapted from Thariq Shihipar's "Learn Quiz" gist, is the model. Its SKILL.md bodies are rewritten, not copied. Choose this shape only when you truly rewrote the content: once you paste upstream text it is a port, and the port rules apply.
 
 ## Verbatim ports must substitute em-dashes/en-dashes inline at port time
 
